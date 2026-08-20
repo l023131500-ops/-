@@ -8979,3 +8979,56 @@
     שדות טופס עם הודעות שגיאה (טרם נבדקה), או בדיקת ניגודיות של placeholder
     text בשדות קלט.
     via cloud server 167.99.131.167 [loop B]
+
+## 20/08/2026 — סבב 406 (loop B)
+
+406. **עדשת `aria-describedby`/`aria-invalid` על שדות טופס עם הודעות שגיאה
+    (WCAG 1.3.1 / 4.1.2), מוצעת בסוף סבב 405: סוכן Explore סרק את כל 7
+    האפליקציות החיות (17/18/21/22/24/27/28), דפים ציבוריים בלבד, ואיתר כל
+    שדה קלט שמציג הודעת שגיאה מותנית בלי לקשר אותה לשדה עצמו דרך
+    `aria-describedby` (כך שקורא-מסך לא יקריא את השגיאה כשמשתמש מתמקד
+    בשדה). ראשית אומת שכל האפליקציות עם `components/ui/form.tsx`
+    (shadcn `FormField`/`FormControl`/`FormMessage`) כבר מחווטות נכון
+    מובנה — אלו סומנו כנקיות ולא נגעתי בהן. 4 ממצאים אמיתיים נמצאו,
+    כולם בטפסים ידניים/מותאמים-אישית שעוקפים את הרכיב המשותף: (1)
+    **24-galilee-connect-hub**/`ContactPage.tsx` — טופס יצירת קשר עם 4
+    שדות ו-`errorMsg` כללי בלי `id`; (2) **27-bkalut-price**/
+    `user-login.tsx` — טופס כניסת לקוח עם שגיאת `useState` בלי `id`/
+    `role="alert"`; (3) **22-get-your-rights**/`AuthReset.tsx` — טופס
+    איפוס סיסמה, שני שדות `PasswordInput` (עוטף `Input` עם
+    `{...props}`, מעביר כל prop הלאה); (4) **28-kupot-health-funds**/
+    `SwitchFundDialog.tsx` — אשף רב-שלבי מבוסס `react-hook-form`+`zod`
+    עם רכיב `Field` פנימי משותף (`fullName`/`phone`/`email`) שמציג
+    שגיאות אבל לא מקשר אותן.
+
+    לכל ממצא: הוספתי `id` להודעת השגיאה, `aria-describedby` (מותנה בקיום
+    שגיאה) ו-`aria-invalid` לשדה/שדות הרלוונטיים, ו-`role="alert"` היכן
+    שחסר (24/27/22). ב-28, במקום לתקן כל שימוש בנפרד, הרחבתי את רכיב
+    `Field` המשותף עצמו: פרמטר `id` אופציונלי חדש, ומשתמש ב-`cloneElement`
+    כדי להזריק `id`/`aria-invalid`/`aria-describedby` לילד היחיד (השדה)
+    כש-`id` סופק, בתוספת `htmlFor` על ה-`Label` (שיפור נלווה ל-1.3.1).
+    עודכנו רק 3 קריאות ל-`Field` שכבר מעבירות `error` (fullName/phone/
+    email) — שדות אופציונליים בלי שגיאה (idNumber/city/peopleCount/
+    currentSupplemental/note) לא שונו, מחוץ להיקף. 17/18/21 נבדקו ונמצאו
+    נקיים (17/21: אין הודעות שגיאה inline בטפסים ציבוריים, רק toast; 18:
+    הודעת login היא `role="status"` כללית, לא per-field).
+
+    כל שינוי הוא הוספת attributes/prop בלבד לאלמנטים קיימים, ללא שינוי
+    DOM/מבנה/סגנון חזותי. `git diff --stat`: 4 קבצים, 35+/13-. בדיקת
+    איזון סוגריים (Python) נקייה על כל 4 הקבצים. לא הופעל build/
+    dev-server (לפי הנחיות ההרצה). אומת ש-27-bkalut-price/`user-login.tsx`
+    אינו ברשימת הקבצים המוגנים ב-CLAUDE.md הפנימי של האפליקציה
+    (App.tsx/admin-login.tsx/routes.ts/utils.ts); ל-24/22/28 אין
+    CLAUDE.md פנימי משלהן. ענף `fix/b-22-whatsapp-noopener-round395-0820`
+    (שרשרת הענפים היא המקור המלא היחיד ל-loop B, לא `main`), נדחף
+    (מפעיל פריסת Vercel תחת more30.com/galil, more30.com/mechiron,
+    more30.com/zchuyot, more30.com/kupot).
+
+    **הבא בתור:** עדשת `aria-describedby` סגורה כעת בכל 7 האפליקציות.
+    נושא #245 (RLS על `csjekrvukbdznetsrodj`, מוגן — סכימת `csj`, לא
+    לגעת) ו-#250 (RLS על 21-mthbram, חסום MCP) נשארים חסומים. אפשרויות
+    להמשך: רענון תקופתי של עדשת המחירון/מיתוג 'עולם הסטארטאפים', בדיקת
+    ניגודיות של placeholder text בשדות קלט (טרם נבדקה), או עדשת
+    `autoComplete`/סוגי-קלט (`inputMode`) על שדות נוספים שלא נסרקו
+    בסבב 396.
+    via cloud server 167.99.131.167 [loop B]
