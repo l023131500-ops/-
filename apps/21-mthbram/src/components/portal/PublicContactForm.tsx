@@ -121,7 +121,7 @@ const PublicContactForm = ({ portalId, portalType, portalName }: Props) => {
                 </div>
                 <div>
                   <label className="font-body text-xs font-medium text-muted-foreground mb-1 block">טלפון *</label>
-                  <Input value={phone} onChange={e => setPhone(e.target.value)} placeholder="050-..." className="border-gold/20 focus:border-gold/50 bg-background text-foreground" />
+                  <Input type="tel" inputMode="tel" value={phone} onChange={e => setPhone(e.target.value)} placeholder="050-..." className="border-gold/20 focus:border-gold/50 bg-background text-foreground" />
                 </div>
               </div>
               <div>
