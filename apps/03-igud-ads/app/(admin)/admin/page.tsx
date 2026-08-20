@@ -22,10 +22,20 @@ export default function AdminDashboard() {
   useEffect(() => { load(); const id = setInterval(load, 15000); return () => clearInterval(id); }, []);
 
   async function runWorker() {
+    if (running) return;
     setRunning(true);
-    await fetch("/modaot/api/jobs/worker", { method: "POST" });
-    setRunning(false);
-    load();
+    try {
+      const r = await fetch("/modaot/api/jobs/worker", { method: "POST" });
+      if (!r.ok) {
+        const d = await r.json().catch(() => ({}));
+        alert(d.error || "שגיאה בהרצת ה-Worker");
+      }
+      await load();
+    } catch {
+      alert("שגיאת רשת — נסה שוב");
+    } finally {
+      setRunning(false);
+    }
   }
 
   const cards = [
