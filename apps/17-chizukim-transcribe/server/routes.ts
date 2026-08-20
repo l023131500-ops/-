@@ -65,6 +65,9 @@ async function nextSeq(): Promise<number> {
     `${SUPABASE_URL}/rest/v1/recordings?select=seq&order=seq.desc&limit=1`,
     { headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}` } },
   );
+  if (!listRes.ok) {
+    throw new Error(`שגיאה בקבלת המספר הסידורי הבא: ${listRes.status}`);
+  }
   const rows = (await listRes.json()) as { seq: number | null }[];
   return (rows[0]?.seq ?? 0) + 1;
 }
