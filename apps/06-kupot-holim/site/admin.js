@@ -180,8 +180,8 @@
       } else { move = '<span style="color:var(--text-faint)">—</span>'; }
       var toggleLabel = r.status === "done" ? "החזר לחדש" : "סמן טופל";
       var newStatus = r.status === "done" ? "new" : "done";
-      var mail = r.email ? '<a href="mailto:' + esc(r.email) + '">' + esc(r.email) + '</a>' : '<span style="color:var(--text-faint)">—</span>';
-      var phoneLink = r.phone ? '<a href="tel:' + esc(r.phone) + '">' + esc(r.phone) + '</a>' : "";
+      var mail = r.email ? '<span dir="ltr"><a href="mailto:' + esc(r.email) + '">' + esc(r.email) + '</a></span>' : '<span style="color:var(--text-faint)">—</span>';
+      var phoneLink = r.phone ? '<span dir="ltr"><a href="tel:' + esc(r.phone) + '">' + esc(r.phone) + '</a></span>' : "";
       return '<tr>' +
         '<td>' + esc(fmtDate(r.created_at)) + '</td>' +
         '<td>' + type + '</td>' +

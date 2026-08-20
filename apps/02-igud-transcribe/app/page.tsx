@@ -83,8 +83,8 @@ export default function HomePage() {
               <div className="text-sm text-white/70">© {new Date().getFullYear()} כל הזכויות שמורות.</div>
             </div>
             <div className="text-sm text-white/80">
-              <span className="ml-4">טל: 02-3131600</span>
-              <a href="mailto:a023131600@gmail.com" className="inline-block py-1 hover:text-accent">a023131600@gmail.com</a>
+              <span className="ml-4">טל: <span dir="ltr">02-3131600</span></span>
+              <a href="mailto:a023131600@gmail.com" dir="ltr" className="inline-block py-1 hover:text-accent">a023131600@gmail.com</a>
             </div>
           </div>
         </footer>
