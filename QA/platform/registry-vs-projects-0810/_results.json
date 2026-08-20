@@ -1,5 +1,5 @@
 {
-  "measured_at": "2026-08-10T11:30:51.274Z",
+  "measured_at": "2026-08-20T06:35:10.410Z",
   "origin": "https://more30.com",
   "snapshot_captured_at": "2026-08-10T12:05:00Z",
   "home": {
@@ -7,16 +7,16 @@
     "status": 200,
     "finalUrl": "https://more30.com/",
     "contentType": "text/html; charset=utf-8",
-    "bytes": 3517,
+    "bytes": 3284,
     "title": "עולם הסטארטאפים",
-    "fingerprint": "//netfree.link/injection-script/go-payment.js|//netfree.link/injection-script/popup-card-init.js|/assets/index-B35ByRD-.css|/assets/index-C2AHwa-z.js"
+    "fingerprint": "/assets/index-B35ByRD-.css|/assets/index-C2AHwa-z.js"
   },
   "counts": {
     "compared": 36,
-    "agree": 30,
-    "differ": 6,
-    "registry_wrong": 0,
-    "db_wrong": 0,
+    "agree": 34,
+    "differ": 2,
+    "registry_wrong": 1,
+    "db_wrong": 1,
     "portal_fallback": 0,
     "missing_from_registry": 0,
     "protected_skipped": [
@@ -53,9 +53,9 @@
         "status": 200,
         "finalUrl": "https://more30.com/torah/",
         "contentType": "text/html; charset=utf-8",
-        "bytes": 29186,
+        "bytes": 29750,
         "title": "איגוד השיעורים · מערכת תורנית מאוחדת",
-        "fingerprint": "//netfree.link/injection-script/go-payment.js|//netfree.link/injection-script/popup-card-init.js|/torah/assets/index-DMSjp30O.js|/torah/assets/index-DlHhswkm.css",
+        "fingerprint": "/torah/assets/index-Btvatz-J.css|/torah/assets/index-CuCW3tN8.js",
         "verdict": "mount"
       },
       "liveByAddress": true,
@@ -90,9 +90,9 @@
         "status": 200,
         "finalUrl": "https://more30.com/tamlul",
         "contentType": "text/html; charset=utf-8",
-        "bytes": 25380,
+        "bytes": 26753,
         "title": "תמלול מבית איגוד השיעורים",
-        "fingerprint": "//netfree.link/injection-script/go-payment.js|//netfree.link/injection-script/popup-card-init.js|/tamlul/_next/static/chunks/117-14ff6e03231d4582.js|/tamlul/_next/static/chunks/972-9f7bec2de9d6f07c.js|/tamlul/_next/static/chunks/app/page-121123fcd84bbf7b.js|/tamlul/_next/static/chunks/fd9d1056-9f91b5e418130764.js|/tamlul/_next/static/chunks/main-app-2dcde4753ea0d175.js|/tamlul/_next/static/chunks/polyfills-42372ed130431b0a.js|/tamlul/_next/static/chunks/webpack-89c4cccf320c83e5.js|/tamlul/_next/static/css/9b37fb31534ef582.css",
+        "fingerprint": "/tamlul/_next/static/chunks/117-b96eb42f8282fff6.js?dpl=dpl_4AjwX198GL2Rkj7a6DW4iHWYRC2x|/tamlul/_next/static/chunks/972-9f7bec2de9d6f07c.js?dpl=dpl_4AjwX198GL2Rkj7a6DW4iHWYRC2x|/tamlul/_next/static/chunks/app/page-949a6b76cb59a7d7.js?dpl=dpl_4AjwX198GL2Rkj7a6DW4iHWYRC2x|/tamlul/_next/static/chunks/fd9d1056-9f91b5e418130764.js?dpl=dpl_4AjwX198GL2Rkj7a6DW4iHWYRC2x|/tamlul/_next/static/chunks/main-app-2dcde4753ea0d175.js?dpl=dpl_4AjwX198GL2Rkj7a6DW4iHWYRC2x|/tamlul/_next/static/chunks/polyfills-42372ed130431b0a.js?dpl=dpl_4AjwX198GL2Rkj7a6DW4iHWYRC2x|/tamlul/_next/static/chunks/webpack-7699e8985cf58a63.js?dpl=dpl_4AjwX198GL2Rkj7a6DW4iHWYRC2x",
         "verdict": "mount"
       },
       "liveByAddress": true,
@@ -127,9 +127,9 @@
         "status": 200,
         "finalUrl": "https://more30.com/modaot",
         "contentType": "text/html; charset=utf-8",
-        "bytes": 18902,
+        "bytes": 20470,
         "title": "יוצר מודעות לשיעורי תורה — מבית איגוד השיעורים",
-        "fingerprint": "//netfree.link/injection-script/go-payment.js|//netfree.link/injection-script/popup-card-init.js|/modaot/_next/static/chunks/117-d17150fdb64a5657.js|/modaot/_next/static/chunks/972-ac35283b8a67e07e.js|/modaot/_next/static/chunks/app/(public)/page-d9dcd20740af41d3.js|/modaot/_next/static/chunks/fd9d1056-0a73e5988bda9cb2.js|/modaot/_next/static/chunks/main-app-2dcde4753ea0d175.js|/modaot/_next/static/chunks/polyfills-42372ed130431b0a.js|/modaot/_next/static/chunks/webpack-f3a7b00e864e4fb6.js|/modaot/_next/static/css/bd61601e4df3eb76.css",
+        "fingerprint": "/modaot/_next/static/chunks/117-998864d7a4d7c7f1.js?dpl=dpl_EHcFRRkQ3U5fYB9cRR9utEwJAej4|/modaot/_next/static/chunks/972-ac35283b8a67e07e.js?dpl=dpl_EHcFRRkQ3U5fYB9cRR9utEwJAej4|/modaot/_next/static/chunks/app/(public)/page-f669068e65deb0f9.js?dpl=dpl_EHcFRRkQ3U5fYB9cRR9utEwJAej4|/modaot/_next/static/chunks/fd9d1056-0a73e5988bda9cb2.js?dpl=dpl_EHcFRRkQ3U5fYB9cRR9utEwJAej4|/modaot/_next/static/chunks/main-app-2dcde4753ea0d175.js?dpl=dpl_EHcFRRkQ3U5fYB9cRR9utEwJAej4|/modaot/_next/static/chunks/polyfills-42372ed130431b0a.js?dpl=dpl_EHcFRRkQ3U5fYB9cRR9utEwJAej4|/modaot/_next/static/chunks/webpack-6932ed147a15b855.js?dpl=dpl_EHcFRRkQ3U5fYB9cRR9utEwJAej4",
         "verdict": "mount"
       },
       "liveByAddress": true,
@@ -164,9 +164,9 @@
         "status": 200,
         "finalUrl": "https://more30.com/imud/",
         "contentType": "text/html; charset=utf-8",
-        "bytes": 3475,
+        "bytes": 5729,
         "title": "אות ודף — מנוע עימוד תורני",
-        "fingerprint": "//netfree.link/injection-script/go-payment.js|//netfree.link/injection-script/popup-card-init.js|/imud/assets/index-7IQk_wi0.js|/imud/assets/index-VlNluIwL.css",
+        "fingerprint": "/imud/assets/index-BwIV0db3.css|/imud/assets/index-CE4FJVwf.js",
         "verdict": "mount"
       },
       "liveByAddress": true,
@@ -201,9 +201,9 @@
         "status": 404,
         "finalUrl": "https://more30.com/financial/",
         "contentType": "text/html; charset=utf-8",
-        "bytes": 4654,
+        "bytes": 4504,
         "title": "הכתובת לא נמצאה · עולם הסטארטאפים",
-        "fingerprint": "//netfree.link/injection-script/go-payment.js|//netfree.link/injection-script/popup-card-init.js",
+        "fingerprint": "",
         "verdict": "missing"
       },
       "liveByAddress": false,
@@ -238,9 +238,9 @@
         "status": 200,
         "finalUrl": "https://more30.com/briut/",
         "contentType": "text/html; charset=utf-8",
-        "bytes": 14759,
+        "bytes": 15473,
         "title": "בקלות — השוואת קופות חולים והמלצות מעבר",
-        "fingerprint": "//netfree.link/injection-script/go-payment.js|//netfree.link/injection-script/popup-card-init.js|app.js|leads-store.js|styles.css|supabase-config.js",
+        "fingerprint": "app.js|leads-store.js|styles.css|supabase-config.js",
         "verdict": "mount"
       },
       "liveByAddress": true,
@@ -275,9 +275,9 @@
         "status": 404,
         "finalUrl": "https://more30.com/zol/",
         "contentType": "text/html; charset=utf-8",
-        "bytes": 4654,
+        "bytes": 4504,
         "title": "הכתובת לא נמצאה · עולם הסטארטאפים",
-        "fingerprint": "//netfree.link/injection-script/go-payment.js|//netfree.link/injection-script/popup-card-init.js",
+        "fingerprint": "",
         "verdict": "missing"
       },
       "liveByAddress": false,
@@ -312,9 +312,9 @@
         "status": 200,
         "finalUrl": "https://more30.com/bkalot/",
         "contentType": "text/html; charset=utf-8",
-        "bytes": 23339,
+        "bytes": 25343,
         "title": "בדיקה מקיפה על כל הזכויות וההטבות שניתן לקבל",
-        "fingerprint": "//netfree.link/injection-script/go-payment.js|//netfree.link/injection-script/popup-card-init.js|app.js|engine.js|https://bieebmnmkffwbqlsfozh.supabase.co/storage/v1/object/public/design/bkalot-theme.css|repo.js|style.css",
+        "fingerprint": "app.js|engine.js|https://bieebmnmkffwbqlsfozh.supabase.co/storage/v1/object/public/design/bkalot-theme.css|repo.js|style.css",
         "verdict": "mount"
       },
       "liveByAddress": true,
@@ -377,9 +377,9 @@
         "status": 200,
         "finalUrl": "https://more30.com/smel/",
         "contentType": "text/html; charset=utf-8",
-        "bytes": 2074,
-        "title": "SMEL NDLN — מחקר נדל\"ן חכם",
-        "fingerprint": "//netfree.link/injection-script/go-payment.js|//netfree.link/injection-script/popup-card-init.js|/smel/assets/index-BjP8VGql.js|/smel/assets/index-CF04gbI5.css",
+        "bytes": 3209,
+        "title": "SMEL NDLN — מחקר נדל\"ן מנתוני ממשלה",
+        "fingerprint": "/smel/assets/index-DNmUL47e.js|/smel/assets/index-DsXTeWvt.css",
         "verdict": "mount"
       },
       "liveByAddress": true,
@@ -442,9 +442,9 @@
         "status": 200,
         "finalUrl": "https://more30.com/smachot/",
         "contentType": "text/html; charset=utf-8",
-        "bytes": 4612,
+        "bytes": 5124,
         "title": "שמחות פלוס — תוכנית עסקית",
-        "fingerprint": "./app.js|./base.css|./style.css|//netfree.link/injection-script/go-payment.js|//netfree.link/injection-script/popup-card-init.js",
+        "fingerprint": "./app.js|./style.css",
         "verdict": "mount"
       },
       "liveByAddress": true,
@@ -479,9 +479,9 @@
         "status": 200,
         "finalUrl": "https://more30.com/egod/",
         "contentType": "text/html; charset=utf-8",
-        "bytes": 3328,
+        "bytes": 4228,
         "title": "איגוד השיעורים — פורטל מגידי השיעורים",
-        "fingerprint": "//netfree.link/injection-script/go-payment.js|//netfree.link/injection-script/popup-card-init.js|/egod/assets/index-CCW5-dLB.css|/egod/assets/index-y8vBmSHh.js",
+        "fingerprint": "/egod/assets/index-D0_FvEnd.css|/egod/assets/index-Hq3tjL7t.js",
         "verdict": "mount"
       },
       "liveByAddress": true,
@@ -516,9 +516,9 @@
         "status": 200,
         "finalUrl": "https://more30.com/chatzor/",
         "contentType": "text/html; charset=utf-8",
-        "bytes": 35278,
+        "bytes": 2981,
         "title": "מחוברים · חצור הגלילית",
-        "fingerprint": "//netfree.link/injection-script/go-payment.js|//netfree.link/injection-script/popup-card-init.js|/chatzor/assets/index-CVT2cZJc.js|/chatzor/assets/index-Ce8_JRl3.css",
+        "fingerprint": "/chatzor/assets/index-BVdFRaIV.js|/chatzor/assets/index-aLMJbUkB.css",
         "verdict": "mount"
       },
       "liveByAddress": true,
@@ -534,7 +534,7 @@
       "registry": {
         "number": "17",
         "slug": "chizukim-transcribe",
-        "stage": "wip",
+        "stage": "live",
         "live": true,
         "isDeployed": true,
         "deployTarget": "vercel"
@@ -555,15 +555,13 @@
         "status": 200,
         "finalUrl": "https://more30.com/chizukim/",
         "contentType": "text/html; charset=utf-8",
-        "bytes": 4013,
+        "bytes": 4312,
         "title": "מערכת תמלול — חיזוקים קצרים",
-        "fingerprint": "//netfree.link/injection-script/go-payment.js|//netfree.link/injection-script/popup-card-init.js|/chizukim/assets/index-B3-SjNVo.js|/chizukim/assets/index-CGr9WgHf.css",
+        "fingerprint": "/chizukim/assets/index-D1ZhMque.css|/chizukim/assets/index-DWIBi5GK.js",
         "verdict": "mount"
       },
       "liveByAddress": true,
-      "disagreements": [
-        "stage: registry=wip db=live"
-      ],
+      "disagreements": [],
       "contradictedByAddress": []
     },
     {
@@ -573,7 +571,7 @@
       "registry": {
         "number": "18",
         "slug": "torah-editor-mvp",
-        "stage": "wip",
+        "stage": "live",
         "live": true,
         "isDeployed": true,
         "deployTarget": "vercel"
@@ -594,15 +592,13 @@
         "status": 200,
         "finalUrl": "https://more30.com/orech",
         "contentType": "text/html; charset=utf-8",
-        "bytes": 9296,
+        "bytes": 10024,
         "title": "העורך התורני",
-        "fingerprint": "//netfree.link/injection-script/go-payment.js|//netfree.link/injection-script/popup-card-init.js|/orech/_next/static/chunks/117-d92d9ca3c141f121.js|/orech/_next/static/chunks/972-d8104d9ab1af2576.js|/orech/_next/static/chunks/app/page-6944579fc101b43d.js|/orech/_next/static/chunks/fd9d1056-42a1c2df9c4a85a8.js|/orech/_next/static/chunks/main-app-2dcde4753ea0d175.js|/orech/_next/static/chunks/polyfills-42372ed130431b0a.js|/orech/_next/static/chunks/webpack-a42aac6b82fb44bd.js|/orech/_next/static/css/627e2094a0110cff.css",
+        "fingerprint": "/orech/_next/static/chunks/117-7d501c54060cc06e.js?dpl=dpl_EFb6QMe7M9T4FLRzXc8DUcvdKzrS|/orech/_next/static/chunks/972-d8104d9ab1af2576.js?dpl=dpl_EFb6QMe7M9T4FLRzXc8DUcvdKzrS|/orech/_next/static/chunks/app/page-6944579fc101b43d.js?dpl=dpl_EFb6QMe7M9T4FLRzXc8DUcvdKzrS|/orech/_next/static/chunks/fd9d1056-42a1c2df9c4a85a8.js?dpl=dpl_EFb6QMe7M9T4FLRzXc8DUcvdKzrS|/orech/_next/static/chunks/main-app-2dcde4753ea0d175.js?dpl=dpl_EFb6QMe7M9T4FLRzXc8DUcvdKzrS|/orech/_next/static/chunks/polyfills-42372ed130431b0a.js?dpl=dpl_EFb6QMe7M9T4FLRzXc8DUcvdKzrS|/orech/_next/static/chunks/webpack-a42aac6b82fb44bd.js?dpl=dpl_EFb6QMe7M9T4FLRzXc8DUcvdKzrS",
         "verdict": "mount"
       },
       "liveByAddress": true,
-      "disagreements": [
-        "stage: registry=wip db=live"
-      ],
+      "disagreements": [],
       "contradictedByAddress": []
     },
     {
@@ -633,9 +629,9 @@
         "status": 404,
         "finalUrl": "https://more30.com/shiurim/",
         "contentType": "text/html; charset=utf-8",
-        "bytes": 4654,
+        "bytes": 4504,
         "title": "הכתובת לא נמצאה · עולם הסטארטאפים",
-        "fingerprint": "//netfree.link/injection-script/go-payment.js|//netfree.link/injection-script/popup-card-init.js",
+        "fingerprint": "",
         "verdict": "missing"
       },
       "liveByAddress": false,
@@ -670,9 +666,9 @@
         "status": 404,
         "finalUrl": "https://more30.com/igud/",
         "contentType": "text/html; charset=utf-8",
-        "bytes": 4654,
+        "bytes": 4504,
         "title": "הכתובת לא נמצאה · עולם הסטארטאפים",
-        "fingerprint": "//netfree.link/injection-script/go-payment.js|//netfree.link/injection-script/popup-card-init.js",
+        "fingerprint": "",
         "verdict": "missing"
       },
       "liveByAddress": false,
@@ -686,7 +682,7 @@
       "registry": {
         "number": "21",
         "slug": "mthbram",
-        "stage": "live",
+        "stage": "wip",
         "live": true,
         "isDeployed": true,
         "deployTarget": "vercel"
@@ -707,15 +703,13 @@
         "status": 200,
         "finalUrl": "https://more30.com/mthbram/",
         "contentType": "text/html; charset=utf-8",
-        "bytes": 3870,
+        "bytes": 5329,
         "title": "איגוד השיעורים — שיעורי תורה, חברותות והרצאות",
-        "fingerprint": "//netfree.link/injection-script/go-payment.js|//netfree.link/injection-script/popup-card-init.js|/mthbram/assets/index-CIaqlLS4.css|/mthbram/assets/index-y-Q5UqSS.js",
+        "fingerprint": "/mthbram/assets/index-CpyDKzc4.css|/mthbram/assets/index-DvO5jb2-.js",
         "verdict": "mount"
       },
       "liveByAddress": true,
-      "disagreements": [
-        "stage: registry=live db=wip"
-      ],
+      "disagreements": [],
       "contradictedByAddress": []
     },
     {
@@ -725,7 +719,7 @@
       "registry": {
         "number": "22",
         "slug": "get-your-rights",
-        "stage": "wip",
+        "stage": "live",
         "live": true,
         "isDeployed": true,
         "deployTarget": "vercel"
@@ -746,15 +740,13 @@
         "status": 200,
         "finalUrl": "https://more30.com/zchuyot/",
         "contentType": "text/html; charset=utf-8",
-        "bytes": 61656,
+        "bytes": 7355,
         "title": "בקלות — מיצוי זכויות, מענקים והטבות | הזכות שלך, האחריות שלנו",
-        "fingerprint": "//netfree.link/injection-script/go-payment.js|//netfree.link/injection-script/popup-card-init.js|/zchuyot/assets/index-0ikxyjGB.js|/zchuyot/assets/index-COl8W-52.css",
+        "fingerprint": "/zchuyot/assets/index-CNhqbMbz.js|/zchuyot/assets/index-DZx0ZbZ8.css",
         "verdict": "mount"
       },
       "liveByAddress": true,
-      "disagreements": [
-        "stage: registry=wip db=live"
-      ],
+      "disagreements": [],
       "contradictedByAddress": []
     },
     {
@@ -813,9 +805,9 @@
         "status": 200,
         "finalUrl": "https://more30.com/galil/",
         "contentType": "text/html; charset=utf-8",
-        "bytes": 4619,
+        "bytes": 5759,
         "title": "מחוברים — בתי כנסת חצור הגלילית",
-        "fingerprint": "//netfree.link/injection-script/go-payment.js|//netfree.link/injection-script/popup-card-init.js|/galil/assets/index-CN7M8vyl.js|/galil/assets/index-amMzjW3O.css|/galil/registerSW.js",
+        "fingerprint": "/galil/assets/index-CvkIn0dX.css|/galil/assets/index-SphY-p4t.js|/galil/registerSW.js",
         "verdict": "mount"
       },
       "liveByAddress": true,
@@ -878,9 +870,9 @@
         "status": 200,
         "finalUrl": "https://more30.com/studio/",
         "contentType": "text/html; charset=utf-8",
-        "bytes": 8406,
+        "bytes": 8263,
         "title": "מודעות AI — יצירת מודעות מעוצבות לקהילה",
-        "fingerprint": "//netfree.link/injection-script/go-payment.js|//netfree.link/injection-script/popup-card-init.js|/studio/assets/index-DEngzYQk.css|/studio/assets/index-DN36X7rm.js",
+        "fingerprint": "/studio/assets/index-DI1NkRDf.js|/studio/assets/index-QoWQHc2N.css",
         "verdict": "mount"
       },
       "liveByAddress": true,
@@ -915,9 +907,9 @@
         "status": 200,
         "finalUrl": "https://more30.com/mechiron/",
         "contentType": "text/html; charset=utf-8",
-        "bytes": 34415,
+        "bytes": 3952,
         "title": "מאגר בקלות — כלי פנימי לצוות",
-        "fingerprint": "//netfree.link/injection-script/go-payment.js|//netfree.link/injection-script/popup-card-init.js|/mechiron/assets/index-BMbi5OZ_.css|/mechiron/assets/index-DcMphBNb.js|https://bieebmnmkffwbqlsfozh.supabase.co/storage/v1/object/public/design/bkalot-theme.css",
+        "fingerprint": "/mechiron/assets/index-BnbHE8fc.css|/mechiron/assets/index-CsDLxol-.js|https://bieebmnmkffwbqlsfozh.supabase.co/storage/v1/object/public/design/bkalot-theme.css",
         "verdict": "mount"
       },
       "liveByAddress": true,
@@ -952,9 +944,9 @@
         "status": 200,
         "finalUrl": "https://more30.com/kupot/",
         "contentType": "text/html; charset=utf-8",
-        "bytes": 4497,
+        "bytes": 4261,
         "title": "השוואת קופות חולים | מבית בקלות",
-        "fingerprint": "//netfree.link/injection-script/go-payment.js|//netfree.link/injection-script/popup-card-init.js|/kupot/assets/index-BlT4DUpe.js|/kupot/assets/index-CqpVarLR.css",
+        "fingerprint": "/kupot/assets/index-CiEsg7Pn.js|/kupot/assets/index-Da95pq7h.css",
         "verdict": "mount"
       },
       "liveByAddress": true,
@@ -1017,9 +1009,9 @@
         "status": 200,
         "finalUrl": "https://more30.com/crm/auth",
         "contentType": "text/html; charset=utf-8",
-        "bytes": 10818,
+        "bytes": 11863,
         "title": "כניסה למערכת | זכויות פרו",
-        "fingerprint": "//netfree.link/injection-script/go-payment.js|//netfree.link/injection-script/popup-card-init.js|/crm/assets/index-qxULb_kS.js|/crm/assets/styles-Dd7yked2.css",
+        "fingerprint": "/crm/assets/index-CUeME6Ts.js|/crm/assets/styles-ynvvcBCm.css",
         "verdict": "mount"
       },
       "liveByAddress": true,
@@ -1054,9 +1046,9 @@
         "status": 200,
         "finalUrl": "https://more30.com/gesher/auth",
         "contentType": "text/html; charset=utf-8",
-        "bytes": 10983,
+        "bytes": 12511,
         "title": "התחברות — מערכת CRM שותפים",
-        "fingerprint": "//netfree.link/injection-script/go-payment.js|//netfree.link/injection-script/popup-card-init.js|/gesher/assets/index-CB9_Cma2.js|/gesher/assets/styles-3PMaaxrj.css",
+        "fingerprint": "/gesher/assets/index-DpzVaDh8.js|/gesher/assets/styles-XDstXqta.css",
         "verdict": "mount"
       },
       "liveByAddress": true,
@@ -1091,9 +1083,9 @@
         "status": 200,
         "finalUrl": "https://more30.com/nadlan",
         "contentType": "text/html; charset=utf-8",
-        "bytes": 74126,
+        "bytes": 76079,
         "title": "נדל&quot;ן ברגע — תעודת זהות דיגיטלית לכל נכס",
-        "fingerprint": "//netfree.link/injection-script/go-payment.js|//netfree.link/injection-script/popup-card-init.js|/nadlan/_next/static/chunks/23-40856efa509a7bb5.js|/nadlan/_next/static/chunks/231-3a92852a3fa4fd34.js|/nadlan/_next/static/chunks/app/page-b2eb8b7d7ea90793.js|/nadlan/_next/static/chunks/fd9d1056-43988edb66d8a852.js|/nadlan/_next/static/chunks/main-app-693d2cd1d3938aa5.js|/nadlan/_next/static/chunks/polyfills-78c92fac7aa8fdd8.js|/nadlan/_next/static/chunks/webpack-b8b237b7607b6fe9.js|/nadlan/_next/static/css/4b05ff26ea8c9370.css",
+        "fingerprint": "/nadlan/_next/static/chunks/23-5069132af6625424.js?dpl=dpl_A12kJqBgL4XjbqEa2fBbRc9WRvqG|/nadlan/_next/static/chunks/231-3a92852a3fa4fd34.js?dpl=dpl_A12kJqBgL4XjbqEa2fBbRc9WRvqG|/nadlan/_next/static/chunks/app/page-47ed44500609b046.js?dpl=dpl_A12kJqBgL4XjbqEa2fBbRc9WRvqG|/nadlan/_next/static/chunks/fd9d1056-43988edb66d8a852.js?dpl=dpl_A12kJqBgL4XjbqEa2fBbRc9WRvqG|/nadlan/_next/static/chunks/main-app-693d2cd1d3938aa5.js?dpl=dpl_A12kJqBgL4XjbqEa2fBbRc9WRvqG|/nadlan/_next/static/chunks/polyfills-78c92fac7aa8fdd8.js?dpl=dpl_A12kJqBgL4XjbqEa2fBbRc9WRvqG|/nadlan/_next/static/chunks/webpack-fd1e6e9de448a4d2.js?dpl=dpl_A12kJqBgL4XjbqEa2fBbRc9WRvqG",
         "verdict": "mount"
       },
       "liveByAddress": true,
@@ -1156,9 +1148,9 @@
         "status": 200,
         "finalUrl": "https://more30.com/kesef",
         "contentType": "text/html; charset=utf-8",
-        "bytes": 17637,
+        "bytes": 17401,
         "title": "כסף — שקיפות תקציבית לרשויות מקומיות · עולם הסטארטאפים",
-        "fingerprint": "//netfree.link/injection-script/go-payment.js|//netfree.link/injection-script/popup-card-init.js",
+        "fingerprint": "",
         "verdict": "mount"
       },
       "liveByAddress": true,
@@ -1195,9 +1187,9 @@
         "status": 200,
         "finalUrl": "https://more30.com/kiosk/",
         "contentType": "text/html; charset=UTF-8",
-        "bytes": 12090,
+        "bytes": 11854,
         "title": "KioskFleet — נעילת מכשיר לקישורים מאושרים בלבד",
-        "fingerprint": "//netfree.link/injection-script/go-payment.js|//netfree.link/injection-script/popup-card-init.js|css/style.css",
+        "fingerprint": "css/style.css",
         "verdict": "mount"
       },
       "liveByAddress": true,
@@ -1232,9 +1224,9 @@
         "status": 200,
         "finalUrl": "https://more30.com/tivuch",
         "contentType": "text/html; charset=utf-8",
-        "bytes": 17982,
+        "bytes": 18144,
         "title": "נדל״ן פרו — מערכת ניהול למתווכים ויועצי נדל״ן · עולם הסטארטאפים",
-        "fingerprint": "//netfree.link/injection-script/go-payment.js|//netfree.link/injection-script/popup-card-init.js",
+        "fingerprint": "",
         "verdict": "mount"
       },
       "liveByAddress": true,
@@ -1266,17 +1258,20 @@
       },
       "address": {
         "url": "https://more30.com/bkalot-studio/",
-        "status": 404,
+        "status": 200,
         "finalUrl": "https://more30.com/bkalot-studio/",
         "contentType": "text/html; charset=utf-8",
-        "bytes": 4654,
-        "title": "הכתובת לא נמצאה · עולם הסטארטאפים",
-        "fingerprint": "//netfree.link/injection-script/go-payment.js|//netfree.link/injection-script/popup-card-init.js",
-        "verdict": "missing"
+        "bytes": 38584,
+        "title": "בקלות — פתיחת פנייה",
+        "fingerprint": "",
+        "verdict": "mount"
       },
-      "liveByAddress": false,
+      "liveByAddress": true,
       "disagreements": [],
-      "contradictedByAddress": []
+      "contradictedByAddress": [
+        "registry",
+        "db"
+      ]
     },
     {
       "number": "38",
@@ -1306,9 +1301,9 @@
         "status": 404,
         "finalUrl": "https://more30.com/events/",
         "contentType": "text/html; charset=utf-8",
-        "bytes": 4654,
+        "bytes": 4504,
         "title": "הכתובת לא נמצאה · עולם הסטארטאפים",
-        "fingerprint": "//netfree.link/injection-script/go-payment.js|//netfree.link/injection-script/popup-card-init.js",
+        "fingerprint": "",
         "verdict": "missing"
       },
       "liveByAddress": false,

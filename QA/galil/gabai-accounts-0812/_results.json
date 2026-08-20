@@ -1,12 +1,12 @@
 {
-  "probed_at_utc": "2026-08-12T09:07:11.768Z",
+  "probed_at_utc": "2026-08-20T06:29:55.193Z",
   "site": "https://more30.com/galil/",
   "steps": [
     {
       "step": "site",
       "status": 200,
       "final_url": "https://more30.com/galil/",
-      "bytes": 4694
+      "bytes": 4458
     },
     {
       "step": "bundle-credentials",
@@ -32,7 +32,7 @@
       }
     }
   ],
-  "assets_found": 5,
-  "bundle": "https://more30.com/galil/assets/index-pSOB0569.js",
+  "assets_found": 3,
+  "bundle": "https://more30.com/galil/assets/index-SphY-p4t.js",
   "verdict": "anon cannot read gabai_accounts — the open policy is not reachable from the public key"
 }
