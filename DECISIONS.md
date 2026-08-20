@@ -10190,3 +10190,61 @@
     לגבי `window.location.origin`-based share-links ב-27 עדיין דורשת
     אימות מול הפריסה החיה. נושא #245/#250 (RLS, חסומים) נשארים כפי
     שהם. via cloud server 167.99.131.167 [loop B]
+
+## 20/08/2026 — סבב 428 (loop B)
+
+428. **`getPublicOrigin()`/`window.location.origin`-based share/admin/API
+    קישורים ב-27-mechiron היו שבורים בפועל תחת פריסת `more30.com/mechiron`
+    — תוקן.**
+
+    ה"שאלה הפתוחה" מסבב 426/427: אומת בפועל (לא ניחוש) שהחשש היה נכון.
+    `vite.config.ts` מגדיר `base: "/mechiron/"` ו-`_deploy/mechiron-more30/
+    vercel.json` ממפה את כל `/mechiron/(.*)` ל-`index.html` של האפליקציה
+    הזו — כלומר סרגל הכתובת בדפדפן נשאר `more30.com/mechiron` (עם ניתוב
+    hash של `wouter`/`useHashLocation` מעליו), לא `more30.com` בלבד.
+    בדקתי חי עם `curl`: `more30.com/` מחזיר `<title>עולם הסטארטאפים</title>`
+    (הפורטל, אפליקציה נפרדת לגמרי), בעוד `more30.com/mechiron` מחזיר
+    `<title>מאגר בקלות — כלי פנימי לצוות</title>`. `window.location.origin`
+    (ו-`getPublicOrigin()` הקודם) מחזירים רק `protocol//host`, בלי הנתיב —
+    כך שקישור "העתק קישור"/"שתף" שנבנה מ-`${window.location.origin}/#/...`
+    (למשל בעמוד נושא ציבורי) יוצר בפועל `https://more30.com/#/p/topic/123`.
+    מאחר וה-hash אחרי `#` הוא client-side בלבד ואינו נשלח לשרת, לחיצה על
+    קישור כזה נוחתת על עמוד הבית של הפורטל (אפליקציה אחרת לגמרי), לא על
+    דף הנושא ב-mechiron — קישורי שיתוף אמיתיים שנשלחו/הועתקו על ידי
+    משתמשים היו שבורים.
+
+    תוקן ב-`client/src/lib/utils.ts`: `getPublicOrigin()` מוסיף כעת גם
+    את `window.location.pathname` (אחרי הסרת `/` סוגר), לצד ההתנהגות
+    הקיימת של הסרת קידומת `admin.`. תיקון בפונקציה המשותפת הזו מתקן
+    אוטומטית את כל 6 השימושים הקיימים בה (`right-detail.tsx`,
+    `community-admin.tsx`, `dashboard.tsx`, `potential-admin.tsx`, וה-
+    `publicUrl` ב-`price-comparison-admin.tsx`/`health-funds-admin.tsx`).
+    בנוסף עודכנו 7 קריאות ישירות ל-`window.location.origin` שדילגו על
+    `getPublicOrigin()` לגמרי (חלקן בקבצים שכבר ייבאו את הפונקציה לצורך
+    `publicUrl` אך שכחו אותה בשורת `adminUrl` הסמוכה): `public-topic.tsx`
+    (קישור "העתק קישור" של נושא ציבורי — זה שכבר תיקן את ה-breadcrumb
+    ב-href-based pattern בסבב 426 אך השאיר את `publicUrl` עצמו שבור),
+    `public-health-funds.tsx`/`public-price-comparison.tsx` (כפתורי
+    `shareLink()` עם `navigator.share`/clipboard), `api-access.tsx`
+    (דוגמת `curl` למפתחי API חיצוניים), ו-`adminUrl` ב-
+    `price-comparison-admin.tsx`/`health-funds-admin.tsx`.
+
+    **בדיקות תקינות:** אימות חי עם `curl` (כתובות ומעלה, לא הרצת שרת
+    מקומי) הראה בבירור את הבעיה לפני התיקון. בדיקת איזון סוגריים
+    (Python) נקייה על כל 7 הקבצים שנערכו. `git diff --stat`: 7 קבצים,
+    +18/-9 — כל שינוי הוא תיקון שורה קיימת שבורה או הוספת `import`,
+    אין מחיקת פיצ'ר. הקבצים נופלים תחת `.gitignore` (`/apps/**`) כמו
+    שאר `client/src` בפרויקט זה — נדרש `git add -f`. לא הותקנו תלויות
+    ולא הופעל build/dev-server — נבדק בקריאה ישירה של הקוד + `curl`
+    מול הפריסה החיה בלבד, לפי הנחיות ההרצה.
+
+    ענף `fix/b-22-whatsapp-noopener-round395-0820` (שרשרת הענפים היא
+    המקור המלא היחיד ל-loop B, לא `main`), נדחף (מפעיל פריסת Vercel
+    תחת `more30.com/mechiron`).
+
+    **הבא בתור:** `hreflang`/`lang` alternate tags עדיין לא תועד רשמית
+    (כבר אומת ידנית שכל 9 האפליקציות תקינות `lang="he"` חד-לשוניות).
+    כדאי לבדוק אם יש דפוסים דומים של `window.location.origin` ללא נתיב
+    בסיס ב-17/18/19/20/21/22/24/28 (לא נבדק בסבב זה, רק 27). נושא
+    #245/#250 (RLS, חסומים) נשארים כפי שהם. via cloud server
+    167.99.131.167 [loop B]
