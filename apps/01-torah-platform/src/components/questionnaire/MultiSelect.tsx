@@ -1,3 +1,4 @@
+import { useId } from "react";
 import { motion } from "framer-motion";
 import { Check } from "lucide-react";
 
@@ -9,12 +10,13 @@ interface MultiSelectProps {
 }
 
 const MultiSelect = ({ label, options, selected, onToggle }: MultiSelectProps) => {
+  const labelId = useId();
   return (
     <div>
-      <label className="font-display text-base font-bold text-card-foreground mb-4 block">
+      <label id={labelId} className="font-display text-base font-bold text-card-foreground mb-4 block">
         {label}
       </label>
-      <div className="flex flex-wrap gap-3">
+      <div role="group" aria-labelledby={labelId} className="flex flex-wrap gap-3">
         {options.map((option, i) => {
           const isSelected = selected.includes(option);
           return (
@@ -22,6 +24,7 @@ const MultiSelect = ({ label, options, selected, onToggle }: MultiSelectProps) =
               key={option}
               type="button"
               onClick={() => onToggle(option)}
+              aria-pressed={isSelected}
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: i * 0.03, duration: 0.2 }}
