@@ -303,7 +303,10 @@ const RequestLesson = () => {
                   <Input value={addressCity} onChange={(e) => setAddressCity(e.target.value)} placeholder="עיר *" />
                   <Input value={addressNeighborhood} onChange={(e) => setAddressNeighborhood(e.target.value)} placeholder="שכונה" />
                   <Input value={addressStreet} onChange={(e) => setAddressStreet(e.target.value)} placeholder="רחוב *" />
-                  <Button size="sm" className="bg-gradient-gold text-primary-foreground font-body hover:opacity-90" onClick={() => autoAdvance(SUBMIT_STEP)}>המשך ←</Button>
+                  <Button size="sm" className="bg-gradient-gold text-primary-foreground font-body hover:opacity-90" onClick={() => {
+                    if (!addressCity.trim() || !addressStreet.trim()) { toast.error("נא למלא עיר ורחוב"); return; }
+                    autoAdvance(SUBMIT_STEP);
+                  }}>המשך ←</Button>
                 </div>
               </ProgressiveFormStep>
 
