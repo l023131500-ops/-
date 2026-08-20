@@ -3,6 +3,15 @@ import domtoimage from "dom-to-image-more";
 import { Download, Loader2, MessageCircle, Mail } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
+function escapeHtml(str: string): string {
+  return str
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
 type RightData = {
   topic_name: string;
   category: string;
@@ -83,7 +92,7 @@ const CTA_HTML = `
   </div>`;
 
 function buildFieldHTML(field: typeof FIELD_CONFIG[number], right: RightData): string {
-  const val = String(right[field.key]);
+  const val = escapeHtml(String(right[field.key]));
   const contentHTML = field.key === "service_link"
     ? `<span style="color:#2563a8;text-decoration:underline;word-break:break-all;">${val}</span>`
     : val.replace(/\n/g, "<br/>");
@@ -121,10 +130,10 @@ function buildTitleSection(right: RightData): string {
   return `
     <div style="padding:24px 36px 16px;background:linear-gradient(180deg,#f8faf9 0%,#ffffff 100%);">
       <div style="display:inline-block;background:linear-gradient(135deg,rgba(26,77,46,0.08),rgba(26,77,46,0.03));border:1px solid rgba(26,77,46,0.12);border-radius:8px;padding:4px 14px;font-size:12px;color:#1a4d2e;font-weight:600;margin-bottom:10px;">
-        ${right.category}
+        ${escapeHtml(right.category)}
       </div>
       <h1 style="font-size:26px;font-weight:800;color:#1a4d2e;margin:0;line-height:1.4;">
-        ${right.topic_name}
+        ${escapeHtml(right.topic_name)}
       </h1>
       ${buildNecessityHTML(right)}
     </div>`;
@@ -171,7 +180,7 @@ function buildPages(right: RightData): string[] {
         ${HEADER_HTML}
         <div style="padding:20px 36px 8px;">
           <div style="font-size:14px;color:#999;margin-bottom:12px;">
-            ${right.topic_name} - המשך (עמוד ${pages.length + 1})
+            ${escapeHtml(right.topic_name)} - המשך (עמוד ${pages.length + 1})
           </div>
         </div>
         <div style="padding:0 36px 20px;">
