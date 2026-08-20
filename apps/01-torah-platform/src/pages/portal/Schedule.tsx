@@ -101,7 +101,7 @@ export default function Schedule() {
               {l.location && <div>{l.location}</div>}
               {l.time && <div>{l.time}</div>}
               {Array.isArray(l.days_of_week) && <div className="flex gap-1">{l.days_of_week.map((d: number) => <Badge key={d} variant="secondary" className="text-xs">{DAYS[d]}</Badge>)}</div>}
-              <div className="flex justify-end pt-2"><Button size="icon" variant="ghost" onClick={() => del.mutate(l.id)}><Trash2 className="h-4 w-4 text-destructive" /></Button></div>
+              <div className="flex justify-end pt-2"><Button size="icon" variant="ghost" aria-label={`מחק שיעור: ${l.title}`} onClick={() => del.mutate(l.id)}><Trash2 className="h-4 w-4 text-destructive" /></Button></div>
             </CardContent>
           </Card>
         ))}

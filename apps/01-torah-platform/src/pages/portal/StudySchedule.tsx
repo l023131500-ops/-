@@ -451,10 +451,10 @@ export default function StudySchedule() {
                         <Plus className="h-4 w-4 ml-1" />
                         רשומה
                       </Button>
-                      <Button size="icon" variant="ghost" onClick={() => openEditSchedule(sched)}>
+                      <Button size="icon" variant="ghost" aria-label={`ערוך לוח לימוד: ${sched.title}`} onClick={() => openEditSchedule(sched)}>
                         <Edit2 className="h-4 w-4" />
                       </Button>
-                      <Button size="icon" variant="ghost" onClick={() => deleteSchedule.mutate(sched.id)}>
+                      <Button size="icon" variant="ghost" aria-label={`מחק לוח לימוד: ${sched.title}`} onClick={() => deleteSchedule.mutate(sched.id)}>
                         <Trash2 className="h-4 w-4 text-destructive" />
                       </Button>
                     </div>

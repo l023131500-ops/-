@@ -83,7 +83,7 @@ const AdminTips = () => {
                 <Button size="sm" variant={tip.is_active ? "outline" : "default"} onClick={() => toggleActive(tip.id, tip.is_active)}>
                   {tip.is_active ? "השבת" : "הפעל"}
                 </Button>
-                <Button size="sm" variant="ghost" onClick={() => deleteTip(tip.id)}>
+                <Button size="sm" variant="ghost" aria-label={`מחק טיפ: ${tip.title}`} onClick={() => deleteTip(tip.id)}>
                   <Trash2 className="w-4 h-4 text-destructive" />
                 </Button>
               </div>

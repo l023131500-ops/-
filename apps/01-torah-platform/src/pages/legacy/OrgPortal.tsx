@@ -300,7 +300,7 @@ const OrgPortal = () => {
                       <p className="font-body text-xs text-muted-foreground">{lessons.filter(l => l.rabbi_name === r.rabbi_name).length} שיעורים</p>
                     </div>
                   </div>
-                  <Button variant="ghost" size="icon" onClick={() => removeRabbi(r.id)} className="text-destructive hover:bg-destructive/10">
+                  <Button variant="ghost" size="icon" aria-label={`הסר רב: ${r.rabbi_name}`} onClick={() => removeRabbi(r.id)} className="text-destructive hover:bg-destructive/10">
                     <Trash2 className="w-4 h-4" />
                   </Button>
                 </div>

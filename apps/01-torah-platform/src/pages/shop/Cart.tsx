@@ -33,12 +33,12 @@ export default function Cart() {
                   <div className="text-sm text-muted-foreground"><span dir="ltr">{formatILS(it.unit_price_ils)}</span> ליחידה</div>
                 </div>
                 <div className="flex items-center border rounded-md">
-                  <Button variant="ghost" size="icon" onClick={() => updateQty(it.product_id, it.quantity - 1)}><Minus className="h-4 w-4" /></Button>
+                  <Button variant="ghost" size="icon" aria-label={`הפחת כמות: ${it.product_name}`} onClick={() => updateQty(it.product_id, it.quantity - 1)}><Minus className="h-4 w-4" /></Button>
                   <span className="w-10 text-center">{it.quantity}</span>
-                  <Button variant="ghost" size="icon" onClick={() => updateQty(it.product_id, it.quantity + 1)}><Plus className="h-4 w-4" /></Button>
+                  <Button variant="ghost" size="icon" aria-label={`הוסף כמות: ${it.product_name}`} onClick={() => updateQty(it.product_id, it.quantity + 1)}><Plus className="h-4 w-4" /></Button>
                 </div>
                 <div className="font-medium w-24 text-left" dir="ltr">{formatILS(it.unit_price_ils * it.quantity)}</div>
-                <Button variant="ghost" size="icon" onClick={() => removeItem(it.product_id)}><Trash2 className="h-4 w-4 text-destructive" /></Button>
+                <Button variant="ghost" size="icon" aria-label={`הסר מהסל: ${it.product_name}`} onClick={() => removeItem(it.product_id)}><Trash2 className="h-4 w-4 text-destructive" /></Button>
               </CardContent>
             </Card>
           ))}
