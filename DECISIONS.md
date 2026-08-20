@@ -9729,3 +9729,61 @@
      מסבב 175 (דורשים כלי רינדור אמיתי), שני מופעי `FormMessage`
      לא-פעילים מסבב 191, או `core.project_tasks`/`core.project_bugs`
      (6 פריטים פתוחים, עדיין חסומים).
+
+## 20/08/2026 — סבב 196 (loop A)
+
+947. **המשכתי את עדשת המקלדת (2.1.1) שנפתחה בסבב 195 על שאר 02-07/
+     10-14/16 שטרם נסרקו לעומק.** קודם ביררתי מה יש בפועל בכל
+     תיקייה (סוכן Explore קודם טעה וסימן 02/03/04/05/06/10/11/12/
+     13/14 כ"manifest-only" — בדיקה ידנית עם `find`/`ls` הראתה
+     שרובן כן מכילות קוד vendored אמיתי: 02/03 הן אפליקציות Next.js
+     מלאות (`app/`, `components/`), 04/12 הן אפליקציות React מלאות
+     (`client/src`), 06/10 הן אתרים סטטיים ב-vanilla JS
+     (`app.js`/`admin.js`/`engine.js`), 05/11/14 הן דפי שיווק
+     ב-vanilla JS, 13 היא Edge Functions בלבד (אין UI לקוח) — רק
+     07 היא באמת manifest-only). סרקתי כל אחת בהתאם לסוג הקוד שלה:
+     `grep onClick=` על 02/03/04/12 (React/TSX) ו-
+     `grep addEventListener\(.click.\|onclick=` על 05/06/10/11/14
+     (vanilla JS), ואז קראתי את ההקשר המלא של כל תוצאה כדי לבדוק
+     קיום `role`/`tabIndex`/`onKeyDown` (או המקבילה ב-JS גולמי).
+948. **נמצאו 2 ממצאים אמיתיים ומאומתים (קריאה ישירה, לא רק grep) —
+     ב-2 אפליקציות שלא נבדקו בסבב 195:** `04-imud-torani`'s
+     `client/src/components/CoverEditor.tsx:249-256` — שורת "שכבה"
+     לחיצה-בלבד (`<div onClick={() => setSelectedId(l.id)}>`)
+     בפאנל השכבות של עורך העטיפה, ללא `role`/`tabIndex`/`onKeyDown`
+     (הכפתורים המקוננים בפנים — הזז/שכפל/מחק — כבר נגישים כי הם
+     `<button>` אמיתי עם `stopPropagation`, לא נגעתי בהם).
+     `14-bsmachot-plus`'s `website/app.js:305-307` — רשת 25 תמונות
+     ממוזערות של שקפי מצגת המשקיעים (`el('div', 'slide-thumb')`)
+     שכל אחת פותחת lightbox בלחיצה, ללא `role`/`tabindex`/
+     `keydown` listener בשום מקום בקובץ. שאר האפליקציות שנבדקו
+     (02/03/06/10/11/12) כבר עשו זאת נכון — למשל `06-kupot-holim`'s
+     `app.js` ו-`11-bkalut-marketing2`'s `script.js` כבר מוסיפים
+     `role="button"`+`tabindex`+`keydown` על כרטיסים לחיצים באותה
+     מוסכמת בדיוק, אז לא נדרש שינוי שם.
+949. **התיקון — אותה מוסכמת מסבבים 192-195, גרסת React וגרסת
+     vanilla-JS:** ב-`CoverEditor.tsx` הוספתי `role="button"`,
+     `tabIndex={0}`, ו-`onKeyDown` שקורא ל-`setSelectedId(l.id)`
+     על Enter/Space (זהה ל-`onClick` הקיים). ב-`app.js` (14) הוספתי
+     `card.setAttribute('role','button')`, `card.setAttribute('tabindex','0')`,
+     ו-listener נוסף ל-`keydown` שקורא ל-`openLightbox(n)` על
+     Enter/Space — אותו דפוס בדיוק שכבר קיים ב-`06-kupot-holim`'s
+     `app.js` (`renderProfiles`). לא נגעתי בשום `onClick`/state/
+     handler/CSS קיים — רק תוספת attributes+listener לכל אלמנט.
+950. **אפס רגרסיה מאומתת:** `git diff --stat` — 2 קבצים, 3+/3+ (רק
+     שורות נוספות, אין מחיקה/שינוי שורה קיימת). בדיקת איזון
+     סוגריים בפייתון על שני הקבצים המלאים אחרי העריכה: `()`/`{}`/
+     `[]` תואמים בשניהם. שני הנתיבים
+     (`apps/04-imud-torani/client`, `apps/14-bsmachot-plus/website`)
+     חסומים ב-`.gitignore` אך שני הקבצים כבר tracked — `git add`
+     עם נתיב מפורש עבד (עם אזהרת ignore, לא שגיאה), כמו סבבים
+     קודמים. Commit `d8ed5209` על `fix/a-icon-only-buttons-round2-0820`,
+     יידחף ל-origin (מפעיל פריסת Vercel תחת more30.com/imud-torani,
+     /bsmachot-plus).
+951. **הבא בתור:** עדשת המקלדת (2.1.1) נחשבת סגורה כעת על כל
+     01-07/10-16 (08/09 מוגנים, לא נבדקו) — 01/15 מסבב 195,
+     04/14 מסבב זה, ושאר 02/03/06/10/11/12/16 נבדקו ולא נמצא בהן
+     כלום. מועמדים לסבב הבא: שני מועמדי הניגודיות שנותרו
+     לא-חד-משמעיים מסבב 175 (דורשים כלי רינדור אמיתי), שני מופעי
+     `FormMessage` לא-פעילים מסבב 191, או `core.project_tasks`/
+     `core.project_bugs` (6 פריטים פתוחים, עדיין חסומים).
