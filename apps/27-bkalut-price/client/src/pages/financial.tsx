@@ -552,7 +552,7 @@ function OpportunitiesTab({ client }: { client: FinClient | null }) {
                 </div>
                 <div className="flex items-center gap-2">
                   <Badge variant={o.status === "done" ? "default" : "secondary"}>{statusLabel(o.status)}</Badge>
-                  <select className="rounded-md border border-input bg-background px-2 py-1 text-xs" value={o.status} onChange={(e) => update.mutate({ id: o.id, status: e.target.value })}>
+                  <select className="rounded-md border border-input bg-background px-2 py-1 text-xs" value={o.status} disabled={update.isPending} onChange={(e) => update.mutate({ id: o.id, status: e.target.value })}>
                     <option value="new">חדש</option>
                     <option value="in_progress">בטיפול</option>
                     <option value="done">הושלם</option>
@@ -694,7 +694,7 @@ function LeadsTab() {
               </div>
               <div className="flex items-center gap-2">
                 <Badge variant={l.webhookStatus === "sent" ? "default" : l.webhookStatus === "failed" ? "destructive" : "outline"}>וובהוק: {l.webhookStatus}</Badge>
-                <select className="rounded-md border border-input bg-background px-2 py-1 text-xs" value={l.status} onChange={(e) => update.mutate({ id: l.id, status: e.target.value })}>
+                <select className="rounded-md border border-input bg-background px-2 py-1 text-xs" value={l.status} disabled={update.isPending} onChange={(e) => update.mutate({ id: l.id, status: e.target.value })}>
                   <option value="new">חדש</option>
                   <option value="contacted">יצרנו קשר</option>
                   <option value="converted">הומר ללקוח</option>
