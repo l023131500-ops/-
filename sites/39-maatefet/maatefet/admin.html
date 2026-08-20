@@ -77,6 +77,16 @@ input:focus,select:focus{outline:2px solid var(--gold);outline-offset:1px;border
   padding:10px 14px;color:var(--ink-2);font-size:13px;margin:10px 0}
 .codebox{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px;background:var(--royal-2);
   border-radius:3px;padding:4px 8px;word-break:break-all;display:block}
+.stat-grid{display:grid;gap:12px;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));margin-bottom:6px}
+.stat-tile{border:1px solid var(--line-2);border-radius:4px;padding:14px 16px;background:rgba(236,233,245,.02)}
+.stat-num{font-family:'Secular One',sans-serif;font-size:26px;color:var(--gold-soft);line-height:1.2}
+.stat-label{font-size:12px;color:var(--muted);margin-top:4px}
+.breakdown{list-style:none;margin:8px 0 0;padding:0;font-size:13px;color:var(--ink-2)}
+.breakdown li{display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--line-2)}
+.breakdown li:last-child{border-bottom:none}
+.ana-section{margin-top:22px}
+.ana-section h3{font-family:'Heebo',sans-serif;font-weight:500;font-size:14px;color:var(--ink-2);margin:0 0 8px}
+.ana-updated{font-size:12px;color:var(--muted);margin-top:16px}
 </style>
 </head>
 <body>
@@ -132,6 +142,12 @@ input:focus,select:focus{outline:2px solid var(--gold);outline-offset:1px;border
     <div class="card">
       <h2>מדריכים</h2>
       <div id="table"><div class="empty">טוען…</div></div>
+    </div>
+
+    <div class="card">
+      <h2>אנליטיקה</h2>
+      <p class="sub">תמונת מצב חוצת-מדריכים בזמן אמת — לשיפור ההכשרה ומעקב שימוש. כל מספר הוא ספירה אמיתית מהמסד, לא הערכה.</p>
+      <div id="ana"><div class="empty">טוען…</div></div>
     </div>
 
     <div class="card" id="dirCard">
@@ -256,6 +272,79 @@ async function act(id, approve) {
   } catch (e) {
     alert(e.message);
   }
+}
+
+/* ── analytics (stage 4: cross-instructor insights for the super-admin) ── */
+const APPT_LABEL = { scheduled: 'ממתין לאישור', confirmed: 'אושרה הגעה', declined: 'הזוג לא יגיע', cancelled: 'בוטלה', completed: 'התקיימה' };
+const FOLLOWUP_STATUS_LABEL = { pending: 'טרם נשלח', sent: 'נשלח לזוג', completed: 'הושלם', skipped: 'דולג' };
+const CONTENT_TYPE_LABEL = { lesson: 'שיעור', article: 'מאמר', reminder_template: 'תבנית תזכורת', presentation: 'מצגת', exercise: 'תרגיל', note: 'הערה כללית' };
+const WO_CATEGORY_LABEL = {
+  venue: 'אולם', catering: 'קייטרינג', photography_video: 'צילום ווידאו', music: 'מוזיקה',
+  flowers_design: 'פרחים ועיצוב', attire: 'לבוש', rabbi_ketubah: 'רב וכתובה', invitations: 'הזמנות',
+  logistics: 'לוגיסטיקה', budget: 'תקציב', other: 'אחר',
+};
+const WO_STATUS_LABEL = { todo: 'לביצוע', in_progress: 'בתהליך', done: 'הושלם' };
+const INVITE_LABEL = { pending: 'ממתין', used: 'מומש', revoked: 'בוטל', expired: 'פג תוקף' };
+
+function tile(num, label) {
+  return '<div class="stat-tile"><div class="stat-num">' + esc(num) + '</div><div class="stat-label">' + esc(label) + '</div></div>';
+}
+function breakdown(byMap, labelMap) {
+  const keys = Object.keys(byMap || {});
+  if (!keys.length) return '';
+  return '<ul class="breakdown">' + keys.map((k) =>
+    '<li><span>' + esc((labelMap && labelMap[k]) || k) + '</span><span>' + esc(byMap[k]) + '</span></li>'
+  ).join('') + '</ul>';
+}
+
+async function renderAnalytics() {
+  const el = $('ana');
+  el.innerHTML = '<div class="empty">טוען…</div>';
+  let a;
+  try {
+    a = await rpc('maatefet_admin_analytics');
+  } catch (e) {
+    el.innerHTML = '<div class="err">' + esc(e.message) + '</div>';
+    return;
+  }
+  el.innerHTML =
+    '<div class="stat-grid">' +
+      tile(a.instructors.total, 'מדריכים') +
+      tile(a.clients.total, 'זוגות (לקוחות)') +
+      tile(a.clients.couples_linked, 'זוגות מקושרים חתן↔כלה') +
+      tile(a.appointments.total, 'פגישות') +
+      tile(a.reminders.total, 'תזכורות') +
+      tile(a.content_items.total, 'פריטי תוכן') +
+      tile(a.forum.posts, 'דיונים בפורום') +
+      tile(a.followups.total, 'מעקבים אחרי החתונה') +
+      tile(a.wedding_tasks.total, 'משימות ארגון חתונה') +
+      tile(a.directory_entries.total, 'רשומות דירקטורי') +
+    '</div>' +
+    '<div class="ana-section"><h3>מדריכים לפי סטטוס</h3>' + (breakdown(a.instructors.by_status, STATUS_LABEL) || '<p class="empty">אין נתונים.</p>') + '</div>' +
+    '<div class="ana-section"><h3>מדריכים וזוגות לפי מגזר</h3>' +
+      '<ul class="breakdown">' +
+        '<li><span>מדריכים · ' + esc(SEGMENT_LABEL.chatan) + '</span><span>' + esc((a.instructors.by_segment || {}).chatan || 0) + '</span></li>' +
+        '<li><span>מדריכים · ' + esc(SEGMENT_LABEL.kallah) + '</span><span>' + esc((a.instructors.by_segment || {}).kallah || 0) + '</span></li>' +
+        '<li><span>זוגות · ' + esc(SEGMENT_LABEL.chatan) + '</span><span>' + esc((a.clients.by_segment || {}).chatan || 0) + '</span></li>' +
+        '<li><span>זוגות · ' + esc(SEGMENT_LABEL.kallah) + '</span><span>' + esc((a.clients.by_segment || {}).kallah || 0) + '</span></li>' +
+      '</ul></div>' +
+    '<div class="ana-section"><h3>הזמנות (הרשמת זוגות) לפי סטטוס</h3>' + (breakdown(a.invites.by_status, INVITE_LABEL) || '<p class="empty">אין נתונים.</p>') + '</div>' +
+    '<div class="ana-section"><h3>פגישות לפי סטטוס</h3>' + (breakdown(a.appointments.by_status, APPT_LABEL) || '<p class="empty">אין נתונים.</p>') + '</div>' +
+    '<div class="ana-section"><h3>תזכורות</h3><ul class="breakdown">' +
+        '<li><span>הושלמו</span><span>' + esc(a.reminders.done) + '</span></li>' +
+        '<li><span>ממתינות</span><span>' + esc(a.reminders.pending) + '</span></li>' +
+      '</ul></div>' +
+    '<div class="ana-section"><h3>ספריית תוכן לפי סוג · ' + esc(a.content_items.shared) + ' משותפים בקהילה</h3>' + (breakdown(a.content_items.by_type, CONTENT_TYPE_LABEL) || '<p class="empty">אין נתונים.</p>') + '</div>' +
+    '<div class="ana-section"><h3>פורום מקצועי</h3><ul class="breakdown">' +
+        '<li><span>דיונים</span><span>' + esc(a.forum.posts) + '</span></li>' +
+        '<li><span>תגובות</span><span>' + esc(a.forum.replies) + '</span></li>' +
+        '<li><span>נעוצים</span><span>' + esc(a.forum.pinned) + '</span></li>' +
+      '</ul></div>' +
+    '<div class="ana-section"><h3>ליווי אחרי החתונה · ' + esc(a.followups.flagged) + ' מסומנים לבדיקה</h3>' + (breakdown(a.followups.by_status, FOLLOWUP_STATUS_LABEL) || '<p class="empty">אין נתונים.</p>') + '</div>' +
+    '<div class="ana-section"><h3>ארגון חתונה לפי סטטוס</h3>' + (breakdown(a.wedding_tasks.by_status, WO_STATUS_LABEL) || '<p class="empty">אין נתונים.</p>') + '</div>' +
+    '<div class="ana-section"><h3>ארגון חתונה לפי קטגוריה</h3>' + (breakdown(a.wedding_tasks.by_category, WO_CATEGORY_LABEL) || '<p class="empty">אין נתונים.</p>') + '</div>' +
+    '<div class="ana-section"><h3>דירקטוריז · ' + esc(a.directory_entries.active) + ' פעילים</h3>' + (breakdown(a.directory_entries.by_category, DIR_CATEGORY_LABEL) || '<p class="empty">אין נתונים.</p>') + '</div>' +
+    '<p class="ana-updated">עודכן: ' + dtm(a.generated_at) + '</p>';
 }
 
 /* ── directories (poskim / mikvaot / mesadrei kiddushin / bodkot tehara / yoatzim) ── */
@@ -470,6 +559,7 @@ async function boot() {
 
   show('dash');
   renderTable();
+  renderAnalytics();
   renderDirectories();
 }
 
