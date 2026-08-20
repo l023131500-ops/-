@@ -44,15 +44,16 @@ function LoginInner() {
         {err && <div className="mb-3 text-sm text-red-700 bg-red-50 border border-red-200 rounded p-2">{err}</div>}
         <button className="btn-outline w-full mb-4" onClick={loginGoogle}>התחבר עם Google</button>
         <div className="text-center text-xs text-gray-500 mb-3">או</div>
-        <label className="label">אימייל</label>
-        <input className="input mb-3" type="email" inputMode="email" value={email} onChange={(e) => setEmail(e.target.value)} autoComplete="email" />
-        <label className="label">סיסמה</label>
+        <label className="label" htmlFor="login-email">אימייל</label>
+        <input id="login-email" className="input mb-3" type="email" inputMode="email" value={email} onChange={(e) => setEmail(e.target.value)} autoComplete="email" />
+        <label className="label" htmlFor="login-password">סיסמה</label>
         {/* כפתור "הצג סיסמה" (priority §1א). השדה אינו נושא dir משלו, כך שהוא
             יורש rtl מ-<html> ו-`.input` מוסיף `text-right` — התווים נצמדים
             לקצה הימני, והצד השמאלי הוא הפנוי. לכן העין יושבת בשמאל, ו-pl-10
             שומר לה את המקום גם כשהסיסמה ארוכה. */}
         <div className="relative mb-4">
           <input
+            id="login-password"
             className="input pl-10"
             type={showPwd ? "text" : "password"}
             value={pwd}
