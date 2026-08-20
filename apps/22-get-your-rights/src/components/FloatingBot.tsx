@@ -595,11 +595,12 @@ const FloatingBot = () => {
                     <div className="space-y-3">
                       {currentGroup.fields.map((field) => (
                         <div key={field.key}>
-                          <label className="text-xs font-medium text-foreground mb-1.5 block">
+                          <label htmlFor={`comp-${field.key}`} className="text-xs font-medium text-foreground mb-1.5 block">
                             {field.label} {field.key === "id_number" || field.key === "date_of_birth" ? <span className="text-destructive">*</span> : ""}
                           </label>
                           {field.type === "text" && (
                             <Input
+                              id={`comp-${field.key}`}
                               value={compAnswers[field.key] || ""}
                               onChange={(e) => setCompAnswers({ ...compAnswers, [field.key]: e.target.value })}
                               placeholder={(field as any).placeholder || ""}
@@ -608,6 +609,7 @@ const FloatingBot = () => {
                           )}
                           {field.type === "date" && (
                             <Input
+                              id={`comp-${field.key}`}
                               type="date"
                               value={compAnswers[field.key] || ""}
                               onChange={(e) => setCompAnswers({ ...compAnswers, [field.key]: e.target.value })}
@@ -617,6 +619,7 @@ const FloatingBot = () => {
                           )}
                           {field.type === "select" && (
                             <select
+                              id={`comp-${field.key}`}
                               value={compAnswers[field.key] || ""}
                               onChange={(e) => setCompAnswers({ ...compAnswers, [field.key]: e.target.value })}
                               className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
@@ -859,8 +862,8 @@ const FloatingBot = () => {
                       <Input placeholder="שם מלא *" value={familyData.name} onChange={(e) => setFamilyData({ ...familyData, name: e.target.value })} required className="text-sm" />
                       <Input placeholder="תעודת זהות *" value={familyData.id_number} onChange={(e) => setFamilyData({ ...familyData, id_number: e.target.value })} required className="text-sm" />
                       <div>
-                        <label className="text-xs font-medium text-foreground mb-1 block">תאריך לידה *</label>
-                        <Input type="date" value={familyData.date_of_birth} onChange={(e) => setFamilyData({ ...familyData, date_of_birth: e.target.value })} required className="text-sm" dir="ltr" />
+                        <label htmlFor="family-date-of-birth" className="text-xs font-medium text-foreground mb-1 block">תאריך לידה *</label>
+                        <Input id="family-date-of-birth" type="date" value={familyData.date_of_birth} onChange={(e) => setFamilyData({ ...familyData, date_of_birth: e.target.value })} required className="text-sm" dir="ltr" />
                       </div>
                       <SelectField value={familyData.gender} options={genderOptions} placeholder="מגדר *" onChange={(v) => setFamilyData({ ...familyData, gender: v })} />
                       <SelectField value={familyData.marital} options={maritalOptions} placeholder="מצב משפחתי *" onChange={(v) => setFamilyData({ ...familyData, marital: v })} />
