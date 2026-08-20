@@ -6164,3 +6164,49 @@
      `MultiSelect.tsx`/`RadioSelect.tsx` (תוויות-קבוצה בלי
      `<input>` אמיתי) ו-`OrgPortal.tsx` (חלקית מקושר כבר) עדיין
      ממתינים להחלטה אם לדלג.
+
+## 20/08/2026 — סבב 108 (loop A)
+
+578. **בדקתי `git log`/`core.run_progress`/`core.project_bugs`/
+     `core.project_tasks` לפני שהתחלתי.** סבב 107 סגור (commit
+     `3d8776e1`, HEAD תואם). בדקתי גם אם באג ה-auth המפורש בהיקף
+     ("login-returns-to-landing" ו-"signup hash mismatch") עדיין
+     פתוח — לא: מתועד סגור על כל 01-16 ב-#1098/#2504/#3924
+     (commit `2a8b1179`, "close out §1א customer-login sweep").
+     שאר המשימות הפתוחות ב-`core.project_tasks` (02/12/13/25/32)
+     דורשות סוד חסר (`OPENAI_API_KEY`) או החלטת מיזוג שאינה
+     בסמכות סוכן — לא ניתנות לביצוע כרגע. המשכתי לפי התור מ-#577.
+579. **`PortalLessonForm.tsx` נבדק ונמצא ריק מזוגות אמיתיים.**
+     קריאה מלאה גילתה שכל אלמנטי ה-`<label>` בקובץ הם או תוויות-
+     קבוצה מעל `ChipPicker` (כפתורי צ'יפ, בלי `<input>` אמיתי —
+     כמו `MultiSelect`/`RadioSelect` שהוחרגו בעבר) או כותרות-סעיף
+     שחופפות על כמה שדות בבת אחת ("מיקום" מעל 5 שדות, "סוג שיעור
+     וזמנים"/"אופן העברה" מעל `Switch`-ים, "פרטי קשר" מעל 5
+     שדות) — אין אף זוג 1:1 תווית↔בקרה יחידה כנדרש לתבנית
+     `id`/`htmlFor`. תוויות ה-`Switch` (`שיעור קבוע`/`מוקלט`/
+     `שידור חי`) כבר עוטפות את הבקרה implicitly, כמו בכל הסבבים
+     הקודמים. האומדן הישן של סבב 104 (4) מתוקן ל-**0** — הפוך
+     מהמגמה הרגילה (שבה המספר האמיתי היה גבוה יותר), אבל אותה
+     סיבה: האומדן הישן נספר לפי `grep '<label'` גס בלי לבדוק אם
+     כל תווית באמת ממופה 1:1 לבקרה יחידה.
+580. **התיקון בסבב הזה (במקום):** `apps/01-torah-platform/src/
+     components/portal/PublicContactForm.tsx` — טופס "יצירת קשר
+     ופניות" הציבורי בפורטל (מציג לפי `portalType`: org/rabbi/
+     shul; כותב ל-`portal_messages`). קריאה מלאה גילתה **4** זוגות
+     תווית/בקרה לא-מקושרים תואמים לאומדן סבב 104: שם, טלפון, מייל,
+     פרטים נוספים (`Textarea`). הוספתי `id`/`htmlFor` עם קידומת
+     `public-contact-` לארבעת הזוגות.
+581. **אפס רגרסיה מאומתת:** `git diff` מלא — קובץ אחד, 8+/8-, רק
+     `id`/`htmlFor` נוספו; לא נגעתי ב-`value`/`onChange`/`type`/
+     `placeholder`/`rows`/`className`/`inputMode`/`autoComplete`/
+     הלוגיקה. אין `tsc`/`npm` בסביבה הזו — אומת בבדיקת איזון
+     `{}`/`()`/`[]` ב-Python על הקובץ המלא (66/66, 45/45, 9/9) +
+     ספירת 4/4 בין `id="public-contact-` ל-`htmlFor="public-contact-`.
+     Commit `946ea9b3` על `fix/a-icon-only-buttons-round2-0820`,
+     יידחף ל-origin (מפעיל פריסת Vercel תחת more30.com/torah).
+582. **הבא בתור ב-01-torah-platform:** `PortalSettingsTab.tsx`
+     (אומדן 6, טרם אומת בקריאה מלאה) → `StudyDayEventForm.tsx`/
+     `UpdateLesson.tsx` (9 כל אחד). `MultiSelect.tsx`/
+     `RadioSelect.tsx` ו-`OrgPortal.tsx` עדיין ממתינים להחלטה אם
+     לדלג. `PortalLessonForm.tsx` סגור — 0 זוגות, אין צורך לחזור
+     אליו.
