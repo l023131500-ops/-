@@ -72,6 +72,9 @@ export const REGISTRY: ProjectEntry[] = [
   { number: "36", slug: "nadlan-pro", repo: "l023131500-ops/-", name: "נדל\"ן פרו — ניהול למתווכים", department: "realestate", category: "realestate", stage: "beta", live: true, isDeployed: true, supabaseProject: "uhnrgujbdxhhmoxcjria", supabaseSchema: "nadlan_pro", deployTarget: "vercel", liveUrl: "https://more30.com/tivuch", protected: false, note: "schema nadlan_pro על ה-ops. חי תחת more30.com/tivuch — אומת 10/08/2026 (200, חבילה משלו)." },
   { number: "37", slug: "bkalot-clone", repo: "more30", name: "בקלות — עותק עבודה עצמאי", department: "bkalut", category: "rights", stage: "idea", live: false, isDeployed: false, supabaseProject: null, supabaseSchema: null, deployTarget: "unknown", protected: false, note: "שכפול פתוח של מערכת 10 (§5), לא של המוגנות. ‏/bkalot-studio מחזיר 404 — טרם נבנה." },
   { number: "38", slug: "events-gifts", repo: "more30", name: "אירועים ומתנות — מערכת עצמאית", department: "community", category: "events", stage: "idea", live: false, isDeployed: false, supabaseProject: null, supabaseSchema: null, deployTarget: "unknown", protected: false, note: "מתנות באשראי, אישורי הגעה, דפי נחיתה לאולמות. ‏/events מחזיר 404 — טרם נבנה." },
+  // 39 נרשם 20/08 (Loop C) ישירות ב-core.projects (supabase/migrations/0107_register_maatefet.sql),
+  // אותה שיטה בדיוק כמו 34/35 ב-0007. שלב 0 בלבד — קוד טרם נבנה, ראה MAATEFET_BUILD.md.
+  { number: "39", slug: "maatefet", repo: "more30", name: "מעטפת — ליווי מדריכי חתנים ומדריכות כלות", department: "community", category: "events", stage: "idea", live: false, isDeployed: false, supabaseProject: null, supabaseSchema: null, deployTarget: "unknown", protected: false, note: "פלטפורמת ליווי מדריכי חתנים/כלות (15 מודולים, ליבה אחת שני-פנים לפי segment). ‏/maatefet מחזיר \"בקרוב\" — טרם נבנה. מפרט: MAATEFET_BUILD.md." },
 ];
 
 /** Repos to archive/clean only — never treated as active apps. Imported frozen to apps/_archive/. */

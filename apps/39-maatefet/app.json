@@ -1,0 +1,20 @@
+{
+  "number": "39",
+  "slug": "maatefet",
+  "name": "מעטפת — ליווי מדריכי חתנים ומדריכות כלות",
+  "department": "community",
+  "category": "events",
+  "stage": "idea",
+  "live": false,
+  "isDeployed": false,
+  "repo": "more30",
+  "basePath": "/maatefet",
+  "supabase": {
+    "project": null,
+    "schema": null
+  },
+  "deployTarget": "unknown",
+  "protected": false,
+  "source": "not-vendored",
+  "note": "שלב 0 בלבד (רישום ב-core.projects, 20/08 Loop C). קוד האפליקציה טרם נבנה — ‏/maatefet מחזיר \"בקרוב\". מפרט מחייב מלא: MAATEFET_BUILD.md (15 מודולים, ליבה אחת/שני פנים לפי segment חתנים/כלות, 5 שלבי בנייה החל משלד+ליבת מגזר-כלות)."
+}
