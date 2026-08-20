@@ -42,8 +42,12 @@ const ActivitySlideshow = ({ isAdmin = false }: { isAdmin?: boolean }) => {
     const caption = prompt('הוסף כיתוב לתמונה (מה מוצג בתמונה?)') || '';
     const url = await uploadImage(file, 'activities');
     if (url) {
-      await supabase.from('activity_slides').insert({ image_url: url, caption });
-      await fetchSlides();
+      const { error } = await supabase.from('activity_slides').insert({ image_url: url, caption });
+      if (error) {
+        alert('שמירת התמונה נכשלה, נסה שוב');
+      } else {
+        await fetchSlides();
+      }
     }
     setUploading(false);
     if (fileRef.current) fileRef.current.value = '';
@@ -51,7 +55,11 @@ const ActivitySlideshow = ({ isAdmin = false }: { isAdmin?: boolean }) => {
 
   const handleDelete = async (slide: ActivitySlide) => {
     await deleteStorageFile(slide.image_url);
-    await supabase.from('activity_slides').delete().eq('id', slide.id);
+    const { error } = await supabase.from('activity_slides').delete().eq('id', slide.id);
+    if (error) {
+      alert('מחיקת התמונה נכשלה, נסה שוב');
+      return;
+    }
     await fetchSlides();
   };
 

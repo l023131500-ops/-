@@ -31,8 +31,12 @@ const GallerySection = ({ isAdmin = false }: { isAdmin?: boolean }) => {
     const caption = prompt('הוסף כיתוב לתמונה (אופציונלי)') || '';
     const url = await uploadImage(file, 'gallery');
     if (url) {
-      await supabase.from('gallery_images').insert({ image_url: url, caption });
-      await fetchImages();
+      const { error } = await supabase.from('gallery_images').insert({ image_url: url, caption });
+      if (error) {
+        alert('שמירת התמונה נכשלה, נסה שוב');
+      } else {
+        await fetchImages();
+      }
     }
     setUploading(false);
     if (fileRef.current) fileRef.current.value = '';
@@ -40,7 +44,11 @@ const GallerySection = ({ isAdmin = false }: { isAdmin?: boolean }) => {
 
   const handleDelete = async (img: GalleryImage) => {
     await deleteStorageFile(img.image_url);
-    await supabase.from('gallery_images').delete().eq('id', img.id);
+    const { error } = await supabase.from('gallery_images').delete().eq('id', img.id);
+    if (error) {
+      alert('מחיקת התמונה נכשלה, נסה שוב');
+      return;
+    }
     setImages(prev => prev.filter(i => i.id !== img.id));
   };
 

@@ -27,7 +27,8 @@ const getKnowledge = async (): Promise<KnowledgeItem[]> => {
 };
 
 const saveRabbiQuestion = async (q: { name: string; question: string; contact_method: string; contact_value: string; destination: string; urgent: boolean }) => {
-  await supabase.from('rabbi_questions').insert(q);
+  const { error } = await supabase.from('rabbi_questions').insert(q);
+  return error;
 };
 
 interface ChatMessage {
@@ -248,10 +249,12 @@ const InlinRabbiForm = ({ userName, onSent }: { userName: string | null; onSent:
   const [destination, setDestination] = useState<QuestionDestination>('beit_horaa');
   const [urgent, setUrgent] = useState(false);
   const [sent, setSent] = useState(false);
+  const [error, setError] = useState(false);
 
   const handleSubmit = async () => {
     if (!question.trim() || !contactValue.trim()) return;
-    await saveRabbiQuestion({
+    setError(false);
+    const err = await saveRabbiQuestion({
       name: userName || 'אנונימי',
       question,
       contact_method: contactMethod,
@@ -259,6 +262,10 @@ const InlinRabbiForm = ({ userName, onSent }: { userName: string | null; onSent:
       destination,
       urgent,
     });
+    if (err) {
+      setError(true);
+      return;
+    }
     setSent(true);
     onSent();
   };
@@ -325,6 +332,11 @@ const InlinRabbiForm = ({ userName, onSent }: { userName: string | null; onSent:
         className="w-full bg-primary text-primary-foreground font-bold py-2 rounded-lg flex items-center justify-center gap-1.5 text-xs hover:brightness-110 transition-all disabled:opacity-40">
         <Send className="w-3 h-3" /> שלח שאלה לרב
       </button>
+      {error && (
+        <p role="alert" className="text-center text-destructive font-bold text-[10px]">
+          השאלה לא נשלחה עקב תקלה. נסה/י שוב.
+        </p>
+      )}
     </div>
   );
 };

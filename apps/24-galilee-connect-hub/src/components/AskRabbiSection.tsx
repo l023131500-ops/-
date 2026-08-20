@@ -25,11 +25,13 @@ const AskRabbiSection = () => {
   const [urgent, setUrgent] = useState(false);
   const [sent, setSent] = useState(false);
   const [sending, setSending] = useState(false);
+  const [errorMsg, setErrorMsg] = useState('');
 
   const handleSend = async () => {
     if (!question.trim() || !name.trim() || !contactValue.trim()) return;
     setSending(true);
-    await supabase.from('rabbi_questions').insert({
+    setErrorMsg('');
+    const { error } = await supabase.from('rabbi_questions').insert({
       name: name.trim(),
       question: question.trim(),
       contact_method: contactMethod,
@@ -38,6 +40,10 @@ const AskRabbiSection = () => {
       urgent,
     });
     setSending(false);
+    if (error) {
+      setErrorMsg('השאלה לא נשלחה עקב תקלה. אפשר לנסות שוב או להתקשר 054-203-0901.');
+      return;
+    }
     setSent(true);
     setQuestion(''); setName(''); setContactValue(''); setUrgent(false);
     setTimeout(() => setSent(false), 4000);
@@ -156,6 +162,11 @@ const AskRabbiSection = () => {
                     className="w-full bg-gradient-gold text-foreground font-display font-bold py-3 rounded-2xl flex items-center justify-center gap-2 hover:brightness-110 transition-all disabled:opacity-40">
                     <Send className="w-4 h-4" /> {sending ? 'שולח...' : 'שלח שאלה'}
                   </button>
+                )}
+                {errorMsg && (
+                  <p role="alert" className="text-center text-sm font-bold text-destructive bg-destructive/10 rounded-lg py-3 px-4">
+                    {errorMsg}
+                  </p>
                 )}
               </div>
             </motion.div>

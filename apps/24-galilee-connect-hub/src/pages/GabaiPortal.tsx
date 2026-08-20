@@ -60,9 +60,12 @@ const SynagogueManager = () => {
   const [editing, setEditing] = useState<SynagogueFormData | null>(null);
   const [isNew, setIsNew] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [saveError, setSaveError] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
+  const [deleteError, setDeleteError] = useState(false);
   const csvRef = useRef<HTMLInputElement>(null);
   const [importing, setImporting] = useState(false);
+  const [importErrors, setImportErrors] = useState(0);
 
   const fetchSynagogues = useCallback(async () => {
     setLoading(true);
@@ -76,6 +79,7 @@ const SynagogueManager = () => {
   const handleSave = async () => {
     if (!editing || !editing.name.trim() || !editing.address.trim()) return;
     setSaving(true);
+    setSaveError(false);
     const payload = {
       name: editing.name,
       neighborhood: editing.neighborhood,
@@ -87,26 +91,39 @@ const SynagogueManager = () => {
       background_preset: editing.background_preset,
     };
 
-    if (isNew) {
-      await supabase.from('synagogues').insert(payload);
-    } else if (editing.id) {
-      await supabase.from('synagogues').update(payload).eq('id', editing.id);
-    }
+    const { error } = isNew
+      ? await supabase.from('synagogues').insert(payload)
+      : editing.id
+        ? await supabase.from('synagogues').update(payload).eq('id', editing.id)
+        : { error: null };
     setSaving(false);
+    if (error) {
+      setSaveError(true);
+      return;
+    }
     setEditing(null);
     setIsNew(false);
     await fetchSynagogues();
   };
 
   const handleDelete = async (id: string) => {
+    setDeleteError(false);
     // Delete related data first
-    await Promise.all([
+    const relatedResults = await Promise.all([
       supabase.from('synagogue_prayer_times').delete().eq('synagogue_id', id),
       supabase.from('synagogue_lessons').delete().eq('synagogue_id', id),
       supabase.from('synagogue_gabbaim').delete().eq('synagogue_id', id),
       supabase.from('synagogue_announcements').delete().eq('synagogue_id', id),
     ]);
-    await supabase.from('synagogues').delete().eq('id', id);
+    if (relatedResults.some(r => r.error)) {
+      setDeleteError(true);
+      return;
+    }
+    const { error } = await supabase.from('synagogues').delete().eq('id', id);
+    if (error) {
+      setDeleteError(true);
+      return;
+    }
     setConfirmDelete(null);
     await fetchSynagogues();
   };
@@ -137,8 +154,9 @@ const SynagogueManager = () => {
       return obj;
     }).filter(r => r.name);
 
+    let failedRows = 0;
     for (const row of rows) {
-      await supabase.from('synagogues').insert({
+      const { error } = await supabase.from('synagogues').insert({
         name: row.name,
         neighborhood: row.neighborhood || '',
         nusach: row.nusach || 'עדות המזרח',
@@ -147,7 +165,9 @@ const SynagogueManager = () => {
         donation_link: row.donation_link || null,
         background_preset: parseInt(row.background_preset) || 1,
       });
+      if (error) failedRows += 1;
     }
+    setImportErrors(failedRows);
     await fetchSynagogues();
     setImporting(false);
     if (csvRef.current) csvRef.current.value = '';
@@ -178,6 +198,8 @@ const SynagogueManager = () => {
               <Plus className="w-4 h-4" /> הוסף בית כנסת
             </Button>
           </div>
+          {importErrors > 0 && <p className="text-sm text-destructive font-bold">{importErrors} שורות לא יובאו עקב שגיאה.</p>}
+          {deleteError && <p className="text-sm text-destructive font-bold">המחיקה נכשלה עקב תקלה. נסו שוב.</p>}
         </div>
 
         {/* Edit/Add Form */}
@@ -228,6 +250,7 @@ const SynagogueManager = () => {
                 {saving ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
                 {isNew ? 'הוסף בית כנסת' : 'שמור שינויים'}
               </Button>
+              {saveError && <p className="text-sm text-destructive font-bold">השמירה נכשלה עקב תקלה. נסו שוב.</p>}
             </motion.div>
           )}
         </AnimatePresence>
@@ -433,6 +456,7 @@ const AdminPasswordManager = () => {
   const [editId, setEditId] = useState<string | null>(null);
   const [editPass, setEditPass] = useState('');
   const [loading, setLoading] = useState(false);
+  const [actionError, setActionError] = useState('');
 
   const fetchAccounts = useCallback(async () => {
     const { data } = await supabase.from('gabai_accounts').select('*').eq('is_admin', true).order('created_at');
@@ -444,33 +468,48 @@ const AdminPasswordManager = () => {
   const addAdmin = async () => {
     if (!newPass.trim() || newPass.trim().length < 4) return;
     setLoading(true);
-    await supabase.from('gabai_accounts').insert({
+    setActionError('');
+    const { error } = await supabase.from('gabai_accounts').insert({
       username: newName.trim() || `admin_${Date.now()}`,
       display_name: newName.trim() || 'מנהל נוסף',
       password_hash: newPass.trim(),
       is_admin: true,
       is_active: true,
     });
+    setLoading(false);
+    if (error) {
+      setActionError('הוספת המנהל נכשלה עקב תקלה. נסו שוב.');
+      return;
+    }
     setNewPass(''); setNewName('');
     await fetchAccounts();
-    setLoading(false);
   };
 
   const updatePassword = async (id: string) => {
     if (!editPass.trim() || editPass.trim().length < 4) return;
     setLoading(true);
-    await supabase.from('gabai_accounts').update({ password_hash: editPass.trim() }).eq('id', id);
+    setActionError('');
+    const { error } = await supabase.from('gabai_accounts').update({ password_hash: editPass.trim() }).eq('id', id);
+    setLoading(false);
+    if (error) {
+      setActionError('עדכון הסיסמה נכשל עקב תקלה. נסו שוב.');
+      return;
+    }
     setEditId(null); setEditPass('');
     await fetchAccounts();
-    setLoading(false);
   };
 
   const deleteAdmin = async (id: string) => {
     if (accounts.length <= 1) return; // keep at least one
     setLoading(true);
-    await supabase.from('gabai_accounts').delete().eq('id', id);
-    await fetchAccounts();
+    setActionError('');
+    const { error } = await supabase.from('gabai_accounts').delete().eq('id', id);
     setLoading(false);
+    if (error) {
+      setActionError('מחיקת המנהל נכשלה עקב תקלה. נסו שוב.');
+      return;
+    }
+    await fetchAccounts();
   };
 
   return (
@@ -518,6 +557,7 @@ const AdminPasswordManager = () => {
           <Button onClick={addAdmin} disabled={loading || !newPass.trim()} className="w-full gap-2 font-bold bg-gradient-hero text-primary-foreground">
             <Plus className="w-4 h-4" /> הוסף מנהל
           </Button>
+          {actionError && <p className="text-sm text-destructive font-bold">{actionError}</p>}
         </div>
       </div>
     </div>
@@ -566,7 +606,8 @@ const ContactInfoManager = () => {
       setSaveError(true);
       return;
     }
-    await supabase.from('knowledge_base').delete().eq('category', 'פרטי_יצירת_קשר').neq('id', inserted.id);
+    const { error: cleanupError } = await supabase.from('knowledge_base').delete().eq('category', 'פרטי_יצירת_קשר').neq('id', inserted.id);
+    if (cleanupError) console.error('ContactInfoManager: cleanup of stale rows failed', cleanupError);
     setSaving(false);
     setSaved(true);
     setTimeout(() => setSaved(false), 3000);
@@ -636,6 +677,7 @@ const HalachaManager = () => {
   const [category, setCategory] = useState('הלכה יומית');
   const [isSeasonal, setIsSeasonal] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [actionError, setActionError] = useState('');
 
   const fetchItems = async () => {
     setLoading(true);
@@ -649,16 +691,26 @@ const HalachaManager = () => {
   const handleAdd = async () => {
     if (!title.trim() || !content.trim()) return;
     setSaving(true);
-    await supabase.from('daily_halacha').insert({
+    setActionError('');
+    const { error } = await supabase.from('daily_halacha').insert({
       title, content, hebrew_date: hebrewDate || null, category, is_seasonal: isSeasonal,
     });
     setSaving(false);
+    if (error) {
+      setActionError('הוספת ההלכה נכשלה עקב תקלה. נסו שוב.');
+      return;
+    }
     setTitle(''); setContent(''); setHebrewDate('');
     await fetchItems();
   };
 
   const handleDelete = async (id: string) => {
-    await supabase.from('daily_halacha').delete().eq('id', id);
+    setActionError('');
+    const { error } = await supabase.from('daily_halacha').delete().eq('id', id);
+    if (error) {
+      setActionError('המחיקה נכשלה עקב תקלה. נסו שוב.');
+      return;
+    }
     setItems(prev => prev.filter(i => i.id !== id));
   };
 
@@ -695,6 +747,7 @@ const HalachaManager = () => {
           {saving ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Plus className="w-4 h-4" />}
           {saving ? 'שומר...' : 'הוסף הלכה'}
         </Button>
+        {actionError && <p className="text-sm text-destructive font-bold">{actionError}</p>}
 
         {loading ? (
           <div className="text-center py-4"><div className="w-5 h-5 border-2 border-primary border-t-transparent rounded-full animate-spin mx-auto" /></div>
@@ -729,6 +782,7 @@ const NewsletterManager = () => {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [uploading, setUploading] = useState(false);
+  const [actionError, setActionError] = useState('');
   const fileRef = useRef<HTMLInputElement>(null);
 
   const fetchNewsletters = async () => {
@@ -744,6 +798,7 @@ const NewsletterManager = () => {
     const file = e.target.files?.[0];
     if (!file || !title.trim()) return;
     setUploading(true);
+    setActionError('');
 
     const fileName = `${Date.now()}_${file.name}`;
     const { data: uploadData, error: uploadError } = await supabase.storage
@@ -752,27 +807,37 @@ const NewsletterManager = () => {
 
     if (uploadError) {
       setUploading(false);
+      setActionError('העלאת הקובץ נכשלה עקב תקלה. נסו שוב.');
       return;
     }
 
     const { data: urlData } = supabase.storage.from('newsletters').getPublicUrl(fileName);
     const pdfUrl = urlData.publicUrl;
 
-    await supabase.from('newsletters').insert({
+    const { error: insertError } = await supabase.from('newsletters').insert({
       title, description: description || null, pdf_url: pdfUrl,
     });
+    setUploading(false);
+    if (insertError) {
+      setActionError('שמירת הגיליון נכשלה עקב תקלה. נסו שוב.');
+      return;
+    }
 
     setTitle(''); setDescription('');
     if (fileRef.current) fileRef.current.value = '';
     await fetchNewsletters();
-    setUploading(false);
   };
 
   const handleDelete = async (item: any) => {
+    setActionError('');
     // Delete from storage
     const fileName = item.pdf_url.split('/').pop();
     if (fileName) await supabase.storage.from('newsletters').remove([fileName]);
-    await supabase.from('newsletters').delete().eq('id', item.id);
+    const { error } = await supabase.from('newsletters').delete().eq('id', item.id);
+    if (error) {
+      setActionError('מחיקת הגיליון נכשלה עקב תקלה. נסו שוב.');
+      return;
+    }
     setNewsletters(prev => prev.filter(n => n.id !== item.id));
   };
 
@@ -801,6 +866,7 @@ const NewsletterManager = () => {
             {uploading ? 'מעלה...' : 'העלה קובץ PDF'}
           </Button>
           {!title.trim() && <p className="text-xs text-muted-foreground mt-1">יש למלא כותרת לפני ההעלאה</p>}
+          {actionError && <p className="text-sm text-destructive font-bold mt-1">{actionError}</p>}
         </div>
 
         {loading ? (
@@ -837,6 +903,8 @@ const KashrutManager = () => {
   const [establishments, setEstablishments] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [importing, setImporting] = useState(false);
+  const [importErrors, setImportErrors] = useState(0);
+  const [actionError, setActionError] = useState('');
   const fileRef = useRef<HTMLInputElement>(null);
 
   const fetchEstablishments = async () => {
@@ -874,8 +942,9 @@ const KashrutManager = () => {
       return obj;
     }).filter(r => r.name);
 
+    let failedRows = 0;
     for (const row of rows) {
-      await supabase.from('kashrut_establishments').upsert({
+      const { error } = await supabase.from('kashrut_establishments').upsert({
         name: row.name,
         category: row.category || 'כללי',
         address: row.address || '',
@@ -888,14 +957,21 @@ const KashrutManager = () => {
         notes: row.notes || null,
         is_active: true,
       }, { onConflict: 'id' });
+      if (error) failedRows += 1;
     }
+    setImportErrors(failedRows);
     await fetchEstablishments();
     setImporting(false);
     if (fileRef.current) fileRef.current.value = '';
   };
 
   const updateLevel = async (id: string, level: string) => {
-    await supabase.from('kashrut_establishments').update({ kashrut_level: level }).eq('id', id);
+    setActionError('');
+    const { error } = await supabase.from('kashrut_establishments').update({ kashrut_level: level }).eq('id', id);
+    if (error) {
+      setActionError('עדכון רמת הכשרות נכשל עקב תקלה. נסו שוב.');
+      return;
+    }
     setEstablishments(prev => prev.map(e => e.id === id ? { ...e, kashrut_level: level } : e));
   };
 
@@ -926,6 +1002,8 @@ const KashrutManager = () => {
               {importing ? 'מייבא...' : 'ייבא קובץ CSV'}
             </Button>
           </div>
+          {importErrors > 0 && <p className="text-sm text-destructive font-bold">{importErrors} שורות לא יובאו עקב שגיאה.</p>}
+          {actionError && <p className="text-sm text-destructive font-bold">{actionError}</p>}
         </div>
 
         <div>
@@ -987,6 +1065,7 @@ const AdBannerManager = () => {
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
+  const [actionError, setActionError] = useState('');
   const fileRef = useRef<HTMLInputElement>(null);
 
   const fetchBanners = useCallback(async () => {
@@ -999,18 +1078,28 @@ const AdBannerManager = () => {
   const handleSave = async () => {
     if (!imageFile) return;
     setSaving(true);
+    setActionError('');
     const url = await uploadImage(imageFile, 'banners');
     if (url) {
-      await supabase.from('ad_banners').insert({ title, image_url: url, link: link || null, size, position });
-      await fetchBanners();
-      setTitle(''); setLink(''); setImageFile(null); setImagePreview(null);
+      const { error } = await supabase.from('ad_banners').insert({ title, image_url: url, link: link || null, size, position });
+      if (error) {
+        setActionError('פרסום הבאנר נכשל עקב תקלה. נסו שוב.');
+      } else {
+        await fetchBanners();
+        setTitle(''); setLink(''); setImageFile(null); setImagePreview(null);
+      }
     }
     setSaving(false);
   };
 
   const handleDelete = async (banner: any) => {
+    setActionError('');
     await deleteStorageFile(banner.image_url);
-    await supabase.from('ad_banners').delete().eq('id', banner.id);
+    const { error } = await supabase.from('ad_banners').delete().eq('id', banner.id);
+    if (error) {
+      setActionError('מחיקת הבאנר נכשלה עקב תקלה. נסו שוב.');
+      return;
+    }
     setBanners(prev => prev.filter(b => b.id !== banner.id));
   };
 
@@ -1057,6 +1146,7 @@ const AdBannerManager = () => {
         <Button onClick={handleSave} disabled={!imageFile || saving} className="w-full gap-2 font-bold bg-gradient-gold text-foreground disabled:opacity-50">
           {saving ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Plus className="w-4 h-4" />} {saving ? 'מעלה...' : 'פרסם באנר'}
         </Button>
+        {actionError && <p className="text-sm text-destructive font-bold">{actionError}</p>}
         {banners.length > 0 && (
           <div className="space-y-2 pt-3 border-t border-border">
             <h4 className="text-sm font-bold text-muted-foreground">באנרים קיימים ({banners.length})</h4>
@@ -1092,6 +1182,7 @@ const KnowledgeManager = () => {
   const [contactName, setContactName] = useState('');
   const [kbImage, setKbImage] = useState<File | null>(null);
   const [kbImagePreview, setKbImagePreview] = useState<string | null>(null);
+  const [actionError, setActionError] = useState('');
   const kbFileRef = useRef<HTMLInputElement>(null);
 
   const fetchItems = useCallback(async () => {
@@ -1106,22 +1197,32 @@ const KnowledgeManager = () => {
 
   const handleAdd = async () => {
     if (!title.trim() || !content.trim() || !category.trim()) return;
+    setActionError('');
     let imageUrl: string | undefined;
     if (kbImage) {
       imageUrl = await uploadImage(kbImage, 'site-images') || undefined;
     }
-    await supabase.from('knowledge_base').insert({
+    const { error } = await supabase.from('knowledge_base').insert({
       category, subcategory: subcategory || null, title, content,
       phone: kbPhone || null, address: kbAddress || null,
       contact_name: contactName || null, image_url: imageUrl || null,
     });
+    if (error) {
+      setActionError('הוספת הפריט נכשלה עקב תקלה. נסו שוב.');
+      return;
+    }
     await fetchItems();
     setTitle(''); setContent(''); setKbPhone(''); setKbAddress(''); setContactName(''); setSubcategory(''); setKbImage(null); setKbImagePreview(null);
   };
 
   const handleDelete = async (item: KnowledgeItem) => {
+    setActionError('');
     if (item.image_url) await deleteStorageFile(item.image_url);
-    await supabase.from('knowledge_base').delete().eq('id', item.id);
+    const { error } = await supabase.from('knowledge_base').delete().eq('id', item.id);
+    if (error) {
+      setActionError('המחיקה נכשלה עקב תקלה. נסו שוב.');
+      return;
+    }
     await fetchItems();
   };
 
@@ -1188,6 +1289,7 @@ const KnowledgeManager = () => {
           className="w-full gap-2 font-bold bg-gradient-hero text-primary-foreground disabled:opacity-50">
           <Plus className="w-4 h-4" /> הוסף למאגר
         </Button>
+        {actionError && <p className="text-sm text-destructive font-bold">{actionError}</p>}
 
         {categories.map(cat => {
           const catItems = items.filter(k => k.category === cat);
@@ -1223,6 +1325,7 @@ const KnowledgeManager = () => {
 // ---- Contact Leads Manager ----
 const ContactLeadsManager = () => {
   const [leads, setLeads] = useState<any[]>([]);
+  const [actionError, setActionError] = useState('');
 
   const fetchLeads = useCallback(async () => {
     const { data } = await supabase.from('community_leads').select('*').order('created_at', { ascending: false });
@@ -1284,17 +1387,22 @@ const ContactLeadsManager = () => {
             <div className="flex gap-2">
               {!lead.is_read && (
                 <Button variant="outline" size="sm" className="gap-1.5 text-xs font-bold" onClick={async () => {
-                  await supabase.from('community_leads').update({ is_read: true }).eq('id', lead.id);
+                  setActionError('');
+                  const { error } = await supabase.from('community_leads').update({ is_read: true }).eq('id', lead.id);
+                  if (error) { setActionError('הפעולה נכשלה עקב תקלה. נסו שוב.'); return; }
                   fetchLeads();
                 }}><Eye className="w-3.5 h-3.5" /> סמן כנקרא</Button>
               )}
               <Button variant="ghost" size="sm" className="gap-1.5 text-xs font-bold text-destructive" onClick={async () => {
-                await supabase.from('community_leads').delete().eq('id', lead.id);
+                setActionError('');
+                const { error } = await supabase.from('community_leads').delete().eq('id', lead.id);
+                if (error) { setActionError('המחיקה נכשלה עקב תקלה. נסו שוב.'); return; }
                 fetchLeads();
               }}><Trash2 className="w-3.5 h-3.5" /> מחק</Button>
             </div>
           </motion.div>
         ))}
+        {actionError && <p className="text-sm text-destructive font-bold">{actionError}</p>}
       </div>
     </div>
   );
@@ -1303,6 +1411,7 @@ const ContactLeadsManager = () => {
 // ---- Rabbi Questions Manager ----
 const RabbiQuestionsManager = () => {
   const [questions, setQuestions] = useState<RabbiQuestion[]>([]);
+  const [actionError, setActionError] = useState('');
 
   const fetchQuestions = useCallback(async () => {
     const { data } = await supabase.from('rabbi_questions').select('*').order('created_at', { ascending: false });
@@ -1395,17 +1504,22 @@ const RabbiQuestionsManager = () => {
             <div className="flex gap-2">
               {!q.is_read && (
                 <Button variant="outline" size="sm" className="gap-1.5 text-xs font-bold" onClick={async () => {
-                  await supabase.from('rabbi_questions').update({ is_read: true }).eq('id', q.id);
+                  setActionError('');
+                  const { error } = await supabase.from('rabbi_questions').update({ is_read: true }).eq('id', q.id);
+                  if (error) { setActionError('הפעולה נכשלה עקב תקלה. נסו שוב.'); return; }
                   fetchQuestions();
                 }}><Eye className="w-3.5 h-3.5" /> סמן כנקרא</Button>
               )}
               <Button variant="ghost" size="sm" className="gap-1.5 text-xs font-bold text-destructive" onClick={async () => {
-                await supabase.from('rabbi_questions').delete().eq('id', q.id);
+                setActionError('');
+                const { error } = await supabase.from('rabbi_questions').delete().eq('id', q.id);
+                if (error) { setActionError('המחיקה נכשלה עקב תקלה. נסו שוב.'); return; }
                 fetchQuestions();
               }}><Trash2 className="w-3.5 h-3.5" /> מחק</Button>
             </div>
           </motion.div>
         ))}
+        {actionError && <p className="text-sm text-destructive font-bold">{actionError}</p>}
       </div>
     </div>
   );

@@ -64,6 +64,7 @@ const SynagogueDetailsManager = ({ synagogueId, mode = 'admin', synagogueName, o
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [saveError, setSaveError] = useState(false);
 
   const portalLink = useMemo(() => access.username.trim() ? `${window.location.origin}/gabai?username=${encodeURIComponent(access.username.trim())}` : '', [access.username]);
 
@@ -128,6 +129,8 @@ const SynagogueDetailsManager = ({ synagogueId, mode = 'admin', synagogueName, o
   const handleSave = async () => {
     if (!synagogue) return;
     setSaving(true);
+    setSaveError(false);
+    let hasError = false;
     let nextLogoUrl = synagogue.logo_url || null;
 
     if (logoFile) {
@@ -135,7 +138,7 @@ const SynagogueDetailsManager = ({ synagogueId, mode = 'admin', synagogueName, o
       if (uploadedLogo) nextLogoUrl = uploadedLogo;
     }
 
-    await supabase.from('synagogues').update({
+    const { error: synagogueError } = await supabase.from('synagogues').update({
       name: synagogue.name.trim(),
       neighborhood: synagogue.neighborhood.trim(),
       nusach: synagogue.nusach.trim(),
@@ -145,6 +148,7 @@ const SynagogueDetailsManager = ({ synagogueId, mode = 'admin', synagogueName, o
       logo_url: nextLogoUrl,
       background_preset: synagogue.background_preset || 1,
     }).eq('id', synagogueId);
+    if (synagogueError) hasError = true;
 
     const cleanGabbaim = gabbaim.map((item) => ({ name: item.name.trim(), phone: item.phone.trim() })).filter((item) => item.name && item.phone);
     const cleanPrayers = prayerTimes.map((item) => ({ name: item.name.trim(), time: item.time.trim(), day: item.day, no_minyan: item.no_minyan })).filter((item) => item.name && (item.time || item.no_minyan));
@@ -159,19 +163,21 @@ const SynagogueDetailsManager = ({ synagogueId, mode = 'admin', synagogueName, o
       return { content: item.content.trim() || 'מודעה חדשה', image_url: imageUrl || null, is_active: item.is_active };
     }))).filter(Boolean) as Array<{ content: string; image_url: string | null; is_active: boolean }>;
 
-    await Promise.all([
+    const deleteResults = await Promise.all([
       supabase.from('synagogue_gabbaim').delete().eq('synagogue_id', synagogueId),
       supabase.from('synagogue_prayer_times').delete().eq('synagogue_id', synagogueId),
       supabase.from('synagogue_lessons').delete().eq('synagogue_id', synagogueId),
       supabase.from('synagogue_announcements').delete().eq('synagogue_id', synagogueId),
     ]);
+    if (deleteResults.some((r) => r.error)) hasError = true;
 
-    await Promise.all([
-      cleanGabbaim.length ? supabase.from('synagogue_gabbaim').insert(cleanGabbaim.map((item) => ({ ...item, synagogue_id: synagogueId }))) : Promise.resolve(),
-      cleanPrayers.length ? supabase.from('synagogue_prayer_times').insert(cleanPrayers.map((item) => ({ ...item, synagogue_id: synagogueId }))) : Promise.resolve(),
-      cleanLessons.length ? supabase.from('synagogue_lessons').insert(cleanLessons.map((item) => ({ ...item, synagogue_id: synagogueId }))) : Promise.resolve(),
-      cleanAnnouncements.length ? supabase.from('synagogue_announcements').insert(cleanAnnouncements.map((item) => ({ ...item, synagogue_id: synagogueId }))) : Promise.resolve(),
+    const insertResults = await Promise.all([
+      cleanGabbaim.length ? supabase.from('synagogue_gabbaim').insert(cleanGabbaim.map((item) => ({ ...item, synagogue_id: synagogueId }))) : Promise.resolve(null),
+      cleanPrayers.length ? supabase.from('synagogue_prayer_times').insert(cleanPrayers.map((item) => ({ ...item, synagogue_id: synagogueId }))) : Promise.resolve(null),
+      cleanLessons.length ? supabase.from('synagogue_lessons').insert(cleanLessons.map((item) => ({ ...item, synagogue_id: synagogueId }))) : Promise.resolve(null),
+      cleanAnnouncements.length ? supabase.from('synagogue_announcements').insert(cleanAnnouncements.map((item) => ({ ...item, synagogue_id: synagogueId }))) : Promise.resolve(null),
     ]);
+    if (insertResults.some((r) => r?.error)) hasError = true;
 
     if (mode === 'admin') {
       const payload = {
@@ -183,9 +189,11 @@ const SynagogueDetailsManager = ({ synagogueId, mode = 'admin', synagogueName, o
         is_admin: false,
       };
       if (access.id) {
-        await supabase.from('gabai_accounts').update(payload).eq('id', access.id);
+        const { error } = await supabase.from('gabai_accounts').update(payload).eq('id', access.id);
+        if (error) hasError = true;
       } else if (payload.username && payload.password_hash) {
-        await supabase.from('gabai_accounts').insert(payload);
+        const { error } = await supabase.from('gabai_accounts').insert(payload);
+        if (error) hasError = true;
       }
     }
 
@@ -196,9 +204,13 @@ const SynagogueDetailsManager = ({ synagogueId, mode = 'admin', synagogueName, o
       ...(originalLogoUrl && nextLogoUrl && originalLogoUrl !== nextLogoUrl ? [deleteStorageFile(originalLogoUrl)] : []),
     ]);
 
-    setSaved(true);
+    if (hasError) {
+      setSaveError(true);
+    } else {
+      setSaved(true);
+    }
     await fetchData();
-    onSaved?.();
+    if (!hasError) onSaved?.();
     setSaving(false);
   };
 
@@ -220,6 +232,7 @@ const SynagogueDetailsManager = ({ synagogueId, mode = 'admin', synagogueName, o
       </div>
 
       {saved && <div className="rounded-xl border border-primary/20 bg-primary/5 px-4 py-3 text-sm font-bold text-primary">השינויים נשמרו בהצלחה.</div>}
+      {saveError && <div role="alert" className="rounded-xl border border-destructive/20 bg-destructive/5 px-4 py-3 text-sm font-bold text-destructive">חלק מהשינויים לא נשמרו עקב תקלה. נסה/י שוב.</div>}
 
       <div className="grid gap-6 xl:grid-cols-[1.3fr_0.7fr]">
         <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
