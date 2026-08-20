@@ -10073,3 +10073,66 @@
     `/p/topic/:id`), `hreflang`/`lang` alternate tags. נושא #245/#250
     (RLS, חסומים) נשארים כפי שהם. via cloud server 167.99.131.167
     [loop B]
+
+## 20/08/2026 — סבב 426 (loop B)
+
+426. **`BreadcrumbList` JSON-LD אמיתי — רק ב-27-mechiron
+    (`/p/topic/:id`, `/compare/:barcode`), אחרי סקר מלא של 9
+    האפליקציות שהראה שאין היררכיה אמיתית בשום מקום אחר.**
+
+    ה"הבא בתור" של סבב 425. סוכן Explore סקר את כל 9 האפליקציות
+    החיות (17-24,27,28) בחיפוש אחר נתיבי-פרטים עם היררכיה אמיתית
+    (קטגוריה-אב עם דף קטלוג בר-סריקה). התוצאה: ברוב האפליקציות אין
+    בכלל נתיב פרטים עם פרמטר (18,22,28), או שהנתיב קיים אך שדה
+    ה"קטגוריה" הוא state מקומי בלבד שלא מסונכרן ל-URL (24-galilee
+    `/synagogue/:id` — אין שדה קטגוריה בנתונים כלל; 17-chizukim
+    `topic`/`parsha_or_date` הם שדות הניתנים לעריכה ע"י המשתמש, לא
+    קטגוריה אמיתית; 19/20 דורשות בדיקת קומפוננטה נוספת ולא נסגרו
+    בסבב זה). ב-27-bkalut-price בלבד יש שני נתיבים עם קטגוריה אמיתית
+    מגיעה מה-API: `/p/topic/:id` (`row.category`/`row.subCategory`,
+    `public-topic.tsx:148-149`) ו-`/compare/:barcode`
+    (`data.categoryName`, `public-product-compare.tsx:31`). בדקתי אם
+    יש דף-קטלוג שניתן לסנן לפי אותה קטגוריה עם URL אמיתי (למשל
+    `/eligibility?category=...`) — אין: הסינון ב-`public-eligibility.tsx`
+    וב-`public-price-comparison.tsx` הוא state מקומי בלבד, לא נקרא
+    מ-URL בטעינה (אותו דפוס בדיוק שכבר נקבע לגבי `SearchAction`
+    בסבב 422) — לכן לא הומצא URL לרמת-קטגוריה; ה-breadcrumb הוא
+    2 רמות בלבד: בית (`#/eligibility` או `#/price-comparison`, דף
+    אמיתי וקיים) > הדף הנוכחי.
+
+    כתובות ה-crumb לא נבנו מ-`window.location.origin` (שלעולם לא כולל
+    prefix של נתיב-הרכבה כמו `/mechiron`) אלא מ-
+    `window.location.href.split("#")[0]` — הכתובת האמיתית שבשורת
+    הכתובת כרגע, בלי תלות בהנחה לגבי אופן ההרכבה של הפריסה. שים לב:
+    `public-topic.tsx` כבר מכיל `publicUrl` בנוי מ-`window.location.origin`
+    (משמש את כפתורי "העתקת קישור"/"שיתוף" הקיימים) — לא נגעתי בו ולא
+    תיקנתי אותו, כי לא אימתתי בוודאות שזה אכן שגוי בפריסה בפועל (יתכן
+    ש-Vercel מבצע rewrite שמשאיר את ה-origin נכון); זה מחוץ להיקף
+    הלנס הנוכחי ומתועד כאן כשאלה פתוחה לבדיקה עתידית, לא תוקן בניחוש.
+
+    האפליקציה לא כללה שום מנגנון head-management (אין react-helmet),
+    אז נוצר קומפוננט משותף חדש `client/src/components/json-ld.tsx`
+    (מזריק/מסיר `<script type="application/ld+json">` דרך `useEffect`,
+    לא מרנדר כלום) ושולב בשני הדפים.
+
+    **בדיקות תקינות:** בדיקת איזון סוגריים (Python) נקייה על 3
+    הקבצים. `git diff --cached --stat`: 3 קבצים, +54/-0 — תוספות
+    בלבד, אין מחיקה. הקובץ החדש נופל תחת `.gitignore` (`/apps/**`)
+    כמו שאר `client/src` בפרויקט זה — נדרש `git add -f`. לא הותקנו
+    תלויות (`node_modules` לא קיים בסביבה זו) ולא הופעל build/dev-server
+    — נבדק בקריאה ישירה של הקוד בלבד, לפי הנחיות ההרצה.
+
+    ענף `fix/b-22-whatsapp-noopener-round395-0820` (שרשרת הענפים היא
+    המקור המלא היחיד ל-loop B, לא `main`), נדחף (מפעיל פריסת Vercel
+    תחת `more30.com/mechiron`).
+
+    **הבא בתור:** `BreadcrumbList` סגור עבור 27 (2 נתיבים); 19/20
+    (`/t/:slug`, `/s/:slug`, `/te/:slug`) עדיין דורשות בדיקת קומפוננטת
+    ה-render בפועל כדי לדעת אם יש שם קטגוריית-אב אמיתית — לא נבדק
+    בסבב זה. `hreflang`/`lang` alternate tags עדיין לא נבדק. שאלה
+    פתוחה חדשה: האם `window.location.origin`-based URLs הקיימים
+    ב-27 (`publicUrl` ב-`public-topic.tsx`, `getPublicOrigin()` ב-
+    `right-detail.tsx`/`dashboard.tsx`) אכן שוברים קישורי שיתוף
+    בפריסת `more30.com/mechiron` בפועל — דורש אימות מול הפריסה החיה,
+    לא ניחוש. נושא #245/#250 (RLS, חסומים) נשארים כפי שהם. via cloud
+    server 167.99.131.167 [loop B]
