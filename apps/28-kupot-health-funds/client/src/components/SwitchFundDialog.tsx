@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, cloneElement, isValidElement } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -236,7 +236,7 @@ export function SwitchFundDialog({
 
           {step === 1 && (
             <>
-              <Field label="שם מלא" required error={form.formState.errors.fullName?.message}>
+              <Field id="fullName" label="שם מלא" required error={form.formState.errors.fullName?.message}>
                 <Input
                   {...form.register("fullName")}
                   placeholder="שם פרטי ומשפחה"
@@ -245,7 +245,7 @@ export function SwitchFundDialog({
                 />
               </Field>
 
-              <Field label="טלפון" required error={form.formState.errors.phone?.message}>
+              <Field id="phone" label="טלפון" required error={form.formState.errors.phone?.message}>
                 <Input
                   {...form.register("phone")}
                   inputMode="tel"
@@ -256,7 +256,7 @@ export function SwitchFundDialog({
               </Field>
 
               <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                <Field label="דוא&quot;ל" error={form.formState.errors.email?.message}>
+                <Field id="email" label="דוא&quot;ל" error={form.formState.errors.email?.message}>
                   <Input
                     {...form.register("email")}
                     type="email"
@@ -371,24 +371,35 @@ export function SwitchFundDialog({
 }
 
 function Field({
+  id,
   label,
   required,
   error,
   children,
 }: {
+  id?: string;
   label: string;
   required?: boolean;
   error?: string;
   children: React.ReactNode;
 }) {
+  const errorId = id ? `${id}-error` : undefined;
+  const content =
+    id && isValidElement(children)
+      ? cloneElement(children as React.ReactElement<any>, {
+          id,
+          "aria-invalid": !!error,
+          "aria-describedby": error ? errorId : undefined,
+        })
+      : children;
   return (
     <div className="space-y-1.5 text-right">
-      <Label className="text-sm">
+      <Label htmlFor={id} className="text-sm">
         {label}
         {required && <span className="mr-1 text-destructive">*</span>}
       </Label>
-      {children}
-      {error && <p className="text-xs text-destructive" role="alert" aria-live="assertive">{error}</p>}
+      {content}
+      {error && <p id={errorId} className="text-xs text-destructive" role="alert" aria-live="assertive">{error}</p>}
     </div>
   );
 }

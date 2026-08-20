@@ -169,6 +169,7 @@ const AuthReset = () => {
               </p>
               <form onSubmit={onSubmit} className="mt-6 space-y-4">
                 <PasswordInput
+                  id="reset-password"
                   placeholder={`סיסמה חדשה (${PW_MIN} תווים לפחות)`}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
@@ -177,8 +178,11 @@ const AuthReset = () => {
                   autoComplete="new-password"
                   className="text-sm"
                   dir="ltr"
+                  aria-describedby={error ? "reset-error" : undefined}
+                  aria-invalid={!!error}
                 />
                 <PasswordInput
+                  id="reset-confirm"
                   placeholder="שוב, לאימות"
                   value={confirm}
                   onChange={(e) => setConfirm(e.target.value)}
@@ -186,8 +190,10 @@ const AuthReset = () => {
                   autoComplete="new-password"
                   className="text-sm"
                   dir="ltr"
+                  aria-describedby={error ? "reset-error" : undefined}
+                  aria-invalid={!!error}
                 />
-                {error && <p className="text-sm text-destructive">{error}</p>}
+                {error && <p id="reset-error" role="alert" className="text-sm text-destructive">{error}</p>}
                 {done && <p className="text-sm text-primary">הסיסמה עודכנה. מעבירים אותך פנימה…</p>}
                 <Button type="submit" disabled={saving} className="w-full">
                   {saving ? "שומרים…" : "שמירת הסיסמה וכניסה"}

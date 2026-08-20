@@ -186,14 +186,14 @@ const ContactPage = () => {
                     <label htmlFor="contact-name" className="block text-sm font-bold text-foreground mb-1.5">שם מלא *</label>
                     <div className="relative">
                       <User className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                      <Input id="contact-name" value={name} onChange={e => setName(e.target.value)} placeholder="השם שלך" className="pr-10" autoComplete="name" />
+                      <Input id="contact-name" value={name} onChange={e => setName(e.target.value)} placeholder="השם שלך" className="pr-10" autoComplete="name" aria-describedby={errorMsg ? "contact-error" : undefined} aria-invalid={!!errorMsg} />
                     </div>
                   </div>
                   <div>
                     <label htmlFor="contact-phone" className="block text-sm font-bold text-foreground mb-1.5">טלפון *</label>
                     <div className="relative">
                       <Phone className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                      <Input id="contact-phone" value={phone} onChange={e => setPhone(e.target.value)} placeholder="050-0000000" className="pr-10" dir="ltr" autoComplete="tel" />
+                      <Input id="contact-phone" value={phone} onChange={e => setPhone(e.target.value)} placeholder="050-0000000" className="pr-10" dir="ltr" autoComplete="tel" aria-describedby={errorMsg ? "contact-error" : undefined} aria-invalid={!!errorMsg} />
                     </div>
                   </div>
                 </div>
@@ -201,7 +201,7 @@ const ContactPage = () => {
                   <label htmlFor="contact-email" className="block text-sm font-bold text-foreground mb-1.5">אימייל (אופציונלי)</label>
                   <div className="relative">
                     <Mail className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                    <Input id="contact-email" value={email} onChange={e => setEmail(e.target.value)} placeholder="email@example.com" className="pr-10" dir="ltr" autoComplete="email" />
+                    <Input id="contact-email" value={email} onChange={e => setEmail(e.target.value)} placeholder="email@example.com" className="pr-10" dir="ltr" autoComplete="email" aria-describedby={errorMsg ? "contact-error" : undefined} />
                   </div>
                 </div>
                 <div>
@@ -213,6 +213,7 @@ const ContactPage = () => {
                     placeholder="ספר/י לנו במה מדובר..."
                     rows={4}
                     className="w-full rounded-lg border border-input bg-background px-4 py-3 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 resize-none"
+                    aria-describedby={errorMsg ? "contact-error" : undefined}
                   />
                 </div>
                 <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
@@ -225,7 +226,7 @@ const ContactPage = () => {
                   </Button>
                 </motion.div>
                 {errorMsg && (
-                  <p role="alert" className="text-center text-sm font-bold text-destructive bg-destructive/10 rounded-lg py-3 px-4">
+                  <p id="contact-error" role="alert" className="text-center text-sm font-bold text-destructive bg-destructive/10 rounded-lg py-3 px-4">
                     {errorMsg}
                   </p>
                 )}

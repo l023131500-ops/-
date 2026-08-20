@@ -50,6 +50,8 @@ export default function UserLoginPage() {
               onChange={(e) => setIdentifier(e.target.value)}
               autoComplete="username"
               required
+              aria-describedby={error ? "login-error" : undefined}
+              aria-invalid={!!error}
               data-testid="input-identifier"
             />
           </div>
@@ -65,6 +67,8 @@ export default function UserLoginPage() {
                 autoComplete="current-password"
                 required
                 className="pr-10"
+                aria-describedby={error ? "login-error" : undefined}
+                aria-invalid={!!error}
                 data-testid="input-password"
               />
               <button
@@ -79,7 +83,7 @@ export default function UserLoginPage() {
               </button>
             </div>
           </div>
-          {error && <div className="text-sm text-destructive">{error}</div>}
+          {error && <div id="login-error" role="alert" className="text-sm text-destructive">{error}</div>}
           <Button type="submit" disabled={loading} className="w-full gap-1.5" data-testid="button-submit-login">
             <LogIn className="w-4 h-4" />
             {loading ? "מתחבר..." : "התחברות"}
