@@ -3,6 +3,7 @@ import { getAdminClient, HTR_BUCKET } from '@/lib/supabase';
 import { pickEngine, HtrEngineNotConfigured } from '@/lib/htr-engine';
 import { pickCorrector, CorrectorNotConfigured } from '@/lib/htr-corrector';
 import type { HtrJob } from '@/lib/htr-types';
+import { getHubUserFromRequest } from '@/lib/hub-auth';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -21,6 +22,10 @@ export const maxDuration = 300;
 // ============================================================
 
 export async function POST(req: NextRequest) {
+  if (!(await getHubUserFromRequest(req))) {
+    return NextResponse.json({ error: 'נדרשת התחברות' }, { status: 401 });
+  }
+
   const body = await req.json().catch(() => null);
   const jobId: string | undefined = body?.job_id;
   const skipCorrection = !!body?.skip_correction;

@@ -7,9 +7,28 @@ import {
   STATUS_LABELS, MATERIAL_LABELS, TIER_LABELS, LOW_CONFIDENCE_THRESHOLD,
   HTR_MAX_UPLOAD_BYTES
 } from '@/lib/htr-types';
+import { getHubClient, hubConfigured } from '@/lib/hub';
 
 /** גודל קובץ בשפה של אדם, לא בבייטים. */
 const mb = (bytes: number) => (bytes / (1024 * 1024)).toFixed(1);
+
+/**
+ * כל קריאה ל-API של HTR חייבת לשאת את ה-access_token של ההאב, כי ה-routes
+ * דוחים כעת קריאה בלי Bearer token תקין (ראה lib/hub-auth.ts). הפרונט הזה
+ * לא הציג עד כה שום מסך "יש להתחבר" -- מוסיפים אחד קטן במקום להיכשל בשקט
+ * מול 401.
+ */
+async function authHeaders(): Promise<HeadersInit> {
+  if (!hubConfigured()) return {};
+  const { data } = await getHubClient().auth.getSession();
+  const token = data.session?.access_token;
+  return token ? { Authorization: `Bearer ${token}` } : {};
+}
+
+async function authFetch(input: string, init: RequestInit = {}): Promise<Response> {
+  const headers = { ...(init.headers || {}), ...(await authHeaders()) };
+  return fetch(input, { ...init, headers });
+}
 
 type JobSummary = Pick<HtrJob,
   'id' | 'created_at' | 'page_label' | 'material' | 'tier' | 'status' | 'engine' | 'corrector' | 'mean_confidence' | 'approved_at'>;
@@ -18,11 +37,14 @@ export default function HtrPage() {
   const [jobs, setJobs] = useState<JobSummary[]>([]);
   const [selected, setSelected] = useState<string | null>(null);
   const [loadingList, setLoadingList] = useState(false);
+  const [needsLogin, setNeedsLogin] = useState(false);
 
   const refresh = useCallback(async () => {
     setLoadingList(true);
     try {
-      const r = await fetch('/orech/api/htr/jobs');
+      const r = await authFetch('/orech/api/htr/jobs');
+      if (r.status === 401) { setNeedsLogin(true); setJobs([]); return; }
+      setNeedsLogin(false);
       const d = await r.json();
       setJobs(d.jobs || []);
     } finally {
@@ -44,22 +66,31 @@ export default function HtrPage() {
         <Link href="/" className="back-link">→ חזרה</Link>
       </div>
 
-      <UploadForm onDone={refresh} />
-
-      <div className="htr-layout">
-        <JobList
-          jobs={jobs}
-          loading={loadingList}
-          selected={selected}
-          onSelect={setSelected}
-          onRefresh={refresh}
-        />
-        <div className="htr-detail-pane">
-          {selected
-            ? <JobDetail jobId={selected} onChanged={refresh} />
-            : <div className="empty-hint">בחר עבודה מהרשימה כדי לצפות, לתקן ולאשר.</div>}
+      {needsLogin ? (
+        <div className="empty-hint">
+          מודול ה-HTR דורש התחברות — יש להיכנס דרך כפתור הכניסה למעלה כדי לצפות בעבודות, להעלות
+          ולאשר טקסט.
         </div>
-      </div>
+      ) : (
+        <>
+          <UploadForm onDone={refresh} />
+
+          <div className="htr-layout">
+            <JobList
+              jobs={jobs}
+              loading={loadingList}
+              selected={selected}
+              onSelect={setSelected}
+              onRefresh={refresh}
+            />
+            <div className="htr-detail-pane">
+              {selected
+                ? <JobDetail jobId={selected} onChanged={refresh} />
+                : <div className="empty-hint">בחר עבודה מהרשימה כדי לצפות, לתקן ולאשר.</div>}
+            </div>
+          </div>
+        </>
+      )}
     </main>
   );
 }
@@ -184,14 +215,14 @@ function UploadForm({ onDone }: { onDone: () => void }) {
       fd.append('tier', tier);
       if (pageLabel) fd.append('page_label', pageLabel);
 
-      const r = await fetch('/orech/api/htr/upload', { method: 'POST', body: fd });
+      const r = await authFetch('/orech/api/htr/upload', { method: 'POST', body: fd });
       const d = await r.json();
       if (!r.ok) throw new Error(d.error || 'העלאה נכשלה');
 
       // הפעלת עיבוד מיד
       const jobId = d.job.id;
       setMsg({ type: 'ok', text: 'הועלה. מריץ זיהוי...' });
-      const pr = await fetch('/orech/api/htr/process', {
+      const pr = await authFetch('/orech/api/htr/process', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ job_id: jobId })
@@ -349,7 +380,7 @@ function JobDetail({ jobId, onChanged }: { jobId: string; onChanged: () => void 
   const [msg, setMsg] = useState<string | null>(null);
 
   const load = useCallback(async () => {
-    const r = await fetch(`/orech/api/htr/jobs/${jobId}`);
+    const r = await authFetch(`/orech/api/htr/jobs/${jobId}`);
     const d = await r.json();
     setJob(d.job);
     setImgUrl(d.imageSignedUrl);
@@ -368,7 +399,7 @@ function JobDetail({ jobId, onChanged }: { jobId: string; onChanged: () => void 
     if (!finalText.trim()) { setMsg('לא ניתן לאשר טקסט ריק'); return; }
     setBusy(true); setMsg(null);
     try {
-      const r = await fetch(`/orech/api/htr/jobs/${jobId}/approve`, {
+      const r = await authFetch(`/orech/api/htr/jobs/${jobId}/approve`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ final_text: finalText })
@@ -384,7 +415,7 @@ function JobDetail({ jobId, onChanged }: { jobId: string; onChanged: () => void 
   async function saveDraft() {
     setBusy(true); setMsg(null);
     try {
-      const r = await fetch(`/orech/api/htr/jobs/${jobId}`, {
+      const r = await authFetch(`/orech/api/htr/jobs/${jobId}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ final_text: finalText })

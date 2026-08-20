@@ -1,11 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getAdminClient, HTR_BUCKET } from '@/lib/supabase';
+import { getHubUserFromRequest } from '@/lib/hub-auth';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
 // GET /api/htr/jobs?limit=50  — רשימת ה-jobs האחרונים
 export async function GET(req: NextRequest) {
+  if (!(await getHubUserFromRequest(req))) {
+    return NextResponse.json({ error: 'נדרשת התחברות' }, { status: 401 });
+  }
+
   const limit = Math.min(Number(req.nextUrl.searchParams.get('limit')) || 50, 200);
   let supabase;
   try {

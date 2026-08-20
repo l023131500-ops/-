@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getAdminClient } from '@/lib/supabase';
+import { getHubUserFromRequest } from '@/lib/hub-auth';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -10,9 +11,14 @@ export const dynamic = 'force-dynamic';
 // "הטקסט קדוש": ללא צעד זה שום טקסט לא נכנס. חובה final_text לא ריק.
 // ============================================================
 export async function POST(req: NextRequest, { params }: { params: { id: string } }) {
+  const user = await getHubUserFromRequest(req);
+  if (!user) {
+    return NextResponse.json({ error: 'נדרשת התחברות' }, { status: 401 });
+  }
+
   const body = await req.json().catch(() => null);
   const finalText: string | undefined = body?.final_text;
-  const approvedBy: string = body?.approved_by || 'human';
+  const approvedBy: string = user.email || body?.approved_by || 'human';
 
   if (!finalText || !finalText.trim()) {
     return NextResponse.json(

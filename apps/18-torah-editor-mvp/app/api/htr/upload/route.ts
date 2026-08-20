@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getAdminClient, HTR_BUCKET } from '@/lib/supabase';
 import { HTR_MAX_UPLOAD_BYTES } from '@/lib/htr-types';
 import type { HtrMaterial, HtrTier } from '@/lib/htr-types';
+import { getHubUserFromRequest } from '@/lib/hub-auth';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -23,6 +24,10 @@ const VALID_MATERIAL: HtrMaterial[] = [
 const VALID_TIER: HtrTier[] = ['regular', 'internal'];
 
 export async function POST(req: NextRequest) {
+  if (!(await getHubUserFromRequest(req))) {
+    return NextResponse.json({ error: 'נדרשת התחברות' }, { status: 401 });
+  }
+
   let form: FormData;
   try {
     form = await req.formData();

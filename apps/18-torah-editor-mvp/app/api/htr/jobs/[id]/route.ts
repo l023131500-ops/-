@@ -1,11 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getAdminClient, HTR_BUCKET } from '@/lib/supabase';
+import { getHubUserFromRequest } from '@/lib/hub-auth';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
 // GET /api/htr/jobs/:id — job מלא + signed URL לתמונה
-export async function GET(_req: NextRequest, { params }: { params: { id: string } }) {
+export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
+  if (!(await getHubUserFromRequest(req))) {
+    return NextResponse.json({ error: 'נדרשת התחברות' }, { status: 401 });
+  }
+
   let supabase;
   try {
     supabase = getAdminClient();
@@ -30,6 +35,10 @@ export async function GET(_req: NextRequest, { params }: { params: { id: string 
 // PATCH /api/htr/jobs/:id — עדכון final_text ע"י עורך אנושי (עריכה ידנית)
 // לא משנה raw_text / corrected_text — "הטקסט קדוש".
 export async function PATCH(req: NextRequest, { params }: { params: { id: string } }) {
+  if (!(await getHubUserFromRequest(req))) {
+    return NextResponse.json({ error: 'נדרשת התחברות' }, { status: 401 });
+  }
+
   const body = await req.json().catch(() => null);
   const finalText: string | undefined = body?.final_text;
   if (typeof finalText !== 'string') {
