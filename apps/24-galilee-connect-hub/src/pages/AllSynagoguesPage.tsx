@@ -48,6 +48,10 @@ const AllSynagoguesPage = () => {
             <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4" />
             <p className="text-muted-foreground font-semibold">טוען בתי כנסת...</p>
           </div>
+        ) : synagogues.length === 0 ? (
+          <div className="text-center py-16">
+            <p className="text-muted-foreground font-semibold">אין עדיין בתי כנסת רשומים במערכת.</p>
+          </div>
         ) : (
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {synagogues.map((syn, i) => {
