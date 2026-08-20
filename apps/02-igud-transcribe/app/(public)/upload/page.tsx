@@ -111,8 +111,9 @@ export default function UploadPage() {
           {step === 1 && (
             <form onSubmit={validateCoupon} className="card space-y-6">
               <div>
-                <label className="label">קוד קופון</label>
+                <label className="label" htmlFor="upload-coupon-code">קוד קופון</label>
                 <input
+                  id="upload-coupon-code"
                   type="text"
                   value={code}
                   onChange={(e) => setCode(e.target.value)}
@@ -163,8 +164,9 @@ export default function UploadPage() {
               </div>
 
               <div>
-                <label className="label">קובץ אודיו</label>
+                <label className="label" htmlFor="upload-audio-file">קובץ אודיו</label>
                 <input
+                  id="upload-audio-file"
                   type="file"
                   accept="audio/*,video/*"
                   onChange={(e) => setFile(e.target.files?.[0] ?? null)}

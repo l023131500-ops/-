@@ -105,8 +105,9 @@ export default function LoginPage() {
 
           <form onSubmit={handleEmail} className="space-y-4">
             <div>
-              <label className="label">דוא"ל</label>
+              <label className="label" htmlFor="login-email">דוא"ל</label>
               <input
+                id="login-email"
                 type="email"
                 inputMode="email"
                 autoComplete="email"
@@ -122,9 +123,10 @@ export default function LoginPage() {
                 מוסיף `text-right`, כך שהתווים מסתיימים בקצה הימני — ולכן
                 העין יושבת בשמאל, עם pl-10 שמפנה לה מקום. */}
             <div>
-              <label className="label">סיסמה</label>
+              <label className="label" htmlFor="login-password">סיסמה</label>
               <div className="relative">
                 <input
+                  id="login-password"
                   type={showPassword ? "text" : "password"}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
