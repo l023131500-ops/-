@@ -43,6 +43,26 @@ export const tenantProfilesQuery = () =>
     },
   });
 
+// profiles_self_read (RLS) returns every profile in the caller's tenant, not
+// just the caller's own row, so a plain .limit(1) here would pick an
+// arbitrary teammate. Filter explicitly by the signed-in user's auth id.
+export const myProfileQuery = () =>
+  queryOptions({
+    queryKey: ["my-profile"],
+    queryFn: async () => {
+      const { data: authData, error: authError } = await supabase.auth.getUser();
+      if (authError) throw authError;
+      if (!authData.user) return null;
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("id, role")
+        .eq("auth_user_id", authData.user.id)
+        .maybeSingle();
+      if (error) throw error;
+      return data;
+    },
+  });
+
 export function useInvalidateSettings() {
   const qc = useQueryClient();
   return () => {

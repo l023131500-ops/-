@@ -13,7 +13,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Loader2, Save, ExternalLink, Plug, CheckCircle2, XCircle } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
-import { myTenantQuery, tenantProfilesQuery, type TenantSettings, type IntegrationSettings, type NotificationSettings } from "@/features/settings/queries";
+import { myTenantQuery, myProfileQuery, tenantProfilesQuery, type TenantSettings, type IntegrationSettings, type NotificationSettings } from "@/features/settings/queries";
 
 export const Route = createFileRoute("/_authenticated/settings")({
   head: () => ({ meta: [{ title: "הגדרות | זכויות פרו" }] }),
@@ -192,6 +192,8 @@ function UsersTab() {
 
 function IntegrationsTab() {
   const { data: tenant, isLoading } = useQuery(myTenantQuery());
+  const { data: me } = useQuery(myProfileQuery());
+  const isAdmin = me?.role === "admin";
   const qc = useQueryClient();
   const settings = (tenant?.settings ?? {}) as TenantSettings;
   const integrations = settings.integrations ?? {};
@@ -199,7 +201,7 @@ function IntegrationsTab() {
   const [saving, setSaving] = useState(false);
 
   async function save() {
-    if (!tenant?.id) return;
+    if (!tenant?.id || !isAdmin) return;
     setSaving(true);
     const newSettings: TenantSettings = { ...settings, integrations: form };
     const { error } = await supabase.from("tenants").update({ settings: newSettings }).eq("id", tenant.id);
@@ -225,6 +227,11 @@ function IntegrationsTab() {
         <CardTitle className="text-base flex items-center gap-2"><Plug className="h-4 w-4" /> אינטגרציות</CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
+        {!isAdmin && (
+          <p className="text-sm text-muted-foreground">
+            צפייה בלבד — רק מנהל הארגון יכול לערוך אינטגרציות ואסימוני חיבור.
+          </p>
+        )}
         {services.map((s) => {
           const value = form[s.key] ?? "";
           const status = value ? "connected" : "not_configured";
@@ -245,13 +252,14 @@ function IntegrationsTab() {
                   dir="ltr"
                   placeholder={s.placeholder}
                   value={value}
+                  disabled={!isAdmin}
                   onChange={(e) => setForm({ ...form, [s.key]: e.target.value })}
                 />
               </div>
             </div>
           );
         })}
-        <Button onClick={save} disabled={saving}>
+        <Button onClick={save} disabled={saving || !isAdmin}>
           {saving && <Loader2 className="h-4 w-4 animate-spin me-1" />}
           <Save className="h-4 w-4 me-1" /> שמור הגדרות
         </Button>
@@ -262,13 +270,15 @@ function IntegrationsTab() {
 
 function NotificationsTab() {
   const { data: tenant, isLoading } = useQuery(myTenantQuery());
+  const { data: me } = useQuery(myProfileQuery());
+  const isAdmin = me?.role === "admin";
   const qc = useQueryClient();
   const settings = (tenant?.settings ?? {}) as TenantSettings;
   const [form, setForm] = useState<NotificationSettings>(settings.notifications ?? {});
   const [saving, setSaving] = useState(false);
 
   async function save() {
-    if (!tenant?.id) return;
+    if (!tenant?.id || !isAdmin) return;
     setSaving(true);
     const newSettings: TenantSettings = { ...settings, notifications: form };
     const { error } = await supabase.from("tenants").update({ settings: newSettings }).eq("id", tenant.id);
@@ -290,17 +300,23 @@ function NotificationsTab() {
     <Card>
       <CardHeader><CardTitle className="text-base">הגדרות התראות</CardTitle></CardHeader>
       <CardContent className="space-y-4">
+        {!isAdmin && (
+          <p className="text-sm text-muted-foreground">
+            צפייה בלבד — רק מנהל הארגון יכול לערוך הגדרות התראות.
+          </p>
+        )}
         {toggles.map((t) => (
           <div key={t.key} className="flex items-center justify-between border-b pb-2">
             <Label htmlFor={t.key}>{t.label}</Label>
             <Switch
               id={t.key}
               checked={!!form[t.key]}
+              disabled={!isAdmin}
               onCheckedChange={(v) => setForm({ ...form, [t.key]: v })}
             />
           </div>
         ))}
-        <Button onClick={save} disabled={saving}>
+        <Button onClick={save} disabled={saving || !isAdmin}>
           {saving && <Loader2 className="h-4 w-4 animate-spin me-1" />}
           <Save className="h-4 w-4 me-1" /> שמור
         </Button>
