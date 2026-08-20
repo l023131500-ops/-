@@ -10798,3 +10798,56 @@
       מומלץ לסבב הבא: לעבור ל-`10-bkalot-rights` (50 אזכורים,
       חי) שטרם נסרק לעומק, או לבדוק `admin.html` בעצמו (טרם נקרא
       שורה-שורה, רק `admin.js` נבדק לעומק).
+
+## 20/08/2026 — סבב 214 (loop A) — `15-egod`: `window.open` ל-WhatsApp חיצוני בלי `noopener`/`noreferrer` (reverse tabnabbing)
+
+1042. **בדקתי מחדש לפני שהתחלתי:** `core.run_progress` (סבב 213 האחרון,
+      commit `025560b5`/`cac65691`, תואם ל-HEAD). עקבתי אחרי ההמלצה
+      מ-1041 וסרקתי לעומק את `10-bkalot-rights` (כל 4 קבצי הקוד:
+      `app.js` 545 שורות, `engine.js` 302 שורות, `repo.js` 89 שורות,
+      `index.html`) — שני מועמדים ראשוניים (listener כפול על טופס
+      ליד ב-`openLeadForm`, "false-success" ב-`submitLead`) התבררו
+      **כשגויים** בבדיקה ישירה: ה-listener מוצמד ל-`onsubmit` (property,
+      לא `addEventListener`) על אלמנט `<form>` **חדש** שנוצר מחדש דרך
+      `innerHTML` בכל קריאה, כך שאין הצטברות; ו-`submitLead` כבר
+      מטפלת נכון בכישלון (מפעילה מחדש את הכפתור, מציגה שגיאה בעברית,
+      לא מדווחת הצלחה כוזבת) — שני הדגלים נסגרו כ"לא באג".
+1043. **הממצא האמיתי, מאומת בקוד:** `apps/15-egod/src/pages/portal/
+      Attendance.tsx`, `sendEncouragement()` (שורה 69, לפני התיקון):
+      `window.open(`https://wa.me/${...}?text=${msg}`, "_blank")` —
+      ללא ארגומנט שלישי (`windowFeatures`). זו קריאה לאתר **צד-שלישי
+      אמיתי** (`wa.me`, לא דומיין more30), ובלי `noopener`, הטאב
+      החדש מקבל גישה ל-`window.opener` ויכול להפנות את הטאב המקורי
+      (פורטל המורים של 15-egod, אחרי התחברות) לעמוד פישינג —
+      reverse tabnabbing קלאסי. השוואתי מול כל שאר הקישורים ל-`wa.me`
+      בהיקף 01-16 (`grep -rn "wa\.me\|window\.open"` על 01/04/05/06/
+      07/10/11/12/13/14/15/16): כולם `<a target="_blank" rel=
+      "noopener">` (מוגנים כבר), חוץ מהקריאה הזו וקריאה אחת נוספת
+      ב-`10-bkalot-rights/app.js:528` שהיעד שלה הוא `more30.com/
+      mechiron` (מקור אותו אתר, לא צד שלישי — סיכון זניח, לא תוקן).
+      זו בדיוק אותה משפחת באג שתוקנה כבר ב-loop B ל-`22-get-your-
+      rights` (ענף `fix/b-22-whatsapp-noopener-round395-0820`) —
+      כאן זו ההופעה המקבילה בהיקף 01-16 של loop A.
+1044. **התיקון:** ארגומנט שלישי `"noopener,noreferrer"` נוסף לקריאת
+      ה-`window.open` היחידה הזו, תואם לתבנית הקיימת כבר ב-`26-
+      modaot-studio/client/src/pages/Editor.tsx:172`
+      (`window.open(url, "_blank", "noopener,noreferrer")`). שורה
+      אחת שונתה, שום דבר אחר בפונקציה או בקובץ לא נגע.
+1045. **אפס רגרסיה מאומתת:** שינוי חד-שורתי, תחביר TypeScript/JSX
+      תקין (נבדק ידנית — אין node/tsc זמינים להרצה ארוכה בסבב הזה,
+      לפי הנחיית ההרצה). `git diff --stat`: קובץ אחד, +1/-1. הקובץ
+      כבר tracked (`git ls-files` אישר) — `git add` הרגיל נתן את אותה
+      אזהרת `.gitignore` false-positive שתועדה בסבבים קודמים על
+      `apps/06-kupot-holim/site` (`git check-ignore -v` לא מצא כלל
+      תואם בפועל); `git add -f` פתר. לא נגעתי במערכות/סכימות מוגנות
+      (08/09/bkalut-app/bkalot-admin/zr_*/NEDARIM3873/csj/csj_src/
+      igud), ב-`main`, או במערכת מחוץ להיקף (רק 01-16/gannenet/auth/
+      super-admin/admin dashboard/homepage ordering/pricing). Commit
+      `54f7b333` על `fix/a-icon-only-buttons-round2-0820`, נדחף
+      ל-`origin` (מפעיל פריסת Vercel תחת `more30.com/egod`).
+1046. **הבא בתור:** `10-bkalot-rights` נסרק כעת במלואו — לא נמצאו
+      עוד באגים פעילים שם. מומלץ לסבב הבא: לעבור למערכת אחרת
+      בהיקף 01-16 שטרם נסרקה לעומק (למשל `04-imud-torani`,
+      `12-smel-ndln`, או `16-chatzor-connect`), או לבדוק את שכבת
+      התשתית המשותפת (gannenet/40, login/auth, super-admin, admin
+      dashboard) שטרם עברה סבב סריקה ייעודי.
