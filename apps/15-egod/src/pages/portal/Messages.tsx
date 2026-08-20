@@ -88,7 +88,7 @@ const Messages = () => {
                         <span className="font-bold text-foreground">{msg.sender_name}</span>
                         <Badge variant={st.variant}>{st.label}</Badge>
                       </div>
-                      <p className="text-sm text-muted-foreground">📞 {msg.sender_phone} {msg.sender_email && `| ✉️ ${msg.sender_email}`}</p>
+                      <p className="text-sm text-muted-foreground">📞 <span dir="ltr">{msg.sender_phone}</span>{msg.sender_email && <> | ✉️ <span dir="ltr">{msg.sender_email}</span></>}</p>
                       {msg.message && <p className="text-sm text-foreground mt-2 bg-muted/50 rounded-lg p-3">{msg.message}</p>}
                       <p className="text-xs text-muted-foreground mt-2">{new Date(msg.created_at).toLocaleString("he-IL")}</p>
                     </div>

@@ -111,8 +111,8 @@ const Participants = () => {
                 <div>
                   <p className="font-medium text-foreground">{p.full_name}</p>
                   <div className="flex items-center gap-3 text-xs text-muted-foreground">
-                    {p.phone && <span className="flex items-center gap-1"><Phone className="w-3 h-3" />{p.phone}</span>}
-                    {p.email && <span className="flex items-center gap-1"><Mail className="w-3 h-3" />{p.email}</span>}
+                    {p.phone && <span className="flex items-center gap-1"><Phone className="w-3 h-3" /><span dir="ltr">{p.phone}</span></span>}
+                    {p.email && <span className="flex items-center gap-1"><Mail className="w-3 h-3" /><span dir="ltr">{p.email}</span></span>}
                   </div>
                 </div>
               </div>

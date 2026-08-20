@@ -106,7 +106,7 @@ const AdminMessages = () => {
                       )}
                     </div>
                     <div className="flex items-center gap-3 text-xs text-muted-foreground mb-2">
-                      {m.sender_phone && <span className="flex items-center gap-1"><Phone className="w-3 h-3" />{m.sender_phone}</span>}
+                      {m.sender_phone && <span className="flex items-center gap-1"><Phone className="w-3 h-3" /><span dir="ltr">{m.sender_phone}</span></span>}
                       {m.sender_email && <span dir="ltr">{m.sender_email}</span>}
                       <span>{new Date(m.created_at).toLocaleString("he-IL")}</span>
                     </div>

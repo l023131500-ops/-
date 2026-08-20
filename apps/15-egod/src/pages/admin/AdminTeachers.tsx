@@ -250,7 +250,7 @@ const AdminTeachers = () => {
                   <tr key={p.id} className="border-b border-border last:border-0 hover:bg-muted/10">
                     <td className="p-4 font-medium text-foreground">{p.full_name || "—"}</td>
                     <td className="p-4"><Badge variant="outline">{portalTypeLabel(p.portal_type || "rabbi")}</Badge></td>
-                    <td className="p-4 text-muted-foreground">{p.email || "—"}</td>
+                    <td className="p-4 text-muted-foreground" dir="ltr">{p.email || "—"}</td>
                     <td className="p-4 text-muted-foreground">{p.city || "—"}</td>
                     <td className="p-4">
                       <span className={`px-2 py-1 rounded-full text-xs font-medium ${p.is_approved ? "bg-green-100 text-green-700" : "bg-orange-100 text-orange-700"}`}>

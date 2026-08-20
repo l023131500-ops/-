@@ -114,7 +114,7 @@ const Attendance = () => {
                       </Badge>
                     )}
                   </div>
-                  {p.phone && <p className="text-xs text-muted-foreground">{p.phone}</p>}
+                  {p.phone && <p className="text-xs text-muted-foreground" dir="ltr">{p.phone}</p>}
                 </div>
 
                 {streak >= 2 && p.phone && (

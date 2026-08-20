@@ -69,7 +69,7 @@ const PortalSidebar = () => {
           </div>
           <div>
             <p className="font-heading font-bold text-sm">{portalLabel}</p>
-            <p className="text-xs text-sidebar-foreground/60">{orgName || user?.email}</p>
+            <p className="text-xs text-sidebar-foreground/60">{orgName || <span dir="ltr">{user?.email}</span>}</p>
           </div>
         </Link>
       </div>

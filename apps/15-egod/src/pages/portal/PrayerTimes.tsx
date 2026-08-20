@@ -117,7 +117,7 @@ const PrayerTimes = () => {
                 <div>
                   <h3 className="font-heading font-bold text-lg text-foreground">{syn.name}</h3>
                   {syn.address && <p className="text-sm text-muted-foreground">📍 {syn.address} {syn.city ? `- ${syn.city}` : ""}</p>}
-                  {syn.phone && <p className="text-sm text-muted-foreground">📞 {syn.phone}</p>}
+                  {syn.phone && <p className="text-sm text-muted-foreground">📞 <span dir="ltr">{syn.phone}</span></p>}
                 </div>
                 <div className="flex gap-2">
                   <Button size="sm" variant="outline" onClick={() => { setShowAddPrayer(syn.id); setPrayerForm({ prayer_type: "", day_of_week: "יומי", time: "", notes: "" }); }}>
