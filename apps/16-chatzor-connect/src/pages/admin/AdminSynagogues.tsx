@@ -70,7 +70,7 @@ export function AdminSynagogues() {
         </Button>
       </div>
 
-      <div className="mt-6">
+      <div className="mt-6" aria-live="polite">
         {isLoading ? (
           <CardGridSkeleton count={3} />
         ) : isError ? (
