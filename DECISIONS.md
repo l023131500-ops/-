@@ -6927,3 +6927,36 @@
      קשר ב-footer, שדות name/phone) שסבב הבא צריך לתקן בנפרד. אחרי
      זה, לחזור ל-`core.project_tasks`/`core.project_bugs` או לפתוח
      עדשה נוספת (ניגודיות צבעים, סדר טאבים/focus-order).
+
+## 20/08/2026 — סבב 126 (loop A)
+
+656. **המשכתי את המלצת #655.** בדקתי `core.run_progress` (סבב 125
+     האחרון, commit `ef27d9f2`, תואם HEAD) — אין עבודה תלויה. קראתי
+     את `apps/01-torah-platform/src/components/Footer.tsx` המלא:
+     יש שני `<input>` `.tsx` set-ים שמשתפים את אותו state
+     (`contactName`/`contactPhone`) — טופס "פנייה מהירה" בעמודה 3
+     (שורות 130-151, עם `errors.name`/`errors.phone` per-field
+     מוצג ב-`<p>` מותנה תחת השדה) וטופס "יש לך ארגון?" בעמודה 4
+     (שורות 203-218, ולידציה בטוסט בלבד ללא הודעת per-field —
+     אין מה לתקן שם). רק טופס עמודה 3 תואם את העדשה: שדות עם הודעת
+     שגיאה per-field מותנית בלי `aria-invalid`/`aria-describedby`
+     על ה-`input`.
+657. **התיקון:** הוספתי `id="footer-contact-name"`/
+     `id="footer-contact-phone"` לשני ה-`input`-ים, `aria-invalid`
+     (בוליאני לפי `errors.name`/`errors.phone`) ו-
+     `aria-describedby` (מצביע ל-`footer-contact-name-error`/
+     `footer-contact-phone-error` כשיש שגיאה, אחרת `undefined`), ו-
+     `id` תואם על שני ה-`<p>` של הודעת השגיאה. לא נגעתי בלוגיקת
+     `validate`/`onChange`/`className`/state קיימים.
+658. **אפס רגרסיה מאומתת:** `git diff --stat` — קובץ אחד, 8+/2-,
+     רק תוספת attributes. אין `tsc`/`npm` בסביבה הזו — אומת בבדיקת
+     איזון `{}`/`()`/`[]` ב-Python על הקובץ המלא: 89/89, 84/84,
+     20/20 — תואם.
+659. **הבא בתור:** עדשת ה-`aria-describedby`/`aria-invalid`
+     per-field סגורה כעת על כל המועמדים שנמצאו ב-01/16
+     (`Field.tsx` המשותף בסבב 125 + `Footer.tsx` בסבב זה). סבב הבא
+     צריך לפתוח Explore agent חדש לעדשה נוספת (ניגודיות צבעים,
+     סדר טאבים/focus-order, `aria-current` בניווט, או `lang`/`dir`
+     על טקסט מעורב-שפה), או לחזור ל-`core.project_tasks`/
+     `core.project_bugs` לעבודה אחרת בתחום auth/admin/pricing/
+     gannenet.
