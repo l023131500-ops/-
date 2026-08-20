@@ -93,7 +93,7 @@ export default function UploadPage() {
   return (
     <div className="min-h-screen bg-slate-50">
       <SiteHeader />
-      <main className="container-rtl py-12">
+      <main id="main" className="container-rtl py-12">
         <div className="max-w-2xl mx-auto">
           <h1 className="text-3xl font-serif font-bold text-brand-blue mb-2">העלאת שיעור לתמלול</h1>
           <p className="text-slate-600 mb-8">

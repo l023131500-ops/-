@@ -4,7 +4,14 @@ import ThemeToggle from "./ThemeToggle";
 
 export default function SiteHeader() {
   return (
-    <header className="border-b border-stone-200 bg-white/80 backdrop-blur sticky top-0 z-30">
+    <>
+      <a
+        href="#main"
+        className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:right-2 focus:z-50 focus:rounded-md focus:bg-brand-blue focus:px-4 focus:py-2 focus:text-white"
+      >
+        דלג לתוכן
+      </a>
+      <header className="border-b border-stone-200 bg-white/80 backdrop-blur sticky top-0 z-30">
       <div className="container-rtl flex items-center justify-between py-3 flex-wrap gap-3">
         <Link href="/" className="flex items-center gap-3">
           <Logo className="h-9 w-9 text-brand" />
@@ -31,6 +38,7 @@ export default function SiteHeader() {
         </nav>
       </div>
     </header>
+    </>
   );
 }
 

@@ -3,6 +3,13 @@ import ThemeToggle from "@/components/ThemeToggle";
 
 export default function HomePage() {
   return (
+    <>
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:right-2 focus:z-50 focus:rounded-md focus:bg-brand-goldsurface focus:px-4 focus:py-2 focus:text-brand-darksurface"
+      >
+        דלג לתוכן
+      </a>
     <main className="min-h-screen bg-gradient-to-b from-brand-blue to-brand-dark text-white">
       {/* כפתור הכניסה המשותף של more30 יושב `fixed` בפינה השמאלית העליונה
           (הקצה האינליין-סופי ב-RTL), ושם `justify-between` מניח את
@@ -38,7 +45,7 @@ export default function HomePage() {
         </nav>
       </header>
 
-      <section className="container mx-auto px-6 py-20 text-center">
+      <section id="main-content" className="container mx-auto px-6 py-20 text-center">
         <p className="text-brand-gold font-semibold tracking-wider mb-4">מבית איגוד השיעורים</p>
         <h1 className="font-serif text-5xl md:text-6xl font-bold leading-tight mb-6">
           מודעות מקצועיות לשיעורי תורה
@@ -91,5 +98,6 @@ export default function HomePage() {
         © איגוד השיעורים · 02-3131600 · a023131600@gmail.com
       </footer>
     </main>
+    </>
   );
 }
