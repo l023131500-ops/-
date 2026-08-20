@@ -6880,3 +6880,50 @@
      טאבים/focus-order, או `aria-describedby` על שדות עם הודעת
      ולידציה), או לחזור ל-`core.project_tasks`/`core.project_bugs`
      לעבודה אחרת בתחום auth/admin/pricing/gannenet.
+
+## 20/08/2026 — סבב 125 (loop A)
+
+652. **המשכתי את המלצת #651** (עדשת `aria-describedby`/`aria-invalid`
+     על שדות עם הודעת ולידציה per-field). קראתי README.md/
+     CONNECTIONS.md, בדקתי `core.run_progress` (סבב 124 האחרון,
+     commit `2677a4aa`, תואם HEAD) + `core.project_tasks` (אותם 5
+     פתוחים: 02/12/13/25/32, עדיין חסומים על סודות חסרים
+     `OPENAI_API_KEY`/`SUPABASE_SERVICE_KEY` או החלטות מיזוג/origin
+     מחוץ לסמכות הסוכן) + `core.project_bugs` (ריק) — שום דבר חדש
+     בתחום. פתחתי עדשה חדשה: שדות טופס עם הודעת שגיאה per-field
+     מותנית (לא באנר שגיאה כללי לכל הטופס — זה כבר נסגר בסבבים
+     120-124) שאין להם `aria-invalid` על ה-input או `aria-describedby`
+     שמקשר להודעה. Explore agent סרק את כל 7 האפליקציות ה-vendored
+     (01/02/03/04/12/15/16) וזיהה 3 מועמדים אמיתיים — כולם ב-
+     `apps/16-chatzor-connect`, כל השלושה משתמשים באותו component
+     משותף `src/components/ui/Field.tsx` (`InquiryForm.tsx` — טופס
+     פנייה ציבורי; `SynagogueForm.tsx` — טופס אדמין; ועוד קבצי
+     admin/gabai CRUD).
+653. **התיקון:** במקום לתקן כל טופס בנפרד, תיקנתי את ה-component
+     המשותף עצמו (`Field.tsx`) — תבנית זהה לתיקון ה-`Modal.tsx`
+     המשותף בסבב 116: `Field` מקבל `error` ו-`htmlFor` (=`id` של
+     ה-input); עכשיו הוא בונה `errorId` (`${htmlFor}-error`), עושה
+     `cloneElement` על ה-child היחיד (Input/Select/Textarea/
+     PasswordInput) כדי להוסיף לו `aria-invalid`/`aria-describedby`
+     כשיש שגיאה, ונותן `id={errorId}` לפסקת השגיאה. וידאתי לפני
+     העריכה (grep על 11 קבצים שמשתמשים ב-`<Field`) שבכל מקום ה-
+     children הוא אלמנט יחיד (Input/Select/Textarea/PasswordInput,
+     לא מספר ילדים/טקסט גולמי) כדי ש-`cloneElement` יהיה בטוח.
+     תיקון אחד ב-component משותף מכסה את כל 11 הקבצים (`InquiryForm`,
+     `SynagogueForm`, `AdminLogin`, `AskRav`, `ResetPassword`, ו-6
+     טפסי admin/gabai CRUD נוספים) בלי לגעת באף אחד מהם.
+654. **אפס רגרסיה מאומתת:** `git diff` — קובץ אחד (`Field.tsx`)
+     בלבד, רק import חדש + לוגיקת `cloneElement`/`errorId` +
+     `id`/`aria-invalid`/`aria-describedby` נוספו — שום `className`/
+     `label`/prop קיים לא נגע. אין `tsc`/`npm` בסביבה הזו — אומת
+     בבדיקת איזון `{}`/`()`/`[]` ב-Python על הקובץ המלא: 27/27,
+     16/16, 1/1 — תואם.
+655. **הבא בתור:** עדשת ה-`aria-describedby`/`aria-invalid`
+     per-field סגורה כעת על 16-chatzor-connect (component משותף
+     יחיד מכסה את כל 11 השימושים). 01/03/04 השתמשו בעיקר ב-htmlFor
+     ישיר בלי error-per-field state (כבר נסגרו בעדשה אחרת בסבבים
+     104-115), כך שנותר רק `Footer.tsx` ב-01-torah-platform
+     (state ידני עם `useState`, לא component משותף — טופס יצירת
+     קשר ב-footer, שדות name/phone) שסבב הבא צריך לתקן בנפרד. אחרי
+     זה, לחזור ל-`core.project_tasks`/`core.project_bugs` או לפתוח
+     עדשה נוספת (ניגודיות צבעים, סדר טאבים/focus-order).
