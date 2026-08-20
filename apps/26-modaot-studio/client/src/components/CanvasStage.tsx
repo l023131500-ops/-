@@ -1,6 +1,8 @@
 // מנוע הרינדור החי — הופך TemplateDoc ל-canvas אינטראקטיבי עם react-konva.
 // כל שכבה מרונדרת לפי סוגה. טקסט עם autoFit מקטין את הפונט כדי להיכנס לתיבה.
 // ה-Stage מוקטן לתצוגה (scale), אך מיוצא ברזולוציה מלאה (pixelRatio).
+// כל צומת-שורש של שכבה נושא id={layer.id} — ייצוא הוידאו (lib/videoExport.ts)
+// מאתר צמתים לפי מזהה השכבה כדי לצלם את הבמה בשלבי-חשיפה (scene build-up).
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Stage, Layer, Rect, Text, Group, Path, Image as KImage, Circle, Line } from "react-konva";
@@ -130,7 +132,7 @@ function ImageNode({ layer, onSelect, onChange, interactive }: {
   if (!layer.src || !img) {
     // placeholder — מסגרת מקווקוות "העלה תמונה"
     return (
-      <Group onClick={onSelect} onTap={onSelect} listening={interactive} opacity={layer.opacity ?? 1} globalCompositeOperation={(layer.blend ?? "source-over") as any}>
+      <Group id={layer.id} onClick={onSelect} onTap={onSelect} listening={interactive} opacity={layer.opacity ?? 1} globalCompositeOperation={(layer.blend ?? "source-over") as any}>
         {layer.circle ? (
           <Circle x={cx} y={cy} radius={w / 2} fill="rgba(255,255,255,0.06)" stroke="#C9A227" strokeWidth={2} dash={[10, 8]} />
         ) : (
@@ -154,6 +156,7 @@ function ImageNode({ layer, onSelect, onChange, interactive }: {
     : undefined;
   return (
     <Group
+      id={layer.id}
       onClick={onSelect} onTap={onSelect} listening={interactive}
       draggable={interactive && !layer.locked}
       onDragEnd={(e) => onChange?.({ x: layer.x + e.target.x(), y: layer.y + e.target.y() })}
@@ -169,7 +172,7 @@ function ImageNode({ layer, onSelect, onChange, interactive }: {
 }
 
 function ShapeNode({ layer }: { layer: ShapeLayer }) {
-  const common = { fill: layer.fill, stroke: layer.stroke, strokeWidth: layer.strokeWidth ?? 0, opacity: layer.opacity ?? 1, globalCompositeOperation: (layer.blend ?? "source-over") as any, listening: false };
+  const common = { id: layer.id, fill: layer.fill, stroke: layer.stroke, strokeWidth: layer.strokeWidth ?? 0, opacity: layer.opacity ?? 1, globalCompositeOperation: (layer.blend ?? "source-over") as any, listening: false };
   if (layer.shape === "rect")
     return <Rect x={layer.x} y={layer.y} width={layer.width} height={layer.height ?? layer.width} cornerRadius={layer.cornerRadius ?? 0} dash={layer.dash} {...common} />;
   if (layer.shape === "circle")
@@ -186,7 +189,7 @@ function DecorationNode({ layer }: { layer: DecorationLayer }) {
   if (kind === "frame_double" || kind === "frame_ornate" || kind === "frame_mourning") {
     const thick = kind === "frame_mourning" ? 18 : strokeWidth;
     return (
-      <Group listening={false} opacity={layer.opacity ?? 1} globalCompositeOperation={(layer.blend ?? "source-over") as any}>
+      <Group id={layer.id} listening={false} opacity={layer.opacity ?? 1} globalCompositeOperation={(layer.blend ?? "source-over") as any}>
         <Rect x={x} y={y} width={width} height={height} stroke={fill} strokeWidth={thick} />
         {(kind === "frame_double" || kind === "frame_ornate") && (
           <Rect x={x + 12} y={y + 12} width={width - 24} height={height - 24} stroke={fill} strokeWidth={Math.max(1, strokeWidth - 1)} />
@@ -202,7 +205,7 @@ function DecorationNode({ layer }: { layer: DecorationLayer }) {
   if (kind === "corner_ornament") {
     const sc = width / 42;
     return (
-      <Group x={x} y={y} rotation={layer.rotation ?? 0} listening={false} opacity={layer.opacity ?? 1} globalCompositeOperation={(layer.blend ?? "source-over") as any}>
+      <Group id={layer.id} x={x} y={y} rotation={layer.rotation ?? 0} listening={false} opacity={layer.opacity ?? 1} globalCompositeOperation={(layer.blend ?? "source-over") as any}>
         <Path data={CORNER_ORNAMENT_PATH} scaleX={sc} scaleY={sc} stroke={fill} strokeWidth={2} fill={fill} />
       </Group>
     );
@@ -213,7 +216,7 @@ function DecorationNode({ layer }: { layer: DecorationLayer }) {
   const sc = width / def.viewBox;
   const scY = height / def.viewBox;
   return (
-    <Group x={x} y={y} rotation={layer.rotation ?? 0} listening={false} opacity={layer.opacity ?? 1} globalCompositeOperation={(layer.blend ?? "source-over") as any}>
+    <Group id={layer.id} x={x} y={y} rotation={layer.rotation ?? 0} listening={false} opacity={layer.opacity ?? 1} globalCompositeOperation={(layer.blend ?? "source-over") as any}>
       {def.paths.map((p, i) => (
         <Path key={i} data={p.d} scaleX={sc} scaleY={scY}
           fill={p.strokeOnly ? undefined : fill}

@@ -196,6 +196,10 @@ export default function Editor() {
   // שתועדה כ"נשאר לסבב הבא" בפריט 16 של הצ'קליסט. לא נוגע בקנבס/בשמירה הקיימים —
   // רק קורא ל-stageRef ברזולוציה מלאה, בדיוק כמו handleDownloadPNG/PDF.
   const [videoExporting, setVideoExporting] = useState(false);
+  // פתיח "בניית סצנה" בוידאו (lib/videoExport.ts): הרקע נחשף, אז עיטורים/צורות,
+  // תמונות, והטיפוגרפיה נכנסת לפי תפקיד (פתיח→כותרת→תוכן→תחתית) — ואז ה-Ken
+  // Burns הרגיל ממשיך על המודעה השלמה. דלוק כברירת מחדל; כיבוי = ההתנהגות הישנה.
+  const [sceneBuildUp, setSceneBuildUp] = useState(true);
   // כתוביות עבריות בשכבת הוידאו עצמו (המשך ל-videoExport.ts) — ברירת מחדל דלוקה,
   // כי רוב הצפייה במדיה חברתית ללא קול. ניתן לכבות לפני הייצוא.
   const [showCaptions, setShowCaptions] = useState(true);
@@ -797,6 +801,15 @@ export default function Editor() {
         captionScriptEn: includeEnglishCaptions ? captionScriptEn || undefined : undefined,
         musicUrl: musicUrl || undefined,
         musicVolume: musicVolume / 100,
+        sceneBuildUp,
+        sceneLayers: doc.layers.map((l) => ({
+          id: l.id,
+          type: l.type,
+          z: l.z,
+          visible: l.visible,
+          y: l.y,
+          role: l.type === "text" ? (l as TextLayer).role : undefined,
+        })),
         onProgress: (fraction) => setVideoProgress(Math.round(fraction * 100)),
       });
       downloadBlob(blob, `${selected?.name ?? "modaa"}.webm`);
@@ -1978,6 +1991,16 @@ export default function Editor() {
                   )}
                 </div>
               )}
+              <div className="flex items-center justify-between border-t border-[#C9A227]/15 pt-2">
+                <Label className="text-xs text-[#F5EEDD]/70">
+                  פתיח בניית סצנה (הרקע, העיטורים והטקסטים נכנסים בהדרגה)
+                </Label>
+                <Switch
+                  checked={sceneBuildUp}
+                  onCheckedChange={setSceneBuildUp}
+                  data-testid="switch-video-scene-buildup"
+                />
+              </div>
               <div className="flex flex-col gap-1.5 border-t border-[#C9A227]/15 pt-2">
                 <div className="flex items-center justify-between gap-2">
                   <Label className="flex items-center gap-1 text-xs text-[#F5EEDD]/70">

@@ -1,7 +1,9 @@
 // ייצוא "וידאו קידום" — הבנייה בפועל שהובטחה ב-CHECKLIST/graphics.md #16 (שלב 5):
 // רצף פריימים על גבי התמונה הסטטית ברזולוציה מלאה (אותו stage.toCanvas ששכבות
 // PNG/PDF כבר משתמשות בו ב-lib/exporter.ts — שום רינדור/שכבה קיימים לא משתנים),
-// עם תנועת זום/פאן איטית (Ken Burns) שמסונכרנת למשך הקריינות שנוצרה ב-#16
+// עם פתיח "בניית סצנה" (הרקע נחשף, עיטורים/תמונות/טיפוגרפיה נכנסים בהדרגה
+// בסדר תפקידים — buildEntranceGroups/captureBuildUpSnapshots) ואז תנועת
+// זום/פאן איטית (Ken Burns) שמסונכרנת למשך הקריינות שנוצרה ב-#16
 // (server/narration.ts). מוקלט ב-MediaRecorder + canvas.captureStream בדפדפן,
 // בלי תלות ב-ffmpeg בסביבת Vercel serverless — בדיוק לפי התוכנית שתועדה שם.
 //
@@ -20,6 +22,14 @@ import type { NarrationAlignment } from "@shared/tts-hebrew";
 const MAX_VIDEO_DIM = 1080;
 const FPS = 30;
 const FALLBACK_DURATION_SEC = 6;
+// פתיח "בניית סצנה" (scene build-up): הוידאו לא נפתח על המודעה הגמורה אלא בונה
+// אותה מול העיניים — רקע → עיטורים/צורות → תמונות → טיפוגרפיה לפי תפקיד
+// (פתיח→כותרת→תוכן→תחתית) — ואז ממשיך ב-Ken Burns הרגיל על הקומפוזיציה
+// המלאה. תקרת אורך הפתיח נמוכה ממחצית הקליפ כדי שהמודעה השלמה תמיד תחזיק
+// את רוב זמן המסך.
+const BUILDUP_MAX_SEC = 3.2;
+const BUILDUP_MAX_FRACTION = 0.45;
+const BUILDUP_MAX_TEXT_STEPS = 4;
 // כשאין קריינות בכלל (רק מוזיקת רקע) אין קצב-דיבור שקובע אורך טבעי לוידאו,
 // אז משתמשים באורך קליפ-קידום קצר סטנדרטי (8-15 שניות ברשתות חברתיות) במקום
 // ב-FALLBACK_DURATION_SEC (שנשאר רק "רשת ביטחון" למקרה שמטא-דאטה של קריינות
@@ -58,8 +68,9 @@ function waitForAudioDuration(audioEl: HTMLAudioElement): Promise<number> {
   });
 }
 
-/** מצייר פריים בודד: זום איטי מהמרכז + פאן קל, לפי חלקיק זמן t ב-[0,1]. */
-function drawKenBurnsFrame(ctx: CanvasRenderingContext2D, src: HTMLCanvasElement, vw: number, vh: number, t: number) {
+/** ציור Ken Burns בלי ניקוי הקנבס — כדי שאפשר יהיה לצייר שני מקורות זה על זה
+ * (cross-fade בפתיח בניית-הסצנה) באותה טרנספורמציית זום/פאן בדיוק. */
+function drawKenBurnsImage(ctx: CanvasRenderingContext2D, src: HTMLCanvasElement, vw: number, vh: number, t: number) {
   const p = easeInOut(t);
   const scale = 1 + (ZOOM_END - 1) * p;
   const sw = src.width / scale;
@@ -68,8 +79,97 @@ function drawKenBurnsFrame(ctx: CanvasRenderingContext2D, src: HTMLCanvasElement
   const dyMax = src.height - sh;
   const sx = dxMax * 0.5 * p;
   const sy = dyMax * 0.35 * p;
-  ctx.clearRect(0, 0, vw, vh);
   ctx.drawImage(src, sx, sy, sw, sh, 0, 0, vw, vh);
+}
+
+/** מצייר פריים בודד: זום איטי מהמרכז + פאן קל, לפי חלקיק זמן t ב-[0,1]. */
+function drawKenBurnsFrame(ctx: CanvasRenderingContext2D, src: HTMLCanvasElement, vw: number, vh: number, t: number) {
+  ctx.clearRect(0, 0, vw, vh);
+  drawKenBurnsImage(ctx, src, vw, vh, t);
+}
+
+/** תיאור-שכבה מינימלי שהעורך מוסר לצורך פתיח בניית-הסצנה — לא TemplateDoc
+ * מלא, כדי שהמודול יישאר בלי תלות בסכמת השכבות המלאה. */
+export interface SceneLayerInfo {
+  id: string;
+  type: "text" | "image" | "shape" | "decoration";
+  z?: number;
+  visible?: boolean;
+  /** LayerRole של שכבות טקסט (opener/title/subtitle/body/field/footer) — קובע את סדר הכניסה. */
+  role?: string;
+  y?: number;
+}
+
+// סדר-כניסה לטיפוגרפיה לפי תפקיד: פתיח לפני כותרת, תחתית אחרונה — כמו שמעצב
+// מניח שכבות מול לקוח. תפקיד לא מוכר משתבץ אחרי התוכן ולפני התחתית.
+const ROLE_ENTRY_ORDER: Record<string, number> = {
+  opener: 0, title: 1, subtitle: 2, body: 3, field: 4, footer: 6,
+};
+
+/**
+ * מחלק את השכבות הנראות לקבוצות-כניסה: [עיטורים+צורות], [תמונות], ואז שכבות
+ * טקסט לפי תפקיד (ROLE_ENTRY_ORDER) ואז מיקום-אנכי — כל אחת שלב משלה, עד
+ * BUILDUP_MAX_TEXT_STEPS שלבים (העודף מתמזג לשלב הטקסט האחרון כדי שפתיח לא
+ * יהפוך למצגת אינסופית במודעות עמוסות). קבוצות ריקות נשמטות.
+ */
+export function buildEntranceGroups(layers: SceneLayerInfo[]): string[][] {
+  const visible = layers.filter((l) => l.visible !== false && l.id);
+  const byZ = (a: SceneLayerInfo, b: SceneLayerInfo) => (a.z ?? 0) - (b.z ?? 0);
+  const scenery = visible.filter((l) => l.type === "shape" || l.type === "decoration").sort(byZ);
+  const images = visible.filter((l) => l.type === "image").sort(byZ);
+  const texts = visible
+    .filter((l) => l.type === "text")
+    .sort((a, b) => {
+      const ra = ROLE_ENTRY_ORDER[a.role ?? ""] ?? 5;
+      const rb = ROLE_ENTRY_ORDER[b.role ?? ""] ?? 5;
+      return ra !== rb ? ra - rb : (a.y ?? 0) - (b.y ?? 0);
+    });
+
+  const groups: string[][] = [];
+  if (scenery.length) groups.push(scenery.map((l) => l.id));
+  if (images.length) groups.push(images.map((l) => l.id));
+  const textSteps = Math.min(texts.length, BUILDUP_MAX_TEXT_STEPS);
+  for (let i = 0; i < textSteps; i++) {
+    groups.push(
+      i === textSteps - 1 ? texts.slice(i).map((l) => l.id) : [texts[i].id],
+    );
+  }
+  return groups;
+}
+
+/**
+ * מצלם את הבמה בשלבי-חשיפה מצטברים: רקע בלבד, ואז כל קבוצת-כניסה נוספת מעל
+ * קודמותיה. מסתיר צמתים לפי id (CanvasStage נותן לכל צומת-שורש את מזהה
+ * השכבה שלו), מצלם, ומשחזר את הנראוּת — הכל סינכרוני בתוך אותה משימת JS,
+ * כך שהעורך על המסך לא מהבהב. צומת שלא אותר (שכבה ישנה בלי id על הצומת)
+ * פשוט נשאר גלוי בכל התמונות — במקרה הגרוע הוא "כבר שם" מהפריים הראשון,
+ * אף פעם לא נעלם מהתוצאה.
+ */
+function captureBuildUpSnapshots(stage: Konva.Stage, groups: string[][], pixelRatio: number): HTMLCanvasElement[] {
+  const allIds = new Set(groups.flat());
+  const nodes = stage.find((n: Konva.Node) => allIds.has(n.id()));
+  if (!nodes.length) return [];
+  const byId = new Map<string, Konva.Node[]>();
+  for (const n of nodes) {
+    const arr = byId.get(n.id()) ?? [];
+    arr.push(n);
+    byId.set(n.id(), arr);
+  }
+  const snapshots: HTMLCanvasElement[] = [];
+  try {
+    nodes.forEach((n) => n.visible(false));
+    snapshots.push(stage.toCanvas({ pixelRatio })); // רקע בלבד
+    for (const group of groups) {
+      for (const id of group) byId.get(id)?.forEach((n) => n.visible(true));
+      snapshots.push(stage.toCanvas({ pixelRatio }));
+    }
+  } finally {
+    // כל הצמתים שהוסתרו רונדרו כנראים (שכבת visible===false לא מרונדרת בכלל
+    // ב-CanvasStage) — שחזור ל-true מחזיר את הבמה בדיוק למצבה.
+    nodes.forEach((n) => n.visible(true));
+    stage.batchDraw();
+  }
+  return snapshots;
 }
 
 interface CaptionSegment {
@@ -288,6 +388,12 @@ export interface PromoVideoOptions {
   musicUrl?: string | null;
   /** עוצמת המוזיקה יחסית לקריינות, 0–1. ברירת מחדל 0.25 (מוזיקה ברקע, לא מתחרה בקריינות). */
   musicVolume?: number;
+  /** תיאורי השכבות של המסמך (id/type/z/role/visible) — נדרש לפתיח בניית-הסצנה.
+   * חסר/ריק = בלי פתיח, Ken Burns על הקומפוזיציה המלאה מהפריים הראשון, כמו קודם. */
+  sceneLayers?: SceneLayerInfo[] | null;
+  /** פתיח בניית-סצנה (רקע → עיטורים → תמונות → טיפוגרפיה). ברירת מחדל: true
+   * כש-sceneLayers קיים. false = ההתנהגות הישנה בדיוק. */
+  sceneBuildUp?: boolean;
   onProgress?: (fraction: number) => void;
 }
 
@@ -313,6 +419,21 @@ export async function exportPromoVideo(
   const sourceCanvas = stage.toCanvas({ pixelRatio: basePixelRatio * videoScale });
   const vw = sourceCanvas.width;
   const vh = sourceCanvas.height;
+
+  // פתיח בניית-סצנה — צילום שלבי-החשיפה חייב לקרות כאן, באותו רגע-במה שבו
+  // צולמה הקומפוזיציה המלאה (לפני כל await), כדי ששני המקורות יהיו זהים
+  // פיקסל-לפיקסל פרט לשכבות הנכנסות. כשל שקט = בלי פתיח, כמו קודם.
+  let buildUpSnapshots: HTMLCanvasElement[] = [];
+  if (opts.sceneBuildUp !== false && opts.sceneLayers?.length) {
+    try {
+      const groups = buildEntranceGroups(opts.sceneLayers);
+      if (groups.length) {
+        buildUpSnapshots = captureBuildUpSnapshots(stage, groups, basePixelRatio * videoScale);
+      }
+    } catch {
+      buildUpSnapshots = []; // אסור שהפתיח יפיל ייצוא שעבד עד היום
+    }
+  }
 
   let audioEl: HTMLAudioElement | null = null;
   let duration = FALLBACK_DURATION_SEC;
@@ -357,8 +478,29 @@ export async function exportPromoVideo(
   const ctx = recordCanvas.getContext("2d");
   if (!ctx) throw new Error("לא ניתן ליצור הקשר ציור לקנבס הוידאו");
 
+  // ציר-זמן הפתיח: כל מעבר (רקע→קבוצה 1→...→קומפוזיציה מלאה) מקבל פרוסה שווה
+  // מתוך אורך הפתיח. ה-Ken Burns רץ ברציפות מ-t=0 על כל מקור שמצויר, כך
+  // שהמעבר מהפתיח להמשך חלק — אותה טרנספורמציה, בלי קפיצה.
+  const buildUpSec = buildUpSnapshots.length >= 2
+    ? Math.min(BUILDUP_MAX_SEC, duration * BUILDUP_MAX_FRACTION)
+    : 0;
+  // מספר המעברים = צילומים-1 (רקע→קבוצה 1→...→הצילום האחרון, שהוא כבר
+  // הקומפוזיציה המלאה); אחרי הפתיח עוברים ל-sourceCanvas — זהה ויזואלית
+  // לצילום האחרון, כך שאין קפיצה.
+  const buildUpStepSec = buildUpSec > 0 ? buildUpSec / (buildUpSnapshots.length - 1) : 0;
+
   function renderFrame(elapsedSec: number, t: number) {
-    drawKenBurnsFrame(ctx!, sourceCanvas, vw, vh, t);
+    if (buildUpSec > 0 && elapsedSec < buildUpSec) {
+      const step = Math.min(buildUpSnapshots.length - 2, Math.floor(elapsedSec / buildUpStepSec));
+      const p = easeInOut(Math.min(1, (elapsedSec - step * buildUpStepSec) / buildUpStepSec));
+      drawKenBurnsFrame(ctx!, buildUpSnapshots[step], vw, vh, t);
+      ctx!.save();
+      ctx!.globalAlpha = p;
+      drawKenBurnsImage(ctx!, buildUpSnapshots[step + 1], vw, vh, t);
+      ctx!.restore();
+    } else {
+      drawKenBurnsFrame(ctx!, sourceCanvas, vw, vh, t);
+    }
     if (captionSegments.length) {
       const text = activeCaption(captionSegments, elapsedSec);
       const textEn = captionSegmentsEn.length ? activeCaption(captionSegmentsEn, elapsedSec) : null;
