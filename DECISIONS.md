@@ -11430,3 +11430,58 @@
       10-bkalot-rights/12-smel-ndln — רוב האזכורים שם הם תיעוד דריפט DB,
       לא סריקת קוד UI לעומק), או `04-imud-torani` מעבר ל-`server/seed.ts`
       שכבר נקרא (עדיין לא נסרק דפוס double-submit/error-handling לעומק).
+
+## 20/08/2026 — סבב 226 (loop A) — `06-kupot-holim/site/leads-store.js`: כשל רשת ב-updateStatus/deleteLead נבלע בשקט
+
+1100. **בדקתי מחדש לפני שהתחלתי:** `core.run_progress` (סבב 225 האחרון,
+      commit `a0078cd5`/`41893182`, תואם ל-HEAD). המלצת 1099 הצביעה על
+      שלוש מערכות עם מעט ביקורים: 06-kupot-holim, 10-bkalot-rights,
+      12-smel-ndln. דיספצ'תי סוכני Explore על שלושתן.
+1101. **שני ממצאים נדחו לאחר אימות ישיר בקוד:** (א) `10-bkalot-rights/
+      app.js:446-449` — `applyHeroStats()` מדלג על עדכון `data-count` כש-
+      `n === 0`. נראה כמו "gate hides zero", אבל `core.issues #141`
+      (status: fixed) מתעד את זה כהחלטת עיצוב מפורשת שכבר טופלה ב-
+      08/10/2026 (commit `aeb8f1e`): `data-count` הוא גיבוי מכוון לטעינה
+      שנכשלה, לא איפוס — יש הערה בקוד עצמו (שורות 431-435) שמצטטת את
+      המספר. לא באג. (ב) `12-smel-ndln/client/src/lib/research.ts:127-150`
+      — סוכן Explore טען ש-`if (transit && Number(transit.value) <= 500)`
+      מדלג על מרחק 0. קריאה ישירה מראה שזה שגוי: `transit` הוא בדיקת-
+      קיום לאובייקט הפרמטר (לא לערך המספרי), וה-`<=500` היא השוואה
+      שמחזירה בוליאני תקין גם כש-`Number(...)===0` (0<=500 הוא true).
+      אין באג — false positive של הסוכן.
+1102. **הממצא שאומת ישירות בקוד:** `06-kupot-holim/site/leads-store.js`.
+      `updateStatus()` (שורות 111-115) ו-`deleteLead()` (שורות 125-128)
+      מבצעים `fetch(...).then(function(r){ return {ok:r.ok}; })` בלי
+      `.catch()`. כשל HTTP (401/403/5xx) מטופל תקין דרך `r.ok` — זה כבר
+      תוקן בסבב 212. אבל כשל ברמת הרשת עצמה (offline/DNS/CORS — ה-
+      `fetch()` נדחה במקום להסתיים) גורם ל-Promise שנדחה בלי שום `.catch`
+      בשרשרת. `admin.js` (הקורא היחיד, שורות 206-237) גם הוא בלי `.catch`
+      על הקריאה: `b.disabled=true` מופעל *לפני* הקריאה (שורה 209/226),
+      ורק `.then(function(res){ if(!res||!res.ok){ b.disabled=false;
+      alert(...); } ... })` מטפל בתוצאה. תרחיש כשל אמיתי: אדמין לוחץ
+      "סמן כטופל" או "מחק" בזמן שהרשת נופלת (WiFi מתנתק, VPN קורס) —
+      הכפתור ננעל ל-`disabled=true` לצמיתות, בלי שום הודעת שגיאה, כי
+      ה-`.then()` שמכיל את `b.disabled=false` ואת ה-`alert` אף פעם לא
+      רץ. `insertLead()` (שורות 55-69) כבר מכיל `.catch()` לאותו סוג כשל
+      (נופל ל-localStorage) — הדפוס קיים בקובץ אבל לא יושם עקבי בשני
+      המטפלים האחרים.
+1103. **התיקון:** נוסף `.catch(function () { return { ok: false }; })`
+      בסוף שרשרת ה-`fetch` בשני המטפלים, אחרי ה-`.then` הקיים. זה מפנה
+      כשל-רשת לאותו נתיב שכבר קיים לכשל-HTTP (`{ok:false}` → הכפתור
+      משתחרר וההודעה "עדכון הסטטוס נכשל"/"מחיקת הפנייה נכשלה" מוצגת) —
+      אותה תוצאה בדיוק, בלי לוגיקה חדשה ב-`admin.js`. לא נגעתי ב-
+      `insertLead`/`listLeads` (כבר תקינים) או בשום מטפל אחר.
+1104. **אפס רגרסיה מאומתת:** `git diff --stat`: קובץ אחד, +2/-2.
+      `node --check apps/06-kupot-holim/site/leads-store.js` — תחביר
+      תקין. לא נגעתי במערכות/סכימות מוגנות (08/09/bkalut-app/bkalot-
+      admin/zr_*/NEDARIM3873/csj/csj_src/igud), ב-`main`, או במערכת
+      מחוץ להיקף (06 בטווח 01-16). `git add -f` נדרש (אותה אזהרת
+      `.gitignore` כוזבת על `apps/**` שתועדה בסבבים קודמים). Commit
+      `6820e916` על `fix/a-icon-only-buttons-round2-0820`, נדחף ל-
+      `origin` (מפעיל פריסת Vercel תחת `more30.com/briut`).
+1105. **הבא בתור:** `06-kupot-holim` נסרק כעת לעומק בכל שלושת הקבצים
+      (`app.js`/`admin.js`/`leads-store.js`) — לא מומלץ עוד סבב ייעודי
+      שם בלי שינוי קוד חדש. נותרו: `10-bkalot-rights` (נסרק ללא ממצא
+      חדש בסבב הזה), `12-smel-ndln` (`research.ts` נסרק ללא ממצא, אבל
+      `server/routes.ts`/`server/storage.ts`/`shared/schema.ts` עוד לא
+      נסרקו), או `04-imud-torani` מעבר ל-`server/seed.ts` שכבר נקרא.
