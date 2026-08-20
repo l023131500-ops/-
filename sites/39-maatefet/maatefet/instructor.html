@@ -196,6 +196,7 @@ th{color:var(--muted);font-weight:400;font-size:12px;text-transform:uppercase;le
       <button class="tab" data-view="calendar">יומן</button>
       <button class="tab" data-view="reminders">תזכורות</button>
       <button class="tab" data-view="content">ספריית תוכן</button>
+      <button class="tab" data-view="forum">פורום מקצועי</button>
     </div>
 
     <section id="viewClients">
@@ -310,6 +311,39 @@ th{color:var(--muted);font-weight:400;font-size:12px;text-transform:uppercase;le
       <div class="card">
         <h2>הפריטים שלי</h2>
         <div id="contentTable"><div class="empty">טוען…</div></div>
+      </div>
+    </section>
+
+    <section id="viewForum" hidden>
+      <p class="sub">מרחב שיח בין כל המדריכים/ות המאומתים/ות במעטפת — גם מגזר הכלות וגם מגזר החתנים. לשאלות/ייעוץ מקצועי בין קולגות, לא לפרטי זוגות.</p>
+      <div class="card">
+        <h2>פוסט חדש</h2>
+        <label for="fTitle">כותרת *</label>
+        <input id="fTitle" />
+        <label for="fBody">תוכן *</label>
+        <textarea id="fBody"></textarea>
+        <div id="fErr"></div>
+        <button class="btn" id="fSubmit">פרסום</button>
+      </div>
+      <div class="card">
+        <h2>כל הפוסטים</h2>
+        <div id="forumList"><div class="empty">טוען…</div></div>
+      </div>
+      <div class="card" id="forumThreadCard" hidden>
+        <h2 id="forumThreadTitle"></h2>
+        <p class="sub" id="forumThreadMeta"></p>
+        <p id="forumThreadBody"></p>
+        <div style="margin:10px 0">
+          <button class="btn btn-sm btn-quiet" id="forumPinToggle"></button>
+          <button class="btn btn-sm btn-danger" id="forumDeletePost">מחיקת הפוסט</button>
+        </div>
+        <h2 style="margin-top:20px">תגובות</h2>
+        <div id="forumReplies"><div class="empty">אין עדיין תגובות.</div></div>
+        <label for="fReplyBody" style="margin-top:14px">תגובה חדשה</label>
+        <textarea id="fReplyBody"></textarea>
+        <div id="fReplyErr"></div>
+        <button class="btn btn-sm" id="fReplySubmit">שליחת תגובה</button>
+        <div style="margin-top:14px"><button class="btn btn-sm btn-quiet" id="forumThreadClose">סגירה</button></div>
       </div>
     </section>
   </div>
@@ -707,8 +741,117 @@ async function renderContent() {
     '</tbody></table>';
 }
 
+/* ── dashboard: professional forum (module 7) ────────────────────────────── */
+$('fSubmit').addEventListener('click', async () => {
+  const title = $('fTitle').value.trim();
+  const body = $('fBody').value.trim();
+  if (!title) { $('fErr').innerHTML = '<div class="err">כותרת היא שדה חובה.</div>'; return; }
+  if (!body) { $('fErr').innerHTML = '<div class="err">תוכן הוא שדה חובה.</div>'; return; }
+  $('fSubmit').disabled = true;
+  try {
+    await rpc('maatefet_forum_post_create', { p_title: title, p_body: body });
+    $('fTitle').value = ''; $('fBody').value = '';
+    $('fErr').innerHTML = '';
+    renderForum();
+  } catch (e) {
+    $('fErr').innerHTML = '<div class="err">' + esc(e.message) + '</div>';
+  } finally {
+    $('fSubmit').disabled = false;
+  }
+});
+
+function forumPostRow(p) {
+  return '<tr data-post="' + p.id + '">' +
+    '<td>' + (p.is_pinned ? '📌 ' : '') + v(p.title) + '</td>' +
+    '<td>' + v(p.author_name) + ' · ' + (SEGMENT_LABEL[p.author_segment] || p.author_segment) + '</td>' +
+    '<td>' + p.reply_count + '</td>' +
+    '<td>' + dtm(p.created_at) + '</td>' +
+    '<td><button class="btn btn-sm btn-quiet" data-open-post="' + p.id + '">פתיחה</button></td>' +
+    '</tr>';
+}
+
+async function renderForum() {
+  const el = $('forumList');
+  el.innerHTML = '<div class="empty">טוען…</div>';
+  let rows;
+  try {
+    rows = await rpc('maatefet_forum_posts_list');
+  } catch (e) {
+    el.innerHTML = '<div class="err">' + esc(e.message) + '</div>';
+    return;
+  }
+  if (!rows.length) { el.innerHTML = '<div class="empty">עדיין אין פוסטים בפורום. היו הראשונים/ות לפתוח שיח.</div>'; return; }
+  el.innerHTML = '<table><thead><tr><th>כותרת</th><th>מאת</th><th>תגובות</th><th>נוצר</th><th></th></tr></thead><tbody>' +
+    rows.map(forumPostRow).join('') + '</tbody></table>';
+  for (const b of el.querySelectorAll('[data-open-post]')) b.addEventListener('click', () => openForumThread(b.dataset.openPost));
+}
+
+async function openForumThread(postId) {
+  $('forumThreadCard').hidden = false;
+  $('forumThreadCard').scrollIntoView({ behavior: 'smooth', block: 'center' });
+  $('forumThreadTitle').textContent = 'טוען…';
+  $('forumThreadBody').textContent = '';
+  $('forumReplies').innerHTML = '<div class="empty">טוען…</div>';
+  let data;
+  try {
+    data = await rpc('maatefet_forum_thread', { p_post_id: postId });
+  } catch (e) {
+    $('forumThreadTitle').textContent = '';
+    $('forumReplies').innerHTML = '<div class="err">' + esc(e.message) + '</div>';
+    return;
+  }
+  const p = data.post;
+  $('forumThreadTitle').textContent = (p.is_pinned ? '📌 ' : '') + p.title;
+  $('forumThreadMeta').textContent = p.author_name + ' · ' + (SEGMENT_LABEL[p.author_segment] || p.author_segment) + ' · ' + new Date(p.created_at).toLocaleString('he-IL', { dateStyle: 'short', timeStyle: 'short' });
+  $('forumThreadBody').textContent = p.body;
+  $('forumPinToggle').textContent = p.is_pinned ? 'ביטול נעיצה' : 'נעיצה (סופר-אדמין בלבד)';
+  $('forumPinToggle').onclick = async () => {
+    try {
+      await rpc('maatefet_forum_post_pin', { p_id: p.id, p_pinned: !p.is_pinned });
+      openForumThread(p.id);
+      renderForum();
+    } catch (e) { alert(e.message); }
+  };
+  $('forumDeletePost').onclick = async () => {
+    if (!confirm('למחוק את הפוסט וכל התגובות עליו?')) return;
+    try {
+      await rpc('maatefet_forum_post_delete', { p_id: p.id });
+      $('forumThreadCard').hidden = true;
+      renderForum();
+    } catch (e) { alert(e.message); }
+  };
+
+  const replies = data.replies || [];
+  $('forumReplies').innerHTML = replies.length
+    ? replies.map((r) => (
+        '<div style="border-bottom:1px solid var(--line-2);padding:10px 0">' +
+        '<div class="sub" style="margin-bottom:4px">' + esc(r.author_name) + ' · ' + (SEGMENT_LABEL[r.author_segment] || r.author_segment) + ' · ' + new Date(r.created_at).toLocaleString('he-IL', { dateStyle: 'short', timeStyle: 'short' }) + '</div>' +
+        '<div>' + esc(r.body) + '</div>' +
+        '</div>'
+      )).join('')
+    : '<div class="empty">אין עדיין תגובות.</div>';
+
+  $('fReplySubmit').onclick = async () => {
+    const body = $('fReplyBody').value.trim();
+    if (!body) { $('fReplyErr').innerHTML = '<div class="err">יש להזין תוכן לתגובה.</div>'; return; }
+    $('fReplySubmit').disabled = true;
+    try {
+      await rpc('maatefet_forum_reply_create', { p_post_id: p.id, p_body: body });
+      $('fReplyBody').value = ''; $('fReplyErr').innerHTML = '';
+      openForumThread(p.id);
+      renderForum();
+    } catch (e) {
+      $('fReplyErr').innerHTML = '<div class="err">' + esc(e.message) + '</div>';
+    } finally {
+      $('fReplySubmit').disabled = false;
+    }
+  };
+}
+
+$('forumThreadClose').addEventListener('click', () => { $('forumThreadCard').hidden = true; });
+
 /* ── tabs ───────────────────────────────────────────────────────────────── */
-const VIEWS = { clients: 'viewClients', invites: 'viewInvites', calendar: 'viewCalendar', reminders: 'viewReminders', content: 'viewContent' };
+const VIEWS = { clients: 'viewClients', invites: 'viewInvites', calendar: 'viewCalendar', reminders: 'viewReminders', content: 'viewContent', forum: 'viewForum' };
 for (const tab of document.querySelectorAll('.tab')) {
   tab.addEventListener('click', () => {
     for (const t of document.querySelectorAll('.tab')) t.classList.toggle('active', t === tab);
@@ -717,6 +860,7 @@ for (const tab of document.querySelectorAll('.tab')) {
     if (tab.dataset.view === 'calendar') renderAppointments();
     if (tab.dataset.view === 'reminders') renderReminders();
     if (tab.dataset.view === 'content') renderContent();
+    if (tab.dataset.view === 'forum') renderForum();
   });
 }
 
