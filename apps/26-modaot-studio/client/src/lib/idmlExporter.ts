@@ -7,6 +7,7 @@
 // מגבלה מתועדת כמו עיטורים במתאם Figma (#10): לעיצוב-מחדש ידני בInDesign.
 // אין ספריית zip בפרויקט (jszip וכו') — נכתב zip תקני (method 0=store) ביד.
 import type { TemplateDoc, AnyLayer, TextLayer } from "@shared/layers";
+import { baseTextDirection } from "./exporter";
 
 // ---- ZIP (stored, ללא דחיסה) ----
 
@@ -227,9 +228,13 @@ export function buildIDML(doc: TemplateDoc): Uint8Array {
     const fillRef = colorRef(t.fill);
     const lines = (t.text || "").split("\n");
     const content = lines.map((line) => `<Content>${xesc(line)}</Content>`).join("<Br/>");
+    // כמו stageToSVG (exporter.ts): כיוון-בסיס לפי התו החזק הראשון בתוכן, לא
+    // rtl קבוע — שכבת טקסט באנגלית בלבד (קריאה-לפעולה/שם-מותג/טלפון) חייבת
+    // StoryDirection="LeftToRightDirection" כדי לא להתהפך ב-InDesign.
+    const storyDirection = baseTextDirection(t.text || "") === "ltr" ? "LeftToRightDirection" : "RightToLeftDirection";
     stories.push({
       id: storyId,
-      xml: `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<idPkg:Story xmlns:idPkg="http://ns.adobe.com/AdobeInDesign/idml/1.0/packaging" DOMVersion="16.0">\n<Story Self="${storyId}" TrackChanges="false">\n<StoryPreference StoryOrientation="Horizontal" StoryDirection="RightToLeftDirection"/>\n<ParagraphStyleRange AppliedParagraphStyle="ParagraphStyle/$ID/NormalParagraphStyle" Justification="${justification}" Leading="${leading}">\n<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/$ID/[No character style]" PointSize="${t.fontSize}" AppliedFont="${xesc(t.fontFamily)}" FontStyle="${xesc(fontStyleName)}" FillColor="${fillRef}" Tracking="${tracking}">\n${content}\n</CharacterStyleRange>\n</ParagraphStyleRange>\n</Story>\n</idPkg:Story>`,
+      xml: `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<idPkg:Story xmlns:idPkg="http://ns.adobe.com/AdobeInDesign/idml/1.0/packaging" DOMVersion="16.0">\n<Story Self="${storyId}" TrackChanges="false">\n<StoryPreference StoryOrientation="Horizontal" StoryDirection="${storyDirection}"/>\n<ParagraphStyleRange AppliedParagraphStyle="ParagraphStyle/$ID/NormalParagraphStyle" Justification="${justification}" Leading="${leading}">\n<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/$ID/[No character style]" PointSize="${t.fontSize}" AppliedFont="${xesc(t.fontFamily)}" FontStyle="${xesc(fontStyleName)}" FillColor="${fillRef}" Tracking="${tracking}">\n${content}\n</CharacterStyleRange>\n</ParagraphStyleRange>\n</Story>\n</idPkg:Story>`,
     });
     const vAlign = t.verticalAlign === "middle" ? "CenterAlign" : t.verticalAlign === "bottom" ? "BottomAlign" : "TopAlign";
     const fh = t.height ?? t.fontSize * lines.length * (t.lineHeight ?? 1.15);

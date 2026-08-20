@@ -69,7 +69,7 @@ function cssBlendMode(blend: string): string | null {
 // מפורש כי אין ברירת מחדל שקולה בפורמט SVG, ולכן צריך להתאים אותו לתוכן
 // בפועל כדי לא לסתור את מה שהמשתמש רואה ומעצב בפועל (למשל שכבת קריאה-לפעולה
 // באנגלית בלבד, מחיר, טלפון, כתובת אתר — נפוצים במודעות).
-function baseTextDirection(text: string): "rtl" | "ltr" {
+export function baseTextDirection(text: string): "rtl" | "ltr" {
   for (const ch of text) {
     if (/[֐-׿]/.test(ch)) return "rtl";
     if (/[A-Za-z]/.test(ch)) return "ltr";
