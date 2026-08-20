@@ -1326,7 +1326,7 @@ const KnowledgeManager = () => {
               <div className="space-y-2">
                 {catItems.map(item => (
                   <div key={item.id} className="flex items-center gap-3 bg-muted/50 rounded-lg p-3">
-                    {item.image_url && <img src={item.image_url} alt="" className="w-12 h-12 rounded-lg object-cover shrink-0" />}
+                    {item.image_url && <img src={item.image_url} alt={item.title} className="w-12 h-12 rounded-lg object-cover shrink-0" />}
                     <div className="flex-1 min-w-0">
                       <div className="font-bold text-foreground text-sm truncate">{item.title}</div>
                       <div className="text-xs text-muted-foreground truncate">

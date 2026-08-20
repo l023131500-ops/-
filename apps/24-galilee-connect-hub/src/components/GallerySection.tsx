@@ -113,7 +113,7 @@ const GallerySection = ({ isAdmin = false }: { isAdmin?: boolean }) => {
             <button onClick={() => setLightbox(null)} className="absolute top-4 left-4 w-10 h-10 rounded-full bg-card/20 text-primary-foreground flex items-center justify-center">
               <X className="w-6 h-6" />
             </button>
-            <img src={lightbox} alt="" className="max-w-full max-h-[90vh] rounded-2xl shadow-2xl" />
+            <img src={lightbox} alt={images.find(im => im.image_url === lightbox)?.caption || 'תמונה מוגדלת'} className="max-w-full max-h-[90vh] rounded-2xl shadow-2xl" />
           </motion.div>
         )}
       </div>
