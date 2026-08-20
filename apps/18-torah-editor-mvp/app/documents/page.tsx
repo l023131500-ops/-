@@ -258,9 +258,9 @@ export default function DocumentsPage() {
           <p>
             המסמכים שלכם שמורים לחשבון האישי. אחרי ההתחברות תחזרו לכאן והם ייטענו.
           </p>
-          <a className="action" href="/login?from=/orech/documents">
+          <Link className="action" href="/login?from=/orech/documents">
             כניסה לחשבון
-          </a>
+          </Link>
         </div>
       ) : (
         <>
