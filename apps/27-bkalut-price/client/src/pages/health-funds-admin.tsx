@@ -120,7 +120,7 @@ export default function HealthFundsAdmin() {
   const [podcastBusy, setPodcastBusy] = useState<"" | "script" | "save" | "audio" | "delete" | "send">("");
 
   const publicUrl = `${getPublicOrigin()}/#/health-funds`;
-  const adminUrl = `${typeof window !== "undefined" ? window.location.origin : ""}/#/health-funds-admin`;
+  const adminUrl = `${getPublicOrigin()}/#/health-funds-admin`;
 
   async function loadTopics() {
     const requestedKind = kindFilter;

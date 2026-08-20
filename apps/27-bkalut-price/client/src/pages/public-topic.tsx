@@ -7,6 +7,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/logo";
 import { JsonLd } from "@/components/json-ld";
+import { getPublicOrigin } from "@/lib/utils";
 import {
   ArrowRight,
   ChevronDown,
@@ -51,7 +52,7 @@ export default function PublicTopic() {
   const [copiedText, setCopiedText] = useState(false);
   const [showMore, setShowMore] = useState(false);
 
-  const publicUrl = typeof window !== "undefined" ? `${window.location.origin}/#/p/topic/${id}` : "";
+  const publicUrl = typeof window !== "undefined" ? `${getPublicOrigin()}/#/p/topic/${id}` : "";
   // Derived from the live address bar (not window.location.origin, which
   // never carries a path-mount prefix) so the crumb URLs stay correct
   // regardless of how this deployment is mounted.

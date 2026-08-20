@@ -13,6 +13,7 @@ import { Logo } from "@/components/logo";
 import { HealthBrand } from "@/components/health-brand";
 import { useToast } from "@/hooks/use-toast";
 import { API_BASE, apiRequest } from "@/lib/queryClient";
+import { getPublicOrigin } from "@/lib/utils";
 import {
   Search, Tag, ArrowRight, Share2, X, ChevronDown,
   HeartPulse, Users, Award, ChevronLeft, Stethoscope, Landmark, HandHeart, Wallet,
@@ -207,7 +208,7 @@ export default function PublicHealthFunds() {
 
   function shareLink() {
     const p = buildParams(filters);
-    const url = `${window.location.origin}/#/health-funds${p.toString() ? `?${p.toString()}` : ""}`;
+    const url = `${getPublicOrigin()}/#/health-funds${p.toString() ? `?${p.toString()}` : ""}`;
     if (navigator.share) {
       navigator.share({ title: meta?.title || "השוואת קופות חולים", url }).catch(() => {});
     } else {

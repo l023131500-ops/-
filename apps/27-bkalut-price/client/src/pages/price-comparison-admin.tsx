@@ -100,7 +100,7 @@ export default function PriceComparisonAdmin() {
   const [creatingVol, setCreatingVol] = useState(false);
 
   const publicUrl = `${getPublicOrigin()}/#/price-comparison`;
-  const adminUrl = `${typeof window !== "undefined" ? window.location.origin : ""}/#/price-comparison-admin`;
+  const adminUrl = `${getPublicOrigin()}/#/price-comparison-admin`;
 
   async function loadAll() {
     try {

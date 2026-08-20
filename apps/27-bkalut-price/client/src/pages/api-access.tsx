@@ -5,6 +5,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/hooks/use-toast";
+import { getPublicOrigin } from "@/lib/utils";
 import { Key, Copy, RefreshCcw, ShieldCheck, ShieldOff, ExternalLink, Trash2 } from "lucide-react";
 
 interface ApiSettings {
@@ -67,7 +68,7 @@ export default function ApiAccessPage() {
     }
   }
 
-  const exampleUrl = typeof window !== "undefined" ? `${window.location.origin}/api/external` : "/api/external";
+  const exampleUrl = typeof window !== "undefined" ? `${getPublicOrigin()}/api/external` : "/api/external";
   const curl = revealedToken
     ? `curl -H "Authorization: Bearer ${revealedToken}" ${exampleUrl}/health`
     : `curl -H "Authorization: Bearer <TOKEN>" ${exampleUrl}/health`;

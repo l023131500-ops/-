@@ -7,6 +7,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Logo } from "@/components/logo";
 import { useToast } from "@/hooks/use-toast";
 import { API_BASE } from "@/lib/queryClient";
+import { getPublicOrigin } from "@/lib/utils";
 import { Search, Tag, Store, ArrowRight, FileDown, Share2, Sparkles, SlidersHorizontal, X, Send, ShoppingCart, Plus, Trash2, ScanBarcode } from "lucide-react";
 import { BarcodeScannerDialog, isBarcodeScanSupported } from "@/components/barcode-scanner-dialog";
 
@@ -308,7 +309,7 @@ export default function PublicPriceComparison() {
 
   function shareLink() {
     const p = buildParams(filters);
-    const url = `${window.location.origin}/#/price-comparison${p.toString() ? `?${p.toString()}` : ""}`;
+    const url = `${getPublicOrigin()}/#/price-comparison${p.toString() ? `?${p.toString()}` : ""}`;
     if (navigator.share) {
       navigator.share({ title: settings?.title || "השוואת מחירים", url }).catch(() => {});
     } else {
