@@ -164,7 +164,7 @@ export default function Wizard() {
   return (
     <div className="min-h-screen bg-background" dir="rtl">
       <SiteHeader />
-      <div className="mx-auto max-w-5xl px-5 py-10">
+      <main id="main" className="mx-auto max-w-5xl px-5 py-10">
         <div className="mb-2 flex items-center gap-2">
           <Wand2 className="h-6 w-6 text-primary" />
           <h1 className="font-serif text-xl font-bold text-foreground">אשף עימוד חכם</h1>
@@ -299,7 +299,7 @@ export default function Wizard() {
             )}
           </div>
         </div>
-      </div>
+      </main>
     </div>
   );
 }

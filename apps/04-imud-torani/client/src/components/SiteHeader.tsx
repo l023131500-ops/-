@@ -36,7 +36,14 @@ export function Logo({ size = 34 }: { size?: number }) {
 export function SiteHeader() {
   const { theme, toggle } = useTheme();
   return (
-    <header className="sticky top-0 z-40 border-b border-border bg-background/85 backdrop-blur">
+    <>
+      <a
+        href="#main"
+        className="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:right-2 focus:z-50 focus:rounded-md focus:bg-primary focus:px-4 focus:py-2 focus:text-primary-foreground"
+      >
+        דלג לתוכן
+      </a>
+      <header className="sticky top-0 z-40 border-b border-border bg-background/85 backdrop-blur">
       {/* כפתור הכניסה המשותף של more30 יושב `fixed` בפינה השמאלית העליונה
           (הקצה האינליין-סופי ב-RTL) — בדיוק על "שאלון חכם", הפעולה הראשית
           של הסרגל. נמדד ב-390px שהלחיצה מגיעה לכדור ולא לקישור.
@@ -95,6 +102,7 @@ export function SiteHeader() {
           </button>
         </nav>
       </div>
-    </header>
+      </header>
+    </>
   );
 }

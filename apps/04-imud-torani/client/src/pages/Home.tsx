@@ -33,7 +33,7 @@ export default function Home() {
     <div className="min-h-screen bg-background">
       <SiteHeader />
 
-      <main>
+      <main id="main">
       {/* Hero */}
       <section className="border-b border-border bg-gradient-to-b from-accent/40 to-transparent">
         <div className="mx-auto max-w-6xl px-5 py-16 text-center">

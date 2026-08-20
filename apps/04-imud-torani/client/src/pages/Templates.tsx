@@ -73,7 +73,7 @@ export default function Templates() {
   return (
     <div className="min-h-screen bg-background">
       <SiteHeader />
-      <div className="mx-auto max-w-6xl px-5 py-10">
+      <main id="main" className="mx-auto max-w-6xl px-5 py-10">
         <h1 className="font-serif text-xl font-bold text-foreground">בחר תבנית עימוד</h1>
         <p className="mt-1 text-muted-foreground">
           כל תבנית מגדירה את מבנה העמוד, הגופן והשכבות. ניתן לשנות כל הגדרה בהמשך.
@@ -111,7 +111,7 @@ export default function Templates() {
               </div>
             </section>
           ))}
-      </div>
+      </main>
 
       {/* בחירת שם + יצירה */}
       {selected && (
