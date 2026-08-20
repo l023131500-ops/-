@@ -669,7 +669,7 @@ const AdminRightsReference = () => {
                     ) : key === "service_link" ? (
                       <Input value={editRight[key] || ""} onChange={(e) => setEditRight({ ...editRight, [key]: e.target.value })} className="text-sm" dir="ltr" />
                     ) : (
-                      <Textarea value={String(editRight[key] || "")} onChange={(e) => setEditRight({ ...editRight, [key]: e.target.value })} className="text-sm" rows={2} />
+                      <Textarea value={String(editRight[key] || "")} onChange={(e) => setEditRight({ ...editRight, [key]: e.target.value })} aria-label={label} className="text-sm" rows={2} />
                     )}
                   </div>
                 ))}
@@ -709,7 +709,7 @@ const AdminRightsReference = () => {
                 ) : key === "service_link" ? (
                   <Input placeholder={label} value={newRight[key]} onChange={(e) => setNewRight({ ...newRight, [key]: e.target.value })} className="text-sm" dir="ltr" />
                 ) : (
-                  <Textarea placeholder={label} value={newRight[key]} onChange={(e) => setNewRight({ ...newRight, [key]: e.target.value })} className="text-sm" rows={2} />
+                  <Textarea placeholder={label} value={newRight[key]} onChange={(e) => setNewRight({ ...newRight, [key]: e.target.value })} aria-label={label} className="text-sm" rows={2} />
                 )}
               </div>
             ))}

@@ -636,6 +636,7 @@ const FloatingBot = () => {
                               <button
                                 type="button"
                                 onClick={() => setCompAnswers({ ...compAnswers, [field.key]: "כן" })}
+                                aria-pressed={compAnswers[field.key] === "כן"}
                                 className={`flex-1 py-2 rounded-lg text-sm font-bold transition-all ${
                                   compAnswers[field.key] === "כן"
                                     ? "bg-primary text-primary-foreground shadow-sm"
@@ -647,6 +648,7 @@ const FloatingBot = () => {
                               <button
                                 type="button"
                                 onClick={() => setCompAnswers({ ...compAnswers, [field.key]: "לא" })}
+                                aria-pressed={compAnswers[field.key] === "לא"}
                                 className={`flex-1 py-2 rounded-lg text-sm font-bold transition-all ${
                                   compAnswers[field.key] === "לא"
                                     ? "bg-destructive/80 text-white shadow-sm"
@@ -789,6 +791,7 @@ const FloatingBot = () => {
                               <button
                                 type="button"
                                 onClick={() => setTopicAnswers({ ...topicAnswers, [`q${i}`]: true })}
+                                aria-pressed={answer === true}
                                 className={`px-3 py-1 rounded-lg text-xs font-bold transition-all ${
                                   answer === true
                                     ? "bg-primary text-primary-foreground"
@@ -798,6 +801,7 @@ const FloatingBot = () => {
                               <button
                                 type="button"
                                 onClick={() => setTopicAnswers({ ...topicAnswers, [`q${i}`]: false })}
+                                aria-pressed={answer === false}
                                 className={`px-3 py-1 rounded-lg text-xs font-bold transition-all ${
                                   answer === false
                                     ? "bg-destructive/80 text-white"
@@ -1049,6 +1053,7 @@ const ContactForm = ({
       placeholder="רוצים להוסיף משהו? (לא חובה)"
       value={contactForm.details}
       onChange={(e) => setContactForm({ ...contactForm, details: e.target.value })}
+      aria-label="פרטים נוספים"
       className="text-sm min-h-[60px]"
     />
     {onDocsChange && <FileUpload onFilesUploaded={onDocsChange} maxFiles={3} />}

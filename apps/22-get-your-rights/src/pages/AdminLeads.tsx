@@ -274,6 +274,7 @@ const AdminLeads = () => {
         <div className="flex gap-3 flex-wrap">
           {Object.entries(statusConfig).map(([key, cfg]) => (
             <button key={key} onClick={() => setStatusFilter(statusFilter === key ? "all" : key)}
+              aria-pressed={statusFilter === key}
               className={`flex items-center gap-2 px-4 py-2 rounded-lg border text-sm font-medium transition-all ${
                 statusFilter === key ? `${cfg.bg} ${cfg.border} ring-2 ring-offset-1` : "bg-card border-border hover:bg-muted/50"
               }`}>
@@ -471,7 +472,7 @@ const AdminLeads = () => {
                   </div>
                   <div className="space-y-2">
                     <label className="text-xs text-muted-foreground font-medium">תיאור הטיפול (חובה לסימון "טופל"):</label>
-                    <Textarea value={handledDesc} onChange={(e) => setHandledDesc(e.target.value)} placeholder="תאר איך הליד טופל..." className="text-sm min-h-[60px]" />
+                    <Textarea value={handledDesc} onChange={(e) => setHandledDesc(e.target.value)} placeholder="תאר איך הליד טופל..." aria-label="תיאור הטיפול" className="text-sm min-h-[60px]" />
                     {selectedLead.handled_description && selectedLead.status === "handled" && (
                       <div className="text-xs bg-green-50 border border-green-200 rounded p-2">
                         <span className="font-bold">✅ תיאור טיפול שמור: </span>{selectedLead.handled_description}
@@ -483,7 +484,7 @@ const AdminLeads = () => {
                 {/* Admin notes */}
                 <div className="border-t border-border pt-3">
                   <p className="text-xs font-bold text-foreground mb-2">✏️ הערות מנהל:</p>
-                  <Textarea value={editNotes} onChange={(e) => setEditNotes(e.target.value)} placeholder="הוסף הערות..." className="text-sm min-h-[80px]" />
+                  <Textarea value={editNotes} onChange={(e) => setEditNotes(e.target.value)} placeholder="הוסף הערות..." aria-label="הערות מנהל" className="text-sm min-h-[80px]" />
                   <Button onClick={handleSaveNotes} disabled={savingNotes} size="sm" className="mt-2 gap-2">
                     <Save className="w-3.5 h-3.5" />{savingNotes ? "שומר..." : "שמור הערות"}
                   </Button>
