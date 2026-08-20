@@ -329,7 +329,7 @@ export default function CreatePage() {
                 {/* Required fields */}
                 {(selectedTemplate.required_fields || []).length > 0 && (
                   <div className="space-y-4">
-                    <h3 className="font-medium text-sm text-gray-700">שדות חובה</h3>
+                    <h2 className="font-medium text-sm text-gray-700">שדות חובה</h2>
                     {(selectedTemplate.required_fields || []).map((field) => (
                       <div key={field}>
                         <label className="label" htmlFor={`create-field-${field}`}>
