@@ -3484,3 +3484,81 @@
      רק "כבוי/דלוק") על הטבלאות שכל אחת מ-01/02/03/04/06/12/15/16 כותבת
      אליהן ישירות מהלקוח (anon key) — לא נבדק שיטתית עד כה בלופ הזה, להבדיל
      מ-#245 שהוא ספציפית 15 טבלאות ב-csj (משותף עם Loop B, כבר תועד וחסום).
+
+## 20/08/2026 (LOOP A — סבב 50) — `apps/{01,03,15}/app.json` הצביעו על ה-Supabase project הלא-נכון — תוקן; מיפוי חדש של סכימות ה-hub שנחשפו
+
+292. **בדקתי מחדש `core.run_progress`/`core.issues` לפני שהתחלתי.** סבב 49
+     סגור (commit `121faf9b`), הציע שני כיוונים לא-נוסים: (1) לבדוק אם
+     15-egod נגיש כעת ב-MCP, (2) לבדוק RLS בפועל. בדקתי (1) שוב —
+     `list_projects` עדיין לא כולל את `hkkkynyoigzlttpynoeo` (10 פרויקטים
+     ברשימה, זהה למצב הקודם מבחינת 15). תוך כדי כך, `list_projects` חשף
+     **רשימת פרויקטים שונה** ממה שתועד ב-CONNECTIONS.md — `csjekrvukbdznetsrodj`
+     (06/12/17/27) ו-`bieebmnmkffwbqlsfozh` (01/02/03/10/18) שניהם כעת
+     `ACTIVE_HEALTHY` ונגישים ישירות (לא רק דרך ה-hub), וכמה פרויקטים
+     נוספים לגמרי לא-מתועדים (`rpamomtvqweqqiotgtta`, `eygjmfftosigbmzpndib`,
+     `zxckwefnuectxqhtpfib`, `tltfpznyqxpuydgefmnp`, `tsnmjjnollodauelnvsz`,
+     `svvpuypogqnkgcmtqlgu`, `qkszcdkzgfcpfwvskdna` — כולם `INACTIVE`, כנראה
+     פרויקטים ישנים/מנוסים שהצטרפו לחשבון בטווח התאריכים 22/03–04/06/2026,
+     ללא זיהוי ודאי לאיזו מערכת ממוספרת הם שייכים; לא נגעתי — מחוץ להיקף
+     בירור זה, נרשם רק כתצפית).
+293. **חקרתי גם את סכימות ה-hub (`uhnrgujbdxhhmoxcjria`) וגיליתי שיש שם
+     הרבה יותר סכימות ממה שתועד**: מלבד `core`/`public`/`nadlan`/`chatzor`,
+     קיימות `igud` (136 טבלאות!), `igud_ads`, `igud_otvedaf`,
+     `igud_transcribe`, `csj`, `csj_src` (+ `_kupot`/`_nadlan`/`_tr` variants),
+     `kesef`, `egod`, `getrights`, `hebcrm`, `rights`, `nadlan_pro`,
+     `bkalot_auto`, `bkalot_clone`. **בדקתי `apps/34-kesef/app.json` ו-
+     `apps/15-egod/app.json` כדי לוודא שאלה לא באמת המערכות שלי במסווה** —
+     `34-kesef` (מספר **מחוץ** לטווח 01-16/17-31, לא בבעלות אף לופ ידוע)
+     מאשר במפורש: "הסכימה kesef חיה על ה-hub — 36 טבלאות... קוד המקור לא
+     אותר בשום ריפו נגיש". כלומר `kesef`/`egod`/`igud*`/`csj*` על ה-hub הן
+     כנראה סכימות של גוף-על ארגוני נפרד (איגוד שיעורים) שאינן שייכות
+     למערכות הממוספרות 01-16 שאני אחראי עליהן, למרות חפיפת שם מקרית עם
+     15-egod ("egod" = "איגוד" בכתיב חלופי). **לא נגעתי בהן** — גם כי
+     `igud`/`csj`/`csj_src` מוגנות במפורש בהוראות, וגם כי אין לי דרך
+     לאמת בעלות/הרשאה על שאר הסכימות (`kesef`, `egod`, `bkalot_auto`,
+     `bkalot_clone`, `getrights`, `hebcrm`, `rights`, `nadlan_pro`) —
+     נרשם כתצפית בלבד עבור לופ עתידי/הבעלים.
+294. **הממצא האמיתי שכן בהיקף שלי:** תוך השוואת `apps/{01,03,15}/app.json`
+     (המניפסטים היחידים שנעקבים ב-git תחת `apps/**`) מול `core.projects`
+     (הרישום החי שה-admin dashboard קורא ממנו) — **דריפט אמיתי**:
+     - `apps/01-torah-platform/app.json`: `supabase.project` היה
+       `uhnrgujbdxhhmoxcjria` (ה-hub), בעוד `core.projects` + עשרות רשומות
+       ב-DECISIONS.md (תיקונים שיושמו בפועל, למשל #283) + CONNECTIONS.md
+       עצמו קובעים במפורש: "01/03 = live on bieebmnm (**not** uhnrgujb as
+       previously inferred)". כלומר המניפסט מעולם לא עודכן אחרי התיקון
+       הזה שכבר בוצע ב-Phase 1.
+     - `apps/03-igud-ads/app.json`: `supabase.project`/`schema`/`deployTarget`
+       היו `null`/`null`/`"unknown"` — למרות ש-CONNECTIONS.md ו-
+       `apps/README.md` כבר קובעים בבירור `bieebmnmkffwbqlsfozh`/`vercel`.
+     - `apps/15-egod/app.json`: `supabase.project` היה `uhnrgujbdxhhmoxcjria`
+       עם הערה "shares Supabase with torah-platform" — **שגוי במפורש**:
+       CONNECTIONS.md קובע "15 egod has its **own** project hkkky… (**not**
+       shared with 01)", ו-`core.projects` + כל תיקוני 15-egod שיושמו
+       בפועל (סבבים 34-38, למשל #227 `activate-invite`) פעלו מול
+       `hkkkynyoigzlttpynoeo` — פרויקט **נפרד לגמרי**, שאינו נגיש דרך
+       ה-MCP הזה כלל. הסיכון האמיתי: מי שסומך על המניפסט הזה (סוכן/מפתח
+       עתידי) עלול לנסות להתחבר/למגר נתונים מול ה-hub במקום מול הפרויקט
+       האמיתי של 15 — בדיוק הסוג של "יצירת חיבור שגוי שעלול לייתם נתונים"
+       שהכלל הקדוש #1 ב-README אוסר.
+295. **התיקון:** עדכנתי את שלושת קבצי ה-`app.json` (`project`/`schema`/
+     `deployTarget` בלבד, לפי עדות מתועדת בלבד — לא ניחוש) + הוספתי משפט
+     הערה קצר בכל אחד שמסביר את התיקון ומקורו, כדי שלא יישכח שוב. **לא
+     נגעתי** בשדות אחרים (`repo`, `source`, `protected`, `note` המקורי
+     חוץ מהתוספת) ולא במערכות 04/05/06/07/10/11/12/13/14 — ל-04 יש סתירה
+     בין `core.projects` (`uhnrgujbdxhhmoxcjria`) לבין `apps/README.md`
+     (`?` + יעד `railway`), ול-06/10/12 יש אי-ודאות לגבי שם הסכימה
+     המדויקת (`core.projects` אומר `public` לכולן, אבל `csjekrvukbdznetsrodj`
+     שאני רואה עכשיו ישירות מכיל סכימות `kupot`/`nadlan`/`transcription`
+     בפועל, לא `public`) — במקום לנחש/להעתיק נתון לא-מאומת, השארתי אותן
+     כפי שהיו (`null` = "לא אומת", כנה יותר מ"אומת" שגוי). ולידציית JSON
+     (`python3 -m json.load`) עברה על שלושת הקבצים. ענף
+     `fix/a-app-json-supabase-project-drift-0820`.
+296. **הבא בתור:** (א) 04-imud-torani — לפתור את הסתירה
+     `core.projects`(`uhnrgujb`) מול `apps/README.md`(`?`/`railway`) על
+     ידי בדיקת קוד מקומי אם `apps/04-imud-torani` קיים ווקטור (`grep`
+     `SUPABASE_URL`/`.env.example`); (ב) 06/10/12 — לאתר את שם הסכימה
+     המדויקת על `csjekrvukbdznetsrodj` (לדוגמה ע"י השוואת שמות טבלה
+     בסכימות `kupot`/`nadlan`/`transcription` מול קוד המקור המקומי אם
+     קיים) לפני עדכון `app.json`; (ג) לתעד את רשימת הפרויקטים/הסכימות
+     הבלתי-מתועדות שנחשפו (#292-293) ב-CONNECTIONS.md עצמו, לא רק כאן,
+     כדי שלופ עתידי לא יגלה מחדש מאפס.

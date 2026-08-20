@@ -8,11 +8,11 @@
   "repo": "l023131500-ops/egod",
   "basePath": "/15",
   "supabase": {
-    "project": "uhnrgujbdxhhmoxcjria",
+    "project": "hkkkynyoigzlttpynoeo",
     "schema": "public"
   },
   "deployTarget": "lovable",
   "protected": false,
   "source": "not-vendored",
-  "note": "Born in Lovable; shares Supabase with torah-platform."
+  "note": "Born in Lovable. Supabase project corrected 20/08/2026 — this file previously claimed 15 shares the uhnrgujbdxhhmoxcjria hub project with 01-torah-platform, but CONNECTIONS.md's Phase 1 verification (reading the live .env) and core.projects both confirm 15-egod has its own separate project, hkkkynyoigzlttpynoeo, not reachable via this session's Supabase MCP. Every applied fix in DECISIONS.md (rounds 34-38 etc.) targeted that project's own migrations."
 }

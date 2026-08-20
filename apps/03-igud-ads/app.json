@@ -8,11 +8,11 @@
   "repo": "l023131500-ops/igud-ads",
   "basePath": "/03",
   "supabase": {
-    "project": null,
-    "schema": null
+    "project": "bieebmnmkffwbqlsfozh",
+    "schema": "public"
   },
-  "deployTarget": "unknown",
+  "deployTarget": "vercel",
   "protected": false,
   "source": "not-vendored",
-  "note": "Revenue system."
+  "note": "Revenue system. Supabase project/schema and deploy target filled in 20/08/2026 from CONNECTIONS.md's verified project table (03 lives on bieebmnmkffwbqlsfozh alongside 01/02/10/18) and apps/README.md's status matrix — previously null/unknown here."
 }
