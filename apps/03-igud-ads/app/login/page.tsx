@@ -41,11 +41,11 @@ function LoginInner() {
       <div className="card max-w-md w-full">
         <h1 className="font-serif text-2xl font-bold mb-1 text-brand-dark">כניסה למערכת</h1>
         <p className="text-sm text-gray-600 mb-6">למפעיל המערכת בלבד</p>
-        {err && <div className="mb-3 text-sm text-red-700 bg-red-50 border border-red-200 rounded p-2">{err}</div>}
+        {err && <div id="login-error" role="alert" className="mb-3 text-sm text-red-700 bg-red-50 border border-red-200 rounded p-2">{err}</div>}
         <button className="btn-outline w-full mb-4" onClick={loginGoogle}>התחבר עם Google</button>
         <div className="text-center text-xs text-gray-500 mb-3">או</div>
         <label className="label" htmlFor="login-email">אימייל</label>
-        <input id="login-email" className="input mb-3" type="email" inputMode="email" value={email} onChange={(e) => setEmail(e.target.value)} autoComplete="email" />
+        <input id="login-email" className="input mb-3" type="email" inputMode="email" value={email} onChange={(e) => setEmail(e.target.value)} autoComplete="email" aria-describedby={err ? "login-error" : undefined} aria-invalid={err ? true : undefined} />
         <label className="label" htmlFor="login-password">סיסמה</label>
         {/* כפתור "הצג סיסמה" (priority §1א). השדה אינו נושא dir משלו, כך שהוא
             יורש rtl מ-<html> ו-`.input` מוסיף `text-right` — התווים נצמדים
@@ -59,6 +59,8 @@ function LoginInner() {
             value={pwd}
             onChange={(e) => setPwd(e.target.value)}
             autoComplete="current-password"
+            aria-describedby={err ? "login-error" : undefined}
+            aria-invalid={err ? true : undefined}
           />
           <button
             type="button"
