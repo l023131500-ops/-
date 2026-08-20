@@ -101,12 +101,12 @@ export default function PaymentsAdmin() {
         <div className="flex items-center gap-2 text-sm">
           <span>מתאריך:</span>
           <input type="date" value={dateFrom} onChange={(e) => setDateFrom(e.target.value)}
-            className="border rounded px-2 py-1 text-sm" />
+            aria-label="מתאריך" className="border rounded px-2 py-1 text-sm" />
         </div>
         <div className="flex items-center gap-2 text-sm">
           <span>עד:</span>
           <input type="date" value={dateTo} onChange={(e) => setDateTo(e.target.value)}
-            className="border rounded px-2 py-1 text-sm" />
+            aria-label="עד תאריך" className="border rounded px-2 py-1 text-sm" />
         </div>
         <button onClick={load} className="bg-brand-bluesurface text-white px-4 py-1.5 rounded text-sm hover:bg-brand-darksurface">
           רענן
