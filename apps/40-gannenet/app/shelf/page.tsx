@@ -173,7 +173,7 @@ export default function ShelfPage() {
       </div>
 
       <div className="card" style={{ padding: 14, display: "flex", gap: 12, flexWrap: "wrap", alignItems: "center", marginBottom: 14 }}>
-        <input className="input" style={{ flex: "1 1 220px" }} placeholder="חיפוש חומר…" value={q} onChange={(e) => setQ(e.target.value)} />
+        <input className="input" style={{ flex: "1 1 220px" }} placeholder="חיפוש חומר…" aria-label="חיפוש חומר" value={q} onChange={(e) => setQ(e.target.value)} />
         <select className="input" style={{ flex: "0 0 190px" }} value={sender} onChange={(e) => setSender(e.target.value)}>
           <option value="">כל המקורות</option>
           {senders.map((s) => <option key={s} value={s}>{s}</option>)}

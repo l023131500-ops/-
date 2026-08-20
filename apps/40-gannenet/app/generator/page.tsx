@@ -103,18 +103,18 @@ export default function Generator() {
       )}
 
       <div className="card" style={{ padding: 24 }}>
-        <label style={{ fontWeight: 600, fontSize: 14 }}>נושא</label>
-        <input className="input" style={{ marginTop: 6, marginBottom: 14 }} placeholder='למשל: "האות א׳ — אתרוג", "פרשת נח — תיבת נח", "סימני הסתיו"' value={topic} onChange={(e) => setTopic(e.target.value)} />
+        <label htmlFor="gen-topic" style={{ fontWeight: 600, fontSize: 14 }}>נושא</label>
+        <input id="gen-topic" className="input" style={{ marginTop: 6, marginBottom: 14 }} placeholder='למשל: "האות א׳ — אתרוג", "פרשת נח — תיבת נח", "סימני הסתיו"' value={topic} onChange={(e) => setTopic(e.target.value)} />
         <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
           <div style={{ flex: "1 1 200px" }}>
-            <label style={{ fontWeight: 600, fontSize: 14 }}>קבוצת גיל</label>
-            <select className="input" style={{ marginTop: 6 }} value={ageGroup} onChange={(e) => setAgeGroup(e.target.value)}>
+            <label htmlFor="gen-age" style={{ fontWeight: 600, fontSize: 14 }}>קבוצת גיל</label>
+            <select id="gen-age" className="input" style={{ marginTop: 6 }} value={ageGroup} onChange={(e) => setAgeGroup(e.target.value)}>
               <option>מעון (1–3)</option><option>טרום־חובה (3–5)</option><option>חובה (5–6)</option>
             </select>
           </div>
           <div style={{ flex: "1 1 200px" }}>
-            <label style={{ fontWeight: 600, fontSize: 14 }}>סוג פעילות</label>
-            <select className="input" style={{ marginTop: 6 }} value={style} onChange={(e) => setStyle(e.target.value)}>
+            <label htmlFor="gen-style" style={{ fontWeight: 600, fontSize: 14 }}>סוג פעילות</label>
+            <select id="gen-style" className="input" style={{ marginTop: 6 }} value={style} onChange={(e) => setStyle(e.target.value)}>
               <option>דף עבודה</option><option>דף צביעה</option><option>משחק התאמה</option><option>כרטיסיות</option>
             </select>
           </div>

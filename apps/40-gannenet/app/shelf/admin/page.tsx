@@ -214,6 +214,7 @@ export default function AdminPage() {
               className="input"
               type={showKey ? "text" : "password"}
               placeholder="סיסמת ניהול"
+              aria-label="סיסמת ניהול"
               value={key}
               onChange={(e) => setKey(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && login(key)}
@@ -333,7 +334,7 @@ export default function AdminPage() {
       )}
 
       <div className="card" style={{ padding: 12, display: "flex", gap: 10, flexWrap: "wrap", alignItems: "center", marginTop: 14 }}>
-        <input className="input" style={{ flex: "1 1 220px" }} placeholder="חיפוש…" value={q} onChange={(e) => setQ(e.target.value)} />
+        <input className="input" style={{ flex: "1 1 220px" }} placeholder="חיפוש…" aria-label="חיפוש" value={q} onChange={(e) => setQ(e.target.value)} />
         <select className="input" style={{ flex: "0 0 200px" }} value={cat} onChange={(e) => setCat(e.target.value)}>
           <option value="">כל הקטגוריות</option>
           {cats.map((c) => <option key={c} value={c}>{c}</option>)}
@@ -368,11 +369,12 @@ export default function AdminPage() {
             </div>
             {r.kind === "pdf" && (
               <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                <span style={{ fontSize: 12.5, color: "#6d6f88" }}>עמודים למחיקה:</span>
+                <span id={`pages-del-label-${r.id}`} style={{ fontSize: 12.5, color: "#6d6f88" }}>עמודים למחיקה:</span>
                 <input
                   className="input"
                   style={{ width: 92, fontSize: 13, padding: ".4rem .5rem" }}
                   placeholder="1 / 1-2"
+                  aria-labelledby={`pages-del-label-${r.id}`}
                   value={drafts[r.id] ?? ""}
                   onChange={(e) => setDrafts((d) => ({ ...d, [r.id]: e.target.value }))}
                 />

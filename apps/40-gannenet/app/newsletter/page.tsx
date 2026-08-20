@@ -27,10 +27,10 @@ ${list.map((t) => `• ${t}`).join("\n")}
         <p style={{ color: "#6d6f88", marginTop: 6 }}>טיוטת דף קשר שבועי חם ויהודי — מוכן לשליחה</p>
       </div>
       <div className="card" style={{ padding: 24 }}>
-        <label style={{ fontWeight: 600, fontSize: 14 }}>שם הגן</label>
-        <input className="input" style={{ marginTop: 6, marginBottom: 14 }} value={kg} onChange={(e) => setKg(e.target.value)} placeholder="למשל: גן אורות" />
-        <label style={{ fontWeight: 600, fontSize: 14 }}>נושאי השבוע (שורה לכל נושא)</label>
-        <textarea className="input" style={{ marginTop: 6, minHeight: 120 }} value={topics} onChange={(e) => setTopics(e.target.value)} placeholder={"פרשת בראשית\nהאות א׳\nמידת הכרת הטוב"} />
+        <label htmlFor="kg-name" style={{ fontWeight: 600, fontSize: 14 }}>שם הגן</label>
+        <input id="kg-name" className="input" style={{ marginTop: 6, marginBottom: 14 }} value={kg} onChange={(e) => setKg(e.target.value)} placeholder="למשל: גן אורות" />
+        <label htmlFor="kg-topics" style={{ fontWeight: 600, fontSize: 14 }}>נושאי השבוע (שורה לכל נושא)</label>
+        <textarea id="kg-topics" className="input" style={{ marginTop: 6, minHeight: 120 }} value={topics} onChange={(e) => setTopics(e.target.value)} placeholder={"פרשת בראשית\nהאות א׳\nמידת הכרת הטוב"} />
         <button className="btn btn-main" style={{ marginTop: 16 }} onClick={build}>צרי דף קשר</button>
       </div>
       {out && (
