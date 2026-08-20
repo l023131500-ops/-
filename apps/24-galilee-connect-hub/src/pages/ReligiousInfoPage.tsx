@@ -110,7 +110,7 @@ const ReligiousInfoPage = () => {
                     <div className="flex flex-wrap gap-3">
                       {item.phone && (
                         <a href={`tel:${item.phone}`} className="inline-flex items-center gap-1.5 text-sm font-bold text-primary hover:text-primary/80">
-                          <Phone className="w-4 h-4" /> {item.phone}
+                          <Phone className="w-4 h-4" /> <span dir="ltr">{item.phone}</span>
                         </a>
                       )}
                       {item.address && (

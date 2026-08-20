@@ -47,7 +47,7 @@ const Footer = () => {
           <p className="font-body text-xs text-gold-cream/70 text-center">
             © {new Date().getFullYear()} איגוד השיעורים — מחברים בין לומדים ומלמדים
           </p>
-          <a href="tel:0231330600" className="inline-block py-1 font-body text-xs text-gold-cream hover:text-gold transition-colors">
+          <a href="tel:0231330600" dir="ltr" className="inline-block py-1 font-body text-xs text-gold-cream hover:text-gold transition-colors">
             023-133-0600
           </a>
         </div>

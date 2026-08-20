@@ -294,19 +294,19 @@ const LessonDetailModal = ({ lesson, onClose, imageOptions }: LessonDetailModalP
                   {lesson.contact_phone && (
                     <a href={`tel:${lesson.contact_phone}`} className="flex items-center gap-2 font-body text-sm text-primary hover:text-primary/80 transition-colors">
                       <Phone className="w-4 h-4" />
-                      {lesson.contact_phone}
+                      <span dir="ltr">{lesson.contact_phone}</span>
                     </a>
                   )}
                   {lesson.rabbi_phone && lesson.rabbi_phone !== lesson.contact_phone && (
                     <a href={`tel:${lesson.rabbi_phone}`} className="flex items-center gap-2 font-body text-sm text-primary hover:text-primary/80 transition-colors">
                       <Phone className="w-4 h-4" />
-                      טלפון הרב: {lesson.rabbi_phone}
+                      טלפון הרב: <span dir="ltr">{lesson.rabbi_phone}</span>
                     </a>
                   )}
                   {lesson.contact_email && (
                     <a href={`mailto:${lesson.contact_email}`} className="flex items-center gap-2 font-body text-sm text-primary hover:text-primary/80 transition-colors">
                       <Mail className="w-4 h-4" />
-                      {lesson.contact_email}
+                      <span dir="ltr">{lesson.contact_email}</span>
                     </a>
                   )}
                 </motion.div>

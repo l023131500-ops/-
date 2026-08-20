@@ -499,10 +499,10 @@ export default function PublicLanding() {
               שאלה? בקשת ייעוץ? פנייה כללית? מוזמנים לדבר איתנו.
             </p>
             <p className="text-base text-foreground/85 mt-5">
-              טלפון: <a className="underline" href={`tel:${CONTACT_PHONE.replace(/[^0-9]/g, "")}`} data-testid="link-contact-phone">{CONTACT_PHONE}</a>
+              טלפון: <a className="underline" dir="ltr" href={`tel:${CONTACT_PHONE.replace(/[^0-9]/g, "")}`} data-testid="link-contact-phone">{CONTACT_PHONE}</a>
             </p>
             <p className="text-base text-foreground/85 mt-1">
-              דוא"ל: <a className="underline" href={`mailto:${CONTACT_EMAIL}`} data-testid="link-contact-email">{CONTACT_EMAIL}</a>
+              דוא"ל: <a className="underline" dir="ltr" href={`mailto:${CONTACT_EMAIL}`} data-testid="link-contact-email">{CONTACT_EMAIL}</a>
             </p>
           </div>
         </section>
@@ -511,7 +511,7 @@ export default function PublicLanding() {
       <footer className="border-t border-border bg-card">
         <div className="max-w-[1100px] mx-auto px-4 sm:px-6 py-6 flex flex-col md:flex-row items-center justify-between gap-3 text-xs text-muted-foreground">
           <div className="text-center md:text-right">
-            ארגון בקלות · {CONTACT_PHONE} · {CONTACT_EMAIL}
+            ארגון בקלות · <span dir="ltr">{CONTACT_PHONE}</span> · <span dir="ltr">{CONTACT_EMAIL}</span>
             <div className="mt-1">להבחין תמיד בין זכות לפי חוק לבין אפשרות לפנייה לסיוע התנדבותי.</div>
           </div>
           <div className="flex items-center gap-2">
