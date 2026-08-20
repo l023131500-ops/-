@@ -50,13 +50,14 @@ Deno.serve(async (req) => {
       : "לא מצאנו שיעורים מתאימים לחיפוש שלכם. נסו לחפש בנושא אחר, או השאירו הודעה ונחזור אליכם.";
 
     // Log
-    await supabase.from("ivr_submissions").insert({
+    const { error: logError } = await supabase.from("ivr_submissions").insert({
       caller_phone: caller_phone || "",
       request_type: "agent",
       input_text: text,
       response_text: responseText,
       status: "processed",
     });
+    if (logError) console.error("ivr_submissions insert failed (agent):", logError.message);
 
     return new Response(JSON.stringify({
       success: true,

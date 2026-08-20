@@ -49,7 +49,8 @@ Deno.serve(async (req) => {
   }
 
   // Update last_used
-  await supabase.from('api_keys').update({ last_used_at: new Date().toISOString() }).eq('id', keyData.id);
+  const { error: lastUsedError } = await supabase.from('api_keys').update({ last_used_at: new Date().toISOString() }).eq('id', keyData.id);
+  if (lastUsedError) console.error('api_keys last_used_at update failed:', lastUsedError.message);
 
   const url = new URL(req.url);
   const limit = parseInt(url.searchParams.get('limit') || '50');

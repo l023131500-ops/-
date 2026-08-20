@@ -45,13 +45,14 @@ Deno.serve(async (req) => {
     }).join(" ");
 
     // Log the IVR query
-    await supabase.from("ivr_submissions").insert({
+    const { error: logError } = await supabase.from("ivr_submissions").insert({
       caller_phone: params.caller_phone || "",
       request_type: "search",
       input_text: JSON.stringify(params),
       response_text: textResults || "לא נמצאו שיעורים",
       params: params,
     });
+    if (logError) console.error("ivr_submissions insert failed (search):", logError.message);
 
     return new Response(JSON.stringify({
       success: true,
