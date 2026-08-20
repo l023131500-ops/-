@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { getCallerTenantId } from "@/integrations/supabase/tenant-auth.server";
 
 // Outbound message dispatch — forwards a newly-created `messages` row to n8n
 // which performs the actual WA/Email/SMS send.
@@ -11,6 +12,10 @@ export const Route = createFileRoute("/api/public/notify-message")({
           if (!body || typeof body.messageId !== "string") {
             return new Response(JSON.stringify({ error: "messageId required" }), { status: 400, headers: { "content-type": "application/json" } });
           }
+          const callerTenantId = await getCallerTenantId(request);
+          if (!callerTenantId) {
+            return new Response(JSON.stringify({ error: "unauthorized" }), { status: 401, headers: { "content-type": "application/json" } });
+          }
           const webhookUrl = process.env.N8N_NOTIFY_MESSAGE_URL;
           if (!webhookUrl) {
             console.log("[notify-message] N8N_NOTIFY_MESSAGE_URL not set; skipping.", body);
@@ -22,7 +27,9 @@ export const Route = createFileRoute("/api/public/notify-message")({
             .select("*, client:clients(id, first_name, last_name, phone, email), partner:partners(id, company_name, email, phone)")
             .eq("id", body.messageId)
             .maybeSingle();
-          if (!message) return new Response(JSON.stringify({ error: "message not found" }), { status: 404, headers: { "content-type": "application/json" } });
+          if (!message || message.tenant_id !== callerTenantId) {
+            return new Response(JSON.stringify({ error: "message not found" }), { status: 404, headers: { "content-type": "application/json" } });
+          }
           const res = await fetch(webhookUrl, {
             method: "POST",
             headers: { "content-type": "application/json" },

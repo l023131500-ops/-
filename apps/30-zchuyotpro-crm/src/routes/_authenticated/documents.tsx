@@ -10,6 +10,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { meProfileQuery } from "@/features/clients/queries";
 import { formatDateHe } from "@/lib/format";
 import { triggerN8nWebhook } from "@/lib/n8n";
+import { authedFetch } from "@/lib/authed-fetch";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -197,7 +198,7 @@ function Page() {
 
   const sendForSignature = useMutation({
     mutationFn: async (d: DocRow) => {
-      const r = await fetch("/api/public/notify-signature", {
+      const r = await authedFetch("/api/public/notify-signature", {
         method: "POST", headers: { "content-type": "application/json" },
         body: JSON.stringify({ documentId: d.id }),
       });
@@ -209,7 +210,7 @@ function Page() {
 
   const analyze = useMutation({
     mutationFn: async (d: DocRow) => {
-      const r = await fetch("/api/public/analyze-paystub", {
+      const r = await authedFetch("/api/public/analyze-paystub", {
         method: "POST", headers: { "content-type": "application/json" },
         body: JSON.stringify({ documentId: d.id }),
       });

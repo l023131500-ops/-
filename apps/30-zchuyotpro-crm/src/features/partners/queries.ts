@@ -1,5 +1,6 @@
 import { queryOptions, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { authedFetch } from "@/lib/authed-fetch";
 
 export const partnersListQuery = (filters: { search?: string; category?: string; active?: string }) =>
   queryOptions({
@@ -158,7 +159,7 @@ export function useInvalidatePartners() {
 // Fire-and-forget webhook trigger. Server route handles the actual n8n call.
 export async function dispatchNotify(endpoint: "notify-partner" | "notify-admin", payload: Record<string, unknown>) {
   try {
-    await fetch(`/api/public/${endpoint}`, {
+    await authedFetch(`/api/public/${endpoint}`, {
       method: "POST",
       headers: { "content-type": "application/json" },
       body: JSON.stringify(payload),

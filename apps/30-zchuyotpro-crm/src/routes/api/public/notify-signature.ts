@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { getCallerTenantId } from "@/integrations/supabase/tenant-auth.server";
 
 // Signature request dispatch — sends a document link to the client for signing via n8n.
 export const Route = createFileRoute("/api/public/notify-signature")({
@@ -10,6 +11,10 @@ export const Route = createFileRoute("/api/public/notify-signature")({
           if (!body || typeof body.documentId !== "string") {
             return new Response(JSON.stringify({ error: "documentId required" }), { status: 400, headers: { "content-type": "application/json" } });
           }
+          const callerTenantId = await getCallerTenantId(request);
+          if (!callerTenantId) {
+            return new Response(JSON.stringify({ error: "unauthorized" }), { status: 401, headers: { "content-type": "application/json" } });
+          }
           const webhookUrl = process.env.N8N_NOTIFY_SIGNATURE_URL;
           const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
           const { data: doc } = await supabaseAdmin
@@ -17,7 +22,9 @@ export const Route = createFileRoute("/api/public/notify-signature")({
             .select("*, client:clients(id, first_name, last_name, phone, email)")
             .eq("id", body.documentId)
             .maybeSingle();
-          if (!doc) return new Response(JSON.stringify({ error: "document not found" }), { status: 404, headers: { "content-type": "application/json" } });
+          if (!doc || doc.tenant_id !== callerTenantId) {
+            return new Response(JSON.stringify({ error: "document not found" }), { status: 404, headers: { "content-type": "application/json" } });
+          }
           await supabaseAdmin.from("documents").update({ signature_status: "pending", requires_signature: true }).eq("id", body.documentId);
           let signedUrl: string | null = null;
           if (doc.storage_path) {

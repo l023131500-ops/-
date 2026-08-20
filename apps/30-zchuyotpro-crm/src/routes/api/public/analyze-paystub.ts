@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { getCallerTenantId } from "@/integrations/supabase/tenant-auth.server";
 
 // Pay-stub analysis dispatch — forwards a document to n8n which runs OCR/LLM extraction.
 // n8n is expected to write documents.analysis_result back itself via the service role;
@@ -12,6 +13,10 @@ export const Route = createFileRoute("/api/public/analyze-paystub")({
           if (!body || typeof body.documentId !== "string") {
             return new Response(JSON.stringify({ error: "documentId required" }), { status: 400, headers: { "content-type": "application/json" } });
           }
+          const callerTenantId = await getCallerTenantId(request);
+          if (!callerTenantId) {
+            return new Response(JSON.stringify({ error: "unauthorized" }), { status: 401, headers: { "content-type": "application/json" } });
+          }
           const webhookUrl = process.env.N8N_ANALYZE_PAYSTUB_URL;
           const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
           const { data: doc } = await supabaseAdmin
@@ -19,7 +24,9 @@ export const Route = createFileRoute("/api/public/analyze-paystub")({
             .select("*")
             .eq("id", body.documentId)
             .maybeSingle();
-          if (!doc) return new Response(JSON.stringify({ error: "document not found" }), { status: 404, headers: { "content-type": "application/json" } });
+          if (!doc || doc.tenant_id !== callerTenantId) {
+            return new Response(JSON.stringify({ error: "document not found" }), { status: 404, headers: { "content-type": "application/json" } });
+          }
 
           let signedUrl: string | null = null;
           if (doc.storage_path) {

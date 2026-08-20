@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { getCallerTenantId } from "@/integrations/supabase/tenant-auth.server";
 
 export const Route = createFileRoute("/api/public/notify-admin")({
   server: {
@@ -8,6 +9,19 @@ export const Route = createFileRoute("/api/public/notify-admin")({
           const body = await request.json().catch(() => null);
           if (!body || typeof body.referralId !== "string") {
             return new Response(JSON.stringify({ error: "referralId required" }), { status: 400, headers: { "content-type": "application/json" } });
+          }
+          const callerTenantId = await getCallerTenantId(request);
+          if (!callerTenantId) {
+            return new Response(JSON.stringify({ error: "unauthorized" }), { status: 401, headers: { "content-type": "application/json" } });
+          }
+          const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+          const { data: referral } = await supabaseAdmin
+            .from("partner_referrals")
+            .select("id, tenant_id")
+            .eq("id", body.referralId)
+            .maybeSingle();
+          if (!referral || referral.tenant_id !== callerTenantId) {
+            return new Response(JSON.stringify({ error: "referral not found" }), { status: 404, headers: { "content-type": "application/json" } });
           }
           const webhookUrl = process.env.N8N_NOTIFY_ADMIN_URL;
           if (!webhookUrl) {

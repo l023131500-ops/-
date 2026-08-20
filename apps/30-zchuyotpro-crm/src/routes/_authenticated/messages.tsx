@@ -11,6 +11,7 @@ import { meProfileQuery } from "@/features/clients/queries";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { CHANNEL } from "@/features/clients/constants";
 import { formatDateTimeHe, formatDateHe } from "@/lib/format";
+import { authedFetch } from "@/lib/authed-fetch";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -264,7 +265,7 @@ function ChatPane({ contact, messages, tenantId, senderId, onSent }: {
       if (error) throw error;
       // Fire-and-forget dispatch (skip for internal notes)
       if (channel !== "internal") {
-        fetch("/api/public/notify-message", {
+        authedFetch("/api/public/notify-message", {
           method: "POST", headers: { "content-type": "application/json" },
           body: JSON.stringify({ messageId: data.id }),
         }).catch(() => {});
