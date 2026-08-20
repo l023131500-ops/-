@@ -24,8 +24,16 @@ export const getPublicSiteUrl = (): string => {
   return window.location.origin || PUBLIC_SITE_URL;
 };
 
+// Same as getPublicSiteUrl(), but includes the app's mount path (e.g. "/egod"
+// when served from more30.com/egod). Routes are registered relative to that
+// basename (see App.tsx's BrowserRouter), so links generated for the current
+// custom-domain deployment need the prefix or they resolve to a different app
+// entirely at the site root.
+export const getPublicAppUrl = (): string =>
+  `${getPublicSiteUrl()}${import.meta.env.BASE_URL.replace(/\/+$/, "")}`;
+
 export const buildInviteUrl = (code?: string, email?: string): string => {
-  const base = `${getPublicSiteUrl()}/invite`;
+  const base = `${getPublicAppUrl()}/invite`;
   if (!code && !email) return base;
   const params = new URLSearchParams();
   if (code) params.set("code", code);
@@ -34,7 +42,7 @@ export const buildInviteUrl = (code?: string, email?: string): string => {
 };
 
 export const buildRabbiUrl = (token: string): string =>
-  `${getPublicSiteUrl()}/rabbi/${token}`;
+  `${getPublicAppUrl()}/rabbi/${token}`;
 
 /**
  * Replace any preview/internal Lovable host inside an arbitrary text block

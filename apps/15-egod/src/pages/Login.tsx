@@ -7,7 +7,7 @@ import { PasswordInput } from "@/components/ui/password-input";
 import { BookOpen, Mail, Lock } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable/index";
-import { getPublicSiteUrl } from "@/lib/site";
+import { getPublicAppUrl } from "@/lib/site";
 import { authErrorMessage, PASSWORD_MIN_LENGTH } from "@/lib/authErrors";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
@@ -52,7 +52,7 @@ const Login = () => {
   };
 
   const handleGoogleLogin = async () => {
-    const result = await lovable.auth.signInWithOAuth("google", { redirect_uri: getPublicSiteUrl() });
+    const result = await lovable.auth.signInWithOAuth("google", { redirect_uri: getPublicAppUrl() });
     if (result.error) { toast.error("שגיאה בהתחברות עם Google"); return; }
     if (result.redirected) return;
     navigate("/portal");
