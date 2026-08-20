@@ -11842,3 +11842,35 @@
       — למשל שאר עמודי admin ב-`02-igud-transcribe`/`04-imud-torani`
       שטרם נבדקו, או לחזור לשכבת התשתית המשותפת (gannenet/40,
       super-admin, admin dashboard) שלא קיבלה סבב ייעודי לאחרונה.
+
+## 20/08/2026 — סבב 236 (loop A) — `03-igud-ads/app/(admin)/admin/projects/page.tsx`: guard `deleteProject()` נגד double-submit + כשל רשת שקט
+
+1147. **סריקה רחבה מצאה עוד מופע מאותה מחלקת-באג:** הפעלתי חיפוש
+      ממוקד בעמודי admin תחת מערכות 01/02/03/04/06/10/15/16 (בטווח
+      loop A) אחר handler שכותב (fetch עם DELETE/PATCH/POST/PUT) בלי
+      busy-guard וגם בלי try/catch. `admin/projects/page.tsx`
+      `deleteProject()` (שורות 87-91 לפני התיקון) ירה `fetch(...,
+      {method:"DELETE"})` בלי בדיקת `confirm()`-אחרי-guard, בלי נעילת
+      state בזמן הבקשה, ובלי `try/catch`/`res.ok` — לחיצה כפולה על
+      "מחק" יכולה הייתה לירות שתי בקשות מחיקה, וכשל רשת/שרת היה נראה
+      כמו no-op שקט בלי שום הודעה למשתמש.
+1148. **התיקון:** אותה תבנית זהה שכבר אומתה ב-5 עמודי admin קודמים
+      (users/templates/glossary/coupons/uploads) — הוספתי `deletingId`
+      state, `deleteProject()` בודק/נועל אותו לפני הבקשה, עוטף
+      ב-`try/catch`, מציג `alert()` על תגובת שגיאה (`d.error` מה-API,
+      שמחזיר JSON תקין) או כשל רשת, ומנקה את ה-guard ב-`finally`.
+      הכפתור בטבלה מקבל `disabled={deletingId === p.id}` ומציג
+      "מוחק…" בזמן הפעולה.
+1149. **אפס רגרסיה מאומתת:** `git diff --stat`: קובץ אחד, +19/-4.
+      שום פיצ'ר/מסך/כפתור לא הוסר — רק נוסף guard ו-error handling.
+      אימתתי מול `apps/03-igud-ads/app/api/admin/projects/[id]/route.ts`
+      ש-DELETE מחזיר JSON עם שדה `error` בכשל, תואם ל-`d.error` בקוד
+      החדש. לא נגעתי במערכות/סכימות מוגנות (08/09/bkalut-app/
+      bkalot-admin/zr_*/NEDARIM3873/csj/csj_src/igud), ב-`main`, או
+      במערכת מחוץ להיקף (03 בטווח 01-16).
+1150. **הבא בתור:** הסריקה הרחבה (Explore agent) בדקה גם
+      `admin/page.tsx` `runWorker()` ו-`admin/coupons/page.tsx`
+      `generate()` — שני אלה חסרים try/catch (אחד גם חסר busy-guard
+      לגמרי) אבל בסיכון נמוך יותר (לא DELETE הרסני). מומלץ סבב הבא
+      לתקן אותם, ואז לעבור למערכות 02/04/06/10/15/16 שטרם נסרקו לעומק
+      לאותו דפוס.

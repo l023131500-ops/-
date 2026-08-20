@@ -60,6 +60,7 @@ export default function ProjectsAdmin() {
   const [items, setItems] = useState<Project[]>([]);
   const [detail, setDetail] = useState<DetailData | null>(null);
   const [loading, setLoading] = useState(true);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
   const panelRef = useRef<HTMLDivElement>(null);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
   const previousFocusRef = useRef<HTMLElement | null>(null);
@@ -86,8 +87,21 @@ export default function ProjectsAdmin() {
 
   async function deleteProject(id: string) {
     if (!confirm("למחוק פרויקט זה?")) return;
-    await fetch(`/modaot/api/admin/projects/${id}`, { method: "DELETE" });
-    load();
+    if (deletingId) return;
+    setDeletingId(id);
+    try {
+      const r = await fetch(`/modaot/api/admin/projects/${id}`, { method: "DELETE" });
+      if (r.ok) {
+        load();
+      } else {
+        const d = await r.json().catch(() => ({}));
+        alert(d.error || "שגיאה במחיקת הפרויקט");
+      }
+    } catch {
+      alert("שגיאת רשת — נסה שוב");
+    } finally {
+      setDeletingId(null);
+    }
   }
 
   useEffect(() => {
@@ -202,9 +216,10 @@ export default function ProjectsAdmin() {
                   <td className="p-3" onClick={(e) => e.stopPropagation()}>
                     <button
                       onClick={() => deleteProject(p.id)}
-                      className="text-red-500 text-xs hover:underline ml-2"
+                      disabled={deletingId === p.id}
+                      className="text-red-500 text-xs hover:underline ml-2 disabled:opacity-50 disabled:no-underline"
                     >
-                      מחק
+                      {deletingId === p.id ? "מוחק…" : "מחק"}
                     </button>
                     <Link href={`/admin/projects/${p.id}`} className="text-brand-blue text-xs hover:underline">
                       פרטים
