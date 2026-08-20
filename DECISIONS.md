@@ -10847,3 +10847,69 @@
     ללא disabled guard) ב-24-galilee-connect-hub — לא אומת לעומק,
     מועמד טבעי לסבב הבא. נושאים #62/#94/#115/#164/#169/#254 נשארים
     חסומים. via cloud server 167.99.131.167 [loop B]
+
+## 20/08/2026 — סבב 441 (loop B)
+
+441. **אימות + תיקון מלא של המועמד שתועד בסבב 440: אותה בעיית
+    double-submit (כפתורי מחיקה ללא disabled guard) קיימת ב-6
+    מקומות ב-24-galilee-connect-hub.** קראתי README.md/CONNECTIONS.md,
+    בדקתי `core.run_progress` (הצעד האחרון: סבב 440, קומיטים
+    `1eab9f30`/`df8e1008`, תואם ל-HEAD) ו-`core.projects` 17-28
+    (ללא שינוי מטא-דאטה). שלחתי סוכן Explore לאמת לעומק את המועמד
+    שנרשם בסבב 440: דפוסי `handleDelete` ללא state טעינה, בזמן
+    שה-handler האח (הוספה/העלאה) באותו קובץ כן משתמש ב-state כזה
+    ומחבר אותו ל-`disabled` על הכפתור המפעיל.
+
+    הסוכן אישר את הדפוס בפועל ב-6 מקומות, כולם עם דפוס-אח מקומי
+    ברור באותו קובץ ממש:
+    - `src/pages/GabaiPortal.tsx`: `HalachaManager.handleDelete`
+      (מול `handleAdd`+`saving`), `NewsletterManager.handleDelete`
+      (מול `handleUpload`+`uploading`), `AdBannerManager.handleDelete`
+      (מול `handleSave`+`saving`), `KnowledgeManager.handleDelete`
+      (מול `handleAdd`+`saving`).
+    - `src/components/GallerySection.tsx` ו-
+      `src/components/ActivitySlideshow.tsx` (שני הרכיבים, מוצגים
+      תחת `AdminDashboard` כש-`isAdmin=true`): `handleDelete` מול
+      `handleUpload`+`uploading`.
+
+    (הסוכן גם בדק וסיווג כלא-רלוונטי: `ContactLeadsManager`/
+    `GabaiPersonalArea` כבר מוגנים ב-`processingId` משותף;
+    `RabbiQuestionsManager` חסר guard בשני ה-handlers שלו אבל בלי
+    דפוס-אח מקומי להשוואה — לא תואם את קריטריון "דפוס-אח מבוסס
+    באותו קובץ" שנקבע כדי לשמור על תיקון מינימלי ועקבי;
+    `SynagogueDetailsManager.tsx` הן עריכות state מקומיות
+    סינכרוניות, לא קריאות Supabase — לא רלוונטי.)
+
+    **התיקון:** לכל אחד מ-6 המקומות נוסף `deletingId` (state מזהה
+    הפריט הנמחק, לא boolean יחיד — כדי לנטרל רק את כפתור הפריט
+    הספציפי בזמן שרשימה שלמה מוצגת, לא את כל הכפתורים בו-זמנית),
+    שנקבע לפני קריאת ה-delete/storage-removal ומתאפס אחריה, מחובר
+    ל-`disabled={deletingId === id}` על כפתור המחיקה. בארבעת
+    ה-managers ב-GabaiPortal.tsx (שמשתמשים כבר באייקון `RefreshCw`
+    מסתובב לשמירה) הוחלף גם אייקון ה-Trash2 באייקון ספינר בזמן
+    המחיקה, עקבי עם דפוס ה-`saving`/`uploading` הקיים. בשני
+    הרכיבים הציבוריים (Gallery/Slideshow) רק `disabled` +
+    `disabled:opacity-50` נוספו (ללא ספינר, כדי לשמור על העיצוב
+    המינימלי הקיים של כפתורי X קטנים מרחפים). אפס רגרסיה: לוגיקת
+    ההצלחה/כישלון/רענון הקיימת בכל אחד מ-6 ה-handlers לא שונתה כלל.
+
+    **בדיקות תקינות:** קריאת קוד בלבד (ללא dev-server/build, לפי
+    הנחיות ההרצה). בדיקת איזון סוגריים/סוגריים-מסולסלים/מרובעים
+    (Python) על שלושת הקבצים לפני ואחרי — תקין
+    (GabaiPortal.tsx 933/933/723/723/170/170,
+    GallerySection.tsx 88/88/76/76/17/17,
+    ActivitySlideshow.tsx 76/76/66/66/16/16). `git diff --stat`:
+    3 קבצים, +30/-12. הקבצים נופלים תחת `.gitignore`
+    (`apps/**` vendoring-ignore rule) — נדרש `git add -f`, בוצע.
+
+    ענף `fix/b-22-whatsapp-noopener-round395-0820` (שרשרת הענפים היא
+    המקור המלא היחיד ל-loop B, לא `main`), נדחף (מפעיל פריסת Vercel
+    תחת `more30.com/galil`).
+
+    **הבא בתור:** אין עדשה שיטתית פתוחה נוספת ידועה כרגע (מיתוג,
+    קישור מחירון, SEO, נגישות, bidi, noopener, כפתורים מתים,
+    שגיאות שקטות, הרשאות edge function, ועכשיו גם double-submit
+    guards — כולן טופלו/נסרקו). סבב הבא צריך לשלוח סוכן Explore
+    לחפש עדשה חדשה שלא כוסתה עדיין. נושאים #62/#94/#115/#164/#169/
+    #254 (הכרעות/גישה חיצונית) נשארים חסומים.
+    via cloud server 167.99.131.167 [loop B]
