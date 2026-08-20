@@ -5418,3 +5418,37 @@
      (11/9) → Materials (~11) → SeekerForm (14) → Lessons (~15). אחרי
      15-egod נותרות 03-igud-ads (63 מופעים/10 קבצים) ו-01-torah-
      platform (~150 מופעים/19 קבצים) מהמיפוי של סבב 83.
+
+## 20/08/2026 (LOOP A — סבב 86) — `<label htmlFor>`/`id`: 15-egod/FindLesson.tsx
+
+480. **בדקתי מחדש `core.run_progress` לפני שהתחלתי.** סבב 85 סגור
+     (commit `feb03b04`/`c588490f`, תאם ל-HEAD). המשכתי בתור שסבב
+     85/#479 הגדיר: `FindLesson.tsx` (3 מופעים) — הקובץ הקטן ביותר
+     שנותר ב-15-egod.
+481. **קראתי את הקובץ במלואו לפני עריכה** (124 שורות). שלושה פקדים
+     ללא קישור: `Input` לשדה "אזור" (טקסט חופשי), ושני `Select`
+     (Radix, "נושא"/"יום") — אף לא אחד מהם היה תואם ל-`scale`
+     (קבוצת כפתורים) שהוחרג בסבבים קודמים, כך שכל השלושה זכאים
+     לתיקון `htmlFor`/`id`.
+482. **התיקון:** `id="findlesson-city"` על `Input` +
+     `htmlFor="findlesson-city"` תואם; `id="findlesson-subject"` על
+     `SelectTrigger` + `htmlFor` תואם; `id="findlesson-day"` על
+     `SelectTrigger` + `htmlFor` תואם. קידומת `findlesson-` נבחרה
+     כדי להימנע מהתנגשות עתידית עם `id`-ים דומים בדפים אחרים
+     (`Login.tsx`/`Invite.tsx` מסבב 85), אף שאין תרחיש נוכחי לכך.
+483. **אפס רגרסיה מאומתת:** `git diff --stat` — קובץ אחד, 6 שורות
+     נוספו/6 הוסרו (הוספת `id`/`htmlFor` בלבד על `<label>`/`<Input>`/
+     `SelectTrigger` קיימים, בלי לגעת ב-`value`/`onChange`/
+     `placeholder`/`SelectContent`/`SelectItem`). אין `tsc`/`npm`
+     בסביבה הזו — אומת בקריאה מלאה של `git diff` המלא + בדיקת איזון
+     `{}`/`()`/`[]` ב-Python על הקובץ (מאוזן). `git add -f` נדרש
+     כתקדים (15-egod/src מוחרג כברירת מחדל ב-`.gitignore` אך עוקב
+     היסטורית). Commit על אותו ענף `fix/a-icon-only-buttons-round2-0820`,
+     נדחף ל-origin (מפעיל פריסת Vercel תחת more30.com/egod).
+484. **הבא בתור:** נותרו ~11 קבצים/88-93 מופעים ב-15-egod ממופים
+     ומוכנים ללא סקר חוזר, קטן לגדול: Participants/AdminForums (4/3)
+     → RequestLesson/StudySchedule (6/5) → AdminTeachers/JoinTeacher
+     (6/7) → PortalSettings/TeacherForm (11/9) → Materials (~11) →
+     SeekerForm (14) → Lessons (~15). אחרי 15-egod נותרות 03-igud-ads
+     (63 מופעים/10 קבצים) ו-01-torah-platform (~150 מופעים/19 קבצים)
+     מהמיפוי של סבב 83.
