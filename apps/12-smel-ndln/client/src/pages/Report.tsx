@@ -49,7 +49,7 @@ function StatCard({
         <Icon className="h-5 w-5" />
       </div>
       <div className="text-sm font-medium text-muted-foreground">{label}</div>
-      <div className="mt-1 text-2xl font-extrabold text-foreground">{value}</div>
+      <div className="mt-1 text-2xl font-extrabold text-foreground" dir="ltr">{value}</div>
       {sub && <div className="mt-1 text-xs text-muted-foreground">{sub}</div>}
     </Card>
   );
