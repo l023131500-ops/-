@@ -201,12 +201,17 @@ export default function PublicPriceComparison() {
       toast({ title: "חסרים שדות חובה", description: "שם העסק, שם החנות, שם המוצר ומחיר.", variant: "destructive" });
       return;
     }
+    const priceNum = Number(submission.price);
+    if (!Number.isFinite(priceNum) || priceNum <= 0) {
+      toast({ title: "מחיר לא תקין", description: "יש להזין מחיר גדול מאפס.", variant: "destructive" });
+      return;
+    }
     setSubmitting(true);
     try {
       const res = await fetch(`${API_BASE}/api/pc/public/submit-price`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...submission, price: Number(submission.price) }),
+        body: JSON.stringify({ ...submission, price: priceNum }),
       });
       const d = await res.json();
       if (!res.ok) { toast({ title: "ההגשה נכשלה", description: d?.message, variant: "destructive" }); return; }
