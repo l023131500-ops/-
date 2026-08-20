@@ -117,7 +117,7 @@ const OrgPortal = () => {
     if (!error) {
       setRabbis(prev => prev.filter(r => r.id !== id));
       toast.success("הרב הוסר");
-    }
+    } else toast.error("שגיאה בהסרת הרב");
   };
 
   const startEdit = (lesson: any) => { setEditingId(lesson.id); setEditData({ ...lesson }); };
