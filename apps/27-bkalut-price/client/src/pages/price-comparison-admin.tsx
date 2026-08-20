@@ -328,11 +328,15 @@ export default function PriceComparisonAdmin() {
     } catch { toast({ title: "הוספת המבצע נכשלה", variant: "destructive" }); }
   }
 
+  const deletingUrlsRef = useRef<Set<string>>(new Set());
   async function del(url: string, after: () => void) {
+    if (deletingUrlsRef.current.has(url)) return;
+    deletingUrlsRef.current.add(url);
     try {
       await apiRequest("DELETE", url); after();
       toast({ title: "נמחק בהצלחה" });
     } catch { toast({ title: "המחיקה נכשלה", variant: "destructive" }); }
+    finally { deletingUrlsRef.current.delete(url); }
   }
 
   const storeName = (id: number) => stores.find((s) => s.id === id)?.name || `#${id}`;
