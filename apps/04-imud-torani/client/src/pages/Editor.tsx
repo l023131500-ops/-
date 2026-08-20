@@ -195,7 +195,7 @@ export default function Editor() {
             <input
               value={title}
               onChange={(e) => { setTitle(e.target.value); setDirty(true); }}
-              className="w-56 bg-transparent font-serif text-lg font-bold text-foreground outline-none"
+              className="w-56 rounded-sm bg-transparent font-serif text-lg font-bold text-foreground outline-none focus-visible:ring-2 focus-visible:ring-ring"
               data-testid="input-book-title"
               aria-label="שם הספר"
             />
