@@ -384,7 +384,7 @@ function TransactionsTab({ client }: { client: FinClient }) {
                 </div>
                 <div className="flex items-center gap-3">
                   <span className={`font-semibold tabular-nums ${t.kind === "income" ? "text-emerald-600" : "text-foreground"}`}>{t.kind === "income" ? "+" : "-"}{ils(t.amount)}</span>
-                  <Button size="sm" variant="ghost" onClick={() => del.mutate(t.id)}><Trash2 className="w-4 h-4 text-destructive" /></Button>
+                  <Button size="sm" variant="ghost" onClick={() => { if (!confirm("למחוק את התנועה? לא ניתן לשחזר.")) return; del.mutate(t.id); }}><Trash2 className="w-4 h-4 text-destructive" /></Button>
                 </div>
               </div>
             );
