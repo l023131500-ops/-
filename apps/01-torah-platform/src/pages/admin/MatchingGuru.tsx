@@ -132,7 +132,10 @@ const AdminMatching = () => {
             <div className="divide-y divide-border max-h-[70vh] overflow-y-auto">
               {filteredLeads.map(l => (
                 <div key={l.id} className={`p-4 cursor-pointer transition-colors ${selectedLead?.id === l.id ? "bg-secondary/10" : "hover:bg-muted/30"}`}
-                  onClick={() => setSelectedLead(l)}>
+                  onClick={() => setSelectedLead(l)}
+                  role="button"
+                  tabIndex={0}
+                  onKeyDown={e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); setSelectedLead(l); } }}>
                   <div className="flex items-start justify-between gap-3">
                     <div className="flex-1 min-w-0">
                       <p className="font-bold text-foreground">{l.full_name}</p>
@@ -170,7 +173,10 @@ const AdminMatching = () => {
             <div className="divide-y divide-border max-h-[70vh] overflow-y-auto">
               {filteredTeachers.map(t => (
                 <div key={t.id} className={`p-4 cursor-pointer transition-colors ${selectedTeacher?.id === t.id ? "bg-secondary/10" : "hover:bg-muted/30"}`}
-                  onClick={() => setSelectedTeacher(t)}>
+                  onClick={() => setSelectedTeacher(t)}
+                  role="button"
+                  tabIndex={0}
+                  onKeyDown={e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); setSelectedTeacher(t); } }}>
                   <div className="flex items-start justify-between gap-3">
                     <div className="flex-1 min-w-0">
                       <p className="font-bold text-foreground">{t.full_name} {t.organization_name && <span className="text-muted-foreground text-xs">| {t.organization_name}</span>}</p>

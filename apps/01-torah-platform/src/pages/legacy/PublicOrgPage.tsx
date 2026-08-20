@@ -123,6 +123,9 @@ const PublicOrgPage = () => {
                 {lessons.map((lesson, i) => (
                   <motion.div key={lesson.id} initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}
                     onClick={() => setSelectedLesson(lesson)}
+                    role="button"
+                    tabIndex={0}
+                    onKeyDown={e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); setSelectedLesson(lesson); } }}
                     className="bg-card rounded-2xl border border-border p-5 hover:shadow-lg transition-shadow cursor-pointer hover:border-gold/30">
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-2 flex-wrap">

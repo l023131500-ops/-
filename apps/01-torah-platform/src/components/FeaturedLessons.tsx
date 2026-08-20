@@ -60,6 +60,9 @@ const LessonCard = ({ lesson, onClick }: { lesson: any; onClick: () => void }) =
     <motion.div
       whileHover={{ y: -3, scale: 1.02 }}
       onClick={onClick}
+      role="button"
+      tabIndex={0}
+      onKeyDown={e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onClick(); } }}
       className="group cursor-pointer bg-card rounded-2xl border border-border hover:border-primary/30 hover:shadow-elegant transition-all duration-300 overflow-hidden"
     >
       <div className="p-5">

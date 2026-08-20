@@ -227,6 +227,9 @@ const LessonDirectory = () => {
                     transition={{ delay: i * 0.03 }}
                     whileHover={{ y: -4 }}
                     onClick={() => setSelectedLesson(lesson)}
+                    role="button"
+                    tabIndex={0}
+                    onKeyDown={e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); setSelectedLesson(lesson); } }}
                     className="bg-card rounded-2xl border border-border hover:border-teal/20 shadow-elegant transition-all duration-300 overflow-hidden cursor-pointer group"
                   >
                     <div className="p-6">
