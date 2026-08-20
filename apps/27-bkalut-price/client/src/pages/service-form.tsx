@@ -43,7 +43,7 @@ interface PublicServiceContext {
   intake: NormalizedQuestion[];
   documents: NormalizedQuestion[];
   sensitive: boolean;
-  categoryTopics: Array<{ id: number; topic: string; category: string }>;
+  categoryTopics: Array<{ id: number; topic: string; category: string; subCategory: string }>;
 }
 
 const CONTACT_EMAIL = "l023131500@gmail.com";
@@ -107,7 +107,7 @@ export default function ServiceFormPage() {
   const [additionalOpen, setAdditionalOpen] = useState(false);
   const [category, setCategory] = useState("");
   const [files, setFiles] = useState<Record<string, string[]>>({});
-  const [additionalTopics, setAdditionalTopics] = useState<Array<{ id: number; topic: string; category: string }>>([]);
+  const [additionalTopics, setAdditionalTopics] = useState<Array<{ id: number; topic: string; category: string; subCategory: string }>>([]);
   const [termsAccepted, setTermsAccepted] = useState(false);
   const [legalDocsAccepted, setLegalDocsAccepted] = useState<Record<string, boolean>>({
     terms: false,
@@ -218,7 +218,7 @@ export default function ServiceFormPage() {
     return source
       .filter((t) => (category ? t.category === category : false))
       .filter((t) => t.id !== (row?.id ?? -1))
-      .map((t) => ({ id: t.id, topic: t.topic, category: t.category }))
+      .map((t) => ({ id: t.id, topic: t.topic, category: t.category, subCategory: t.subCategory }))
       .slice(0, 60);
   }, [allPublicRights, category, row?.id]);
   // Categories to show in the additional-topics picker — union of meta list
@@ -284,11 +284,11 @@ export default function ServiceFormPage() {
     },
   });
 
-  function toggleAdditionalTopic(topic: { id: number; topic: string; category: string }) {
+  function toggleAdditionalTopic(topic: { id: number; topic: string; category: string; subCategory: string }) {
     setAdditionalTopics((prev) => {
       const exists = prev.some((item) => item.id === topic.id);
       if (exists) return prev.filter((item) => item.id !== topic.id);
-      return [...prev, { id: topic.id, topic: topic.topic, category: topic.category }];
+      return [...prev, { id: topic.id, topic: topic.topic, category: topic.category, subCategory: topic.subCategory }];
     });
   }
 
