@@ -162,8 +162,16 @@ export function EntitlementsTab({ clientId }: { clientId: string }) {
               const isOpen = expanded === e.id;
               return (
                 <li key={e.id} className={cn("p-3 print:p-2", isOpen && "bg-accent/30")}>
-                  <div className="flex items-start gap-3 cursor-pointer print:cursor-default" onClick={() => setExpanded(isOpen ? null : e.id)}>
-                    <Button size="icon" variant="ghost" className="h-6 w-6 print:hidden" aria-label="הרחב">
+                  <div
+                    className="flex items-start gap-3 cursor-pointer print:cursor-default"
+                    role="button"
+                    tabIndex={0}
+                    aria-expanded={isOpen}
+                    aria-label={`${isOpen ? "כווץ" : "הרחב"} זכאות: ${e.title}`}
+                    onClick={() => setExpanded(isOpen ? null : e.id)}
+                    onKeyDown={(ev) => { if (ev.key === "Enter" || ev.key === " ") { ev.preventDefault(); setExpanded(isOpen ? null : e.id); } }}
+                  >
+                    <Button size="icon" variant="ghost" className="h-6 w-6 print:hidden" tabIndex={-1} aria-hidden="true">
                       {isOpen ? <ChevronDown className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
                     </Button>
                     <div className="flex-1 min-w-0">

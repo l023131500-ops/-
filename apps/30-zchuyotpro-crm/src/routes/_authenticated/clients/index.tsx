@@ -103,7 +103,11 @@ function ClientsList() {
                 <TableRow
                   key={c.id}
                   className="cursor-pointer hover:bg-muted/50"
+                  role="button"
+                  tabIndex={0}
+                  aria-label={`פרטי לקוח: ${c.first_name} ${c.last_name}`}
                   onClick={() => navigate({ to: "/clients/$id", params: { id: c.id } })}
+                  onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); navigate({ to: "/clients/$id", params: { id: c.id } }); } }}
                 >
                   <TableCell className="font-mono text-xs">{c.file_number ?? "—"}</TableCell>
                   <TableCell className="font-medium">{c.first_name} {c.last_name}</TableCell>

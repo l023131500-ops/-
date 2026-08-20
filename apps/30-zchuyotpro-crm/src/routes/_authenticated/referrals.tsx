@@ -108,7 +108,15 @@ function ReferralsDashboardPage() {
             <TableBody>
               {rows.length === 0 && <TableRow><TableCell colSpan={6} className="text-center py-12 text-muted-foreground">לא נמצאו הפניות</TableCell></TableRow>}
               {rows.map((r) => (
-                <TableRow key={r.id} className="cursor-pointer hover:bg-muted/50" onClick={() => setSelected(r.id)}>
+                <TableRow
+                  key={r.id}
+                  className="cursor-pointer hover:bg-muted/50"
+                  role="button"
+                  tabIndex={0}
+                  aria-label={`פרטי הפניה: ${r.client?.first_name ?? ""} ${r.client?.last_name ?? ""}`.trim()}
+                  onClick={() => setSelected(r.id)}
+                  onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); setSelected(r.id); } }}
+                >
                   <TableCell className="font-mono text-xs">{r.client?.file_number ?? "—"}</TableCell>
                   <TableCell>{r.client?.first_name} {r.client?.last_name}</TableCell>
                   <TableCell>{r.partner?.company_name ?? "—"}</TableCell>
