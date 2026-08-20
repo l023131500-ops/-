@@ -11969,3 +11969,45 @@
     20-igud-portal `public/app.js` (444 שורות בלבד, פחות תכונות) —
     כדאי לבדוק שם גם. נושאים #62/#94/#115/#164/#169/#254 נשארים חסומים.
     via cloud server 167.99.131.167 [loop B]
+
+## 20/08/2026 — סבב 465 (loop B)
+
+465. **סגירת המועמד מסבב 464: שאר ה-handlers של `submit` ללא
+    `disabled` ב-19-igud-shiurim-portal `public/app.js`.** סרקתי את כל
+    ~19 מופעי `addEventListener('submit'` בקובץ מול הדפוס הקיים
+    (`submitBtn.disabled = true` לפני הקריאה ל-API, `finally { ... =
+    false }` אחריה — משמש כבר ב-donate-form/join-form/subpay-form/
+    lesson-form/service-form/ad-form). מצאתי 13 handlers נוספים חסרי
+    הדפוס: `ask-form` (1145), שני מופעי `nedarim-config-form` (tenant
+    1550 + synagogue 1768), `profile-form` (1633), `prayer-form`
+    (1837), `syn-profile-form` (1889), `te-profile-form` (1981),
+    `te-lesson-form` (2051), `te-ad-form` (2123), `login-form` (2222,
+    זרימת Supabase Auth ישירה ללא try/catch — הותאם ל-if(error)
+    ל-set-false-ו-return), `create-form` (2449), `link-form` (2489),
+    ובנוסף מופע אחד שלא הוזכר ברשימת סבב 464: `contact-form`
+    (`wireContactForm`, שורה 969). תיקנתי את כולם — סוגר את קטגוריית
+    הבאג הזו לגמרי בקובץ הזה (0 handlers נותרו ללא הגנה).
+
+    **התיקון:** אותו דפוס תוספתי בכל מקום — `const submitBtn =
+    e.target.querySelector('button[type="submit"]'); if (submitBtn)
+    submitBtn.disabled = true;` מיד אחרי `e.preventDefault()`, ו-
+    `finally { if (submitBtn) submitBtn.disabled = false; }` עוטף את
+    ה-`try` הקיים. לוגיקת ה-API/alert/refresh/draw בכל handler לא
+    השתנתה.
+
+    **בדיקות תקינות:** קריאת קוד בלבד (ללא dev-server/build, לפי
+    הנחיות ההרצה). `node -c` על הקובץ עבר נקי. ספירת סוגריים/סוגריים-
+    מסולסלים/מרובעים לפני/אחרי (Python): `(` 1623/1623, `{` 956/956,
+    `[` 99/99 (מאוזן). `git diff --stat`: קובץ יחיד, +55/-1.
+
+    לא נגעתי במערכות מוגנות 08/09/bkalut-app/bkalot-admin/zr_*/
+    NEDARIM3873/csj/csj_src/igud, ב-`main`, או במערכת מחוץ ל-scope
+    (17-25/27/28 בלבד).
+
+    ענף `fix/b-22-whatsapp-noopener-round395-0820` (שרשרת הענפים היא
+    המקור המלא היחיד ל-loop B, לא `main`), נדחף.
+
+    **הבא בתור:** הקובץ המקביל ב-20-igud-portal `public/app.js` (444
+    שורות, פחות תכונות) עדיין לא נסרק לאותו דפוס — מומלץ הראשון בסבב
+    הבא. נושאים #62/#94/#115/#164/#169/#254 נשארים חסומים.
+    via cloud server 167.99.131.167 [loop B]
