@@ -85,9 +85,10 @@ table{width:100%;border-collapse:collapse;font-size:14px}
 th,td{text-align:start;padding:10px 8px;border-bottom:1px solid var(--line-2)}
 th{color:var(--muted);font-weight:400;font-size:12px;text-transform:uppercase;letter-spacing:.04em}
 .badge{display:inline-block;font-size:12px;padding:3px 9px;border-radius:20px;border:1px solid var(--line)}
-.badge.pending{color:var(--gold-soft);border-color:var(--gold)}
-.badge.used{color:var(--emerald);border-color:rgba(20,184,138,.5)}
-.badge.revoked,.badge.expired{color:var(--muted)}
+.badge.pending,.badge.scheduled{color:var(--gold-soft);border-color:var(--gold)}
+.badge.used,.badge.confirmed{color:var(--emerald);border-color:rgba(20,184,138,.5)}
+.badge.revoked,.badge.expired,.badge.declined,.badge.cancelled{color:var(--muted)}
+.badge.completed{color:var(--ink-2)}
 .na{color:var(--muted)}
 .empty{color:var(--muted);font-size:14px;padding:20px 0}
 .codebox{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px;background:var(--royal-2);
@@ -192,6 +193,8 @@ th{color:var(--muted);font-weight:400;font-size:12px;text-transform:uppercase;le
     <div class="tabs" role="tablist">
       <button class="tab active" data-view="clients">לקוחות (CRM)</button>
       <button class="tab" data-view="invites">הזמנות</button>
+      <button class="tab" data-view="calendar">יומן</button>
+      <button class="tab" data-view="reminders">תזכורות</button>
       <button class="tab" data-view="content">ספריית תוכן</button>
     </div>
 
@@ -225,6 +228,66 @@ th{color:var(--muted);font-weight:400;font-size:12px;text-transform:uppercase;le
       <div class="card">
         <h2>הזמנות שיצרתי</h2>
         <div id="invitesTable"><div class="empty">טוען…</div></div>
+      </div>
+    </section>
+
+    <section id="viewCalendar" hidden>
+      <div class="card">
+        <h2>קביעת פגישה</h2>
+        <div class="row">
+          <div>
+            <label for="aClient">זוג *</label>
+            <select id="aClient"></select>
+          </div>
+          <div>
+            <label for="aWhen">תאריך ושעה *</label>
+            <input id="aWhen" type="datetime-local" />
+          </div>
+        </div>
+        <div class="row">
+          <div>
+            <label for="aDuration">משך (דקות)</label>
+            <input id="aDuration" type="number" min="15" step="15" value="60" />
+          </div>
+          <div>
+            <label for="aLocation">מיקום</label>
+            <input id="aLocation" placeholder="לדוגמה: זום / המשרד" />
+          </div>
+        </div>
+        <label for="aTopic">נושא</label>
+        <input id="aTopic" />
+        <div id="aErr"></div>
+        <button class="btn" id="aSubmit">קביעת הפגישה</button>
+      </div>
+      <div class="card">
+        <h2>הפגישות שלי</h2>
+        <div id="apptTable"><div class="empty">טוען…</div></div>
+      </div>
+    </section>
+
+    <section id="viewReminders" hidden>
+      <div class="card">
+        <h2>תזכורת חדשה</h2>
+        <div class="row">
+          <div>
+            <label for="rmClient">זוג *</label>
+            <select id="rmClient"></select>
+          </div>
+          <div>
+            <label for="rmWhen">תאריך יעד</label>
+            <input id="rmWhen" type="datetime-local" />
+          </div>
+        </div>
+        <label for="rmTitle">כותרת *</label>
+        <input id="rmTitle" placeholder="לדוגמה: לשלוח טופס פרטים" />
+        <label for="rmDetail">פרטים</label>
+        <input id="rmDetail" />
+        <div id="rmErr"></div>
+        <button class="btn" id="rmSubmit">הוספת תזכורת</button>
+      </div>
+      <div class="card">
+        <h2>התזכורות שלי</h2>
+        <div id="reminderTable"><div class="empty">טוען…</div></div>
       </div>
     </section>
 
@@ -270,6 +333,7 @@ const dt = (x) => (x ? new Date(x).toLocaleDateString('he-IL') : NA);
 const dtm = (x) => (x ? new Date(x).toLocaleString('he-IL', { dateStyle: 'short', timeStyle: 'short' }) : NA);
 const SEGMENT_LABEL = { chatan: 'חתנים', kallah: 'כלות' };
 const INVITE_LABEL = { pending: 'ממתין', used: 'מומש', revoked: 'בוטל', expired: 'פג תוקף' };
+const APPT_LABEL = { scheduled: 'ממתין לאישור הזוג', confirmed: 'אושרה הגעה', declined: 'הזוג לא יגיע', cancelled: 'בוטלה', completed: 'התקיימה' };
 
 function show(id) {
   for (const el of [
@@ -330,6 +394,14 @@ async function renderClients() {
   el.innerHTML = '<table><thead><tr><th>שם</th><th>בן/בת זוג</th><th>טלפון</th><th>תאריך חתונה</th><th>הערות</th><th></th></tr></thead><tbody>' +
     CLIENTS.map(clientRow).join('') + '</tbody></table>';
   for (const b of el.querySelectorAll('[data-edit]')) b.addEventListener('click', () => editClient(b.dataset.edit));
+  populateClientSelects();
+}
+
+function populateClientSelects() {
+  const opts = CLIENTS.length
+    ? CLIENTS.map((c) => '<option value="' + c.id + '">' + esc(c.full_name) + (c.partner_name ? ' ו' + esc(c.partner_name) : '') + '</option>').join('')
+    : '<option value="">אין עדיין זוגות</option>';
+  for (const sel of [$('aClient'), $('rmClient')]) if (sel) sel.innerHTML = opts;
 }
 
 function editClient(id) {
@@ -402,6 +474,131 @@ async function renderInvites() {
   }
 }
 
+/* ── dashboard: calendar (appointments + attendance confirmations) ──────── */
+$('aSubmit').addEventListener('click', async () => {
+  const clientId = $('aClient').value;
+  const when = $('aWhen').value;
+  if (!clientId) { $('aErr').innerHTML = '<div class="err">יש לבחור זוג.</div>'; return; }
+  if (!when) { $('aErr').innerHTML = '<div class="err">יש לבחור תאריך ושעה.</div>'; return; }
+  $('aSubmit').disabled = true;
+  try {
+    await rpc('maatefet_appointment_upsert', {
+      p_client_id: clientId,
+      p_scheduled_at: new Date(when).toISOString(),
+      p_duration_minutes: Number($('aDuration').value) || 60,
+      p_location: $('aLocation').value.trim() || null,
+      p_topic: $('aTopic').value.trim() || null,
+    });
+    $('aWhen').value = ''; $('aLocation').value = ''; $('aTopic').value = '';
+    $('aErr').innerHTML = '';
+    renderAppointments();
+  } catch (e) {
+    $('aErr').innerHTML = '<div class="err">' + esc(e.message) + '</div>';
+  } finally {
+    $('aSubmit').disabled = false;
+  }
+});
+
+function apptRow(a) {
+  const c = CLIENTS.find((x) => x.id === a.client_id);
+  const canCancel = a.status !== 'cancelled' && a.status !== 'completed';
+  return '<tr>' +
+    '<td>' + v(c ? c.full_name : null) + '</td>' +
+    '<td>' + dtm(a.scheduled_at) + '</td>' +
+    '<td>' + v(a.topic) + '</td>' +
+    '<td>' + v(a.location) + '</td>' +
+    '<td><span class="badge ' + a.status + '">' + (APPT_LABEL[a.status] || a.status) + '</span></td>' +
+    '<td>' + (canCancel ? '<button class="btn btn-sm btn-danger" data-cancel-appt="' + a.id + '">ביטול</button>' : '') + '</td>' +
+    '</tr>';
+}
+
+async function renderAppointments() {
+  const el = $('apptTable');
+  el.innerHTML = '<div class="empty">טוען…</div>';
+  let rows;
+  try {
+    rows = await rpc('maatefet_appointments_list');
+  } catch (e) {
+    el.innerHTML = '<div class="err">' + esc(e.message) + '</div>';
+    return;
+  }
+  if (!rows.length) { el.innerHTML = '<div class="empty">עדיין לא נקבעו פגישות.</div>'; return; }
+  el.innerHTML = '<table><thead><tr><th>זוג</th><th>מתי</th><th>נושא</th><th>מיקום</th><th>סטטוס</th><th></th></tr></thead><tbody>' +
+    rows.map(apptRow).join('') + '</tbody></table>';
+  for (const b of el.querySelectorAll('[data-cancel-appt]')) {
+    b.addEventListener('click', () => {
+      if (!confirm('לבטל את הפגישה?')) return;
+      rpc('maatefet_appointment_cancel', { p_id: b.dataset.cancelAppt }).then(renderAppointments).catch((e) => alert(e.message));
+    });
+  }
+}
+
+/* ── dashboard: reminders ─────────────────────────────────────────────── */
+$('rmSubmit').addEventListener('click', async () => {
+  const clientId = $('rmClient').value;
+  const title = $('rmTitle').value.trim();
+  if (!clientId) { $('rmErr').innerHTML = '<div class="err">יש לבחור זוג.</div>'; return; }
+  if (!title) { $('rmErr').innerHTML = '<div class="err">כותרת היא שדה חובה.</div>'; return; }
+  $('rmSubmit').disabled = true;
+  try {
+    const when = $('rmWhen').value;
+    await rpc('maatefet_reminder_upsert', {
+      p_client_id: clientId, p_title: title,
+      p_detail: $('rmDetail').value.trim() || null,
+      p_remind_at: when ? new Date(when).toISOString() : null,
+    });
+    $('rmTitle').value = ''; $('rmDetail').value = ''; $('rmWhen').value = '';
+    $('rmErr').innerHTML = '';
+    renderReminders();
+  } catch (e) {
+    $('rmErr').innerHTML = '<div class="err">' + esc(e.message) + '</div>';
+  } finally {
+    $('rmSubmit').disabled = false;
+  }
+});
+
+function reminderRow(r) {
+  const c = CLIENTS.find((x) => x.id === r.client_id);
+  return '<tr>' +
+    '<td>' + v(c ? c.full_name : null) + '</td>' +
+    '<td>' + v(r.title) + '</td>' +
+    '<td>' + v(r.detail) + '</td>' +
+    '<td>' + dtm(r.remind_at) + '</td>' +
+    '<td><span class="badge ' + (r.is_done ? 'used' : 'pending') + '">' + (r.is_done ? 'טופל' : 'פתוח') + '</span></td>' +
+    '<td>' +
+      '<button class="btn btn-sm btn-quiet" data-toggle-reminder="' + r.id + '" data-done="' + r.is_done + '">' + (r.is_done ? 'סימון כפתוח' : 'סימון כטופל') + '</button> ' +
+      '<button class="btn btn-sm btn-danger" data-delete-reminder="' + r.id + '">מחיקה</button>' +
+    '</td>' +
+    '</tr>';
+}
+
+async function renderReminders() {
+  const el = $('reminderTable');
+  el.innerHTML = '<div class="empty">טוען…</div>';
+  let rows;
+  try {
+    rows = await rpc('maatefet_reminders_list');
+  } catch (e) {
+    el.innerHTML = '<div class="err">' + esc(e.message) + '</div>';
+    return;
+  }
+  if (!rows.length) { el.innerHTML = '<div class="empty">עדיין אין תזכורות.</div>'; return; }
+  el.innerHTML = '<table><thead><tr><th>זוג</th><th>כותרת</th><th>פרטים</th><th>תאריך יעד</th><th>סטטוס</th><th></th></tr></thead><tbody>' +
+    rows.map(reminderRow).join('') + '</tbody></table>';
+  for (const b of el.querySelectorAll('[data-toggle-reminder]')) {
+    b.addEventListener('click', () => {
+      const isDone = b.dataset.done === 'true';
+      rpc('maatefet_reminder_upsert', { p_id: b.dataset.toggleReminder, p_is_done: !isDone }).then(renderReminders).catch((e) => alert(e.message));
+    });
+  }
+  for (const b of el.querySelectorAll('[data-delete-reminder]')) {
+    b.addEventListener('click', () => {
+      if (!confirm('למחוק את התזכורת?')) return;
+      rpc('maatefet_reminder_delete', { p_id: b.dataset.deleteReminder }).then(renderReminders).catch((e) => alert(e.message));
+    });
+  }
+}
+
 /* ── dashboard: content library ────────────────────────────────────────── */
 $('cSubmit').addEventListener('click', async () => {
   const title = $('cTitle').value.trim();
@@ -435,12 +632,14 @@ async function renderContent() {
 }
 
 /* ── tabs ───────────────────────────────────────────────────────────────── */
-const VIEWS = { clients: 'viewClients', invites: 'viewInvites', content: 'viewContent' };
+const VIEWS = { clients: 'viewClients', invites: 'viewInvites', calendar: 'viewCalendar', reminders: 'viewReminders', content: 'viewContent' };
 for (const tab of document.querySelectorAll('.tab')) {
   tab.addEventListener('click', () => {
     for (const t of document.querySelectorAll('.tab')) t.classList.toggle('active', t === tab);
     for (const key in VIEWS) $(VIEWS[key]).hidden = key !== tab.dataset.view;
     if (tab.dataset.view === 'invites') renderInvites();
+    if (tab.dataset.view === 'calendar') renderAppointments();
+    if (tab.dataset.view === 'reminders') renderReminders();
     if (tab.dataset.view === 'content') renderContent();
   });
 }
