@@ -41,6 +41,7 @@ export default function ShelfPage() {
   const [drive, setDrive] = useState<ShelfItem[]>([]);
   const [uploads, setUploads] = useState<ShelfItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const [err, setErr] = useState("");
   const [cat, setCat] = useState("");
   const [sender, setSender] = useState("");
   const [kind, setKind] = useState("");
@@ -50,13 +51,20 @@ export default function ShelfPage() {
 
   useEffect(() => {
     let alive = true;
-    Promise.all([
-      fetch(withBase("/api/drive-catalog")).then((r) => (r.ok ? r.json() : { items: [] })).catch(() => ({ items: [] })),
-      fetch(withBase("/api/catalog")).then((r) => (r.ok ? r.json() : { items: [] })).catch(() => ({ items: [] })),
+    // Each source can fail independently (drive proxy vs. uploads table). A failed
+    // source used to fall back to { items: [] } silently, so the shelf quietly
+    // shrank to just the in-repo seed items with no sign anything was wrong —
+    // report the failure instead so a real outage doesn't look like an empty shelf.
+    Promise.allSettled([
+      fetch(withBase("/api/drive-catalog")).then((r) => (r.ok ? r.json() : Promise.reject(new Error(String(r.status))))),
+      fetch(withBase("/api/catalog")).then((r) => (r.ok ? r.json() : Promise.reject(new Error(String(r.status))))),
     ]).then(([d, u]) => {
       if (!alive) return;
-      if (Array.isArray(d.items)) setDrive(d.items as ShelfItem[]);
-      if (Array.isArray(u.items)) setUploads(u.items as ShelfItem[]);
+      if (d.status === "fulfilled" && Array.isArray(d.value.items)) setDrive(d.value.items as ShelfItem[]);
+      if (u.status === "fulfilled" && Array.isArray(u.value.items)) setUploads(u.value.items as ShelfItem[]);
+      if (d.status === "rejected" || u.status === "rejected") {
+        setErr("חלק מהחומרים לא נטענו כרגע (שגיאת רשת/שרת). מוצגים רק החומרים הקבועים באתר — רעננו את הדף כדי לנסות שוב.");
+      }
       setLoading(false);
     });
     return () => {
@@ -171,6 +179,12 @@ export default function ShelfPage() {
           </button>
         ))}
       </div>
+
+      {err && (
+        <div className="card" style={{ padding: 14, marginBottom: 14, background: "#f8e8ee", borderColor: "#e6c3d1", color: "#a03a5c", fontSize: 13.5 }}>
+          {err}
+        </div>
+      )}
 
       <div className="card" style={{ padding: 14, display: "flex", gap: 12, flexWrap: "wrap", alignItems: "center", marginBottom: 14 }}>
         <input className="input" style={{ flex: "1 1 220px" }} placeholder="חיפוש חומר…" aria-label="חיפוש חומר" value={q} onChange={(e) => setQ(e.target.value)} />
