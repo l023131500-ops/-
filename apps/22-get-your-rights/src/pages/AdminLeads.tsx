@@ -143,8 +143,12 @@ const AdminLeads = () => {
   const handleSaveNotes = async () => {
     if (!selectedLead) return;
     setSavingNotes(true);
-    await supabase.from("leads").update({ admin_notes: editNotes } as any).eq("id", selectedLead.id);
+    const { error } = await supabase.from("leads").update({ admin_notes: editNotes } as any).eq("id", selectedLead.id);
     setSavingNotes(false);
+    if (error) {
+      toast({ title: "שגיאה", description: "שמירת ההערות נכשלה", variant: "destructive" });
+      return;
+    }
     toast({ title: "נשמר", description: "ההערות עודכנו" });
     setLeads(leads.map(l => l.id === selectedLead.id ? { ...l, admin_notes: editNotes } : l));
     setSelectedLead({ ...selectedLead, admin_notes: editNotes });
@@ -157,14 +161,23 @@ const AdminLeads = () => {
     const updates: any = { status: newStatus };
     if (newStatus === "handled") updates.handled_description = handledDesc;
     if (newStatus === "closed") updates.closed_at = new Date().toISOString();
-    await supabase.from("leads").update(updates).eq("id", leadId);
+    const { error } = await supabase.from("leads").update(updates).eq("id", leadId);
+    if (error) {
+      toast({ title: "שגיאה", description: "עדכון הסטטוס נכשל", variant: "destructive" });
+      return;
+    }
     toast({ title: "עודכן", description: `סטטוס שונה ל${statusConfig[newStatus]?.label}` });
     setLeads(leads.map(l => l.id === leadId ? { ...l, ...updates } : l));
     if (selectedLead?.id === leadId) setSelectedLead({ ...selectedLead, ...updates });
   };
 
   const handleDelete = async (leadId: string) => {
-    await supabase.from("leads").delete().eq("id", leadId);
+    const { error } = await supabase.from("leads").delete().eq("id", leadId);
+    if (error) {
+      toast({ title: "שגיאה", description: "מחיקת הליד נכשלה", variant: "destructive" });
+      setDeleteConfirm(null);
+      return;
+    }
     toast({ title: "נמחק", description: "הליד נמחק" });
     setLeads(leads.filter(l => l.id !== leadId));
     if (selectedLead?.id === leadId) setSelectedLead(null);
@@ -175,12 +188,16 @@ const AdminLeads = () => {
     if (!editingLead) return;
     setSavingEdit(true);
     const { id, created_at, ...rest } = editingLead;
-    await supabase.from("leads").update(rest as any).eq("id", id);
+    const { error } = await supabase.from("leads").update(rest as any).eq("id", id);
+    setSavingEdit(false);
+    if (error) {
+      toast({ title: "שגיאה", description: "עדכון פרטי הלקוח נכשל", variant: "destructive" });
+      return;
+    }
     toast({ title: "עודכן", description: "פרטי הלקוח עודכנו" });
     setLeads(leads.map(l => l.id === id ? editingLead : l));
     if (selectedLead?.id === id) setSelectedLead(editingLead);
     setEditingLead(null);
-    setSavingEdit(false);
   };
 
   const exportCSV = () => {

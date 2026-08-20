@@ -60,12 +60,14 @@ const AdminSettings = () => {
   const saveWebhook = async () => {
     setWebhookSaving(true);
     const { data: existing } = await supabase.from("site_settings").select("id").eq("key", "webhook_url").single();
-    if (existing) {
-      await supabase.from("site_settings").update({ value: webhookUrl, updated_at: new Date().toISOString() }).eq("key", "webhook_url");
-    } else {
-      await supabase.from("site_settings").insert({ key: "webhook_url", value: webhookUrl });
-    }
+    const { error } = existing
+      ? await supabase.from("site_settings").update({ value: webhookUrl, updated_at: new Date().toISOString() }).eq("key", "webhook_url")
+      : await supabase.from("site_settings").insert({ key: "webhook_url", value: webhookUrl });
     setWebhookSaving(false);
+    if (error) {
+      toast({ title: "שגיאה", description: "שמירת ה-Webhook נכשלה", variant: "destructive" });
+      return;
+    }
     toast({ title: "נשמר", description: "כתובת ה-Webhook עודכנה בהצלחה" });
   };
 
@@ -86,12 +88,18 @@ const AdminSettings = () => {
     const hash = Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, "0")).join("");
 
     const { data: { session } } = await supabase.auth.getSession();
-    await supabase.from("api_keys").insert({
+    const { error } = await supabase.from("api_keys").insert({
       name: newKeyName,
       key_hash: hash,
       key_prefix: prefix,
       created_by: session?.user?.id || null,
     } as any);
+
+    if (error) {
+      setCreating(false);
+      toast({ title: "שגיאה", description: "יצירת מפתח ה-API נכשלה", variant: "destructive" });
+      return;
+    }
 
     setGeneratedKey(key);
     setNewKeyName("");
@@ -100,7 +108,11 @@ const AdminSettings = () => {
   };
 
   const deleteKey = async (id: string) => {
-    await supabase.from("api_keys").delete().eq("id", id);
+    const { error } = await supabase.from("api_keys").delete().eq("id", id);
+    if (error) {
+      toast({ title: "שגיאה", description: "מחיקת המפתח נכשלה", variant: "destructive" });
+      return;
+    }
     loadApiKeys();
     toast({ title: "נמחק", description: "מפתח ה-API נמחק" });
   };
@@ -252,12 +264,14 @@ const AdminSettings = () => {
                 <Button onClick={async () => {
                   setN8nSaving(true);
                   const { data: existing } = await supabase.from("site_settings").select("id").eq("key", "n8n_webhook_url").single();
-                  if (existing) {
-                    await supabase.from("site_settings").update({ value: n8nWebhookUrl, updated_at: new Date().toISOString() }).eq("key", "n8n_webhook_url");
-                  } else {
-                    await supabase.from("site_settings").insert({ key: "n8n_webhook_url", value: n8nWebhookUrl });
-                  }
+                  const { error } = existing
+                    ? await supabase.from("site_settings").update({ value: n8nWebhookUrl, updated_at: new Date().toISOString() }).eq("key", "n8n_webhook_url")
+                    : await supabase.from("site_settings").insert({ key: "n8n_webhook_url", value: n8nWebhookUrl });
                   setN8nSaving(false);
+                  if (error) {
+                    toast({ title: "שגיאה", description: "שמירת ה-Webhook של n8n נכשלה", variant: "destructive" });
+                    return;
+                  }
                   toast({ title: "נשמר", description: "כתובת ה-Webhook של n8n עודכנה בהצלחה" });
                 }} disabled={n8nSaving} className="gap-2">
                   {n8nSaving ? <RefreshCw className="w-4 h-4 animate-spin" /> : null}
