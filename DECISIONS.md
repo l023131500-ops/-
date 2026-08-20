@@ -5452,3 +5452,42 @@
      SeekerForm (14) → Lessons (~15). אחרי 15-egod נותרות 03-igud-ads
      (63 מופעים/10 קבצים) ו-01-torah-platform (~150 מופעים/19 קבצים)
      מהמיפוי של סבב 83.
+
+## 20/08/2026 (LOOP A — סבב 87) — `<label htmlFor>`/`id`: 15-egod/Participants.tsx, AdminForums.tsx
+
+485. **בדקתי מחדש `core.run_progress` לפני שהתחלתי.** סבב 86 סגור
+     (commit `568f4dce`, תאם ל-HEAD). המשכתי בתור שסבב 85/#479
+     הגדיר: `Participants.tsx`/`AdminForums.tsx` (4/3 מופעים) — הבא
+     בגודל אחרי `FindLesson.tsx`.
+486. **קראתי את שני הקבצים במלואם לפני עריכה.** `Participants.tsx`
+     (133 שורות): 4 פקדים ללא קישור בדיאלוג "הוסף משתתף" — `Select`
+     (שיעור), ו-3 `Input` (שם מלא/טלפון/מייל), כולם דפוס תווית-אח
+     צמוד רגיל. `AdminForums.tsx` (206 שורות): בדיאלוג "פורום חדש" —
+     `Input` (שם), `Textarea` (תיאור), `Input` מספרי (סדר תצוגה) ללא
+     קישור; הרביעי, "פורום מוגבל", הוא `<label>` שכבר **עוטף** את
+     ה-`Switch` שלו (איגוד מרומז תקני ב-HTML) — הוחרג מהתיקון, אין
+     צורך ב-`htmlFor`/`id` נוסף.
+487. **התיקון:** `Participants.tsx` — `id="participant-lesson"` על
+     `SelectTrigger`, `id="participant-fullname"`/`"participant-phone"`/
+     `"participant-email"` על ה-`Input`ים המתאימים, ו-`htmlFor` תואם
+     על כל תווית. `AdminForums.tsx` — `id="forum-name"`/
+     `"forum-description"`/`"forum-sort-order"` על `Input`/`Textarea`/
+     `Input`, ו-`htmlFor` תואם. קידומות `participant-`/`forum-` נבחרו
+     כדי להימנע מהתנגשות עתידית עם `id`-ים דומים בדפים אחרים.
+488. **אפס רגרסיה מאומתת:** `git diff --stat` — 2 קבצים, 14 שורות
+     נוספו/14 הוסרו (הוספת `id`/`htmlFor` בלבד על `<label>`/`<Input>`/
+     `<Textarea>`/`SelectTrigger` קיימים, בלי לגעת ב-`value`/
+     `onChange`/ולידציה/`placeholder`). אין `tsc`/`npm` בסביבה הזו —
+     אומת בקריאה מלאה של `git diff` המלא + בדיקת איזון `{}`/`()`/`[]`
+     ב-Python על שני הקבצים (שניהם מאוזנים). `git add -f` נדרש
+     כתקדים (15-egod/src מוחרג כברירת מחדל ב-`.gitignore` אך עוקב
+     היסטורית). Commit `e8da653d` על אותו ענף
+     `fix/a-icon-only-buttons-round2-0820`, נדחף ל-origin (מפעיל
+     פריסת Vercel תחת more30.com/egod).
+489. **הבא בתור:** נותרו ~9 קבצים/81-86 מופעים ב-15-egod ממופים
+     ומוכנים ללא סקר חוזר, קטן לגדול: RequestLesson/StudySchedule
+     (6/5) → AdminTeachers/JoinTeacher (6/7) → PortalSettings/
+     TeacherForm (11/9) → Materials (~11) → SeekerForm (14) →
+     Lessons (~15). אחרי 15-egod נותרות 03-igud-ads (63 מופעים/10
+     קבצים) ו-01-torah-platform (~150 מופעים/19 קבצים) מהמיפוי של
+     סבב 83.
