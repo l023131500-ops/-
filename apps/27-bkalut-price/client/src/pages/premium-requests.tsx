@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { AdminGate } from "@/components/admin-gate";
+import { useToast } from "@/hooks/use-toast";
 import { CheckCircle2, XCircle, Sparkles } from "lucide-react";
 
 interface RequestRow {
@@ -24,6 +25,7 @@ interface RequestRow {
 interface AppUserRow { id: number; fullName: string; email: string; phone: string; plan: string; username: string | null }
 
 function PremiumRequestsInner() {
+  const { toast } = useToast();
   const list = useQuery<RequestRow[]>({ queryKey: ["/api/admin/premium-requests"] });
   const users = useQuery<AppUserRow[]>({ queryKey: ["/api/admin/users"] });
   const [notes, setNotes] = useState<Record<number, string>>({});
@@ -32,10 +34,12 @@ function PremiumRequestsInner() {
     mutationFn: async ({ id, status, note }: { id: number; status: string; note: string }) => {
       return (await apiRequest("PATCH", `/api/admin/premium-requests/${id}`, { status, adminNote: note })).json();
     },
-    onSuccess: () => {
+    onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({ queryKey: ["/api/admin/premium-requests"] });
       queryClient.invalidateQueries({ queryKey: ["/api/admin/users"] });
+      toast({ title: variables.status === "approved" ? "הבקשה אושרה" : "הבקשה נדחתה" });
     },
+    onError: () => toast({ title: "העדכון נכשל", description: "נסו שוב", variant: "destructive" }),
   });
 
   function userOf(id: number) { return users.data?.find((u) => u.id === id); }
