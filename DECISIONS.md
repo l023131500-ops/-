@@ -5156,3 +5156,60 @@
      בלי `noValidate`/הודעת שגיאה נגישה, `<textarea>`/`<input>` חובה
      (`required`) בלי `aria-required`, או `<input type="date">`/
      `type="number"` בלי `inputMode` מתאים) על 01-16/40-gannenet.
+
+## 20/08/2026 (LOOP A — סבב 81) — `inputMode` על `<input type="number">`: 01/02/03/04/15
+
+452. **בדקתי מחדש `core.run_progress` לפני שהתחלתי.** סבב 80 סגור
+     (commit `cdcf2119`/`1ea3e4cf`, תאם ל-HEAD). בדקתי גם `core.issues`
+     על כל 01-16/40-gannenet — כל הפריטים הפתוחים (#138, #167, #168,
+     #201, #203, #244) חסומים על החלטת משתמש או על חסימת Lovable
+     content-policy חיצונית — שום דבר בר-פעולה. המשכתי מאותו ענף
+     `fix/a-icon-only-buttons-round2-0820`. פתחתי את העדשה שסבב 80/#451
+     הציע: `<input type="number">` בלי `inputMode` מתאים (twin-לנס
+     `type="date"` — נבדק ונשלל, ראה #453).
+453. **הרצתי Agent סקר (read-only) על כל 15 האפליקציות בתחום** (דילוג
+     08/09). מצא 2 תקדימים תקינים קיימים (`10-bkalot-rights/app.js`,
+     `12-smel-ndln/Premium.tsx` — שניהם כבר עם `inputMode="numeric"`).
+     מצא 12 מופעים ב-10 קבצים ב-5 אפליקציות (01, 02, 03, 04, 15) בלי
+     `inputMode` בכלל: מספרים שלמים (מספר העלאות, מספר מודעות, סדר
+     מיון, כמות/pace) → `inputMode="numeric"`; שדות עם ערכים
+     עשרוניים אפשריים (סכום תרומה בש״ח, גודל כותרת ב-em עם
+     `step="0.05"`, ועורך הגדרות גנרי ב-03 שמשתמש ב-`Number()` ולא
+     `parseInt`) → `inputMode="decimal"`. גם בדק את עדשת `type="date"`/
+     `type="time"` (13 מופעים ב-01/02/03/15) ופסל אותה כלנס-שווא:
+     ל-`inputMode` אין ערך תקני שמשפר `type="date"`/`type="time"` —
+     הדפדפן כבר מציג לוח שנה/שעון מקורי מבוסס על ה-`type` בלבד, ללא
+     קשר ל-`inputMode` (MDN לא ממליץ). אומתו כל 12 המופעים בקריאה
+     ישירה לפני עריכה.
+454. **התיקון:** הוספת `inputMode` (numeric/decimal לפי ההקשר) ל-12
+     המופעים ב-10 קבצים: `01-torah-platform/DonationPage.tsx`
+     (סכום תרומה, decimal); `02-igud-transcribe` +
+     `03-igud-ads/transcribe/coupons/page.tsx` (מספר העלאות מותר,
+     numeric — זהה בשני הריפואים); `03-igud-ads/coupons/page.tsx`
+     (מספר מודעות, numeric); `03-igud-ads/templates/page.tsx` ו-
+     `templates/[id]/page.tsx` (מחיר וסדר מיון, numeric — 2 מופעים
+     כל אחד, זהים בין שני הקבצים); `03-igud-ads/settings/page.tsx`
+     (עורך גנרי, decimal כברירת מחדל בטוחה כי `Number()` לא קוטע
+     עשרוני); `04-imud-torani/EditDept.tsx` (גודל כותרת em, decimal);
+     `15-egod/AdminForums.tsx` (סדר תצוגה, numeric);
+     `15-egod/StudySchedule.tsx` (כמות/pace, numeric).
+455. **אפס רגרסיה מאומתת:** `git diff --stat` — 10 קבצים, 12 שורות
+     נוספו/7 הוסרו (כל שינוי הוא הוספת תכונת `inputMode` יחידה על
+     תגית `<input>`/`<Input>` קיימת). אין `tsc`/`npm` בסביבה הזו —
+     אומת בקריאה מלאה של כל קובץ לפני/אחרי + `git diff` מלא + בדיקת
+     איזון `{}`/`()`/`[]` ב-Python על כל 10 הקבצים (כולם מאוזנים).
+     הקבצים מוחרגים כברירת מחדל ב-`.gitignore` אך עוקבים היסטורית —
+     `git add` (בלי `-f`) הצליח לשלב אותם על אף הודעת ה-ignore (הם
+     כבר עוקבים), כתקדים מסבבים 76-80. Commit `34eee391` על אותו ענף
+     `fix/a-icon-only-buttons-round2-0820`, נדחף ל-origin (מפעיל
+     פריסות Vercel תחת more30.com/torah, more30.com/tamlul,
+     more30.com/modaot, more30.com/imud, more30.com/egod).
+456. **הבא בתור:** עדשת ה-`inputMode` על `type="number"` נבדקה כעת
+     על כל 15 האפליקציות בתחום — 12 מופעים תוקנו ב-5 אפליקציות,
+     10-bkalot-rights/12-smel-ndln כבר היו תקינים ושימשו כתקדים.
+     `type="date"`/`type="time"` נבדק ונפסל כלנס-שווא (אין ערך
+     `inputMode` תקני רלוונטי). סבב הבא סביר: ניסיון חוזר תקופתי
+     ל-#167/#201, או עדשה חדשה (למשל: טפסים בלי `noValidate`/הודעת
+     שגיאה נגישה, `<textarea>`/`<input>` חובה (`required`) בלי
+     `aria-required`, או בדיקת `<label htmlFor>`/`id` שלא תואמים)
+     על 01-16/40-gannenet.
