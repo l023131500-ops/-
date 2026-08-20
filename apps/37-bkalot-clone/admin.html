@@ -1595,6 +1595,7 @@ pre{
       const tally = noteMatchTally(hist, q);
       if (tally) body.append(tally);
       const t = document.createElement("table");
+      t.className = "bk-font-narrow";
       t.innerHTML = "<thead><tr><th>מ־</th><th>אל</th><th>מי הכריע</th><th>מתי</th><th>למה</th></tr></thead>";
       const tb = document.createElement("tbody");
       for (const r of hist) {
@@ -1660,6 +1661,7 @@ pre{
     body.append(h3(`זכויות (${rights.length})`));
     if (rights.length) {
       const t = document.createElement("table");
+      t.className = "bk-font-narrow";
       t.innerHTML = "<thead><tr><th>#</th><th>קוד</th><th>שם הזכות</th><th>קטגוריה</th><th>גורם</th></tr></thead>";
       const tb = document.createElement("tbody");
       for (const r of rights) {
@@ -1820,6 +1822,7 @@ pre{
 
     if (docs.length) {
       const t = document.createElement("table");
+      t.className = "bk-font-narrow";
       t.innerHTML = "<thead><tr><th>#</th><th>סוג</th><th>כותרת</th><th>מכתב</th><th>נוצר</th><th>הופק על ידי</th><th>תור</th><th></th></tr></thead>";
       const tb = document.createElement("tbody");
       const panel = document.createElement("div");
