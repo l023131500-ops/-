@@ -141,18 +141,18 @@ const StudySchedule = () => {
                 <DialogHeader><DialogTitle>הוסף הספק לימודי חדש</DialogTitle></DialogHeader>
                 <div className="space-y-4 mt-4">
                   <div>
-                    <label className="text-sm font-medium mb-1 block">שיעור</label>
+                    <label htmlFor="studyschedule-lesson" className="text-sm font-medium mb-1 block">שיעור</label>
                     <Select value={newSchedule.lesson_id} onValueChange={(v) => setNewSchedule(p => ({ ...p, lesson_id: v }))}>
-                      <SelectTrigger><SelectValue placeholder="בחר שיעור" /></SelectTrigger>
+                      <SelectTrigger id="studyschedule-lesson"><SelectValue placeholder="בחר שיעור" /></SelectTrigger>
                       <SelectContent>{lessons.map(l => <SelectItem key={l.id} value={l.id}>{l.subject}</SelectItem>)}</SelectContent>
                     </Select>
                   </div>
-                  <div><label className="text-sm font-medium mb-1 block">נושא</label>
-                    <Input value={newSchedule.topic} onChange={(e) => setNewSchedule(p => ({ ...p, topic: e.target.value }))} placeholder='למשל: מסכת ברכות' /></div>
+                  <div><label htmlFor="studyschedule-topic" className="text-sm font-medium mb-1 block">נושא</label>
+                    <Input id="studyschedule-topic" value={newSchedule.topic} onChange={(e) => setNewSchedule(p => ({ ...p, topic: e.target.value }))} placeholder='למשל: מסכת ברכות' /></div>
                   <div className="grid grid-cols-2 gap-3">
-                    <div><label className="text-sm font-medium mb-1 block">סוג קצב</label>
+                    <div><label htmlFor="studyschedule-pacetype" className="text-sm font-medium mb-1 block">סוג קצב</label>
                       <Select value={newSchedule.pace_type} onValueChange={(v) => setNewSchedule(p => ({ ...p, pace_type: v }))}>
-                        <SelectTrigger><SelectValue /></SelectTrigger>
+                        <SelectTrigger id="studyschedule-pacetype"><SelectValue /></SelectTrigger>
                         <SelectContent>
                           <SelectItem value="pages">עמודים ליום</SelectItem>
                           <SelectItem value="dapim">דפים ליום</SelectItem>
@@ -161,11 +161,11 @@ const StudySchedule = () => {
                         </SelectContent>
                       </Select>
                     </div>
-                    <div><label className="text-sm font-medium mb-1 block">כמות</label>
-                      <Input type="number" inputMode="numeric" min={1} value={newSchedule.pace_amount} onChange={(e) => setNewSchedule(p => ({ ...p, pace_amount: parseInt(e.target.value) || 1 }))} /></div>
+                    <div><label htmlFor="studyschedule-paceamount" className="text-sm font-medium mb-1 block">כמות</label>
+                      <Input id="studyschedule-paceamount" type="number" inputMode="numeric" min={1} value={newSchedule.pace_amount} onChange={(e) => setNewSchedule(p => ({ ...p, pace_amount: parseInt(e.target.value) || 1 }))} /></div>
                   </div>
-                  <div><label className="text-sm font-medium mb-1 block">תאריך התחלה</label>
-                    <Input type="date" value={newSchedule.start_date} onChange={(e) => setNewSchedule(p => ({ ...p, start_date: e.target.value }))} /></div>
+                  <div><label htmlFor="studyschedule-startdate" className="text-sm font-medium mb-1 block">תאריך התחלה</label>
+                    <Input id="studyschedule-startdate" type="date" value={newSchedule.start_date} onChange={(e) => setNewSchedule(p => ({ ...p, start_date: e.target.value }))} /></div>
                   <Button onClick={handleAddSchedule} className="w-full bg-secondary text-secondary-foreground hover:bg-gold-dark">שמור</Button>
                 </div>
               </DialogContent>

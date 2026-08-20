@@ -49,18 +49,18 @@ const RequestLesson = () => {
           </div>
           <form onSubmit={handleSubmit} className="bg-card rounded-2xl p-8 shadow-sm border border-border space-y-5">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div><label className="text-sm font-medium text-foreground mb-1 block">שם מלא *</label><Input required aria-required="true" placeholder="ישראל ישראלי" value={form.full_name} onChange={e => setForm(p => ({...p, full_name: e.target.value}))} /></div>
-              <div><label className="text-sm font-medium text-foreground mb-1 block">טלפון *</label><Input required aria-required="true" type="tel" inputMode="tel" autoComplete="tel" placeholder="050-0000000" value={form.phone} onChange={e => setForm(p => ({...p, phone: e.target.value}))} /></div>
+              <div><label htmlFor="requestlesson-fullname" className="text-sm font-medium text-foreground mb-1 block">שם מלא *</label><Input id="requestlesson-fullname" required aria-required="true" placeholder="ישראל ישראלי" value={form.full_name} onChange={e => setForm(p => ({...p, full_name: e.target.value}))} /></div>
+              <div><label htmlFor="requestlesson-phone" className="text-sm font-medium text-foreground mb-1 block">טלפון *</label><Input id="requestlesson-phone" required aria-required="true" type="tel" inputMode="tel" autoComplete="tel" placeholder="050-0000000" value={form.phone} onChange={e => setForm(p => ({...p, phone: e.target.value}))} /></div>
             </div>
-            <div><label className="text-sm font-medium text-foreground mb-1 block">אזור מגורים *</label><Input required aria-required="true" placeholder="עיר ושכונה" value={form.area} onChange={e => setForm(p => ({...p, area: e.target.value}))} /></div>
-            <div><label className="text-sm font-medium text-foreground mb-1 block">נושא מועדף</label>
+            <div><label htmlFor="requestlesson-area" className="text-sm font-medium text-foreground mb-1 block">אזור מגורים *</label><Input id="requestlesson-area" required aria-required="true" placeholder="עיר ושכונה" value={form.area} onChange={e => setForm(p => ({...p, area: e.target.value}))} /></div>
+            <div><label htmlFor="requestlesson-subject" className="text-sm font-medium text-foreground mb-1 block">נושא מועדף</label>
               <Select value={form.preferred_subject} onValueChange={v => setForm(p => ({...p, preferred_subject: v}))}>
-                <SelectTrigger><SelectValue placeholder="בחר נושא" /></SelectTrigger>
+                <SelectTrigger id="requestlesson-subject"><SelectValue placeholder="בחר נושא" /></SelectTrigger>
                 <SelectContent>{["גמרא","הלכה","פרשת שבוע","דף יומי","מוסר","חסידות","אחר"].map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}</SelectContent>
               </Select>
             </div>
-            <div><label className="text-sm font-medium text-foreground mb-1 block">זמנים מועדפים</label><Input placeholder="למשל: ערבי ראשון-רביעי, 20:00" value={form.preferred_times} onChange={e => setForm(p => ({...p, preferred_times: e.target.value}))} /></div>
-            <div><label className="text-sm font-medium text-foreground mb-1 block">הערות</label><Textarea placeholder="ספר לנו עוד..." rows={3} value={form.notes} onChange={e => setForm(p => ({...p, notes: e.target.value}))} /></div>
+            <div><label htmlFor="requestlesson-times" className="text-sm font-medium text-foreground mb-1 block">זמנים מועדפים</label><Input id="requestlesson-times" placeholder="למשל: ערבי ראשון-רביעי, 20:00" value={form.preferred_times} onChange={e => setForm(p => ({...p, preferred_times: e.target.value}))} /></div>
+            <div><label htmlFor="requestlesson-notes" className="text-sm font-medium text-foreground mb-1 block">הערות</label><Textarea id="requestlesson-notes" placeholder="ספר לנו עוד..." rows={3} value={form.notes} onChange={e => setForm(p => ({...p, notes: e.target.value}))} /></div>
             <Button type="submit" size="lg" disabled={loading} className="w-full bg-secondary text-secondary-foreground hover:bg-gold-dark text-lg py-6 rounded-xl">
               <Send className="w-5 h-5 ml-2" />{loading ? "שולח..." : "שלח פנייה"}
             </Button>
