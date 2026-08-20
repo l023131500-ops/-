@@ -7819,3 +7819,39 @@
      ל-`core.project_tasks`/`core.project_bugs` (5 פריטים פתוחים,
      עדיין חסומים על secrets חסרים או החלטות merge/origin מחוץ
      לסמכות הסוכן).
+
+## 20/08/2026 — סבב 149 (loop A)
+
+748. **בדקתי מחדש** את 5 הפריטים הפתוחים ב-`core.project_tasks`/
+     `core.project_bugs` — עדיין חסומים (secrets חסרים:
+     `OPENAI_API_KEY`/`SUPABASE_SERVICE_KEY`; החלטות מיזוג/origin
+     מחוץ לסמכות הסוכן). **פתחתי עדשת נגישות חדשה**: כפתורים
+     icon-only עם `title` בלבד וללא `aria-label` (קטגוריה שלא כוסתה
+     בעדשות הקודמות — aria-label על inputs, alt-text, aria-live,
+     focus-trap). איתרתי ב-`04-imud-torani/client/src/pages/
+     departments/EditDept.tsx` שני כפתורים כאלה (נעילת בלוק, שורה
+     ~106; הגדרות בלוק, שורה ~114) בתוך רכיב עריכת הבלוקים — לצידם,
+     באותה שורת כפתורים, שלושה כפתורים אחרים (הזזה למעלה/למטה,
+     מחיקה) כבר עם `aria-label` תקין, כך שזה חוסר עקבי מקומי וברור.
+749. **תיקון:** הוספת `aria-label` זהה לערך ה-`title` הקיים לשני
+     הכפתורים (`{locked ? "בטל נעילה" : "נעל בלוק (הגנה מפני שינוי)"}`
+     ו-`"הגדרות בלוק"`), ללא שינוי ל-`onClick`/`title`/`className`/
+     state הקיימים.
+750. **אפס רגרסיה מאומתת:** `git diff --stat` — קובץ אחד, 2+/1-
+     שורות בלבד; אין שינוי ל-`setMeta`/`setOpenMeta`/`move`/`remove`/
+     רינדור הטקסטאריה מסביב. אין `tsc`/`npm` בסביבה הזו — אימות
+     איזון `{}`/`()`/`[]` בפייתון על הקובץ המלא: 122/122, 99/99,
+     23/23 — תואם. הקובץ עוקב ב-git (מאומת `git ls-files`) אך `git
+     add` מדפיס אזהרת `.gitignore` (הכלל חוסם את `apps/04-imud-torani/
+     client` בכללי, לא רק את הקובץ) — ה-`add` עדיין מצליח על קובץ
+     שכבר עוקב, כפי שנצפה גם בעדשות קודמות עם `.gitignore` דומה
+     (01/02/03). Commit `ee5fd02d` על `fix/a-icon-only-buttons-round2-0820`,
+     נדחף ל-origin (מפעיל פריסת Vercel תחת more30.com/imud-torani —
+     נדרש אימות נתיב מדויק בסבב עתידי דרך `core.projects`).
+751. **הבא בתור:** מועמדים #2-#3 שאותרו באותה סריקה — כפתורי move-up/
+     move-down/duplicate/delete ב-`04-imud-torani/client/src/
+     components/CoverEditor.tsx` (שורות ~257-260, אותו חוסר `title`
+     ללא `aria-label`), ותמונות עם `alt=""` ריק (לא דקורטיביות) ב-
+     `15-egod/src/pages/portal/PortalSettings.tsx` (שורות ~248,
+     ~280). אפשר להמשיך את עדשת ה-icon-only-buttons על 05-16, לטפל
+     ב-`alt=""` ב-15-egod, או לפתוח עדשה נוספת.
