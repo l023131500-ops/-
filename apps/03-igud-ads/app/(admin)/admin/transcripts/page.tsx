@@ -131,7 +131,7 @@ export default function TranscriptsAdmin() {
           <div className="bg-surface rounded-xl max-w-3xl w-full max-h-[90vh] overflow-y-auto p-6" onClick={(e) => e.stopPropagation()}>
             <div className="flex justify-between items-start mb-4">
               <h2 className="font-serif text-xl font-bold">{modal.original_filename || modal.id}</h2>
-              <button onClick={() => setModal(null)} className="text-gray-400 hover:text-gray-700 text-xl">✕</button>
+              <button onClick={() => setModal(null)} className="text-gray-400 hover:text-gray-700 text-xl" aria-label="סגור">✕</button>
             </div>
 
             <div className="flex gap-2 mb-4 flex-wrap">

@@ -229,7 +229,7 @@ export default function TemplatesPage() {
               <h2 className="font-serif text-xl font-bold">
                 {form.id ? "עריכת תבנית" : "תבנית חדשה"}
               </h2>
-              <button className="text-gray-500 hover:text-gray-900 text-2xl leading-none" onClick={closeDialog}>×</button>
+              <button className="text-gray-500 hover:text-gray-900 text-2xl leading-none" onClick={closeDialog} aria-label="סגור">×</button>
             </div>
 
             {error && (

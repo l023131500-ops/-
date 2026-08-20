@@ -200,7 +200,7 @@ export default function ProjectsAdmin() {
               <h2 className="font-serif text-xl font-bold">
                 {detail.project?.title || detail.project?.id}
               </h2>
-              <button onClick={() => setDetail(null)} className="text-gray-400 hover:text-gray-700 text-xl">✕</button>
+              <button onClick={() => setDetail(null)} className="text-gray-400 hover:text-gray-700 text-xl" aria-label="סגור">✕</button>
             </div>
 
             <div className="grid md:grid-cols-2 gap-4 mb-4 text-sm text-gray-600">

@@ -217,6 +217,7 @@ export default function UsersPage() {
               <button
                 className="text-gray-500 hover:text-gray-900 text-2xl leading-none"
                 onClick={() => setShowDialog(false)}
+                aria-label="סגור"
               >
                 ×
               </button>
