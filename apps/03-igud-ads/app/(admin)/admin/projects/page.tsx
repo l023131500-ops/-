@@ -158,6 +158,7 @@ export default function ProjectsAdmin() {
                         className="text-brand-blue text-xs hover:underline"
                         onClick={(e) => e.stopPropagation()}
                         target="_blank"
+                        rel="noopener noreferrer"
                       >
                         צפייה
                       </Link>

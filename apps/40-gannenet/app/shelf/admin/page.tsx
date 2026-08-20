@@ -388,7 +388,7 @@ export default function AdminPage() {
               />
               הסתר קובץ
             </label>
-            <Link href={`/shelf/${r.id}`} target="_blank" className="btn btn-ghost" style={{ fontSize: 13, padding: ".4rem .7rem" }}>צפייה</Link>
+            <Link href={`/shelf/${r.id}`} target="_blank" rel="noopener noreferrer" className="btn btn-ghost" style={{ fontSize: 13, padding: ".4rem .7rem" }}>צפייה</Link>
             <button
               onClick={() => save(r, pendingHidden, drafts[r.id] ?? "")}
               disabled={saving === r.id}

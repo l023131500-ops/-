@@ -41,7 +41,7 @@ export default function TenantDetail() {
       <h1 className="font-heading text-3xl mb-2">{tenant.display_name || tenant.name}</h1>
       <div className="flex items-center gap-3 mb-6">
         <span className="text-muted-foreground">/{tenant.slug}</span>
-        <Button asChild size="sm" variant="outline"><a href={`/t/${tenant.slug}`} target="_blank"><ExternalLink className="ml-1 h-3 w-3" /> צפה באתר</a></Button>
+        <Button asChild size="sm" variant="outline"><a href={`/t/${tenant.slug}`} target="_blank" rel="noopener noreferrer"><ExternalLink className="ml-1 h-3 w-3" /> צפה באתר</a></Button>
       </div>
       <Card>
         <CardHeader><CardTitle>תכונות מופעלות</CardTitle></CardHeader>
