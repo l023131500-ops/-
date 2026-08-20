@@ -2954,3 +2954,54 @@
     מותקן (כלל אי-התקנה כרגיל) -- אומת בקריאה חוזרת של הקובץ בלבד.
     קומיט על `fix/b-igud-portal-contact-form-false-error-0820`, יידחף
     (מפעיל פריסת Vercel תחת הנתיב הממופה ל-20).
+
+## 20/08/2026 — סבב 41
+
+237. **קראתי README.md/CONNECTIONS.md, בדקתי `core.run_progress`** (מזהה
+    loop B אחרון, תיקון עטיפת boolean RPC בטופס יצירת קשר ב-20
+    igud-portal, קומיט `0fac9f3e` -- כבר ה-parent של הענף הזה, כבר
+    נדחף) ו-`core.issues`/`core.project_tasks` פתוחים בהיקף 17-31: השורה
+    היחידה הפתוחה (#164, 21-mthbram, nedarim-webhook portal_share)
+    חסומה במפורש על הכרעת המשתמש (סוד משותף לוובהוק מול השארת מסלול
+    פתוח) -- לא ניתנת לביצוע אוטונומי. הרצתי שלושה סוכני Explore
+    מקבילים על שטח שלא נסרק לעומק לאחרונה: 19-igud-shiurim-portal,
+    31-hebrew-bridge-crm, 24-galilee-connect-hub.
+238. **19 חזר נקי** (כל כתיבה עטופה ב-`handleRpcResult`/
+    `handleBooleanRpcResult`, XSS מוגן ב-`esc()`, אין endpoint לא-מאומת
+    חדש). 31 החזיר ממצא חלש: `updateTaskStatus`/`updateTaskPriority`
+    ב-`tasks.functions.ts` לא בודקות rows-affected אחרי `.update()`
+    (בניגוד לתבנית שכבר קיימת ב-`client.functions.ts` לתיעוד/מחיקת
+    מסמכים) -- אבל בדיקה ישירה הראתה ש-`assertCanMutateTask` (שורות
+    154-163) כבר חוסמת בעליות זרה במפורש בקוד האפליקציה (זורקת
+    "Forbidden" לפני ה-`update`), כך שתרחיש ה-RLS-מסנן-בשקט שהתבנית
+    האחרת מגנה עליו לא ניתן להגעה בפועל כאן -- לא באג חי, רק הגנה
+    כפולה בעדיפות נמוכה. דחיתי את זה לטובת הממצא של 24.
+239. **24-galilee-connect-hub -- ממצא אמיתי**: `SynagoguePage.tsx`
+    (`handleSendContact`, שורות 61-75 לפני התיקון) שולח `INSERT` ל-
+    `community_leads` בלי לבדוק את שגיאת ה-RPC בכלל (`await
+    supabase.from(...).insert(...)` בלי לפרק `{error}`), ומיד אחר כך
+    קורא `setSent(true)` ומציג "הפנייה נשלחה בהצלחה!" -- תמיד, גם אם
+    ה-INSERT נכשל. אימתתי שזו בדיוק אותה מחלקת באג שכבר תוקנה בעבר
+    (core.issues #240) בשני האחים הישירים באותו קובץ `community_leads`:
+    `ContactPage.tsx:65-78` ו-`ServiceRequestForm.tsx:44-58` -- שניהם
+    כבר בודקים `const { error } = await supabase...insert(...)`,
+    מציגים הודעת שגיאה ב-UI (state `errorMsg`), ומונעים כפל-שליחה עם
+    `sending`. `SynagoguePage.tsx` הוא השלישי בקבוצה, ולבדו לא קיבל את
+    התיקון הזה בסבב #240 -- כנראה נסרק/פוצל בנפרד. בניגוד לשני האחים,
+    `lead_type: 'synagogue'` כאן כן חוקי מול ה-CHECK constraint
+    (`lead_type IN ('general','synagogue','rabbi_question',
+    'gabbai_support')`, מיגרציה `20260315224054`) -- כך שהבאג כאן הוא
+    אך ורק חוסר-בדיקת-שגיאה (רשת/RLS/תקלת DB עתידית), לא ה-CHECK
+    שכבר תוקן אצל השניים האחרים.
+240. **התיקון**: הוספתי `sending`/`errorMsg` state (זהה בשם ובהתנהגות
+    לשני האחים), עטפתי את ה-`insert` בפירוק `{ error }`, מציגים הודעת
+    שגיאה ("הפנייה לא נשלחה עקב תקלה. נסו שוב.") ומבטלים את הכפתור
+    בזמן שליחה/שדות ריקים במקום לקרוא `setSent(true)` תמיד. אפס שינוי
+    ל-`ContactPage.tsx`/`ServiceRequestForm.tsx` (כבר תקינים), אפס
+    שינוי לסכמה/RLS/CHECK constraint, אפס שינוי להתנהגות המקרה
+    המוצלח (עדיין אותה הודעת הצלחה, עדיין ניקוי השדות). אין
+    `node_modules` מותקן בעץ הזה (כלל אי-התקנה כרגיל) -- אומת בקריאה
+    חוזרת של הקובץ המלא בלבד. קומיט הבא על
+    `fix/b-galilee-connect-hub-synagoguepage-silent-insert-fail-0820`,
+    יידחף (מפעיל פריסת Vercel תחת `more30.com/galil`; שינוי אך ורק
+    לטופס יצירת הקשר בעמוד בית כנסת בודד).

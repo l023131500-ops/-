@@ -17,6 +17,8 @@ const SynagoguePage = () => {
   const [contactPhone, setContactPhone] = useState('');
   const [contactMessage, setContactMessage] = useState('');
   const [sent, setSent] = useState(false);
+  const [sending, setSending] = useState(false);
+  const [errorMsg, setErrorMsg] = useState('');
 
   if (loading) {
     return (
@@ -60,13 +62,20 @@ const SynagoguePage = () => {
 
   const handleSendContact = async () => {
     if (!contactName.trim() || !contactPhone.trim()) return;
-    await supabase.from('community_leads').insert({
+    setErrorMsg('');
+    setSending(true);
+    const { error } = await supabase.from('community_leads').insert({
       name: contactName.trim(),
       phone: contactPhone.trim(),
       message: contactMessage.trim() || `פנייה מדף בית הכנסת ${synagogue.name}`,
       lead_type: 'synagogue',
       synagogue_id: synagogue.id,
     });
+    setSending(false);
+    if (error) {
+      setErrorMsg('הפנייה לא נשלחה עקב תקלה. נסו שוב.');
+      return;
+    }
     setSent(true);
     setContactName('');
     setContactPhone('');
@@ -238,8 +247,9 @@ const SynagoguePage = () => {
                   aria-label="הודעה"
                   className="w-full bg-muted/60 rounded-xl p-3 border border-border/50 text-sm resize-none h-24 focus:outline-none focus:ring-2 focus:ring-primary/30"
                 />
-                <Button onClick={handleSendContact} className="w-full gap-2 font-bold">
-                  <Send className="w-4 h-4" /> שלח פנייה
+                {errorMsg && <p className="text-sm text-destructive font-bold text-center">{errorMsg}</p>}
+                <Button onClick={handleSendContact} disabled={sending || !contactName.trim() || !contactPhone.trim()} className="w-full gap-2 font-bold">
+                  <Send className="w-4 h-4" /> {sending ? 'שולח...' : 'שלח פנייה'}
                 </Button>
               </div>
             )}
