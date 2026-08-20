@@ -10187,3 +10187,80 @@
      שני מופעי `FormMessage` לא-פעילים מסבב 191, `core.project_tasks`/
      `core.project_bugs` (6 פריטים חסומים), או סקירת שאר ספקי ה-credits
      (Apify/ElevenLabs) לוודא שאין תקלת-אחוזים דומה בכיוון ההפוך אצלם.
+
+## 20/08/2026 — סבב 204 (loop A) — `01-torah-platform`: `public.nedarim_submissions` היה פתוח לגמרי ל-anon, בלי RLS
+
+986. **בדיקה קודמת של הבא-בתור (985) לא הניבה תיקון אמיתי.** Apify ו-
+     ElevenLabs (`portal/api/credits.ts`) שניהם מחשבים `percent` מ-`used/limit`
+     אמיתיים שמוחזרים ישירות מהספק — אין להם את הדפוס של Recraft (סבב 203,
+     "נשאר X" בלי יחס אמיתי), ולכן אין כאן תקלת-אחוזים הפוכה לתקן. שני מועמדים
+     נוספים מ-Explore agent (הגנה מיותרת ב-`download-name.ts` על מצב שלא ניתן
+     להגיע אליו; "יתרת קרדיטים שלילית מ-Recraft" ללא כל ראיה שה-API באמת
+     יכול להחזיר כזו) נבדקו ונדחו כלא-ממשיים לפני שנפתח כיוון חדש.
+987. **הכיוון החדש: להשוות בין `core.run_progress` (סבב 202, פרויקט
+     `bieebmnm`) לבין `get_advisors` חי על אותו פרויקט.** בסבב 202 נבדקו
+     ונפסלו 10 טבלאות `rls_disabled_in_public` (`client_profiles`,
+     `client_files`, `crm_users`, `crm_sessions`, `hf_tiers`, `hf_requests`,
+     `hf_topics`, `yemot_right_config`, `reminder_log`, `pc_import_files`) —
+     כולן זוהו כשייכות ל-`bkalut` (08/09, מוגן). אבל ה-advisor החי מחזיר
+     **13** שורות `rls_disabled_in_public` על אותו פרויקט, לא 10: שלוש טבלאות
+     נוספות (`nedarim_submissions`, `client_timeline`, `knowledge_chunks`) לא
+     נבדקו מעולם. `grep` על שלושתן מצא ש-`nedarim_submissions` נקראת/נכתבת
+     ישירות מ-3 קבצים תחת `apps/01-torah-platform/src/` — בהיקף מפורש
+     (01-16) — בעוד השתיים האחרות לא הופיעו בשום מקום תחת 01-16/gannenet/
+     admin/portal/packages, כלומר כנראה שייכות גם הן ל-bkalut או למערכת אחרת
+     מחוץ להיקף (לא נגעתי בהן).
+988. **הממצא: `public.nedarim_submissions` (עמודות: `id`, `client_id`,
+     `tofes_id`, `emda`, `id_forms_send`, `mosad_id`, `raw_json`,
+     `created_at`) — RLS כבוי לגמרי, ו-`information_schema.role_table_grants`
+     מראה `anon` עם SELECT/INSERT/UPDATE/DELETE/TRUNCATE מלאים.** המפתח
+     האנונימי חשוף בקוד שנארז לדפדפן (`VITE_SUPABASE_ANON_KEY`,
+     `src/integrations/supabase/client.ts`) — כלומר כל מבקר יכול לקרוא/לכתוב/
+     למחוק כל שורת הגשת-תרומה, כולל `raw_json` (מטען הגלם המלא מהוובהוק של
+     נדרים פלוס) ושדות זיהוי המוסד, בלי שום אימות. אומתתי שהפונקציות שכן
+     כותבות לטבלה (`nedarim-webhook`, `nedarim-create-payment`,
+     `nedarim-admin` — קראתי את שלוש ה-Edge Functions) משתמשות אך ורק
+     ב-`SUPABASE_SERVICE_ROLE_KEY` (עוקף RLS תמיד), כך שאין להן שום תלות
+     בגישת ה-anon. הקריאות מהדפדפן היחידות (`AdminDashboard.tsx`,
+     `NedarimManagement.tsx`, `MatchingTab.tsx` תחת `src/pages/legacy/`)
+     נמצאות מאחורי `<RequireSuperAdmin/>` ב-`App.tsx` (route level) — אבל
+     גישת REST ישירה עם ה-anon key עוקפת את השער הזה לגמרי, כי הוא רק
+     ברמת ה-React router ואין שום אכיפה במסד.
+989. **התיקון: הדלקת RLS + מדיניות אחת, לפי הדפוס הקיים כבר בסכימה הזאת.**
+     `pg_policies` על אותו פרויקט מראה טבלאות ניהוליות-בלבד בלי `tenant_id`
+     (`lesson_topics_write`, `forum_access.fa_admin_write`) שמשתמשות ב-
+     `is_super_admin(auth.uid())` בלבד כתנאי ALL — בדיוק הצורה של
+     `nedarim_submissions` (אין בה `tenant_id`/`user_id` לסינון עצמי, זו
+     טבלה פנימית-לגמרי). קראתי את `is_super_admin()` (`STABLE SECURITY
+     DEFINER`, בודקת שורה ב-`public.user_roles` עם `role='super_admin' AND
+     tenant_id IS NULL`) — מחזירה `false` בבטחה כש-`auth.uid()` הוא NULL
+     (מבקר לא מחובר), אז אין סיכון שהמדיניות "תיפתח" בטעות לאנונימי.
+     הרצתי מיגרציה חיה על `bieebmnm` (`lock_down_nedarim_submissions_rls`):
+     `alter table ... enable row level security` + `create policy
+     "nedarim_submissions_admin_only" for all using/with check
+     (is_super_admin(auth.uid()))`. אומתתי אחרי ההרצה: `relrowsecurity=true`,
+     `pg_policies` מראה את המדיניות החדשה בלבד, ו-`get_advisors` (security)
+     חוזר בלי אף שורת `nedarim_submissions` (היו 13 `rls_disabled_in_public`
+     על הפרויקט, נשארו 12 — השתיים האחרות מחוץ להיקף כמתועד ב-987).
+     נוסף גם קובץ מיגרציה תואם בריפו,
+     `apps/01-torah-platform/supabase/migrations/
+     20260820160500_lock_down_nedarim_submissions_rls.sql`, כדי שסביבת פיתוח
+     מקומית/פריסה חוזרת תישאר מסונכרנת עם המסד החי — אותו דפוס בדיוק שהיה
+     בסבב 201 (סנכרון `schema.sql` אחרי מיגרציה חיה על `03-igud-ads`).
+990. **אפס רגרסיה מאומתת:** מספר השורות בטבלה כרגע 1 (לא נתון גדול, אבל
+     הפגיעות הייתה קיימת מהרגע הראשון ותגדל עם כל תרומה אמיתית — לא ספירת
+     שורות היא הסיבה לתקן). כל כתיבה בפועל (שלושת ה-Edge Functions) עוברת
+     דרך `service_role`, שמתעלם לגמרי מ-RLS — אפס שינוי התנהגות שם. הקריאה
+     היחידה מהדפדפן היא ל-super-adminים שכבר עוברים את אותה בדיקת
+     `is_super_admin`/`user_roles` בשער ה-route (`RequireSuperAdmin`) לפני
+     שהם מגיעים לעמוד בכלל — כלומר מי שכבר יכול לפתוח את `/legacy/nedarim`
+     ימשיך לראות בדיוק אותם נתונים, ומי שלא — יחסם גם ברמת ה-DB ולא רק
+     ברמת ה-UI. לא נגעתי במערכות/סכימות מוגנות (08/09/bkalut-app/
+     bkalot-admin/zr_*/NEDARIM3873/csj/csj_src/igud), ב-`main`, או במערכת
+     מחוץ להיקף (רק 01-16/gannenet/auth/super-admin/admin dashboard/
+     homepage ordering/pricing).
+991. **הבא בתור:** שתי הטבלאות הנותרות מ-987 (`client_timeline`,
+     `knowledge_chunks`) דורשות grep נוסף מחוץ להיקף כדי לקבוע בעלות — לא
+     נבדקו כאן כי הן לא הופיעו תחת אף אחד מתיקיות ההיקף. חוץ מזה: שני
+     מועמדי הניגודיות מסבב 175, שני מופעי `FormMessage` לא-פעילים מסבב 191,
+     או `core.project_tasks`/`core.project_bugs` (6 פריטים חסומים).
