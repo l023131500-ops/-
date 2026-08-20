@@ -182,6 +182,21 @@ input:focus,select:focus{outline:2px solid var(--gold);outline-offset:1px;border
       <h2>מעקב אחרי החתונה</h2>
       <div id="followupList"><div class="empty">טוען…</div></div>
     </div>
+
+    <div class="card">
+      <h2>דירקטוריז</h2>
+      <p class="sub">פוסקים, מקוואות, מסדרי קידושין, בודקות טהרה ויועצים זוגיים — נבחרו ידנית ע"י צוות more30, מותאמים למגזר שלכם.</p>
+      <label for="dirFilter">סינון לפי קטגוריה</label>
+      <select id="dirFilter">
+        <option value="">כל הקטגוריות</option>
+        <option value="posek">פוסקי הלכה</option>
+        <option value="mikveh">מקוואות</option>
+        <option value="mesader_kiddushin">מסדרי קידושין</option>
+        <option value="bodeket_tahara">בודקות טהרה</option>
+        <option value="yoetz_zugi">יועצים זוגיים</option>
+      </select>
+      <div id="dirList"><div class="empty">טוען…</div></div>
+    </div>
   </div>
 
   <div id="fatal" hidden></div>
@@ -405,6 +420,38 @@ async function renderFollowups() {
   }
 }
 
+/* ── directories (poskim / mikvaot / mesadrei kiddushin / bodkot tehara / yoatzim) ── */
+const DIR_CATEGORY_LABEL = {
+  posek: 'פוסק הלכה', mikveh: 'מקווה', mesader_kiddushin: 'מסדר קידושין',
+  bodeket_tahara: 'בודקת טהרה', yoetz_zugi: 'יועץ/ת זוגי/ת',
+};
+
+function directoryRow(d) {
+  return '<tr>' +
+    '<td>' + (DIR_CATEGORY_LABEL[d.category] || esc(d.category)) + '</td>' +
+    '<td>' + v(d.name) + '</td>' +
+    '<td>' + v(d.phone) + '</td>' +
+    '<td>' + v(d.city) + '</td>' +
+    '</tr>';
+}
+
+async function renderDirectories() {
+  const el = $('dirList');
+  el.innerHTML = '<div class="empty">טוען…</div>';
+  let rows;
+  try {
+    rows = await rpc('maatefet_directory_list', { p_category: $('dirFilter').value || null });
+  } catch (e) {
+    el.innerHTML = '<div class="err">' + esc(e.message) + '</div>';
+    return;
+  }
+  if (!rows.length) { el.innerHTML = '<div class="empty">עדיין אין רשומות בקטגוריה הזו.</div>'; return; }
+  el.innerHTML = '<table><thead><tr><th>קטגוריה</th><th>שם</th><th>טלפון</th><th>עיר</th></tr></thead><tbody>' +
+    rows.map(directoryRow).join('') + '</tbody></table>';
+}
+
+$('dirFilter').addEventListener('change', renderDirectories);
+
 /* ── 2FA gate (required for the couple's own personal area) ──────────────── */
 let MFA_FACTOR_ID = null;
 
@@ -525,6 +572,7 @@ async function boot() {
   renderReminders();
   renderInstructorBrand();
   renderFollowups();
+  renderDirectories();
 }
 
 boot();

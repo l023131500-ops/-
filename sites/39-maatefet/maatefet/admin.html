@@ -64,9 +64,15 @@ th{color:var(--muted);font-weight:400;font-size:12px;text-transform:uppercase;le
   vertical-align:-2px;margin-inline-end:8px}
 @keyframes spin{to{transform:rotate(360deg)}}
 label{display:block;font-size:13px;color:var(--ink-2);margin:0 0 6px}
-input{width:100%;background:var(--royal-2);border:1px solid var(--line-2);border-radius:3px;
+input,select{width:100%;background:var(--royal-2);border:1px solid var(--line-2);border-radius:3px;
   color:var(--ink);font-family:inherit;font-size:14px;padding:10px 12px;margin-bottom:14px}
-input:focus{outline:2px solid var(--gold);outline-offset:1px;border-color:var(--gold)}
+input:focus,select:focus{outline:2px solid var(--gold);outline-offset:1px;border-color:var(--gold)}
+.row{display:grid;gap:14px;grid-template-columns:1fr 1fr}
+@media(max-width:640px){.row{grid-template-columns:1fr}}
+.badge.inactive{color:var(--muted);border-color:var(--line-2)}
+.btn-sm{padding:6px 12px;font-size:12px}
+.btn-quiet{background:transparent;color:var(--ink-2);border-color:var(--line-2)}
+.btn-quiet:hover:not(:disabled){color:var(--gold-soft);border-color:var(--gold);box-shadow:none}
 .err{border:1px solid rgba(224,87,78,.5);background:rgba(224,87,78,.08);border-radius:4px;
   padding:10px 14px;color:var(--ink-2);font-size:13px;margin:10px 0}
 .codebox{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px;background:var(--royal-2);
@@ -126,6 +132,47 @@ input:focus{outline:2px solid var(--gold);outline-offset:1px;border-color:var(--
     <div class="card">
       <h2>מדריכים</h2>
       <div id="table"><div class="empty">טוען…</div></div>
+    </div>
+
+    <div class="card" id="dirCard">
+      <h2>דירקטוריז</h2>
+      <p class="sub">פוסקים / מקוואות / מסדרי קידושין / בודקות טהרה / יועצים זוגיים — הזנה ידנית בלבד, לא שאיבה אוטומטית. גלוי למדריכים ולזוגות בפורטל, לפי מגזר.</p>
+      <div class="row">
+        <div>
+          <label for="dCategory">קטגוריה *</label>
+          <select id="dCategory">
+            <option value="posek">פוסק הלכה</option>
+            <option value="mikveh">מקווה</option>
+            <option value="mesader_kiddushin">מסדר קידושין</option>
+            <option value="bodeket_tahara">בודקת טהרה</option>
+            <option value="yoetz_zugi">יועץ/ת זוגי/ת</option>
+          </select>
+        </div>
+        <div>
+          <label for="dSegment">מגזר</label>
+          <select id="dSegment">
+            <option value="">שני המגזרים</option>
+            <option value="chatan">חתנים</option>
+            <option value="kallah">כלות</option>
+          </select>
+        </div>
+      </div>
+      <label for="dName">שם *</label>
+      <input id="dName" />
+      <div class="row">
+        <div><label for="dPhone">טלפון</label><input id="dPhone" /></div>
+        <div><label for="dEmail">אימייל</label><input id="dEmail" type="email" /></div>
+      </div>
+      <div class="row">
+        <div><label for="dCity">עיר</label><input id="dCity" /></div>
+        <div><label for="dAddress">כתובת</label><input id="dAddress" /></div>
+      </div>
+      <label for="dNotes">הערות</label>
+      <input id="dNotes" />
+      <div id="dErr"></div>
+      <button class="btn" id="dSubmit">הוספת רשומה</button>
+      <button class="btn btn-quiet" id="dCancelEdit" hidden>ביטול עריכה</button>
+      <div id="dTable" style="margin-top:22px"><div class="empty">טוען…</div></div>
     </div>
   </div>
 </div>
@@ -210,6 +257,112 @@ async function act(id, approve) {
     alert(e.message);
   }
 }
+
+/* ── directories (poskim / mikvaot / mesadrei kiddushin / bodkot tehara / yoatzim) ── */
+const DIR_CATEGORY_LABEL = {
+  posek: 'פוסק הלכה', mikveh: 'מקווה', mesader_kiddushin: 'מסדר קידושין',
+  bodeket_tahara: 'בודקת טהרה', yoetz_zugi: 'יועץ/ת זוגי/ת',
+};
+let DIR_ROWS = [];
+let dEditingId = null;
+
+function dirRow(d) {
+  return '<tr>' +
+    '<td>' + (DIR_CATEGORY_LABEL[d.category] || esc(d.category)) + '</td>' +
+    '<td>' + (SEGMENT_LABEL[d.segment] || 'שני המגזרים') + '</td>' +
+    '<td>' + v(d.name) + '</td>' +
+    '<td>' + v(d.phone) + '</td>' +
+    '<td>' + v(d.city) + '</td>' +
+    '<td>' + (d.is_active ? '<span class="badge verified">פעיל</span>' : '<span class="badge inactive">כבוי</span>') + '</td>' +
+    '<td>' +
+      '<button class="btn btn-sm btn-quiet" data-dir-edit="' + d.id + '">עריכה</button>' +
+      '<button class="btn btn-sm btn-quiet" data-dir-toggle="' + d.id + '">' + (d.is_active ? 'כיבוי' : 'הפעלה') + '</button>' +
+      '<button class="btn btn-sm btn-danger" data-dir-delete="' + d.id + '">מחיקה</button>' +
+    '</td>' +
+    '</tr>';
+}
+
+async function renderDirectories() {
+  const el = $('dTable');
+  el.innerHTML = '<div class="empty">טוען…</div>';
+  try {
+    DIR_ROWS = await rpc('maatefet_directory_admin_list');
+  } catch (e) {
+    el.innerHTML = '<div class="err">' + esc(e.message) + '</div>';
+    return;
+  }
+  if (!DIR_ROWS.length) { el.innerHTML = '<div class="empty">עדיין אין רשומות בדירקטורי.</div>'; return; }
+  el.innerHTML = '<table><thead><tr><th>קטגוריה</th><th>מגזר</th><th>שם</th><th>טלפון</th><th>עיר</th><th>סטטוס</th><th></th></tr></thead><tbody>' +
+    DIR_ROWS.map(dirRow).join('') + '</tbody></table>';
+  for (const b of el.querySelectorAll('[data-dir-edit]')) b.addEventListener('click', () => startDirEdit(b.dataset.dirEdit));
+  for (const b of el.querySelectorAll('[data-dir-toggle]')) {
+    b.addEventListener('click', () => {
+      const d = DIR_ROWS.find((x) => x.id === b.dataset.dirToggle);
+      if (!d) return;
+      rpc('maatefet_directory_upsert', {
+        p_id: d.id, p_category: d.category, p_segment: d.segment, p_name: d.name,
+        p_phone: d.phone, p_email: d.email, p_city: d.city, p_address: d.address,
+        p_notes: d.notes, p_is_active: !d.is_active,
+      }).then(renderDirectories).catch((e) => alert(e.message));
+    });
+  }
+  for (const b of el.querySelectorAll('[data-dir-delete]')) {
+    b.addEventListener('click', () => {
+      if (!confirm('למחוק את הרשומה לצמיתות?')) return;
+      rpc('maatefet_directory_delete', { p_id: b.dataset.dirDelete }).then(renderDirectories).catch((e) => alert(e.message));
+    });
+  }
+}
+
+function startDirEdit(id) {
+  const d = DIR_ROWS.find((x) => x.id === id);
+  if (!d) return;
+  dEditingId = id;
+  $('dCategory').value = d.category;
+  $('dSegment').value = d.segment || '';
+  $('dName').value = d.name || '';
+  $('dPhone').value = d.phone || '';
+  $('dEmail').value = d.email || '';
+  $('dCity').value = d.city || '';
+  $('dAddress').value = d.address || '';
+  $('dNotes').value = d.notes || '';
+  $('dSubmit').textContent = 'עדכון רשומה';
+  $('dCancelEdit').hidden = false;
+  $('dirCard').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function resetDirForm() {
+  dEditingId = null;
+  for (const id of ['dName', 'dPhone', 'dEmail', 'dCity', 'dAddress', 'dNotes']) $(id).value = '';
+  $('dCategory').value = 'posek';
+  $('dSegment').value = '';
+  $('dSubmit').textContent = 'הוספת רשומה';
+  $('dCancelEdit').hidden = true;
+  $('dErr').innerHTML = '';
+}
+
+$('dCancelEdit').addEventListener('click', resetDirForm);
+
+$('dSubmit').addEventListener('click', async () => {
+  const name = $('dName').value.trim();
+  if (!name) { $('dErr').innerHTML = '<div class="err">שם הוא שדה חובה.</div>'; return; }
+  $('dSubmit').disabled = true;
+  try {
+    const existing = dEditingId ? DIR_ROWS.find((x) => x.id === dEditingId) : null;
+    await rpc('maatefet_directory_upsert', {
+      p_id: dEditingId, p_category: $('dCategory').value, p_segment: $('dSegment').value || null,
+      p_name: name, p_phone: $('dPhone').value.trim() || null, p_email: $('dEmail').value.trim() || null,
+      p_city: $('dCity').value.trim() || null, p_address: $('dAddress').value.trim() || null,
+      p_notes: $('dNotes').value.trim() || null, p_is_active: existing ? existing.is_active : true,
+    });
+    resetDirForm();
+    renderDirectories();
+  } catch (e) {
+    $('dErr').innerHTML = '<div class="err">' + esc(e.message) + '</div>';
+  } finally {
+    $('dSubmit').disabled = false;
+  }
+});
 
 /* ── 2FA gate (required for the super-admin panel — approves/suspends real people) ── */
 let MFA_FACTOR_ID = null;
@@ -317,6 +470,7 @@ async function boot() {
 
   show('dash');
   renderTable();
+  renderDirectories();
 }
 
 boot();
