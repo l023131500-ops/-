@@ -141,8 +141,8 @@ export function buildBrandBookHtml(opts: {
     <p class="sec-sub">גרסה ראשית, שטח מגן ושימוש נכון</p>
     ${logoSrc ? `<div class="logo-showcase"><img src="${logoSrc}" alt="לוגו ראשי" /></div>` : `<div class="info-box"><div class="d">טרם נוצר לוגו — חזור לערכת המותג וצור קונספטים.</div></div>`}
     ${logoSrc ? `<div class="two-up">
-      <div class="mini"><img src="${logoSrc}" /><div style="font-size:11px;color:#888;margin-top:8px">על רקע בהיר</div></div>
-      <div class="mini dark"><img src="${logoSrc}" /><div style="font-size:11px;color:#F5F0E6;margin-top:8px">על רקע כהה</div></div>
+      <div class="mini"><img src="${logoSrc}" alt="לוגו על רקע בהיר" /><div style="font-size:11px;color:#888;margin-top:8px">על רקע בהיר</div></div>
+      <div class="mini dark"><img src="${logoSrc}" alt="לוגו על רקע כהה" /><div style="font-size:11px;color:#F5F0E6;margin-top:8px">על רקע כהה</div></div>
     </div>` : ""}
     <div class="info-box" style="margin-top:18px"><div class="t">שטח מגן</div><div class="d">שמור מרווח מינימלי סביב הלוגו בגובה האות בשם המותג. אין למקם טקסט או אלמנטים בתוך שטח זה.</div></div>
     <div class="info-box"><div class="t">מה לא לעשות</div><div class="d">אין למתוח, לסובב, לשנות צבעים, להוסיף צללים או להציב על רקע בעל ניגודיות נמוכה.</div></div>
@@ -194,7 +194,7 @@ export function buildBrandBookHtml(opts: {
     <p class="sec-sub">כרטיס ביקור, חתימת אימייל, פוסט לרשתות ונייר מכתבים</p>
     <div class="two-up">
       <div class="mini" style="text-align:right;padding:24px;background:${allColors[0]?.hex || "#0B1E3F"};color:#fff">
-        ${logoSrc ? `<img src="${logoSrc}" style="max-height:44px;margin-bottom:14px" />` : ""}
+        ${logoSrc ? `<img src="${logoSrc}" alt="לוגו על כרטיס ביקור" style="max-height:44px;margin-bottom:14px" />` : ""}
         <div style="font-family:'Frank Ruhl Libre';font-size:18px;font-weight:700">${esc(brand.brandName)}</div>
         <div style="font-size:12px;opacity:.8;margin-top:6px">כרטיס ביקור · שם · תפקיד · טלפון</div>
       </div>
@@ -206,11 +206,11 @@ export function buildBrandBookHtml(opts: {
     </div>
     <div class="two-up" style="margin-top:14px">
       <div class="mini" style="padding:0;overflow:hidden;background:${allColors[1]?.hex || "#101B32"};color:#fff;min-height:150px;display:flex;flex-direction:column;align-items:center;justify-content:center">
-        ${logoSrc ? `<img src="${logoSrc}" style="max-height:60px;margin-bottom:10px" />` : ""}
+        ${logoSrc ? `<img src="${logoSrc}" alt="לוגו על פוסט לרשתות חברתיות" style="max-height:60px;margin-bottom:10px" />` : ""}
         <div style="font-size:12px;opacity:.8">פוסט לרשתות · 1:1</div>
       </div>
       <div class="mini" style="text-align:right;padding:24px;min-height:150px">
-        ${logoSrc ? `<img src="${logoSrc}" style="max-height:40px;margin-bottom:14px" />` : ""}
+        ${logoSrc ? `<img src="${logoSrc}" alt="לוגו על נייר מכתבים" style="max-height:40px;margin-bottom:14px" />` : ""}
         <div style="font-size:11px;color:#aaa;line-height:1.8">נייר מכתבים רשמי<br/>עם לוגו בראש הדף<br/>ופרטי יצירת קשר בתחתית</div>
       </div>
     </div>
