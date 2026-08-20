@@ -7294,3 +7294,38 @@
      או לפתוח עדשה חדשה (ניגודיות צבעים, `alt` ריק/חסר על תמונות),
      או לחזור ל-`core.project_tasks`/`core.project_bugs` לעבודה
      אחרת בתחום auth/admin/pricing/gannenet.
+
+## 20/08/2026 — סבב 134 (loop A)
+
+688. **המשכתי את המלצת #687** (עדשת `aria-live` על התור שנמצא בסבב
+     133: 10-bkalot-rights, 12-smel-ndln, 14-bsmachot-plus,
+     16-chatzor-connect). בדקתי `core.run_progress` (סבב 133 האחרון,
+     commit `1f6279fe`, תואם HEAD) + `core.project_tasks` (אותם 5
+     פתוחים: 02/12/13/25/32, עדיין חסומים על סודות חסרים או החלטות
+     מיזוג/origin מחוץ לסמכות הסוכן) + `core.project_bugs` (ריק) —
+     שום דבר חדש בתחום. בחרתי את 16-chatzor-connect
+     (`AdminSynagogues.tsx` שורה 137) — ההתאמה הכי נקייה לתבנית
+     המבוססת: `<div className="mt-6">` בשורה 73 עוטף באופן קבוע את
+     ה-ternary של loading-skeleton/`ErrorState`/רשימה-כולל-empty-state,
+     בעוד שורת ה-`<li>` של "אין בתי כנסת עדיין" (שורה 137) לא מודיעה
+     לקורא-מסך כשהיא מופיעה — לעומת ה-`ErrorState` הסמוך שכבר משתמש
+     ב-`role="alert"` כראוי.
+689. **התיקון:** הוספתי `aria-live="polite"` ל-`<div className="mt-6">`
+     הקיים בשורה 73 (לא לתג מותנה) — עקבי עם התבנית מסבבים 132-133.
+     `role="alert"` ב-`ErrorState` הפנימי ממשיך לפעול כרגיל (assertive,
+     בלתי תלוי בהורה polite). אפס שינוי ללוגיקת `isLoading`/`isError`/
+     `synagogues`/מודל/מוטציות. אומת איזון `{}`/`()`/`[]` על הקובץ
+     המלא: 73/73, 72/72, 6/6 — תואם. הקובץ חסום ע"י `.gitignore`
+     (`apps/**`) אך היה כבר עוקב ב-git (`git ls-files` אישר) — נעשה
+     `git add -f` לפי התקדים מסבב 133. Commit `4935d51c` על
+     `fix/a-icon-only-buttons-round2-0820`, יידחף ל-origin (מפעיל
+     פריסת Vercel תחת more30.com/chatzor).
+690. **הבא בתור:** נותרו בתור מסבב 133: 10-bkalot-rights (`app.js`
+     שורות 388/469, הודעות שגיאה ב-vanilla JS ללא live region),
+     12-smel-ndln (`Report.tsx` שורה 85, "טוען דוח…" — מקרה שונה,
+     כל ה-component מוחזר מוקדם ולא נשאר wrapper קבוע ב-DOM בזמן
+     המעבר, דורש מחשבה נוספת על התבנית לפני תיקון) ו-14-bsmachot-plus
+     (`app.js` שורות 387-392). אפשר להמשיך שם, או לפתוח עדשה חדשה
+     (ניגודיות צבעים, `alt` ריק/חסר על תמונות), או לחזור ל-
+     `core.project_tasks`/`core.project_bugs` לעבודה אחרת בתחום
+     auth/admin/pricing/gannenet.
