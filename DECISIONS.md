@@ -11524,3 +11524,45 @@
     צד client (99 קומיטים, רוב הבדיקות היו ממוקדות edge functions).
     נושאים #62/#94/#115/#164/#169/#254 נשארים חסומים.
     via cloud server 167.99.131.167 [loop B]
+
+## 20/08/2026 — סבב 453 (loop B)
+
+453. **סגירת 6 ה-handlers הנותרים ב-27-bkalut-price (המועמד שהוצע
+    בסוף סבב 452).** קריאת הקוד הישירה של ארבעת הקבצים שצוינו אשרה
+    שכל אחד מששת ה-handlers הבאים כותב DELETE ל-API בלי שום guard
+    כניסה-חוזרת: `removeTopic`/`removeTier` ב-`health-funds-admin.tsx`,
+    `deleteLink` ב-`potential-admin.tsx`, `deleteLink`/`deleteQuestion`
+    ב-`community-admin.tsx`, ו-`remove` ב-`delivery.tsx`. לחיצה כפולה
+    או רשת חוזרת יכולה לירות שתי בקשות `DELETE` חופפות לאותה שורה,
+    בדיוק אותו דפוס שתוקן בסבב 452 ב-`price-comparison-admin.tsx`.
+
+    **התיקון:** אותו דפוס guard בכל אחד מהשישה — `useRef<Set<number>>`
+    ייעודי לכל handler (כדי לא לערבב מזהי ישות ממינים שונים, למשל
+    topic מול tier), בדיקת `has(id)` לפני ביצוע, `add(id)` לפני
+    הבקשה, ו-`delete(id)` ב-`finally` שמכסה גם הצלחה וגם שגיאה. שני
+    קבצים (`potential-admin.tsx`, `community-admin.tsx`, `delivery.tsx`)
+    לא ייבאו `useRef` קודם — נוסף לייבוא הקיים מ-`react`. מסלולי
+    ההצלחה/שגיאה הקיימים (כולל `window.confirm`/`confirm` שכבר היו
+    שם) לא השתנו.
+
+    **בדיקות תקינות:** קריאת קוד בלבד (ללא dev-server/build). ספירת
+    סוגריים/סוגריים-מסולסלים לפני/אחרי לכל אחד מארבעת הקבצים (Node):
+    `health-funds-admin.tsx` — `(` 438/438, `{` 484/484;
+    `potential-admin.tsx` — `(` 295/295, `{` 292/292;
+    `community-admin.tsx` — `(` 274/274, `{` 278/278;
+    `delivery.tsx` — `(` 135/135, `{` 145/145 (כולם מאוזנים).
+    `git diff --stat`: 4 קבצים, +37/-5.
+
+    לא אומתה פריסה חיה: ההנחיות אוסרות dev-server/תהליכי רקע —
+    האימות נעשה בקריאת קוד בלבד.
+
+    ענף `fix/b-22-whatsapp-noopener-round395-0820` (שרשרת הענפים היא
+    המקור המלא היחיד ל-loop B, לא `main`), נדחף.
+
+    **הבא בתור:** תבנית ה-guard הזו מכסה כעת את כל handlers המחיקה
+    שאותרו ב-27-bkalut-price. מועמד הבא: חזרה לבדיקת
+    race-conditions/stale-async ב-21-mthbram צד client (99 קומיטים,
+    רוב הבדיקות היו ממוקדות edge functions), או סריקת דפוס דומה
+    ב-18-torah-editor-mvp/22-get-your-rights/24-galilee שטרם נסרקו
+    לעומק לחלוטין. נושאים #62/#94/#115/#164/#169/#254 נשארים חסומים.
+    via cloud server 167.99.131.167 [loop B]
