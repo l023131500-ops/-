@@ -152,7 +152,18 @@ export default function Home() {
       {/* Hero */}
       <header className="border-b border-border bg-gradient-to-l from-primary/10 via-primary/[0.04] to-transparent">
         <div className="mx-auto max-w-5xl px-4 py-10 sm:py-14">
-          <div className="flex items-start justify-between gap-3">
+          {/* כפתור הכניסה המשותף של more30 יושב `fixed` בפינה השמאלית העליונה
+              (הקצה האינליין-סופי ב-RTL, ‎inset-inline-end:16px / top:12px‎) —
+              בדיוק על קישור "מחירון" כאן, שיושב בקצה השני של `justify-between`
+              במסך צר (עד `sm`, ‎py-10‎ מביא את השורה ל-y‎~40px‎, בתוך טווח
+              הכדור). `--more30-auth-inset` הוא הרוחב שהכדור מפרסם בפועל. */}
+          <div
+            className="flex items-start justify-between gap-3"
+            style={{
+              paddingInlineEnd:
+                "max(1rem, calc(var(--more30-auth-inset, 124px) - max(0px, (100vw - 1024px) / 2)))",
+            }}
+          >
             <div className="flex items-center gap-3">
               <BrandLogo className="h-11 w-11 text-primary" />
               <div>
