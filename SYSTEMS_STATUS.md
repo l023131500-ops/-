@@ -6352,3 +6352,53 @@ StoryDirection=RightToLeftDirection נכון, 6 TextFrame + 7 Rectangle תואמ
 
 עדות: `QA/bkalot-clone/full-flow-verify-0819/` (`README.md` + ארבעת קבצי ה-JSON
 הגולמיים: `intake`, `render`, `queue`, `dispatch`).
+
+---
+
+## 20/08/2026 (Loop C, סבב 4) — 39 מעטפת: ה-UI הראשון + נמצאו ותוקנו שתי בעיות אמיתיות
+
+בונה על שלושת הסבבים הקודמים (רישום #39 → סכימת `maatefet` + RLS → RPCs
+`redeem_invite`/`verify_instructor`). הצעד הזה: ה-UI האמיתי הראשון תחת
+`sites/39-maatefet/maatefet/` (אותו דפוס בדיוק כמו `sites/36-nadlan-pro` ו-
+`sites/34-kesef` — HTML/JS סטטי, ללא build, Supabase JS ישיר) — `index.html`
+(נחיתה ציבורית), `instructor.html` (הרשמת מדריך/ה → ממתין/ה לאימות → דשבורד:
+CRM לזוגות + הזמנות + ספריית תוכן), `join.html` (מימוש הזמנה ע"י הזוג לפי קוד
+מדויק), `admin.html` (פאנל סופר-אדמין לאימות מדריכים).
+
+**נמצאה בעיה אמיתית #1:** בדיקה חיה (`Accept-Profile: maatefet` מול ה-REST
+API) גילתה של-PostgREST של הפרויקט אין `maatefet` ברשימת ה-exposed schemas —
+בדיוק כמו שקרה קודם ל-#34 kesef (ראה `NEEDS_USER.md` §3). כל ה-RPCs שנבנו
+בסבב 3 היו לכן בלתי-נגישים משום דפדפן. הוספתי `maatefet` לרשימה דרך
+ה-Management API (איחוד עם הערך הקיים `public,graphql_public,nadlan,chatzor,
+kesef` — שום ערך לא נמחק, נבדק לפני ואחרי) ושלחתי `NOTIFY pgrst, 'reload
+config'`, אך ה-PostgREST הרץ לא טען את זה בלי רסטארט לפרויקט — **לא הפעלתי
+רסטארט** (אותה החלטה בדיוק כמו ב-kesef: זה ישבש זמנית את 32/16 החיות, בלי
+תועלת דחופה). הפתרון בפועל: שכבת `public.maatefet_*` (עטיפות דקות סביב
+`maatefet.*`, אותו דפוס כמו `public.np_*` ב-36) — עובדת כבר עכשיו, בלי תלות
+ברסטארט עתידי.
+
+**נמצאה בעיה אמיתית #2:** מדיניות ה-RLS המקורית ל-anon על `invites`
+(`invites_anon_lookup_by_code`, מסבב 2) הגבילה רק *אילו* שורות נראות
+(`status='pending' and expires_at > now()`), ולא דרשה סינון לפי קוד — כלומר
+כל קורא אנונימי יכול היה בעיקרון להריץ `select * from invites` ולמצות
+(enumerate) את כל ההזמנות הממתינות (שם/טלפון/אימייל של זוגות), בלי לדעת קוד
+כלל. היה רדום כל עוד הסכימה לא נחשפה, אבל תוקן בשורש: המדיניות וההרשאה
+הוסרו לגמרי, הוחלפו ב-RPC יחיד (`maatefet_invite_peek`) שמקבל קוד מדויק
+ומחזיר 4 שדות תצוגה בלבד (שם זוג, מגזר, שם מדריך/ה, תוקף) — לא טלפון/אימייל,
+ולא מאפשר רשימה.
+
+**נמצאה בעיה אמיתית #3 (הרשאות):** נבדק חי עם `has_function_privilege` שכל
+פונקציות ה-`public.maatefet_*` היו ניתנות להרצה ע"י `anon`, למרות
+`revoke all ... from public` מפורש — כי ל-Supabase יש `ALTER DEFAULT
+PRIVILEGES IN SCHEMA public` שמעניק `EXECUTE` ל-`anon`/`authenticated`
+ישירות עם יצירת כל פונקציה חדשה, ו-`revoke ... from public` לא מבטל הרשאה
+מפורשת כזו. בפועל לא היה חור אבטחה אמיתי (כל נתיב נבדק ב-`auth.uid()` או
+נחסם ב-RLS/הרשאת-טבלה), אבל תוקן לניקיון: `revoke execute ... from anon`
+מפורש על כל הפונקציות שאינן `maatefet_invite_peek`, ואומת מחדש חי.
+
+**מה נשאר לשלב 0:** פרויקט Vercel נפרד + rewrite ב-`portal/vercel.dist.json`
+כדי ש-`/maatefet` יהיה חי בפועל (אותו דפוס כמו 34/36 — נרשם ב-`NEEDS_USER.md`).
+2FA (Auth MFA) והצפנת-שדה לתוכן רגיש נותרו עבודת שכבת-אפליקציה עתידית,
+מתועדות ב-`MAATEFET_BUILD.md`, לא הומצאו כאן.
+
+מיגרציות: `0110_maatefet_public_api.sql`, `0111_maatefet_public_api_lock_anon.sql`.

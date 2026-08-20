@@ -1,0 +1,211 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>פאנל סופר-אדמין · מעטפת</title>
+<meta name="robots" content="noindex, nofollow" />
+<meta name="theme-color" content="#0B0D2E" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Secular+One&family=Heebo:wght@300;400;500;700&display=swap"
+      rel="stylesheet" media="print" onload="this.media='all'" />
+<noscript><link href="https://fonts.googleapis.com/css2?family=Secular+One&family=Heebo:wght@300;400;500;700&display=swap" rel="stylesheet" /></noscript>
+<script src="https://more30.com/auth-button.js" defer></script>
+<style>
+:root{
+  color-scheme: dark;
+  --royal:#0B0D2E; --royal-2:#12153F;
+  --gold:#C9A227; --gold-soft:#E3C765; --emerald:#14B88A; --rose:#E0574E;
+  --ink:#ECE9F5; --ink-2:#B9B6D6; --muted:#8E8BB2;
+  --line:rgba(201,162,39,.20); --line-2:rgba(236,233,245,.10);
+  --ease:cubic-bezier(.22,.61,.36,1);
+}
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;background:var(--royal);color:var(--ink);
+  font-family:'Heebo',system-ui,-apple-system,'Segoe UI',sans-serif;font-weight:300;line-height:1.65;
+  -webkit-font-smoothing:antialiased}
+[hidden]{display:none !important}
+.wrap{max-width:900px;margin:0 auto;padding:60px 20px 90px}
+.nav{position:sticky;top:0;z-index:50;background:rgba(11,13,46,.9);backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--line-2);padding:14px 20px;
+  padding-inline-end:calc(20px + var(--more30-auth-inset, 112px))}
+.wordmark{font-family:'Secular One',sans-serif;font-size:16px;max-width:900px;margin:0 auto;display:block}
+.wordmark span{color:var(--gold)}
+h1{font-family:'Secular One',sans-serif;font-weight:400;font-size:24px;margin:32px 0 6px}
+h2{font-family:'Secular One',sans-serif;font-weight:400;font-size:18px;margin:0 0 14px}
+.sub{color:var(--ink-2);font-size:14px;margin:0 0 26px}
+.card{border:1px solid var(--line-2);border-radius:4px;padding:24px;background:rgba(236,233,245,.03);margin-bottom:20px}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{text-align:start;padding:10px 8px;border-bottom:1px solid var(--line-2)}
+th{color:var(--muted);font-weight:400;font-size:12px;text-transform:uppercase;letter-spacing:.04em}
+.na{color:var(--muted)}
+.empty{color:var(--muted);font-size:14px;padding:20px 0}
+.badge{display:inline-block;font-size:12px;padding:3px 9px;border-radius:20px;border:1px solid var(--line)}
+.badge.pending{color:var(--gold-soft);border-color:var(--gold)}
+.badge.verified{color:var(--emerald);border-color:rgba(20,184,138,.5)}
+.badge.suspended{color:var(--rose);border-color:rgba(224,87,78,.5)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  font-family:'Heebo',sans-serif;font-size:13px;font-weight:400;padding:8px 16px;
+  border:1px solid var(--gold);border-radius:3px;background:var(--gold);color:var(--royal);
+  cursor:pointer;transition:background .2s var(--ease),color .2s var(--ease);margin-inline-end:6px}
+.btn:hover:not(:disabled){background:transparent;color:var(--gold-soft);box-shadow:0 0 0 1px var(--gold) inset}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn-danger{border-color:rgba(224,87,78,.6);background:transparent;color:var(--rose)}
+.btn-danger:hover:not(:disabled){background:rgba(224,87,78,.1)}
+.state{border-radius:5px;padding:26px 28px;text-align:center;margin:30px 0}
+.state.bad{border:1px solid rgba(224,87,78,.5);background:rgba(224,87,78,.08)}
+.state.wait{border:1px solid rgba(201,162,39,.5);background:rgba(201,162,39,.06)}
+.state h2{margin:0 0 8px}
+.state p{margin:0;color:var(--ink-2);font-size:14px}
+.loading{color:var(--muted);font-size:15px;text-align:center;padding:80px 0}
+.spinner{display:inline-block;width:14px;height:14px;border:2px solid var(--line-2);
+  border-top-color:var(--gold);border-radius:50%;animation:spin .7s linear infinite;
+  vertical-align:-2px;margin-inline-end:8px}
+@keyframes spin{to{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+<nav class="nav"><a class="wordmark" href="/maatefet">מעטפת<span> · פאנל סופר-אדמין</span></a></nav>
+
+<div class="wrap">
+  <div id="loading" class="loading"><span class="spinner"></span>טוען…</div>
+
+  <div id="authGate" hidden>
+    <div class="state wait"><h2>כניסה נדרשת</h2><p>יש להתחבר עם חשבון more30.</p></div>
+  </div>
+
+  <div id="deniedWrap" hidden>
+    <div class="state bad">
+      <h2>הגישה מוגבלת</h2>
+      <p>הדף הזה זמין רק לסופר-אדמין של more30.</p>
+    </div>
+  </div>
+
+  <div id="dash" hidden>
+    <h1>אימות מדריכים</h1>
+    <p class="sub">מדריך/ה חדש/ה מתחיל/ה במצב "ממתין/ה". רק כאן ניתן לאשר או להשעות — פעולה זו אכופה גם במסד הנתונים.</p>
+    <div class="card">
+      <h2>מדריכים</h2>
+      <div id="table"><div class="empty">טוען…</div></div>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+
+const SUPABASE_URL = 'https://uhnrgujbdxhhmoxcjria.supabase.co';
+const SUPABASE_ANON =
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVobnJndWpiZHhoaG1veGNqcmlhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODMzNjE3MjgsImV4cCI6MjA5ODkzNzcyOH0.nHuOhw-WQEU17lNa7XOlORnBhVAYbJBHudKafWkSHBw';
+
+const sb = createClient(SUPABASE_URL, SUPABASE_ANON, {
+  auth: { persistSession: true, storageKey: 'more30-auth', detectSessionInUrl: true },
+});
+
+const LOGIN = 'https://more30.com/login?from=' + encodeURIComponent('https://more30.com/maatefet/admin');
+const $ = (id) => document.getElementById(id);
+const esc = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, (c) =>
+  ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const NA = '<span class="na">לא זמין</span>';
+const v = (x) => (x === null || x === undefined || x === '' ? NA : esc(x));
+const dtm = (x) => (x ? new Date(x).toLocaleString('he-IL', { dateStyle: 'short', timeStyle: 'short' }) : NA);
+const SEGMENT_LABEL = { chatan: 'חתנים', kallah: 'כלות' };
+const STATUS_LABEL = { pending: 'ממתין', verified: 'מאומת', suspended: 'מושעה' };
+
+function show(id) {
+  for (const el of ['loading', 'authGate', 'deniedWrap', 'dash']) $(el).hidden = el !== id;
+}
+
+async function rpc(fn, args) {
+  const { data, error } = await sb.rpc(fn, args || {});
+  if (error) throw new Error(error.message);
+  return data;
+}
+
+let ROWS = [];
+
+function row(i) {
+  const actions = i.status === 'pending'
+    ? '<button class="btn" data-approve="' + i.id + '">אישור</button><button class="btn btn-danger" data-reject="' + i.id + '">דחייה</button>'
+    : (i.status === 'verified'
+        ? '<button class="btn btn-danger" data-reject="' + i.id + '">השעיה</button>'
+        : '<button class="btn" data-approve="' + i.id + '">אישור מחדש</button>');
+  return '<tr>' +
+    '<td>' + v(i.full_name) + '</td>' +
+    '<td>' + (SEGMENT_LABEL[i.segment] || esc(i.segment)) + '</td>' +
+    '<td>' + v(i.phone) + '</td>' +
+    '<td>' + v(i.email) + '</td>' +
+    '<td><span class="badge ' + i.status + '">' + (STATUS_LABEL[i.status] || i.status) + '</span></td>' +
+    '<td>' + dtm(i.created_at) + '</td>' +
+    '<td>' + actions + '</td>' +
+    '</tr>';
+}
+
+async function renderTable() {
+  const el = $('table');
+  el.innerHTML = '<div class="empty">טוען…</div>';
+  try {
+    ROWS = await rpc('maatefet_admin_instructors_list');
+  } catch (e) {
+    el.innerHTML = '<div class="err">' + esc(e.message) + '</div>';
+    return;
+  }
+  if (!ROWS.length) { el.innerHTML = '<div class="empty">עדיין אין בקשות הרשמה.</div>'; return; }
+  el.innerHTML = '<table><thead><tr><th>שם</th><th>מגזר</th><th>טלפון</th><th>אימייל</th><th>סטטוס</th><th>נרשם/ה</th><th></th></tr></thead><tbody>' +
+    ROWS.map(row).join('') + '</tbody></table>';
+  for (const b of el.querySelectorAll('[data-approve]'))
+    b.addEventListener('click', () => act(b.dataset.approve, true));
+  for (const b of el.querySelectorAll('[data-reject]'))
+    b.addEventListener('click', () => {
+      if (!confirm('לדחות/להשעות את המדריך/ה?')) return;
+      act(b.dataset.reject, false);
+    });
+}
+
+async function act(id, approve) {
+  try {
+    await rpc('maatefet_verify_instructor', { p_instructor_id: id, p_approve: approve });
+    renderTable();
+  } catch (e) {
+    alert(e.message);
+  }
+}
+
+async function requireSession() {
+  const { data } = await sb.auth.getSession();
+  if (data?.session) return data.session;
+  for (let i = 0; i < 10; i++) {
+    await new Promise((r) => setTimeout(r, 150));
+    const { data: d } = await sb.auth.getSession();
+    if (d?.session) return d.session;
+  }
+  return null;
+}
+
+async function boot() {
+  show('loading');
+  const session = await requireSession();
+  if (!session) {
+    show('authGate');
+    setTimeout(() => { location.href = LOGIN; }, 1800);
+    return;
+  }
+
+  let isAdmin = false;
+  try {
+    const { data, error } = await sb.rpc('more30_is_super_admin');
+    if (error) throw new Error(error.message);
+    isAdmin = !!data;
+  } catch (e) { isAdmin = false; }
+
+  if (!isAdmin) { show('deniedWrap'); return; }
+
+  show('dash');
+  renderTable();
+}
+
+boot();
+</script>
+</body>
+</html>

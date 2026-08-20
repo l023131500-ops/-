@@ -74,9 +74,11 @@ export const REGISTRY: ProjectEntry[] = [
   { number: "38", slug: "events-gifts", repo: "more30", name: "אירועים ומתנות — מערכת עצמאית", department: "community", category: "events", stage: "idea", live: false, isDeployed: false, supabaseProject: null, supabaseSchema: null, deployTarget: "unknown", protected: false, note: "מתנות באשראי, אישורי הגעה, דפי נחיתה לאולמות. ‏/events מחזיר 404 — טרם נבנה." },
   // 39 נרשם 20/08 (Loop C) ישירות ב-core.projects (supabase/migrations/0107_register_maatefet.sql),
   // אותה שיטה בדיוק כמו 34/35 ב-0007. סכימת maatefet (instructors/invites/clients/
-  // content_items, invite-only + RLS) הוחלה 20/08 ב-0108_maatefet_core_schema.sql —
-  // קוד אפליקציה/UI עדיין לא נבנה, ראה MAATEFET_BUILD.md.
-  { number: "39", slug: "maatefet", repo: "more30", name: "מעטפת — ליווי מדריכי חתנים ומדריכות כלות", department: "community", category: "events", stage: "wip", live: false, isDeployed: false, supabaseProject: "uhnrgujbdxhhmoxcjria", supabaseSchema: "maatefet", deployTarget: "unknown", protected: false, note: "פלטפורמת ליווי מדריכי חתנים/כלות (15 מודולים, ליבה אחת שני-פנים לפי segment). סכימת maatefet חיה (invite-only + RLS מדורג). ‏/maatefet מחזיר \"בקרוב\" — קוד אפליקציה/UI טרם נבנה. מפרט: MAATEFET_BUILD.md." },
+  // content_items, invite-only + RLS) הוחלה 20/08 ב-0108_maatefet_core_schema.sql.
+  // 20/08 סבב 4: ה-UI הראשון נבנה בפועל תחת sites/39-maatefet/maatefet (אותו דפוס
+  // בדיוק כמו sites/36-nadlan-pro ו-sites/34-kesef) + שכבת public.maatefet_* RPC —
+  // עדיין ללא פרויקט Vercel/rewrite משלו ב-portal, ראה MAATEFET_BUILD.md.
+  { number: "39", slug: "maatefet", repo: "more30", name: "מעטפת — ליווי מדריכי חתנים ומדריכות כלות", department: "community", category: "events", stage: "wip", live: false, isDeployed: false, supabaseProject: "uhnrgujbdxhhmoxcjria", supabaseSchema: "maatefet", deployTarget: "vercel", protected: false, note: "פלטפורמת ליווי מדריכי חתנים/כלות (15 מודולים, ליבה אחת שני-פנים לפי segment). סכימת maatefet חיה + שכבת public.maatefet_* RPC. קוד ה-UI הראשון קיים ב-sites/39-maatefet/maatefet (index/instructor/join/admin — הרשמת מדריך/ה → אימות סופר-אדמין → הזמנה → מימוש → CRM). עדיין חסר: פרויקט Vercel נפרד + rewrite ב-portal/vercel.dist.json כדי ש-/maatefet יהיה חי (אותו דפוס כמו 34/36). מפרט: MAATEFET_BUILD.md." },
 ];
 
 /** Repos to archive/clean only — never treated as active apps. Imported frozen to apps/_archive/. */

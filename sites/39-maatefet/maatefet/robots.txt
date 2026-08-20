@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /maatefet
+Disallow: /maatefet/instructor
+Disallow: /maatefet/join
+Disallow: /maatefet/admin
+
+Sitemap: https://more30.com/sitemap.xml

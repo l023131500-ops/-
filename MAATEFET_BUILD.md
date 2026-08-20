@@ -8,6 +8,21 @@
 >
 > **20/08/2026 (Loop C, סבב 2):** שלב 0 התחיל בפועל — סכימת `maatefet` הוחלה על ה-hub (`uhnrgujbdxhhmoxcjria`) דרך `supabase/migrations/0108_maatefet_core_schema.sql`: טבלאות `instructors`/`invites`/`clients`/`content_items`, כולן RLS, כולן invite-only (מדריך מתחיל `pending` ועובר `verified` רק ע"י סופר-אדמין — אכוף בטריגר `guard_instructor_status_change`, לא רק ב-UI; לקוח מקבל שורה רק דרך קוד-הזמנה אמיתי שיצר מדריך מאומת). הסופר-אדמין משתמש בפונקציה הגלובלית הקיימת `public.more30_is_super_admin()` — לא נבנה טבלת-ניהול חדשה. **עדיין לא נבנה:** קוד אפליקציה/UI (‏/maatefet עדיין "בקרוב"), פאנל סופר-אדמין בפועל לאימות מדריכים, 2FA (Auth MFA — שכבת-אפליקציה, לא DB), הצפנת-שדה לתוכן רגיש (דורש ניהול-מפתחות + RPC הצפנה/פענוח). אלה השלב הבא.
 >
+> **20/08/2026 (Loop C, סבב 4):** נבנה ה-UI הראשון בפועל תחת
+> `sites/39-maatefet/maatefet/` (`index`/`instructor`/`join`/`admin`, אותו דפוס
+> כמו `sites/36-nadlan-pro`/`sites/34-kesef`), מחובר לשכבת API חדשה
+> `public.maatefet_*` (`supabase/migrations/0110`/`0111`). תוך כדי הבנייה נמצאו
+> ותוקנו שלוש בעיות אמיתיות: (1) סכימת `maatefet` לא הייתה ב-exposed schemas של
+> ה-Data API — כל ה-RPCs מסבב 3 היו בלתי-נגישים משום דפדפן; נוספה דרך
+> Management API (יחול ברסטארט טבעי, לא נכפה כדי לא לשבש 32/16), ובינתיים
+> נבנתה שכבת `public.maatefet_*` שעוקפת את זה. (2) מדיניות ה-RLS לאנון על
+> `invites` אפשרה מיצוי (enumeration) של כל ההזמנות הממתינות בלי קוד כלל —
+> הוסרה, הוחלפה ב-RPC יחיד לפי קוד מדויק. (3) כל פונקציות ה-`public.maatefet_*`
+> היו ניתנות להרצה ע"י `anon` למרות `revoke ... from public` (ברירת המחדל של
+> Supabase ל-schema `public`) — תוקן ב-`revoke execute ... from anon` מפורש.
+> נותר לשלב 0: פרויקט Vercel נפרד + rewrite ב-portal (ראה `NEEDS_USER.md`), 2FA,
+> הצפנת-שדה.
+>
 > **20/08/2026 (Loop C, סבב 3):** תוקן פער תפקודי אמיתי שנשאר מסבב 2 — ב-RLS של 0108 ללקוח (חתן/כלה) לא הייתה שום דרך ליצור את שורת ה-`clients` שלו/ה אחרי כניסה בהזמנה אמיתית (המדיניות דרשה `instructor_id` שהוא/היא לא מחזיקים), כך שזרימת "invite-only בכל שכבה" הייתה חסומה מהצד של הלקוח. נוסף `supabase/migrations/0109_maatefet_redeem_invite.sql`: `maatefet.redeem_invite()` (RPC אחד, SECURITY DEFINER, תובע קוד-הזמנה באופן אטומי מול מרוץ-כפילות, מגביל את היצירה ל-`auth_user_id` של הקורא בלבד — לא ניתן להעביר uuid זר) ו-`maatefet.verify_instructor()` (עוטף את בדיקת `more30_is_super_admin()` ל-RPC נקי לפאנל הסופר-אדמין הבא, במקום שהלקוח יבנה UPDATE גולמי מול טבלה עם RLS+טריגר). שני ה-RPCs אומתו חיים (הופעלו בפועל דרך MCP, `pg_proc.prosecdef=true` נבדק, ואין אזהרת אבטחה חדשה על סכימת `maatefet` ב-advisors). **עדיין לא נבנה:** קוד אפליקציה/UI. השלב הבא הוא ה-UI עצמו — עכשיו יש לו RPCs תקינים לבנות מולם (הרשמת מדריך → אימות סופר-אדמין → יצירת הזמנה → מימוש הזמנה על ידי הלקוח → מסך CRM ראשון).
 
 ## החלטות יסוד מחייבות (מהאפיון)

@@ -13,8 +13,8 @@
     "project": "uhnrgujbdxhhmoxcjria",
     "schema": "maatefet"
   },
-  "deployTarget": "unknown",
+  "deployTarget": "vercel",
   "protected": false,
-  "source": "not-vendored",
-  "note": "שלב 0 בבנייה (20/08 Loop C). סכימת maatefet חיה: instructors/invites/clients/content_items, invite-only + RLS מדורג, מנעול הרשאות-על (guard_instructor_status_change), מחוברת לסופר-אדמין הגלובלי (more30_is_super_admin). קוד אפליקציה/UI טרם נבנה — ‏/maatefet עדיין מחזיר \"בקרוב\". מפרט מחייב מלא: MAATEFET_BUILD.md (15 מודולים, ליבה אחת/שני פנים לפי segment חתנים/כלות, 5 שלבי בנייה)."
+  "source": "sites/39-maatefet",
+  "note": "שלב 0 (20/08 Loop C, סבב 4). סכימת maatefet חיה: instructors/invites/clients/content_items, invite-only + RLS מדורג, מנעול הרשאות-על (guard_instructor_status_change), מחוברת לסופר-אדמין הגלובלי (more30_is_super_admin). נחשפה שכבת public.maatefet_* RPC (עטיפות דקות, כמו np_* ב-36) כי סכימת maatefet לא הייתה ב-exposed schemas של ה-Data API (תוקן דרך Management API, לא הופעל מחדש הפרויקט). קוד ה-UI הראשון קיים ב-sites/39-maatefet/maatefet (index/instructor/join/admin) אך עדיין אין פרויקט Vercel נפרד + rewrite ב-portal, ולכן /maatefet עדיין לא חי. מפרט מחייב מלא: MAATEFET_BUILD.md (15 מודולים, ליבה אחת/שני פנים לפי segment חתנים/כלות, 5 שלבי בנייה)."
 }
