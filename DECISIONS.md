@@ -7717,3 +7717,51 @@
     פתיחת עדשה חדשה (למשל: אימות מספרי/תאריך חסר בטפסים, או
     `dangerouslySetInnerHTML` בלי סניטציה).
     via cloud server 167.99.131.167 [loop B]
+
+## 20/08/2026 — סבב 382 (loop B)
+
+382. **פתיחת עדשת `dangerouslySetInnerHTML` בלי סניטציה (מוצע בסבב 381)
+    על 7 האפליקציות החיות (17/18/21/22/24/27/28) — נמצא XSS אמיתי אחד,
+    תוקן.** סוכן Explore סרק את כל שימושי `dangerouslySetInnerHTML`,
+    `eval(`, ו-`.innerHTML =` הישיר בשבע האפליקציות. רוב הממצאים היו
+    שליליים-כוזבים: `22-get-your-rights/src/components/RightBrandedCard.tsx`
+    (שורות 213, 305) ו-`17-chizukim-transcribe/client/src/pages/recording-detail.tsx`
+    (שורה 324) מריצים `escapeHtml()` על כל תוכן משתמש לפני ההזרקה, עם
+    תגיות HTML רק מתבניות קבועות; קבצי `chart.tsx` (6 עותקים בכל
+    האפליקציות, shadcn) מזריקים רק צבעי CSS קבועים מ-`config`;
+    `28-kupot-health-funds/server/storage.ts:27` הוא `eval("require")`
+    עם מחרוזת קבועה (עקיפת bundler, לא קלט משתמש).
+
+    הממצא האמיתי: `apps/24-galilee-connect-hub/src/components/ChatBot.tsx`
+    שורה 529-533 — הצ'אטבוט מריץ `escapeHtml(msg.content)` ואז שני
+    `replace` של מרקדאון (`**bold**` ו-`[text](url)`) להמרה ל-HTML.
+    ה-`escapeHtml` מטפל בתווי `< > & " '` אבל לא בתווי `[ ] ( )`, כך
+    שקישור מרקדאון עם סכימת `javascript:`/`data:` שורד את הבריחה
+    ומגיע ל-`replace` השני כמו שהוא. הבעיה נהיית ניתנת לניצול בפועל
+    כי `handleNameResponse` (שורה 392) משבץ את השם שהמשתמש הקליד
+    ישירות לתוך הודעת בוט: `` שלום **${name}**! `` — אין שום בדיקה על
+    תוכן ה-`name`. שם כמו `[x](javascript:alert(1))` שורד את
+    ה-escape (אין בו תווי HTML מיוחדים), עובר את regex ה-bold
+    (הופך ל-`<strong>[x](javascript:alert(1))</strong>`), ואז regex
+    הקישור הופך אותו לעוגן `javascript:` חי שמוזרק דרך
+    `dangerouslySetInnerHTML` — לחיצה עליו מריצה קוד. תוקן: regex
+    הקישור עבר מ-string-replace קבוע לפונקציית replace שבודקת
+    `/^https?:\/\//i.test(url)` — רק קישורי http/https הופכים ל-`<a>`,
+    כל השאר (כולל `javascript:`/`data:`) נשאר טקסט מרקדאון גולמי בלי
+    לינק. הקישור האמיתי היחיד באפליקציה (וואטסאפ, `https://wa.me/...`
+    בשורה 417) ממשיך לעבוד כרגיל. איזון סוגריים נבדק על הקובץ המלא
+    לאחר העריכה: תקין (278/278 מסולסלים, 369/369 עגולים). לא הופעל
+    build/dev-server (לפי הנחיות ההרצה). הקובץ תחת
+    `apps/24-galilee-connect-hub/src` (חסום ב-`.gitignore` שורה 29
+    `/apps/**`, אבל כבר עוקב בפועל — `git add` הרגיל סירב הפעם
+    (בניגוד לסבב 381), נדרש `git add -f` על הקובץ הבודד שכבר עוקב).
+    ענף `fix/b-24-galilee-chatbot-markdown-link-xss-0820`, קומיט
+    `45017833`, נדחף (מפעיל פריסת Vercel תחת `more30.com/galil`).
+
+    שאר 6 האפליקציות (17/18/21/22/27/28) חזרו נקיות בעדשה הזו — אין
+    בהן אף שימוש לא-בטוח ב-`dangerouslySetInnerHTML`/`eval`/`innerHTML`.
+
+    **הבא בתור:** נושא #250 (RLS על 21-mthbram, חסום MCP), או פתיחת
+    עדשה חדשה (למשל: אימות מספרי/תאריך חסר בטפסים, או input-type
+    שגוי כמו `type="text"` על שדה מספר/טלפון).
+    via cloud server 167.99.131.167 [loop B]
