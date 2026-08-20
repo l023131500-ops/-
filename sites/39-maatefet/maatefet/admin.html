@@ -51,6 +51,7 @@ th{color:var(--muted);font-weight:400;font-size:12px;text-transform:uppercase;le
   border:1px solid var(--gold);border-radius:3px;background:var(--gold);color:var(--royal);
   cursor:pointer;transition:background .2s var(--ease),color .2s var(--ease);margin-inline-end:6px}
 .btn:hover:not(:disabled){background:transparent;color:var(--gold-soft);box-shadow:0 0 0 1px var(--gold) inset}
+.btn:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid var(--gold-soft);outline-offset:2px}
 .btn:disabled{opacity:.45;cursor:not-allowed}
 .btn-danger{border-color:rgba(224,87,78,.6);background:transparent;color:var(--rose)}
 .btn-danger:hover:not(:disabled){background:rgba(224,87,78,.1)}
@@ -93,15 +94,16 @@ input:focus,select:focus{outline:2px solid var(--gold);outline-offset:1px;border
 <body>
 <nav class="nav"><a class="wordmark" href="/maatefet">מעטפת<span> · פאנל סופר-אדמין</span></a></nav>
 
+<main>
 <div class="wrap">
   <div id="loading" class="loading"><span class="spinner"></span>טוען…</div>
 
   <div id="authGate" hidden>
-    <div class="state wait"><h2>כניסה נדרשת</h2><p>יש להתחבר עם חשבון more30.</p></div>
+    <div class="state wait" role="status"><h2>כניסה נדרשת</h2><p>יש להתחבר עם חשבון more30.</p></div>
   </div>
 
   <div id="deniedWrap" hidden>
-    <div class="state bad">
+    <div class="state bad" role="status">
       <h2>הגישה מוגבלת</h2>
       <p>הדף הזה זמין רק לסופר-אדמין של more30.</p>
     </div>
@@ -121,7 +123,7 @@ input:focus,select:focus{outline:2px solid var(--gold);outline-offset:1px;border
       <div class="codebox" id="mfaSecret" style="margin-bottom:14px"></div>
       <label for="mfaEnrollCode">2. הזינו את הקוד בן 6 הספרות מהאפליקציה</label>
       <input id="mfaEnrollCode" inputmode="numeric" autocomplete="one-time-code" maxlength="6" />
-      <div id="mfaEnrollErr"></div>
+      <div id="mfaEnrollErr" role="alert" aria-live="polite"></div>
       <button class="btn" id="mfaEnrollSubmit">אימות והפעלה</button>
     </div>
   </div>
@@ -132,7 +134,7 @@ input:focus,select:focus{outline:2px solid var(--gold);outline-offset:1px;border
     <div class="card">
       <label for="mfaChallengeCode">קוד בן 6 ספרות</label>
       <input id="mfaChallengeCode" inputmode="numeric" autocomplete="one-time-code" maxlength="6" />
-      <div id="mfaChallengeErr"></div>
+      <div id="mfaChallengeErr" role="alert" aria-live="polite"></div>
       <button class="btn" id="mfaChallengeSubmit">אימות</button>
     </div>
   </div>
@@ -192,13 +194,14 @@ input:focus,select:focus{outline:2px solid var(--gold);outline-offset:1px;border
       </div>
       <label for="dNotes">הערות</label>
       <input id="dNotes" />
-      <div id="dErr"></div>
+      <div id="dErr" role="alert" aria-live="polite"></div>
       <button class="btn" id="dSubmit">הוספת רשומה</button>
       <button class="btn btn-quiet" id="dCancelEdit" hidden>ביטול עריכה</button>
       <div id="dTable" style="margin-top:22px"><div class="empty">טוען…</div></div>
     </div>
   </div>
 </div>
+</main>
 
 <script type="module">
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';

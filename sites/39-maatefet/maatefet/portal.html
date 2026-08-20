@@ -47,6 +47,7 @@ h2{font-family:'Secular One',sans-serif;font-weight:400;font-size:18px;margin:0 
   border:1px solid var(--gold);border-radius:3px;background:var(--gold);color:var(--royal);
   cursor:pointer;transition:background .2s var(--ease),color .2s var(--ease);margin-inline-end:6px}
 .btn:hover:not(:disabled){background:transparent;color:var(--gold-soft);box-shadow:0 0 0 1px var(--gold) inset}
+.btn:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid var(--gold-soft);outline-offset:2px}
 .btn:disabled{opacity:.45;cursor:not-allowed}
 .btn-quiet{background:transparent;color:var(--ink-2);border-color:var(--line-2)}
 .btn-quiet:hover:not(:disabled){color:var(--gold-soft);border-color:var(--gold);box-shadow:none}
@@ -108,14 +109,14 @@ input:focus,select:focus{outline:2px solid var(--gold);outline-offset:1px;border
   <div id="loading" class="loading"><span class="spinner"></span>טוען…</div>
 
   <div id="authGate" hidden>
-    <div class="state wait">
+    <div class="state wait" role="status">
       <h2>כניסה נדרשת</h2>
       <p>יש להתחבר עם חשבון more30 כדי להיכנס לאזור האישי.</p>
     </div>
   </div>
 
   <div id="noClientWrap" hidden>
-    <div class="state bad">
+    <div class="state bad" role="status">
       <h2>לא נמצא כרטיס פעיל</h2>
       <p>
         לחשבון הזה אין עדיין כרטיס אצל מדריך/ה במעטפת. אם קיבלתם קישור הזמנה
@@ -139,7 +140,7 @@ input:focus,select:focus{outline:2px solid var(--gold);outline-offset:1px;border
       <div class="err" id="mfaSecret" style="border-color:var(--line-2);background:var(--royal-2);color:var(--ink);font-family:ui-monospace,Menlo,monospace;word-break:break-all;margin-bottom:14px"></div>
       <label for="mfaEnrollCode">2. הזינו את הקוד בן 6 הספרות מהאפליקציה</label>
       <input id="mfaEnrollCode" inputmode="numeric" autocomplete="one-time-code" maxlength="6" />
-      <div id="mfaEnrollErr"></div>
+      <div id="mfaEnrollErr" role="alert" aria-live="polite"></div>
       <button class="btn" id="mfaEnrollSubmit">אימות והפעלה</button>
     </div>
   </div>
@@ -150,7 +151,7 @@ input:focus,select:focus{outline:2px solid var(--gold);outline-offset:1px;border
     <div class="card">
       <label for="mfaChallengeCode">קוד בן 6 ספרות</label>
       <input id="mfaChallengeCode" inputmode="numeric" autocomplete="one-time-code" maxlength="6" />
-      <div id="mfaChallengeErr"></div>
+      <div id="mfaChallengeErr" role="alert" aria-live="polite"></div>
       <button class="btn" id="mfaChallengeSubmit">אימות</button>
     </div>
   </div>
@@ -213,7 +214,7 @@ input:focus,select:focus{outline:2px solid var(--gold);outline-offset:1px;border
     </div>
   </div>
 
-  <div id="fatal" hidden></div>
+  <div id="fatal" hidden role="alert" aria-live="assertive"></div>
 </div>
 </main>
 
@@ -395,12 +396,14 @@ function followupCard(f) {
     '<p class="when">' + when + '</p>' +
     '<span class="badge scheduled">שאלון קצר ממתין למילוי</span>' +
     '<div style="margin-top:12px">' +
-      FOLLOWUP_QUESTIONS.map((q) => q.type === 'scale'
-        ? '<label>' + esc(q.label) + '</label><select data-fu-field="' + q.key + '"><option value="">בחרו…</option>' +
-            [1, 2, 3, 4, 5].map((n) => '<option value="' + n + '">' + n + '</option>').join('') + '</select>'
-        : '<label>' + esc(q.label) + '</label><input type="text" data-fu-field="' + q.key + '" />'
-      ).join('') +
-      '<div class="err" data-fu-err></div>' +
+      FOLLOWUP_QUESTIONS.map((q) => {
+        const fieldId = 'fu-' + f.id + '-' + q.key;
+        return q.type === 'scale'
+          ? '<label for="' + fieldId + '">' + esc(q.label) + '</label><select id="' + fieldId + '" data-fu-field="' + q.key + '"><option value="">בחרו…</option>' +
+              [1, 2, 3, 4, 5].map((n) => '<option value="' + n + '">' + n + '</option>').join('') + '</select>'
+          : '<label for="' + fieldId + '">' + esc(q.label) + '</label><input type="text" id="' + fieldId + '" data-fu-field="' + q.key + '" />';
+      }).join('') +
+      '<div class="err" data-fu-err role="alert" aria-live="polite"></div>' +
       '<button class="btn" data-fu-submit="' + f.id + '">שליחת תשובות</button>' +
     '</div></div>';
 }
@@ -447,7 +450,7 @@ function woCard(t) {
   return '<div class="appt" data-wo="' + t.id + '">' +
     '<div style="display:flex;align-items:flex-start;gap:10px">' +
     (canToggle
-      ? '<input type="checkbox" data-wo-toggle="' + t.id + '"' + (done ? ' checked' : '') + ' style="margin-top:5px;width:auto" />'
+      ? '<input type="checkbox" data-wo-toggle="' + t.id + '" aria-label="' + esc(t.title) + (done ? ' — סמן כלא-הושלם' : ' — סמן כהושלם') + '"' + (done ? ' checked' : '') + ' style="margin-top:5px;width:auto" />'
       : '<span class="badge scheduled" style="margin-top:2px">מדריך/ה</span>') +
     '<div style="flex:1">' +
       '<p class="when" style="' + (done ? 'text-decoration:line-through;color:var(--muted)' : '') + '">' + esc(t.title) + '</p>' +
