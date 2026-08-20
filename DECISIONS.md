@@ -11093,3 +11093,45 @@
       ה-auth/admin המשותפת — `admin/src/App.tsx` תוקן בסבב 210 רק
       עבור ה-`getSession()` hang, ולא עבר סריקה מקיפה מעבר לזה; גם
       דשבורד ה-super-admin ומאזני ה-API טרם עברו סבב סריקה ייעודי.
+
+## 20/08/2026 — סבב 220 (loop A) — `16-chatzor-connect`: סימון פנייה כ"נקראה" נכשל בשקט (אין `onError`) בשני מסכי inbox
+
+1070. **בדקתי מחדש לפני שהתחלתי:** `core.run_progress` (סבב 219
+      האחרון, commit `71c40cb3`/`037ee588`, תואם ל-HEAD). עקבתי אחרי
+      ההמלצה מ-1069 ובחרתי ב-`16-chatzor-connect` — אפליקציה שטרם
+      נסרקה לעומק בהיקף הזה. סריקה של כל ה-`useMutation` באפליקציה
+      העלתה שני קבצים עם אותו דפוס באג שכבר תוקן שלוש פעמים באפליקציות
+      אחרות באותו היקף (04-imud-torani סבב 217, ואחרות): mutation
+      עם `onSuccess` אך בלי `onError`.
+1071. **הממצא שאומת ישירות בקוד:** `apps/16-chatzor-connect/src/
+      pages/admin/AdminInbox.tsx` (שורות 21-24 לפני התיקון) ו-`apps/
+      16-chatzor-connect/src/pages/gabai/GabaiInbox.tsx` (שורות 18-21
+      לפני התיקון) — שני מסכי "תיבת פניות" (ניהול וגבאי) — ה-`markRead`
+      mutation (`markInquiryRead`, מסמן פנייה כנקראה) הגדיר רק
+      `onSuccess: () => qc.invalidateQueries(...)`, ללא `onError`.
+      זה בניגוד לדפוס העקבי בשאר האפליקציה: `AdminSynagogues.tsx`
+      (שורות 38/44/50) מגדיר `onError: (e: Error) => toast(e.message
+      || "...", "error")` לכל ה-mutations שלו. תרחיש כשל אמיתי: גבאי
+      או מנהל לוחץ "סמן כנקרא" על פנייה; הבקשה נכשלת (רשת/הרשאות/
+      שגיאת שרת) — הכפתור נראה כאילו לא עשה כלום, בלי שום משוב
+      שהפעולה נכשלה, והפנייה עשויה להישאר מסומנת כ"לא נקראה" בלי
+      שהמשתמש יודע למה.
+1072. **התיקון:** נוסף `useToast` (מיובא מ-`@/components/ui/Toaster`,
+      כבר בשימוש ב-`AdminSynagogues.tsx` באותה אפליקציה) ו-`onError:
+      (e: Error) => toast(e.message || "שגיאה בסימון כנקרא", "error")`
+      לשני ה-mutations — אותו דפוס בדיוק שכבר קיים ב-`AdminSynagogues.
+      tsx`. שום handler/לוגיקה אחרים לא נגעו. `git diff --stat`: שני
+      קבצים, +6/-0 (3 שורות כל אחד: import + `const toast` + `onError`).
+      אותה אזהרת `.gitignore` כוזבת כמו בסבבים קודמים (`git check-ignore
+      -v` לא מצא כלל תואם) — `git add -f` פתר. לא נגעתי במערכות/
+      סכימות מוגנות (08/09/bkalut-app/bkalot-admin/zr_*/NEDARIM3873/
+      csj/csj_src/igud), ב-`main`, או במערכת מחוץ להיקף. Commit
+      `8a50eb90` על `fix/a-icon-only-buttons-round2-0820`, נדחף
+      ל-`origin` (מפעיל פריסת Vercel תחת `more30.com/chatzor`).
+1073. **הבא בתור:** `16-chatzor-connect` עדיין לא נסרק במלואו — יש
+      עוד מסכים/hooks שלא נבדקו (למשל `AdminServices.tsx`,
+      `AdminLessons.tsx` נבדקו רק כרפרנס דפוס; מסכי גבאי נוספים מעבר
+      ל-`GabaiInbox.tsx` טרם נסרקו). מומלץ לסבב הבא: להמשיך שם, לסיים
+      `04-imud-torani/server/seed.ts`, או לעבור לשכבת ה-auth/admin
+      המשותפת (דשבורד ה-super-admin, מאזני ה-API) שטרם עברה סבב סריקה
+      ייעודי.
