@@ -25,7 +25,8 @@ export const Route = createFileRoute("/api/public/notify-signature")({
           if (!doc || doc.tenant_id !== callerTenantId) {
             return new Response(JSON.stringify({ error: "document not found" }), { status: 404, headers: { "content-type": "application/json" } });
           }
-          await supabaseAdmin.from("documents").update({ signature_status: "pending", requires_signature: true }).eq("id", body.documentId);
+          const { error: pendingErr } = await supabaseAdmin.from("documents").update({ signature_status: "pending", requires_signature: true }).eq("id", body.documentId);
+          if (pendingErr) console.error("[notify-signature] failed to mark signature_status=pending", pendingErr);
           let signedUrl: string | null = null;
           if (doc.storage_path) {
             const { data: urlData } = await supabaseAdmin.storage.from("client-documents").createSignedUrl(doc.storage_path, 60 * 60 * 24 * 7);

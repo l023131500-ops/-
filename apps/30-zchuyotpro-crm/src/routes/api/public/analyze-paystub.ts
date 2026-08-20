@@ -33,13 +33,15 @@ export const Route = createFileRoute("/api/public/analyze-paystub")({
             const { data: urlData } = await supabaseAdmin.storage.from("client-documents").createSignedUrl(doc.storage_path, 60 * 60);
             signedUrl = urlData?.signedUrl ?? null;
           }
-          await supabaseAdmin.from("documents").update({ processing_status: "processing" }).eq("id", body.documentId);
+          const { error: processingErr } = await supabaseAdmin.from("documents").update({ processing_status: "processing" }).eq("id", body.documentId);
+          if (processingErr) console.error("[analyze-paystub] failed to mark processing_status=processing", processingErr);
 
           // Never invent an analysis_result. AnalysisView reads gross_salary/net_salary out of it
           // and the "עדכון פרופיל הלקוח" button writes those numbers into client_financial_profile,
           // where they are indistinguishable from extracted data. If the analysis did not run, say so.
           if (!webhookUrl) {
-            await supabaseAdmin.from("documents").update({ processing_status: "failed" }).eq("id", body.documentId);
+            const { error: failedErr } = await supabaseAdmin.from("documents").update({ processing_status: "failed" }).eq("id", body.documentId);
+            if (failedErr) console.error("[analyze-paystub] failed to mark processing_status=failed (no webhook configured)", failedErr);
             return new Response(
               JSON.stringify({ ok: false, dispatched: false, error: "ניתוח תלושים אינו מוגדר בסביבה זו — לא הוגדר N8N_ANALYZE_PAYSTUB_URL" }),
               { status: 503, headers: { "content-type": "application/json" } },
@@ -54,7 +56,8 @@ export const Route = createFileRoute("/api/public/analyze-paystub")({
           if (!res?.ok) {
             // The document was already marked "processing" above; leaving it there would show
             // "בעיבוד" forever for a dispatch that never landed.
-            await supabaseAdmin.from("documents").update({ processing_status: "failed" }).eq("id", body.documentId);
+            const { error: dispatchFailedErr } = await supabaseAdmin.from("documents").update({ processing_status: "failed" }).eq("id", body.documentId);
+            if (dispatchFailedErr) console.error("[analyze-paystub] failed to mark processing_status=failed (dispatch failed)", dispatchFailedErr);
             return new Response(
               JSON.stringify({ ok: false, dispatched: false, error: "שליחת המסמך לניתוח נכשלה" }),
               { status: 502, headers: { "content-type": "application/json" } },
