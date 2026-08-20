@@ -27,6 +27,15 @@ const AIAgent = () => {
     }
   }, [messages, isLoading]);
 
+  useEffect(() => {
+    if (!isOpen) return;
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setIsOpen(false);
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [isOpen]);
+
   const sendMessage = async () => {
     const text = input.trim();
     if (!text || isLoading) return;
