@@ -81,12 +81,12 @@ const Invite = () => {
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="text-sm font-medium mb-1 block">כתובת מייל</label>
-              <Input type="email" inputMode="email" autoComplete="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="email@example.com" dir="ltr" />
+              <label className="text-sm font-medium mb-1 block" htmlFor="invite-email">כתובת מייל</label>
+              <Input id="invite-email" type="email" inputMode="email" autoComplete="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="email@example.com" dir="ltr" />
             </div>
             <div>
-              <label className="text-sm font-medium mb-1 block">קוד הזמנה</label>
-              <Input value={code} onChange={(e) => setCode(e.target.value)} placeholder="קוד שקיבלת מהניהול" dir="ltr" />
+              <label className="text-sm font-medium mb-1 block" htmlFor="invite-code">קוד הזמנה</label>
+              <Input id="invite-code" value={code} onChange={(e) => setCode(e.target.value)} placeholder="קוד שקיבלת מהניהול" dir="ltr" />
             </div>
             <Button type="submit" disabled={loading} className="w-full bg-secondary text-secondary-foreground hover:bg-gold-dark">
               {loading ? "מפעיל..." : "הפעל פורטל"}

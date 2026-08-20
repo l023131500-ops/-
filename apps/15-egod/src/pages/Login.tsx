@@ -81,15 +81,15 @@ const Login = () => {
             <form className="space-y-4" onSubmit={handleLogin}>
               {isSignup && (
                 <div>
-                  <label className="text-sm font-medium text-foreground mb-1 block">שם מלא</label>
-                  <Input placeholder="הרב ישראל כהן" value={fullName} onChange={(e) => setFullName(e.target.value)} required aria-required="true" />
+                  <label className="text-sm font-medium text-foreground mb-1 block" htmlFor="fullName">שם מלא</label>
+                  <Input id="fullName" placeholder="הרב ישראל כהן" value={fullName} onChange={(e) => setFullName(e.target.value)} required aria-required="true" />
                 </div>
               )}
               <div>
-                <label className="text-sm font-medium text-foreground mb-1 block">דוא"ל</label>
+                <label className="text-sm font-medium text-foreground mb-1 block" htmlFor="email">דוא"ל</label>
                 <div className="relative">
                   <Mail className="absolute right-3 top-3 w-4 h-4 text-muted-foreground" />
-                  <Input type="email" inputMode="email" autoComplete="email" placeholder="email@example.com" value={email} onChange={(e) => setEmail(e.target.value)} className="pr-9" dir="ltr" required aria-required="true" />
+                  <Input id="email" type="email" inputMode="email" autoComplete="email" placeholder="email@example.com" value={email} onChange={(e) => setEmail(e.target.value)} className="pr-9" dir="ltr" required aria-required="true" />
                 </div>
               </div>
               <div>
