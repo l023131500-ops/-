@@ -9636,3 +9636,55 @@
     של ה-Switch, לא בתוך הרכיב עצמו כי `Shell` כבר מספק `<main>`
     למסלול הפנימי). נושא #245/#250 (RLS, חסומים) נשארים כפי שהם.
     via cloud server 167.99.131.167 [loop B]
+
+## 20/08/2026 — סבב 417 (loop B)
+
+417. **27-bkalut-price: השלמת עדשת skip-to-content. נסגר — 9/9
+    האפליקציות החיות של loop B עם קישור דילוג/`<main id="main-content">`.**
+
+    11 עמודים ציבוריים כבר ציירו `<main>` (אומת מראש בסבב 416): רק
+    `id="main-content"` נוסף לכל אחד — `public-landing`, `public-
+    eligibility`, `public-potential`, `public-topic`, `public-financial`,
+    `public-reminder`, `public-price-comparison`, `public-product-
+    compare`, `public-health-funds`, `health-fund-service`, `voluntary-
+    submit`. אומת מראש (grep) שלכל קובץ יש בדיוק `<main>` אחד לפני
+    העריכה.
+
+    שלושה עמודים בלי `<main>` כלל (`public-community.tsx`, `service-
+    form.tsx`, `terms.tsx`) — כל אחד עם מבנה `return` שונה (`public-
+    community`: ארבע נקודות `return` נפרדות; `service-form`: לוגיקה
+    מורכבת; `terms.tsx`: גם ציבורי בנתיב `/terms` וגם פנימי דרך `Shell`
+    שכבר מספק `<main className="flex-1">` משלו). כדי לא לגעת בכל
+    ענפי ה-`return` בנפרד ולא ליצור `<main>` מקונן בתוך `Shell`, עטפתי
+    ברמת הראוטינג ב-`App.tsx`: שלושה רכיבים חדשים ברמת המודול
+    (`ServiceFormPageWithMain`/`PublicCommunityWithMain`/
+    `TermsPageWithMain`, לא פונקציות-חץ מוטבעות בתוך ה-JSX — כדי
+    שווטר/React לא יעשו remount לרכיב המקורי ולמצב הפנימי שלו בכל
+    רינדור-הורה) שמלבישים `<main id="main-content">` סביב הרכיב
+    המקורי, והוחלפו רק בענף ה-`Switch` הציבורי (`/service/:id`,
+    `/community/:slug`, `/terms`). הראוטר הפנימי (`InternalArea`,
+    נתיב `/terms` הנפרד בתוך `Shell`) ממשיך להצביע ישירות על
+    `TermsPage` המקורי ללא עטיפה — נמנע מ-`<main>` מקונן.
+
+    קישור הדילוג נוסף פעם אחת ב-`client/index.html` (לפני `<div
+    id="root">`) וכלל `.skip-link`/`.skip-link:focus` ב-`src/index.css`
+    (לא Tailwind — `tailwind.config.ts` של 27 **כן** כולל את
+    `client/index.html` ב-`content`, בניגוד ל-21/22/24, אבל נשמר עקבי
+    לתבנית הזהה של שמונת האפליקציות הקודמות).
+
+    **בדיקות תקינות:** `grep` אישר שאין סלקטור CSS/JS ממוקד-תג (`main
+    {`, `querySelector('main')`) בכל `client/src`. איזון סוגריים
+    (Python) על `App.tsx`: `{}` 77/77, `()` 66/66, `[]` 3/3. אימות
+    שה-`id="main-content"` מופיע פעם אחת בכל אחד מ-11 קבצי העמודים,
+    ו-3 פעמים ב-`App.tsx` (רכיבי-העטיפה) — 14 קבצים סה"כ, תואם ל-`git
+    diff --cached --stat`: 14 קבצים, ‎+54/-14‎. לא הופעל build/dev-
+    server (לפי הנחיות ההרצה).
+
+    ענף `fix/b-22-whatsapp-noopener-round395-0820` (שרשרת הענפים היא
+    המקור המלא היחיד ל-loop B, לא `main`), קומיט `a505de65`, נדחף
+    (מפעיל פריסת Vercel תחת `more30.com/mechiron`).
+
+    **הבא בתור:** עדשת ה-skip-to-content סגורה על כל 9 האפליקציות
+    החיות של loop B (17,18,19,20,21,22,24,27,28) — 23/25 טרם אומתו
+    כ"חיות" בהקשר זה, כדאי בדיקה קצרה בסבב הבא. נושא #245/#250 (RLS,
+    חסומים) נשארים כפי שהם. via cloud server 167.99.131.167 [loop B]
