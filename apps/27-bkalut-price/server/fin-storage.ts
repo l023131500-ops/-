@@ -862,11 +862,12 @@ export const finStorage = {
     for (const r of inMonth) {
       if (r.kind === "income") income += r.amount;
       else expense += r.amount;
-      const cid = r.categoryId ?? 0;
-      const cur = byCategory.get(cid) || { kind: r.kind, total: 0 };
-      cur.total += r.amount;
-      cur.kind = r.kind;
-      byCategory.set(cid, cur);
+      if (r.kind !== "income") {
+        const cid = r.categoryId ?? 0;
+        const cur = byCategory.get(cid) || { kind: r.kind, total: 0 };
+        cur.total += r.amount;
+        byCategory.set(cid, cur);
+      }
     }
     return {
       income,
