@@ -272,7 +272,7 @@ function Page() {
                   <TableCell><EntitlementCategoryBadge category={r.category} /></TableCell>
                   <TableCell>{r.year ?? "—"}</TableCell>
                   <TableCell className="text-sm text-muted-foreground">{r.source ?? "—"}</TableCell>
-                  <TableCell><Switch checked={r.is_active} onCheckedChange={(v) => toggleActive.mutate({ id: r.id, is_active: v })} /></TableCell>
+                  <TableCell><Switch checked={r.is_active} onCheckedChange={(v) => toggleActive.mutate({ id: r.id, is_active: v })} aria-label={`הפעלה/כיבוי של הזכאות ${r.title}`} /></TableCell>
                   <TableCell className="flex gap-1">
                     <Button size="icon" variant="ghost" onClick={() => setEditing(r)}><Pencil className="h-4 w-4" /></Button>
                     <Button size="icon" variant="ghost" onClick={() => { if (confirm(`למחוק את "${r.title}"?`)) del.mutate(r.id); }}><Trash2 className="h-4 w-4" /></Button>

@@ -335,7 +335,7 @@ export default function CommunityAdmin() {
                   <div className="flex gap-1">
                     <Button size="icon" variant="ghost" onClick={() => copyLink(l.slug)} title="העתקה"><Copy className="w-4 h-4" /></Button>
                     <Button size="icon" variant="ghost" onClick={() => window.open(`${origin}/#/community/${l.slug}`, "_blank")} title="תצוגה"><Eye className="w-4 h-4" /></Button>
-                    <Button size="icon" variant="ghost" onClick={() => toggleLink(l)} title="הפעלה/כיבוי"><Switch checked={l.active} /></Button>
+                    <Switch checked={l.active} onCheckedChange={() => toggleLink(l)} aria-label={`הפעלה/כיבוי של הקישור ${l.label || l.slug}`} />
                     <Button size="icon" variant="ghost" onClick={() => deleteLink(l.id)}><Trash2 className="w-4 h-4 text-destructive" /></Button>
                   </div>
                 </div>

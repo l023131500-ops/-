@@ -257,7 +257,7 @@ export default function PotentialAdminPage() {
             </div>
           </div>
           <div className="flex items-center gap-2">
-            <Switch checked={config.enabled} onCheckedChange={(v) => saveConfig({ enabled: Boolean(v) })} disabled={saving} data-testid="potential-toggle-enabled" />
+            <Switch checked={config.enabled} onCheckedChange={(v) => saveConfig({ enabled: Boolean(v) })} disabled={saving} data-testid="potential-toggle-enabled" aria-label="הפעלה/כיבוי של הסורק לציבור" />
             <Button variant="outline" size="sm" onClick={() => copyLink()}>
               <Copy className="w-4 h-4 ml-1" /> הקישור הציבורי
             </Button>
@@ -553,7 +553,7 @@ export default function PotentialAdminPage() {
                   {l.hiddenSections.length > 0 && <div className="text-[11px] text-muted-foreground">מוסתרים: {l.hiddenSections.join(", ")}</div>}
                 </div>
                 <div className="flex items-center gap-1">
-                  <Switch checked={l.active} onCheckedChange={(v) => toggleLink(l.id, Boolean(v))} />
+                  <Switch checked={l.active} onCheckedChange={(v) => toggleLink(l.id, Boolean(v))} aria-label={`הפעלה/כיבוי של הקישור ${l.title}`} />
                   <Button variant="outline" size="sm" onClick={() => copyLink(l.slug)}>
                     <Copy className="w-3.5 h-3.5 ml-1" /> העתק
                   </Button>

@@ -71,6 +71,7 @@ export function ClientProfessionalsPanel({ clientId }: { clientId: string }) {
                       onCheckedChange={(v) =>
                         toggle.mutate({ professionalId: p.id, assigned: v })
                       }
+                      aria-label={`שיוך איש המקצוע ${p.name} ללקוח`}
                     />
                   </div>
                 ))}

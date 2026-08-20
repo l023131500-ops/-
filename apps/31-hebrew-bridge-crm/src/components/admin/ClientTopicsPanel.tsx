@@ -62,6 +62,7 @@ export function ClientTopicsPanel({ clientId }: { clientId: string }) {
                   onCheckedChange={(v) =>
                     toggle.mutate({ topicId: t.id, isRelevant: v })
                   }
+                  aria-label={`סימון הנושא ${t.name} כרלוונטי ללקוח`}
                 />
                 <div className="min-w-0">
                   <div className="font-medium truncate">{t.name}</div>
