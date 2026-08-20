@@ -10439,3 +10439,63 @@
     חסר גם באפליקציות אחרות בתחום (17/18/19/20/21/22/24/28) שיש להן
     יותר מעמוד ציבורי אחד. נושאים #245/#250 (RLS, חסומים) נשארים כפי
     שהם. via cloud server 167.99.131.167 [loop B]
+
+## 20/08/2026 — סבב 433 (loop B)
+
+433. **המשך ישיר לפריט "הבא בתור" מסבב 432: נבדקו 6 אפליקציות נוספות
+    בתחום (17/18/19/20/21/22/24/28) לאיתור אותו דפוס — קישור מחירון
+    שקיים רק בדף הנחיתה אך חסר בדפי-כלים פנימיים. נמצא ותוקן פער אחד
+    ב-17-chizukim-transcribe.**
+
+    בדיקה: `grep -rl "subscribe?app="` בכל אפליקציה בתחום מול רשימת כל
+    קבצי הדף שלה. ב-21-mthbram/22-zchuyot/24-galilee הקישור יושב
+    ב-`Navbar.tsx` המשותף — מוצג אוטומטית בכל דף שמשתמש בו, אין פער.
+    ב-19-igud-shiurim-portal/20-igud-portal (אפליקציות `index.html`+
+    `app.js` סטטיות, לא React) הקישור כבר ב-`nav-links` הראשי ב-
+    `public/index.html` — מוצג בכל מסך (SPA עם ניתוב hash), אין פער.
+    ב-18-torah-editor-mvp הקישור קיים רק ב-`app/page.tsx` (עמוד הבית);
+    שאר הדפים (`documents`/`editor`/`htr`/`login`) לא נבדקו לעומק הפעם
+    — נשאר פתוח ל"הבא בתור". ב-28-kupot-health-funds הקישור קיים רק
+    ב-`client/src/pages/home.tsx`.
+
+    ב-**17-chizukim-transcribe** הקישור קיים רק ב-`recordings.tsx`
+    (הדף הראשי, ארכיון ההקלטות) בעוד ששני דפי-כלים פנימיים —
+    `upload.tsx` (העלאת הקלטה חדשה) ו-`recording-detail.tsx` (עריכת
+    תמלול) — עם `<header>` נפרד משלהם (לא קומפוננטה משותפת) הכילו רק
+    קישור "חזרה לרשימה", בלי קישור מחירון. אותו דפוס בדיוק כמו 7 דפי
+    ה-`public-*.tsx` שתוקנו ב-27-mechiron בסבב 432. אומתתי מול
+    `core.plans` (Supabase MCP) ש-`app_key='chizukim'` מחזיק 3 מסלולים
+    `customer_visible=true` פעילים (`free`/`basic`/`extended`,
+    ₪0/₪2/₪5) — אין קישור מת.
+
+    תוקן: ב-`upload.tsx` הוספתי `flex items-center justify-between
+    gap-3` ל-`<div>` הקיים בכותרת (שלא היה `flex` בכלל) וקישור
+    `<a href="/subscribe?app=chizukim">מחירון</a>` חדש לצד קישור
+    "חזרה". ב-`recording-detail.tsx` (שהכותרת שלו כבר הייתה
+    `justify-between` עם כפתור "שמירה" בצד ימין) עטפתי את כפתור
+    השמירה ואת קישור המחירון החדש יחד ב-`<div className="flex
+    items-center gap-2">` כדי לשמור על 2 ילדי-flex ברמה העליונה
+    ולא לשבור את ה-`justify-between`. שני הקישורים קיבלו
+    `data-testid="link-pricing"` ואותה מחלקת עיצוב (`hover-elevate
+    rounded-md px-2 py-1`) כמו קישורי המחירון שנוספו ב-27-mechiron
+    בסבב 432.
+
+    **בדיקות תקינות:** קריאת קוד בלבד (ללא dev-server/build, לפי
+    הנחיות ההרצה). בדיקת איזון סוגריים (Python) ו-`<div>`/`</div>` על
+    שני הקבצים — הפער הגולמי (`div open` != `div close`) קיים גם
+    ב-`HEAD` לפני העריכה (עקב תגיות `<div .../>` עצמיות-סגירה,
+    נבדק ב-`git show HEAD:...`) ולא גדל מעבר לתוספת המדויקת שביצעתי
+    (זוג פתיחה/סגירה אחד חדש ב-`recording-detail.tsx`, אפס חדשים
+    ב-`upload.tsx`). `git diff --stat`: 2 קבצים, +25/-9 — כל שינוי
+    הוא תוספת עטיפה קיימת או קישור חדש, אין מחיקת פיצ'ר. הקבצים
+    נופלים תחת `.gitignore` (`/apps/**`) — נדרש `git add -f`.
+
+    ענף `fix/b-22-whatsapp-noopener-round395-0820` (שרשרת הענפים היא
+    המקור המלא היחיד ל-loop B, לא `main`), נדחף (מפעיל פריסת Vercel
+    תחת `more30.com/chizukim`).
+
+    **הבא בתור:** 18-torah-editor-mvp (דפי `documents`/`editor`/`htr`/
+    `login`) ו-28-kupot-health-funds (דפים מעבר ל-`home.tsx`) עדיין לא
+    נבדקו לעומק לאותו דפוס — המועמדים הבאים הטבעיים. נושאים #245/#250
+    (RLS, חסומים) נשארים כפי שהם. via cloud server 167.99.131.167
+    [loop B]
