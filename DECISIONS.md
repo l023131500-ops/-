@@ -5006,3 +5006,53 @@
      תקופתי ל-#167/#201, או עדשה חדשה (למשל: טפסים בלי `noValidate`/
      הודעת שגיאה נגישה, או קלטי `<input type="password">` בלי
      `autocomplete` נכון) על 01-16/40-gannenet.
+
+## 20/08/2026 (LOOP A — סבב 78) — `autocomplete` על שדות `<input type="password">`: 02/03/04/40-gannenet
+
+437. **בדקתי מחדש `core.run_progress` לפני שהתחלתי.** סבב 77 סגור
+     (commit `45a4dfa9`, תאם ל-HEAD). המשכתי מאותו ענף
+     `fix/a-icon-only-buttons-round2-0820`. פתחתי את העדשה שסבב
+     77/#436 הציע: `<input type="password">` בלי `autocomplete`
+     נכון — עדשה שקשורה ישירות לתחום ה-login/auth של הלקוחות
+     שבתחום Loop A, ומעולם לא נבדקה שיטתית על 01-16/40-gannenet.
+438. **הרצתי Explore agent על כל 15 האפליקציות בתחום** (דילוג
+     08/09). מצא שדות סיסמה אמיתיים ב-12 קבצים; רוב הכניסה/הרשמה/
+     איפוס-סיסמה הקיימת כבר נושאת `autocomplete="current-password"`/
+     `"new-password"` נכון (01-torah-platform, 06-kupot-holim,
+     15-egod, 16-chatzor-connect, admin/, portal/). **4 מופעים
+     אמיתיים חסרי `autocomplete` אומתו בקריאה ישירה של כל קובץ:**
+     שני שדות התחברות אמיתיים — `02-igud-transcribe/app/login/
+     page.tsx:109-131` (אימייל+סיסמה, טופס כניסה לוגד ל-Supabase
+     Auth) ו-`03-igud-ads/app/login/page.tsx:48-60` (אותו דפוס,
+     "כניסה למערכת" למפעיל) — ושני שדות מפתח-סוד משותפים שאינם
+     סיסמת-משתמש אמיתית: `40-gannenet/app/shelf/admin/
+     page.tsx:213-222` (מפתח ניהול משותף מ-`ADMIN_PASSWORD`) ו-
+     `04-imud-torani/client/src/pages/departments/
+     ProofreadDept.tsx:146-149` (מפתח API של ספק AI, BYO-key
+     מהלקוח, `data-testid="input-ai-key"`).
+439. **התיקון: `autoComplete="current-password"`** (וגם
+     `autoComplete="email"` על שדות האימייל הצמודים) בשני טפסי
+     הכניסה האמיתיים (02/03) — כך שמנהלי סיסמאות יזהו ויציעו למלא
+     נכון. **`autoComplete="off"`** על שני שדות מפתח-הסוד המשותפים
+     (40-gannenet/04-imud-torani) — אלה אינם סיסמת-כניסה אישית, ולא
+     נכון לתייג אותם כ-`current-password`/`new-password`; `off` מונע
+     ממנהל סיסמאות להציע לשמור/למלא מפתח סוד משותף כאילו הוא
+     האישורים האישיים של המשתמש. אפס שינוי ל-`value`/`onChange`/
+     מבנה/טקסט קיים מעבר להוספת ה-attribute.
+440. **אפס רגרסיה מאומתת:** `git diff --stat` — 4 קבצים, 6 שורות
+     נוספו/2 הוסרו (כל שינוי הוא הוספת/שינוי attribute יחיד על
+     תגית קיימת). אין `tsc`/`npm` בסביבה הזו — אומת בקריאה מלאה של
+     כל קובץ לפני/אחרי + `git diff` מלא + בדיקת איזון `{}`/`()`/`[]`
+     ב-Python על ארבעת הקבצים (כולם מאוזנים). ארבעת הקבצים מוחרגים
+     כברירת מחדל ב-`.gitignore` אך עוקבים היסטורית (מאומת
+     `git ls-files --error-unmatch`) — כנדרש `git add -f` כדי
+     להשתיק את הודעת ה-ignore בלבד, כתקדים מסבבים 76-77. Commit
+     `ecac657c` על אותו ענף `fix/a-icon-only-buttons-round2-0820`,
+     נדחף ל-origin (מפעיל פריסות Vercel תחת more30.com/tamlul,
+     more30.com/modaot, more30.com/imud, more30.com/gannenet).
+441. **הבא בתור:** עדשת ה-`autocomplete` על סיסמאות נבדקה כעת על כל
+     15 האפליקציות בתחום — 2 טפסי כניסה אמיתיים תוקנו, 2 שדות
+     מפתח-סוד תוקנו ל-`off`, השאר כבר תקינים. סבב הבא סביר: ניסיון
+     חוזר תקופתי ל-#167/#201, או עדשה חדשה (למשל: טפסים בלי
+     `noValidate`/הודעת שגיאה נגישה, או `<input type="tel">` בלי
+     `inputMode`/`pattern` מתאים) על 01-16/40-gannenet.
