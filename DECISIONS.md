@@ -5877,3 +5877,31 @@
 542. **הבא בתור ב-03-igud-ads:** admin/users (5) → admin/templates
      (14) → admin/templates/[id] (14) → public/create (14). אחריו
      01-torah-platform (~150 מופעים/19 קבצים) מהמיפוי של סבב 83.
+
+## 20/08/2026 (LOOP A — סבב 100) — `<label htmlFor>`/`id`: 03-igud-ads/admin/users
+
+543. **בדקתי מחדש `git log`/`core.run_progress` לפני שהתחלתי.** סבב
+     99 סגור (commit `93efc912`/`010a84a4`, HEAD תואם). המשכתי בתור
+     שסבב 99/#542 הגדיר: `admin/users` (5) — הבא בגודל אחרי
+     `admin/notifications`.
+544. **קראתי את הקובץ במלואו לפני עריכה.** 307 שורות, טבלת ניהול
+     משתמשים + דיאלוג יצירה/עריכה עם 5 שדות ללא קישור (אימייל, שם
+     תצוגה, תפקיד, קופון משויך, הערות) ו-checkbox אחד ("משתמש פעיל")
+     שכבר עוטף את ה-input בתוך `<label>` — הוחרג כמו בכל הסבבים
+     הקודמים.
+545. **התיקון:** `user-email`, `user-display-name`, `user-role`,
+     `user-coupon`, `user-notes` — id על כל input/select/textarea,
+     htmlFor תואם על ה-label שלו.
+546. **אפס רגרסיה מאומתת:** `git diff --stat` — קובץ אחד, 10+/5-
+     (רק `id`/`htmlFor` נוספו על `<label>`/`<input>`/`<select>`/
+     `<textarea>` קיימים, בלי לגעת ב-`value`/`onChange`/`type`/
+     `inputMode`/`autoComplete`/`disabled`/`rows`). אין `tsc`/`npm`
+     בסביבה הזו — אומת בקריאה מלאה של `git diff` המלא + בדיקת
+     איזון `{}`/`()`/`[]` ב-Python (87/87, 96/96, 18/18). `git add -f`
+     נדרש כתקדים (`apps/**` מוחרג כברירת מחדל ב-`.gitignore` השורשי
+     אך `03-igud-ads/app` כבר עוקב מרישום ידני קודם). Commit
+     `5d600f65` על `fix/a-icon-only-buttons-round2-0820`, יידחף
+     ל-origin (מפעיל פריסת Vercel תחת more30.com/modaot).
+547. **הבא בתור ב-03-igud-ads:** admin/templates (14) →
+     admin/templates/[id] (14) → public/create (14). אחריו
+     01-torah-platform (~150 מופעים/19 קבצים) מהמיפוי של סבב 83.
