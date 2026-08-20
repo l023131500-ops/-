@@ -22,9 +22,20 @@ import { getCategoryTemplates, listCategoryTemplateKeys, renderCategoryTemplate 
 const AI_DAILY_LIMIT_PER_IP = 40;
 
 function clientIp(req: Request): string {
+  // x-vercel-forwarded-for is set by Vercel's own edge to the real client IP and
+  // cannot be spoofed by the caller (Vercel overwrites/ignores any client-supplied
+  // value for this specific header) — always prefer it when present.
+  const vercelHeader = req.headers["x-vercel-forwarded-for"];
+  const vercelIp = Array.isArray(vercelHeader) ? vercelHeader[0] : vercelHeader?.split(",")[0];
+  if (vercelIp?.trim()) return vercelIp.trim();
+
+  // Fallback: x-forwarded-for is client-appendable at the front, but each proxy hop
+  // (including Vercel's edge) appends the IP it observed to the END — so the LAST
+  // entry is the one Vercel actually saw, not the first (which the caller controls).
   const fwd = req.headers["x-forwarded-for"];
-  const first = Array.isArray(fwd) ? fwd[0] : fwd?.split(",")[0];
-  return first?.trim() || req.socket?.remoteAddress || "unknown";
+  const list = Array.isArray(fwd) ? fwd.join(",") : fwd;
+  const last = list?.split(",").pop();
+  return last?.trim() || req.socket?.remoteAddress || "unknown";
 }
 
 /**
