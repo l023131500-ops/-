@@ -242,9 +242,9 @@ function openLeadForm(context) {
       <p class="lead-sub">צוות בקלות יחזור אליכם עם המידע המלא על הזכויות שמתאימות לכם, ותזכורת אישית לביצוע. ללא עלות וללא התחייבות.</p>
     </div>
     <form id="leadForm" class="lead-form">
-      <div class="lead-field"><label for="lf_name">שם מלא</label><input type="text" id="lf_name" required aria-required="true" autocomplete="name" placeholder="השם שלכם"></div>
-      <div class="lead-field"><label for="lf_phone">טלפון</label><input type="tel" id="lf_phone" required aria-required="true" autocomplete="tel" inputmode="tel" placeholder="050-0000000"></div>
-      <div class="lead-field"><label for="lf_email">אימייל</label><input type="email" id="lf_email" autocomplete="email" inputmode="email" placeholder="name@example.com (אופציונלי)"></div>
+      <div class="lead-field"><label for="lf_name">שם מלא</label><input type="text" id="lf_name" required aria-required="true" autocomplete="name" placeholder="השם שלכם" aria-describedby="lf_msg"></div>
+      <div class="lead-field"><label for="lf_phone">טלפון</label><input type="tel" id="lf_phone" required aria-required="true" autocomplete="tel" inputmode="tel" placeholder="050-0000000" aria-describedby="lf_msg"></div>
+      <div class="lead-field"><label for="lf_email">אימייל</label><input type="email" id="lf_email" autocomplete="email" inputmode="email" placeholder="name@example.com (אופציונלי)" aria-describedby="lf_msg"></div>
       <label class="lead-consent"><input type="checkbox" id="lf_consent" checked> אני מאשר/ת שצוות בקלות ייצור איתי קשר עם המידע והתזכורת</label>
       <button type="submit" class="btn-primary lead-submit">שלחו לי את הפרטים והתזכורת ←</button>
       <div id="lf_msg" class="lead-msg" role="alert" aria-live="assertive"></div>
@@ -258,7 +258,16 @@ function openLeadForm(context) {
     const phone = document.getElementById('lf_phone').value.trim();
     const email = document.getElementById('lf_email').value.trim();
     const consent = document.getElementById('lf_consent').checked;
-    if (!name || !phone) { msg.textContent = 'נא למלא שם וטלפון.'; msg.className = 'lead-msg err'; return; }
+    const nameField = document.getElementById('lf_name');
+    const phoneField = document.getElementById('lf_phone');
+    if (!name || !phone) {
+      msg.textContent = 'נא למלא שם וטלפון.'; msg.className = 'lead-msg err';
+      nameField.setAttribute('aria-invalid', name ? 'false' : 'true');
+      phoneField.setAttribute('aria-invalid', phone ? 'false' : 'true');
+      return;
+    }
+    nameField.setAttribute('aria-invalid', 'false');
+    phoneField.setAttribute('aria-invalid', 'false');
     if (!consent) { msg.textContent = 'יש לאשר יצירת קשר כדי שנוכל לחזור אליכם.'; msg.className = 'lead-msg err'; return; }
     const btn = e.target.querySelector('.lead-submit');
     btn.disabled = true; btn.textContent = 'שולח...';
