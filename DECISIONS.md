@@ -5213,3 +5213,63 @@
      שגיאה נגישה, `<textarea>`/`<input>` חובה (`required`) בלי
      `aria-required`, או בדיקת `<label htmlFor>`/`id` שלא תואמים)
      על 01-16/40-gannenet.
+
+## 20/08/2026 (LOOP A — סבב 82) — `aria-required` על `<input>`/`<textarea>` עם `required`
+
+457. **בדקתי מחדש `core.run_progress` לפני שהתחלתי.** סבב 81 סגור
+     (commit `34eee391`/`88c8fa4f`, תאם ל-HEAD). בדקתי גם `core.issues`
+     על כל 01-16/40-gannenet — כל הפריטים הפתוחים בתחום חסומים על
+     החלטות משתמש (allow-list של Supabase, SMTP, מחיקת gannenet,
+     טלפוני פוטר) או על חסימת Lovable חיצונית (#167/#168) — שום דבר
+     בר-פעולה. פתחתי את העדשה שסבב 81/#456 הציע: `<input>`/`<textarea>`
+     עם `required` בלי `aria-required` נלווה — screen readers מכריזים
+     על שדה חובה באופן אמין יותר עם `aria-required="true"` מפורש
+     לצד `required`, ושני התכונות יכולות לדור יחד בבטחה לפי WAI-ARIA
+     (לא האק, לא כפילות מזיקה).
+458. **הרצתי Explore agent על כל 15 האפליקציות בתחום** (דילוג 08/09).
+     מצא 6 אפליקציות נקיות לגמרי (04, 07, 12, 13, 14, 40-gannenet —
+     אין להן שום שדה חובה). ב-9 האפליקציות הנותרות (01, 02, 03, 05,
+     06, 10, 11, 15, 16) נמצאו שדות `required` בלי `aria-required`.
+     בדקתי ישירות כל קובץ שהאייג'נט ציין לפני עריכה (לקח מסבב 59) —
+     תיקנתי שני חוסרי-דיוק בדוח: ב-03-igud-ads הדוח ציין
+     `app/(public)/create/page.tsx` כמועמד, אך קריאה ישירה גילתה
+     ש-`required_fields` שם הוא רק שדה נתונים (state key), לא תכונת
+     HTML — לא נגעתי בקובץ; גרפתי את כל 03-igud-ads מחדש ומצאתי את
+     שלושת הקבצים האמיתיים (glossary/coupons/upload, כל אחד עם
+     `<input required>` אמיתי). גם אימתתי ש-`Input`/`PasswordInput`/
+     `Textarea`/`Field` בכל האפליקציות עם קומפוננטות עטיפה (01, 15, 16)
+     מעבירים `...props` ישירות לתגית המקורית — הוספת `aria-required`
+     בנקודת הקריאה בטוחה בלי לגעת בקומפוננטה.
+459. **התיקון:** הוספת `aria-required="true"` (או `aria-required={!isDemo}`
+     ב-16-chatzor-connect/AdminLogin.tsx, שם `required={!isDemo}` כבר
+     מותנה — שמרתי על אותה תלות דינמית) לצד `required` הקיים ב-48
+     מופעים ב-21 קבצים: 01-torah-platform (18 מופעים, 8 קבצים —
+     ActivateInvite, SignIn, SignUp, ResetPassword, RabbiQuestions,
+     Azkarot, RequestLesson, JoinTeacher — כניסה/הרשמה/איפוס סיסמה
+     וטפסים ציבוריים); 02-igud-transcribe (4 מופעים, קופונים+מונחון
+     אדמין); 03-igud-ads (6 מופעים, קופונים+מונחון אדמין+העלאת
+     תמלול ציבורית); 05-financial-marketing-site ו-11-bkalut-marketing2
+     (HTML סטטי, כולל תיבות `legal_accepted` checkbox); 06-kupot-holim
+     ו-10-bkalot-rights (HTML/JS סטטי, טפסי ליד); 15-egod (9 מופעים,
+     3 קבצים — כניסה/הרשמה, בקשת שיעור, הצטרפות מגיד); 16-chatzor-connect
+     (2 מופעים, כניסת אדמין).
+460. **אפס רגרסיה מאומתת:** `git diff --stat` — 21 קבצים, 53 שורות
+     נוספו/41 הוסרו (כל שינוי הוא הוספת תכונה יחידה על תגית
+     `<input>`/`<textarea>`/`<Input>`/`<PasswordInput>`/`<Textarea>`
+     קיימת, בשורה אחת). אין `tsc`/`npm` בסביבה הזו — אומת בקריאה
+     מלאה של `git diff` המלא + בדיקת איזון `{}`/`()`/`[]` ב-Python על
+     כל 21 הקבצים (כולם מאוזנים). הקבצים מוחרגים כברירת מחדל
+     ב-`.gitignore` אך עוקבים היסטורית — `git add` (בלי `-f`) הצליח
+     לשלב את כולם על אף הודעת ה-ignore, כתקדים מסבבים 76-81. Commit
+     `909d575f` על אותו ענף `fix/a-icon-only-buttons-round2-0820`,
+     נדחף ל-origin (מפעיל פריסות Vercel תחת more30.com/torah,
+     more30.com/tamlul, more30.com/modaot, more30.com/mechiron,
+     more30.com/bkalot, more30.com/egod, more30.com/chatzor).
+461. **הבא בתור:** עדשת `required`/`aria-required` נבדקה כעת על כל 15
+     האפליקציות בתחום — 48 מופעים תוקנו ב-21 קבצים ב-9 אפליקציות,
+     6 אפליקציות (04/07/12/13/14/40-gannenet) אין להן שדות חובה
+     כלל. סבב הבא סביר: ניסיון חוזר תקופתי ל-#167/#201, או עדשה
+     חדשה (למשל: בדיקת `<label htmlFor>`/`id` שלא תואמים, `<fieldset>`/
+     `<legend>` על קבוצות רדיו/checkbox, או `aria-invalid`/הודעת
+     שגיאה מקושרת ב-`aria-describedby` בטפסים עם ולידציה) על
+     01-16/40-gannenet.
