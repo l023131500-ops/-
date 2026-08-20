@@ -6486,3 +6486,50 @@
      צריך לבדוק מחדש את `core.project_tasks`/`core.project_bugs`
      למשימה חדשה בהיקף (auth/admin/pricing/gannenet), או אם שום
      דבר לא השתחרר, לפתוח את קבוצת-הכפתורים ב-`Wizard.tsx`.
+
+## 20/08/2026 — סבב 115 (loop A)
+
+610. **בדקתי `git log`/`core.run_progress`/`core.project_bugs`/
+     `core.project_tasks` לפני שהתחלתי.** סבב 114 סגור (commit
+     `154bfb2e`/`abd95f63`, תואם HEAD). `core.project_bugs` ריק.
+     חמש המשימות הפתוחות ב-`core.project_tasks` (02/12/13/25/32)
+     עדיין חסומות על סוד חסר (`OPENAI_API_KEY`, `SUPABASE_SERVICE_
+     KEY`) או החלטת מיזוג/origin שאינה בסמכות סוכן — אותו מצב
+     כמו סבב 114, אין משימה חדשה בהיקף auth/admin/pricing/gannenet
+     שהשתחררה. המשכתי להמלצת #609: פתחתי את קבוצת-הכפתורים
+     ב-`Wizard.tsx` שורה 181.
+611. **התיקון:** `apps/04-imud-torani/client/src/pages/Wizard.tsx`
+     שורות 179-201 — לולאת `questions.map((q) => …)` בצעד הראשון
+     של האשף (בחירת סוג ספר/קהל/תוספות דרך כפתורי-צ'יפ). אותו
+     דפוס בדיוק כמו `MultiSelect.tsx`/`RadioSelect.tsx` ב-01-
+     torah-platform בסבב 112: `<Label>` יחיד מעל **קבוצת** כפתורי-
+     צ'יפ, לא בקרה יחידה — `htmlFor` לא מתאים סמנטית. במקום
+     `useId()` (לא ניתן לקרוא Hook בתוך callback של `.map()` —
+     מפר את Rules of Hooks), השתמשתי ב-`q.key` הקיים והייחודי-
+     כבר (משמש כבר כ-React `key` על אותו `div`) לבניית `id`
+     דטרמיניסטי: `` `wiz-group-label-${q.key}` ``. הוספתי אותו
+     `id` על ה-`<Label>`, `role="group"` + `aria-labelledby`
+     תואם על מיכל הכפתורים, ו-`aria-pressed={active}` על כל
+     כפתור-צ'יפ (הם כבר toggle-buttons — `active` כבר מחושב
+     בקוד הקיים לכל אפשרות בין select יחיד ל-multi/`extras`).
+612. **אפס רגרסיה מאומתת:** `git diff` מלא — קובץ אחד, 3+/2-, רק
+     `id`/`role`/`aria-labelledby`/`aria-pressed` נוספו; לא נגעתי
+     ב-`onClick`/`toggleExtra`/`setAnswers`/`className`/הלוגיקה.
+     בדקתי שאין התנגשות עם ה-`id`ים הקיימים מסבב 113 (`wiz-title`/
+     `wiz-author`) — `grep` על `id="wiz-` מראה 4 ערכים שונים, כולם
+     ייחודיים. אין `tsc`/`npm` בסביבה הזו — אומת בבדיקת איזון
+     `{}`/`()`/`[]` ב-Python על הקובץ המלא (125/125, 119/119,
+     41/41). קובץ זה לא ב-gitignore (לא נדרש `git add -f`). Commit
+     יבוא בהמשך על `fix/a-icon-only-buttons-round2-0820`, יידחף
+     ל-origin (מפעיל פריסת Vercel תחת more30.com/imud-torani).
+613. **הלנס `id`/`htmlFor`/`aria-label`/group-semantics על
+     04-imud-torani סגור לחלוטין עכשיו** — `Wizard.tsx` (סבב 113 +
+     סבב זה) ו-`DesignDept.tsx`/`CoverEditor.tsx` (סבב 114). שאר
+     9 האפליקציות בטווח (05-07, 10-11, 13-14, 16) עדיין manifest-
+     בלבד — אין קוד לתקן בהן בריפו הזה. סבב הבא צריך לבדוק מחדש
+     את `core.project_tasks`/`core.project_bugs` למשימה חדשה
+     בהיקף (auth/admin/pricing/gannenet), ואם שום דבר לא
+     השתחרר — לשקול פתיחת לנס נגישות/UX חדש על 01-torah-platform
+     (הלנס הישן `id`/`htmlFor` כבר נסגר שם בסבב 112, אבל ייתכנו
+     לנסים אחרים שלא נבדקו: contrast, keyboard-nav, focus-order)
+     או לבדוק שוב את שאר האפליקציות בטווח אם משהו וונדר בינתיים.

@@ -178,8 +178,8 @@ export default function Wizard() {
           <div className="space-y-7">
             {questions.map((q) => (
               <div key={q.key}>
-                <Label className="mb-2.5 block text-sm font-semibold text-foreground">{q.label}</Label>
-                <div className="flex flex-wrap gap-2">
+                <Label id={`wiz-group-label-${q.key}`} className="mb-2.5 block text-sm font-semibold text-foreground">{q.label}</Label>
+                <div role="group" aria-labelledby={`wiz-group-label-${q.key}`} className="flex flex-wrap gap-2">
                   {q.options.map((o) => {
                     const isMulti = q.key === "extras";
                     const active = isMulti ? extras.includes(o.value) : answers[q.key] === o.value;
@@ -188,6 +188,7 @@ export default function Wizard() {
                         key={o.value}
                         data-testid={`wiz-${q.key}-${o.value}`}
                         onClick={() => (isMulti ? toggleExtra(o.value) : setAnswers((a) => ({ ...a, [q.key]: o.value })))}
+                        aria-pressed={active}
                         className={`rounded-full border px-3.5 py-1.5 text-sm transition hover-elevate ${
                           active ? "border-primary bg-primary text-primary-foreground" : "border-card-border text-foreground"
                         }`}
