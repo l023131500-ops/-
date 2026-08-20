@@ -10019,3 +10019,57 @@
     אמיתי, `hreflang`/`lang` alternate tags, `manifest.json`/
     `manifest.webmanifest` עקביות. נושא #245/#250 (RLS, חסומים)
     נשארים כפי שהם. via cloud server 167.99.131.167 [loop B]
+
+## 20/08/2026 — סבב 425 (loop B)
+
+425. **`manifest.json` (Web App Manifest) חדש ב-7/9 אפליקציות חיות
+    שלא הצהירו אחד — הבא-בתור מסבב 424.**
+
+    בדיקה שיטתית (`find`+`grep 'manifest'`) על כל 9 האפליקציות החיות
+    גילתה ש-21-mthbram כבר מצהיר `manifest.json` מלא (עם אייקונים
+    PNG/JPEG אמיתיים), ו-24-galilee-connect-hub מזריק
+    `manifest.webmanifest` אוטומטית דרך `vite-plugin-pwa` (מתועד
+    בהערה קיימת בקוד — לא נגעתי). שאר 7: 17-chizukim, 18-orech,
+    19-shiurim, 20-igud, 22-zchuyot, 27-mechiron, 28-kupot — לא הצהירו
+    אף אחד מהשניים.
+
+    לכל אחת מה-7 נוצר `manifest.json` תחת אותה תיקיית `public/` שבה
+    כבר יושב ה-`favicon.svg` (מסבבים 417-424), עם:
+    - `name`/`description` — הועתקו מ-`<title>`/`meta[name=description]`
+      הקיימים באותו `index.html`, לא הומצאו.
+    - `theme_color` — הועתק מ-`meta[name=theme-color]` (מצב אור) הקיים.
+    - `background_color` — הומר מ-`--background`/`--bg`/`--color-bg`
+      הקיים ב-CSS `:root` (HSL→hex בפייתון עבור 17/22/28, הועתק ישירות
+      עבור 18/19/20/27 שכבר כתובים כ-hex).
+    - `icons` — מצביע לאותו `favicon.svg` הקיים (SVG יחיד,
+      `sizes: "any"`), לא נוצר PNG חדש.
+    - `start_url`/`scope` — `/{path}/` עבור האפליקציות המונטות תחת
+      נתיב Vercel (17/22/27/28), `/` עבור 19/20 העצמאיות (אותה
+      אבחנה שאומתה בסבב 424 לגבי ה-favicon: שרתי Express עצמאיים,
+      אין mount prefix).
+
+    הוספתי `<link rel="manifest" href="...">` ליד ה-`<link rel="icon">`
+    הקיים בכל 6 האפליקציות מבוססות-Vite/HTML. עבור 18-orech (Next.js,
+    `basePath: "/orech"`) הוספתי `manifest: '/orech/manifest.json'`
+    לאובייקט `metadata` הקיים ב-`app/layout.tsx`, עם הקידומת כתובה ביד
+    — אותה תקלת `basePath` שכבר תועדה ותוקנה עבור `icons` באותו קובץ
+    (הערה קיימת: "‎basePath‎ אינו חל על ‎metadata.icons‎").
+
+    **בדיקות תקינות:** `python3 json.load` נקי על כל 7 קובצי ה-JSON
+    החדשים. `git diff --cached --stat`: 14 קבצים — 7 שינוי שורה יחידה
+    (`<link rel="manifest">` או `manifest:` field, אין מחיקה), 7 קבצים
+    חדשים (תוספות בלבד). כל 7 קובצי ה-`manifest.json` נופלים תחת
+    `.gitignore` (`/apps/**`) כמו `favicon.svg`/`robots.txt` — נדרש
+    `git add -f`. לא הופעל build/dev-server (לפי הנחיות ההרצה).
+
+    ענף `fix/b-22-whatsapp-noopener-round395-0820` (שרשרת הענפים היא
+    המקור המלא היחיד ל-loop B, לא `main`), נדחף (מפעיל 7 פריסות
+    Vercel תחת `more30.com/{chizukim,orech,shiurim,igud,zchuyot,
+    mechiron,kupot}`).
+
+    **הבא בתור:** `manifest.json`/`manifest.webmanifest` סגור 9/9
+    (2 היו כבר תקינות, 7 נוספו כעת). עדיין לא נבדק: `BreadcrumbList`
+    JSON-LD אמיתי (לא רכיב UI) לדפים עם היררכיה (כגון 27-mechiron
+    `/p/topic/:id`), `hreflang`/`lang` alternate tags. נושא #245/#250
+    (RLS, חסומים) נשארים כפי שהם. via cloud server 167.99.131.167
+    [loop B]
