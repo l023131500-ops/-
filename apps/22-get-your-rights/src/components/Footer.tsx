@@ -30,7 +30,7 @@ const Footer = () => {
   };
 
   const handleSubmit = async () => {
-    if (!formData.name || !formData.phone) {
+    if (!formData.name.trim() || !formData.phone.trim()) {
       toast({ title: "שגיאה", description: "נא למלא שם וטלפון", variant: "destructive" });
       return;
     }
