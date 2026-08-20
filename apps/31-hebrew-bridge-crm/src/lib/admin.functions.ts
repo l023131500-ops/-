@@ -139,6 +139,39 @@ export const updateClientAdminNotes = createServerFn({ method: "POST" })
     return { ok: true };
   });
 
+export const getClientShareLink = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: { clientId: string }) => z.object({ clientId: z.string().uuid() }).parse(d))
+  .handler(async ({ data, context }) => {
+    const { supabase, userId } = context as any;
+    await assertAdmin(supabase, userId);
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data: row, error } = await supabaseAdmin
+      .from("client_profiles")
+      .select("share_token, share_enabled")
+      .eq("id", data.clientId)
+      .single();
+    if (error) throw new Error(error.message);
+    return { shareToken: row.share_token as string, shareEnabled: row.share_enabled as boolean };
+  });
+
+export const setClientShareEnabled = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: { clientId: string; enabled: boolean }) =>
+    z.object({ clientId: z.string().uuid(), enabled: z.boolean() }).parse(d)
+  )
+  .handler(async ({ data, context }) => {
+    const { supabase, userId } = context as any;
+    await assertAdmin(supabase, userId);
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { error } = await supabaseAdmin
+      .from("client_profiles")
+      .update({ share_enabled: data.enabled })
+      .eq("id", data.clientId);
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
 export type AdminPartnerRow = {
   id: string;
   full_name: string | null;

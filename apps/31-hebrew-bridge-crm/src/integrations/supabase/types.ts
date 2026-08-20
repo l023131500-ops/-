@@ -336,6 +336,8 @@ export type Database = {
           lead_source: Database["public"]["Enums"]["lead_source"] | null
           payment_status: Database["public"]["Enums"]["payment_status"]
           raw_voicemail_transcription: string | null
+          share_enabled: boolean
+          share_token: string
           updated_at: string
           uploaded_documents: Json
         }
@@ -346,6 +348,8 @@ export type Database = {
           lead_source?: Database["public"]["Enums"]["lead_source"] | null
           payment_status?: Database["public"]["Enums"]["payment_status"]
           raw_voicemail_transcription?: string | null
+          share_enabled?: boolean
+          share_token?: string
           updated_at?: string
           uploaded_documents?: Json
         }
@@ -356,6 +360,8 @@ export type Database = {
           lead_source?: Database["public"]["Enums"]["lead_source"] | null
           payment_status?: Database["public"]["Enums"]["payment_status"]
           raw_voicemail_transcription?: string | null
+          share_enabled?: boolean
+          share_token?: string
           updated_at?: string
           uploaded_documents?: Json
         }

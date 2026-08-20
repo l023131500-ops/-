@@ -8,6 +8,7 @@ import { AddTaskDialog } from "@/components/admin/AddTaskDialog";
 import { ClientTasksList } from "@/components/admin/ClientTasksList";
 import { ClientTopicsPanel } from "@/components/admin/ClientTopicsPanel";
 import { ClientProfessionalsPanel } from "@/components/admin/ClientProfessionalsPanel";
+import { ShareLinkCard } from "@/components/admin/ShareLinkCard";
 
 export const Route = createFileRoute("/_authenticated/admin/clients/$clientId")({
   component: ClientProfilePage,
@@ -26,6 +27,8 @@ function ClientProfilePage() {
         <h1 className="text-3xl font-bold">פרופיל לקוח</h1>
         <p className="text-muted-foreground mt-1 font-mono text-xs">{clientId}</p>
       </div>
+
+      <ShareLinkCard clientId={clientId} />
 
       <Tabs defaultValue="overview" dir="rtl">
         <TabsList>

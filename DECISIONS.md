@@ -4918,3 +4918,74 @@
      ל-31 (hebrew-bridge-crm) הסבב הזה — תחום נפרד, Supabase נפרד
      (`ygaqqnuyfnumezxxmtbh`), ראוי לסבב משלו; מתועד ב-`NEEDS_USER.md`.
      לא נגעתי במוגן, לא ב-`main`.
+
+433. **31 hebrew-bridge-crm — אותה תכונה, סבב עצמאי משלה (כפי שתועד ב-#432
+     שיש לעשות).** בדקתי קודם עם Explore agent את המבנה האמיתי של 31: זו
+     **לא** מערכת בשם `clients`/`share_token` כמו 30 — הטבלה האמיתית היא
+     `client_profiles` (id=FK ל-`profiles`, `lead_source`/`payment_status`/
+     `internal_admin_notes`/`raw_voicemail_transcription`/
+     `uploaded_documents`), עם סטטוס-טיפול בטבלה נפרדת `partner_assignments`
+     (`client_id`,`partner_id`,`treatment_status` enum
+     `not_started|sent|in_progress|completed`). מעקב-הסטטוס הפנימי הקיים
+     (`src/routes/_authenticated/client/status.tsx` +
+     `src/components/client/TreatmentTracker.tsx`) כבר משתמש באותו
+     enum/מונחים — השתמשתי בו כמו-שהוא בעמוד הציבורי החדש, לא המצאתי
+     ווקבולרי סטטוס חדש.
+434. **מיגרציה — תיקנתי מראש את הבאג שנמצא בפועל ב-36 nadlan-pro, לא רק
+     העתקתי את 30.** מיגרציית 30 (`20260820120000_client_public_share_link.sql`)
+     כתובה כ-`ADD COLUMN share_token UUID NOT NULL DEFAULT gen_random_uuid()`
+     במשפט אחד — אבל 30 מעולם לא הופעלה בפועל (DB לא נגיש), כך שהבאג
+     הבא לא נתפס: הסבב של 36-nadlan-pro (מיגרציה 0104, שכן הופעלה בפועל
+     דרך ה-MCP) גילה ואימת ש-Postgres בסביבה הזו מחשב DEFAULT תנודתי
+     (`gen_random_uuid()`) **פעם אחת לכל הכתיבה-מחדש של הטבלה**, לא פעם
+     לכל שורה — כלומר עם יותר משורה קיימת אחת, כל השורות היו מקבלות
+     **אותו** `share_token` והתנגשות מיידית על ה-unique index. במיגרציה
+     החדשה (`apps/31-hebrew-bridge-crm/supabase/migrations/20260820130000_client_public_share_link.sql`)
+     השתמשתי בדפוס הבטוח שכבר הוכח ב-0104: `ADD COLUMN` בלי `NOT NULL`,
+     `UPDATE ... SET share_token = gen_random_uuid()` (כאן כן מחושב per-row,
+     כי זו שאילתת UPDATE רגילה לא ADD-COLUMN-rewrite), ואז `SET NOT NULL`
+     + `SET DEFAULT`. שווה לשקול לתקן גם את מיגרציית 30 באותו אופן לפני
+     שמישהו ירוץ אותה על DB עם יותר מלקוח אחד קיים — לא תיקנתי את זה כאן
+     כדי לשמור על תחום הסבב הזה (31 בלבד).
+435. **API ציבורי (`/api/public/case-status`) + עמוד ציבורי (`/case/$token`).**
+     בדיוק אותו דפוס server.handlers/GET כמו ב-30 (וכמו `leads/submit.ts`
+     הקיים של 31 עצמה — `Content-Type` עם אות גדולה, לא `content-type`,
+     כדי להתאים למוסכמה הקיימת של הקובץ הזה בדיוק, לא של 30). מחזיר רק:
+     `full_name` (מ-`profiles`), `treatment_status`, `assigned_partner_name`
+     (מ-`profiles` של השותף המשויך האחרון), `document_count` (ספירה בלבד —
+     `select("id",{count:"exact",head:true})` על טבלת `documents` — **לא**
+     רשימת שמות/קישורי-קבצים), ו-`registered_at`. לעולם לא: אימייל, טלפון,
+     `internal_admin_notes`, `raw_voicemail_transcription`, תוכן/קישורי
+     מסמכים. חיפוש לפי `share_token` אקראי (UUID), לא לפי `id` השורה —
+     אותו דפוס נגד-IDOR כמו ב-30. עמוד `/case/$token`: העתקתי את פונקציית
+     ה-`appUrl()` המדויקת שכבר מתועדת ב-`auth.tsx` של 31 עצמה (כולל ה-regex
+     `.replace(/([^:]\/)\/+/g,"$1")` שמנקה קווים-נטויים כפולים — גרסה קצת
+     יותר בטוחה מזו שהייתה ב-`case.$token.tsx` של 30), לא בניתי גרסה חדשה.
+     משתמש-חוזר ב-`TreatmentTracker` הקיים (אותו קומפוננטה בדיוק שמוצגת
+     ללקוח המחובר) כדי שהסטטוס הציבורי ייראה זהה למה שהלקוח כבר רואה
+     בפנים — לא המצאתי ויזואליזציה מקבילה.
+436. **UI לאדמין — `src/components/admin/ShareLinkCard.tsx`.** בניגוד ל-30
+     (ששם עמוד-הלקוח כבר טוען את כל אובייקט הלקוח, כך שה-Card קיבל
+     `shareToken`/`shareEnabled` כ-props ישירות), עמוד-הלקוח של האדמין ב-31
+     (`admin/clients.$clientId.tsx`) הוא **שלד** — הטאב "סקירה כללית" שלו
+     כבר אומר "יבנה בשלב הבא" ולא טוען שום נתון-לקוח בכלל. לכן ה-Card כאן
+     טוען את מצב השיתוף בעצמו דרך שתי server functions חדשות
+     (`getClientShareLink`/`setClientShareEnabled` ב-`lib/admin.functions.ts`,
+     באותו דפוס `createServerFn`+`requireSupabaseAuth`+`assertAdmin` בדיוק
+     כמו `updateClientAdminNotes` הקיימת, לא supabase client ישיר כמו ב-30)
+     — נקרא דרך `useServerFn`, אותו דפוס `fn({data:{...}})` המדויק שכבר
+     קיים ב-`ClientTasksList.tsx`/`AddTaskDialog.tsx`. הוכנס מעל ה-`Tabs`,
+     אותו מיקום בדיוק כמו ב-30, בלי לגעת בטאב "יבנה בשלב הבא" הקיים.
+437. **אפס רגרסיה + אימות.** קבצים חדשים בלבד (`ShareLinkCard.tsx`,
+     `case.$token.tsx`, `case-status.ts`, המיגרציה) + תוספות-בלבד לקבצים
+     קיימים (`admin.functions.ts`: שתי פונקציות חדשות בסוף, לא נגעתי
+     בקיימות; `clients.$clientId.tsx`: ייבוא + שורת רינדור אחת;
+     `types.ts`: שני שדות חדשים בשלושת הבלוקים של `client_profiles`).
+     `31-hebrew-bridge-crm/src/lib/admin.functions.ts` נבדק שכל הפונקציות
+     הקיימות (`listClientsForAdmin`, `updateClientAdminNotes`, שיוך-שותפים)
+     נשארו בית-לבית זהות. אין `node_modules`/דפדפן/גישת-DB לפרויקט הזה
+     (`ygaqqnuyfnumezxxmtbh` — אומת שוב הסבב הזה עם `list_tables` דרך ה-MCP,
+     עדיין "access denied", תואם CONNECTIONS.md) — אימות היה קריאת-קוד ישירה
+     מול כל דפוס קיים (מצוטט לעיל) + בדיקת איזון-סוגריים (Python) על כל
+     7 הקבצים שנגעתי/יצרתי. לא build, לא Playwright, לא MCP על ה-DB עצמו.
+     לא נגעתי במוגן, לא ב-`main`.
