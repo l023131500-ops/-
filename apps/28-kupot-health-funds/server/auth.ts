@@ -1,5 +1,6 @@
 import crypto from "node:crypto";
 import type { Request, Response } from "express";
+import { hitRateLimit, clientIp } from "./rate-limit";
 
 // ---------------------------------------------------------------------------
 // כניסת ניהול ל-/api/switch-leads מבוססת עוגייה, בנוסף (לא במקום) לכותרת
@@ -9,6 +10,11 @@ import type { Request, Response } from "express";
 
 const COOKIE_NAME = "kupot_admin_token";
 const COOKIE_MAX_AGE_MS = 8 * 60 * 60 * 1000; // 8 שעות
+
+// עד כה handleAdminLogin השווה סיסמה מול ADMIN_TOKEN ללא שום תקרת ניסיונות —
+// בניגוד ל-/api/agent שכבר מוגן ב-hitRateLimit (ר' rate-limit.ts). כתובת אחת
+// יכולה הייתה לנחש ללא הגבלה. אותו דפוס הגנה בדיוק, מוחל כאן על ניסיונות כושלים.
+const ADMIN_LOGIN_RATE_LIMIT_PER_HOUR = 20;
 
 function timingSafeEqualStr(a: string, b: string): boolean {
   const bufA = Buffer.from(a, "utf8");
@@ -47,6 +53,9 @@ export function handleAdminLogin(req: Request, res: Response) {
   }
   const password = String(req.body?.password || "");
   if (!password || !timingSafeEqualStr(password, adminToken)) {
+    if (hitRateLimit(`admin-login:${clientIp(req)}`, ADMIN_LOGIN_RATE_LIMIT_PER_HOUR)) {
+      return res.status(429).json({ error: "יותר מדי ניסיונות התחברות. נא לנסות שוב בעוד שעה." });
+    }
     return res.status(401).json({ error: "סיסמה שגויה" });
   }
   res.cookie(COOKIE_NAME, adminToken, {
