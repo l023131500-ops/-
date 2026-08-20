@@ -7552,3 +7552,28 @@
     המועמדים שנמצאו (RequestLesson.tsx / public-price-comparison.tsx
     / Footer.tsx), או נושא #250 (RLS על 21-mthbram, חסום MCP).
     via cloud server 167.99.131.167 [loop B]
+
+## 20/08/2026 — סבב 377 (loop B)
+
+377. **המשך עדשת validation clientside חסרה לפני כתיבה — מועמד
+    שני מתוך שלושה שנמצאו בסבב 376.**
+    `apps/21-mthbram/src/pages/RequestLesson.tsx` שלב 16 (כתובת) —
+    התוויות "עיר *" (שורה 303) ו"רחוב *" (שורה 305) מסמנות את
+    השדות כחובה, אבל כפתור "המשך ←" (שורה 306) התקדם לשלב השליחה
+    ללא כל בדיקה, כך שליד בקשת שיעור (`seeker_leads`) יכול היה
+    להישמר עם כתובת ריקה חרף ההבטחה ב-UI. מיקום הוא השדה שהתאמת
+    שיעורים תלויה בו, בדיוק כמו התיקון המקביל ב-TeacherForm.tsx
+    בסבב 376. תוקן בהוספת אותו דפוס guard (no-op שקט + טוסט שגיאה)
+    הקיים כבר בשלב 1 של אותו טופס (contactName/contactPhone) —
+    לא נוסף דפוס UX חדש. `git diff`: 4 שורות נוספו, 1 הוסרה.
+    ענף `fix/b-21-mthbram-requestlesson-address-required-0820`,
+    commit `faddc11e`, נדחף (מפעיל פריסת Vercel תחת
+    `more30.com/mthbram`).
+
+    **נותר בתור (מסבב 376):** `public-price-comparison.tsx`
+    ב-27-bkalut-price (שדה `city` לא מאומת), `Footer.tsx`
+    ב-22-get-your-rights (חסר `.trim()` על שם/טלפון חובה).
+
+    **הבא בתור:** המשך עדשת validation clientside על שני
+    המועמדים הנותרים, או נושא #250 (RLS על 21-mthbram, חסום MCP).
+    via cloud server 167.99.131.167 [loop B]
