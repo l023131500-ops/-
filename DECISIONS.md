@@ -7939,3 +7939,23 @@
      קופון) ו-`03-igud-ads/app/login/page.tsx` (אימייל/סיסמה), או
      לפתוח עדשה נוספת, או לחזור ל-`core.project_tasks`/
      `core.project_bugs` (5 פריטים פתוחים, עדיין חסומים).
+
+## 20/08/2026 — סבב 153 (loop A)
+
+764. **המשך העדשה:** תוקן `03-igud-ads/app/login/page.tsx`, הפריט
+     השני שנותר בתור מסבב 152. בניגוד ל-02, כאן תיבת השגיאה
+     (`{err && <div>...`) לא נשאה `role="alert"` כלל — נוסף גם הוא,
+     יחד עם `id="login-error"` ו-`aria-describedby`/`aria-invalid`
+     על שדות האימייל והסיסמה, מותנים ב-state הקיים `err`.
+765. **אפס רגרסיה מאומתת:** `git diff --stat` — קובץ אחד, 4+/2-
+     שורות; אין שינוי ל-`loginEmail`/`loginGoogle`/state. אימות
+     איזון `{}`/`()`/`[]` בפייתון על הקובץ המלא: 36/36, 41/41, 7/7
+     — תואם. Commit `688b56cc` על
+     `fix/a-icon-only-buttons-round2-0820`, נדחף ל-origin (מפעיל
+     פריסת Vercel תחת more30.com/modaot).
+766. **הבא בתור:** הפריט האחרון שנותר מסבב 152 —
+     `02-igud-transcribe/app/(public)/upload/page.tsx` (שדה קוד
+     קופון, שלב 1 של טופס ההעלאה), או לפתוח עדשה נוספת, או לחזור
+     ל-`core.project_tasks`/`core.project_bugs` (5 פריטים פתוחים,
+     עדיין חסומים על secrets חסרים או החלטות merge/origin מחוץ
+     לסמכות הסוכן).
