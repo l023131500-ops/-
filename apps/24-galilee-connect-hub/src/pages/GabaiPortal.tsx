@@ -1133,8 +1133,14 @@ const AdBannerManager = () => {
             reader.onload = () => setImagePreview(reader.result as string);
             reader.readAsDataURL(file);
           }} />
-          <div onClick={() => fileRef.current?.click()}
-            className="border-2 border-dashed border-border rounded-xl p-6 text-center hover:border-primary/50 transition-colors cursor-pointer">
+          <div
+            onClick={() => fileRef.current?.click()}
+            className="border-2 border-dashed border-border rounded-xl p-6 text-center hover:border-primary/50 transition-colors cursor-pointer"
+            role="button"
+            tabIndex={0}
+            aria-label="העלאת תמונת באנר"
+            onKeyDown={e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); fileRef.current?.click(); } }}
+          >
             {imagePreview ? (
               <div className="flex flex-col items-center gap-2">
                 <img src={imagePreview} alt="באנר" className="max-h-32 rounded-lg object-contain" />
@@ -1273,8 +1279,14 @@ const KnowledgeManager = () => {
             reader.onload = () => setKbImagePreview(reader.result as string);
             reader.readAsDataURL(file);
           }} />
-          <div onClick={() => kbFileRef.current?.click()}
-            className="border-2 border-dashed border-border rounded-xl p-4 text-center hover:border-primary/50 transition-colors cursor-pointer">
+          <div
+            onClick={() => kbFileRef.current?.click()}
+            className="border-2 border-dashed border-border rounded-xl p-4 text-center hover:border-primary/50 transition-colors cursor-pointer"
+            role="button"
+            tabIndex={0}
+            aria-label="העלאת תמונה"
+            onKeyDown={e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); kbFileRef.current?.click(); } }}
+          >
             {kbImagePreview ? (
               <div className="flex flex-col items-center gap-2">
                 <img src={kbImagePreview} alt="תמונה" className="max-h-24 rounded-lg object-contain" />
