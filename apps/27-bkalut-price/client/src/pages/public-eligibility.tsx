@@ -132,14 +132,23 @@ export default function PublicEligibility() {
             <Logo size={28} showWordmark={false} />
             <span className="font-bold text-base mr-2">בקלות</span>
           </Link>
-          <Link
-            href="/"
-            data-testid="link-back-to-home"
-            className="inline-flex items-center gap-1 text-[13px] hover-elevate rounded-md px-2 py-1"
-          >
-            <ArrowRight className="w-4 h-4" />
-            חזרה לאתר
-          </Link>
+          <div className="flex items-center gap-2">
+            <a
+              href="/subscribe?app=mechiron"
+              data-testid="nav-eligibility-pricing"
+              className="hover-elevate rounded-md px-2 py-1 text-[13px]"
+            >
+              מחירון
+            </a>
+            <Link
+              href="/"
+              data-testid="link-back-to-home"
+              className="inline-flex items-center gap-1 text-[13px] hover-elevate rounded-md px-2 py-1"
+            >
+              <ArrowRight className="w-4 h-4" />
+              חזרה לאתר
+            </Link>
+          </div>
         </div>
       </header>
 

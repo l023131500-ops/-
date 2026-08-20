@@ -246,13 +246,22 @@ export default function PublicHealthFunds() {
       <header className="border-b border-border bg-card">
         <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between gap-3">
           <HealthBrand size={34} />
-          <Link href="/" data-testid="link-hf-home">
-            <a className="flex items-center gap-1.5 text-sm text-muted-foreground hover-elevate rounded-md px-2 py-1 transition-colors">
-              <Logo className="h-7 w-auto" />
-              <span className="hidden sm:inline">חזרה לבקלות</span>
-              <ChevronLeft className="w-4 h-4" />
+          <div className="flex items-center gap-2">
+            <a
+              href="/subscribe?app=mechiron"
+              data-testid="nav-hf-pricing"
+              className="text-sm text-muted-foreground hover-elevate rounded-md px-2 py-1 transition-colors"
+            >
+              מחירון
             </a>
-          </Link>
+            <Link href="/" data-testid="link-hf-home">
+              <a className="flex items-center gap-1.5 text-sm text-muted-foreground hover-elevate rounded-md px-2 py-1 transition-colors">
+                <Logo className="h-7 w-auto" />
+                <span className="hidden sm:inline">חזרה לבקלות</span>
+                <ChevronLeft className="w-4 h-4" />
+              </a>
+            </Link>
+          </div>
         </div>
       </header>
 

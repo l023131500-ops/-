@@ -10389,3 +10389,53 @@
     כדאי גם ניווט משותף עם קישור מחירון, או אם מספיק שהוא מופיע רק
     בדף הנחיתה הראשי. נושאים #245/#250 (RLS, חסומים) נשארים כפי
     שהם. via cloud server 167.99.131.167 [loop B]
+
+## 20/08/2026 — סבב 432 (loop B)
+
+432. **המשך ישיר לפריט "הבא בתור" מסבב 431: קישור מחירון נוסף גם ל-7
+    מתוך 8 דפי `public-*` הנוספים ב-27-mechiron; `public-community.tsx`
+    נבדק ונפסל במכוון.**
+
+    סרקתי את כל 8 דפי ה-`public-*` הנוספים (מלבד `public-landing.tsx`
+    שכבר תוקן בסבב 431): `public-eligibility.tsx`, `public-health-funds.tsx`,
+    `public-potential.tsx`, `public-price-comparison.tsx`,
+    `public-product-compare.tsx`, `public-reminder.tsx`, `public-topic.tsx`
+    — כולם כלים/מסכי-זרימה בתוך המוצר "בקלות" עצמו (לוגו + מותג "בקלות"
+    בכותרת, קישור "חזרה ל..." יחיד), שונה במהות מ-`public-community.tsx`
+    שנבדק בנפרד: זה שאלון קהילתי ממותג-לבן (`logoUrl`/`brandingText` דינמיים
+    מה-DB, בלי לוגו/ניווט בקלות בכלל) המיועד לשיתוף חיצוני לחברי קהילה —
+    הוספת קישור מחירון "בקלות" שם הייתה פוגעת בעיצוב ה-white-label
+    ומטעה (הנשאלים לא לקוחות בקלות). **הוחלט: לא נוגעים בו.**
+
+    תוקן: בכל אחד מ-7 הקבצים הנותרים, עטפתי את התוכן הקיים בצד ימין של
+    שורת הכותרת (`flex items-center justify-between`) ב-`<div className="flex
+    items-center gap-2">` (או `gap-3` בקבצים שהשתמשו ב-`span`), עם `<a
+    href="/subscribe?app=mechiron">מחירון</a>` חדש לפני/לצד הקישור הקיים —
+    כך שנשארים בדיוק 2 ילדי-flex ברמה העליונה (מותג משמאל, קבוצת פעולות
+    מימין) והעימוד `justify-between` לא נשבר. כל קישור מחירון קיבל
+    `data-testid` ייחודי לדף (`nav-eligibility-pricing`,
+    `nav-hf-pricing`, `nav-potential-pricing`, `nav-pc-pricing`,
+    `nav-compare-pricing`, `nav-reminder-pricing`, `nav-topic-pricing`),
+    אותה מחלקת `hover-elevate rounded-md px-2 py-1` כמו שאר פריטי הניווט
+    בקבצים האלה. אימתתי מחדש (Supabase MCP, `core.plans` על הפרויקט
+    `uhnrgujb`) ש-`app_key='mechiron'` עדיין מחזיק 3 מסלולים
+    `customer_visible=true` פעילים (`free`/`basic`/`extended`,
+    ₪0/₪2/₪5) — אין קישור מת.
+
+    **בדיקות תקינות:** קריאת קוד בלבד (ללא dev-server/build, לפי הנחיות
+    ההרצה). בדיקת איזון סוגריים (Python, `()`/`{}`/`[]`) וספירת
+    `<div>`/`</div>` על כל 7 הקבצים שנערכו — מאוזן בכולם. `git diff
+    --stat`: 7 קבצים, +101/-38 — כל מחיקה היא רק re-indent של אלמנטים
+    קיימים בתוך ה-`<div>` העוטף החדש, אין הסרת פיצ'ר. אין שינוי
+    server-side, אין תלות npm חדשה.
+
+    ענף `fix/b-22-whatsapp-noopener-round395-0820` (שרשרת הענפים היא
+    המקור המלא היחיד ל-loop B, לא `main`), נדחף (מפעיל פריסת Vercel
+    תחת `more30.com/mechiron`).
+
+    **הבא בתור:** נושא קישור המחירון ל-27-mechiron סגור (8/8 דפי
+    לקוח רלוונטיים, `public-community.tsx` נפסל במכוון). כדאי לבדוק
+    אם דפוס דומה (קישור מחירון על דפי-כלים פנימיים, לא רק דף נחיתה)
+    חסר גם באפליקציות אחרות בתחום (17/18/19/20/21/22/24/28) שיש להן
+    יותר מעמוד ציבורי אחד. נושאים #245/#250 (RLS, חסומים) נשארים כפי
+    שהם. via cloud server 167.99.131.167 [loop B]

@@ -183,14 +183,23 @@ export default function PublicReminder() {
             <Logo size={28} showWordmark={false} />
             <span className="font-bold text-base mr-2">בקלות</span>
           </Link>
-          <Link
-            href={`/p/topic/${id}`}
-            data-testid="link-back-to-topic"
-            className="inline-flex items-center gap-1 text-[13px] hover-elevate rounded-md px-2 py-1"
-          >
-            <ArrowRight className="w-4 h-4" />
-            חזרה לנושא
-          </Link>
+          <div className="flex items-center gap-2">
+            <a
+              href="/subscribe?app=mechiron"
+              data-testid="nav-reminder-pricing"
+              className="hover-elevate rounded-md px-2 py-1 text-[13px]"
+            >
+              מחירון
+            </a>
+            <Link
+              href={`/p/topic/${id}`}
+              data-testid="link-back-to-topic"
+              className="inline-flex items-center gap-1 text-[13px] hover-elevate rounded-md px-2 py-1"
+            >
+              <ArrowRight className="w-4 h-4" />
+              חזרה לנושא
+            </Link>
+          </div>
         </div>
       </header>
 

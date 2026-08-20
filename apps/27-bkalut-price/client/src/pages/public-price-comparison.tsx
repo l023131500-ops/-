@@ -370,7 +370,16 @@ export default function PublicPriceComparison() {
           <Link href="/" data-testid="link-pc-home">
             <a className="flex items-center gap-2"><Logo className="h-8 w-auto" /></a>
           </Link>
-          <span className="text-sm text-muted-foreground">השוואת מחירים</span>
+          <div className="flex items-center gap-3">
+            <span className="text-sm text-muted-foreground">השוואת מחירים</span>
+            <a
+              href="/subscribe?app=mechiron"
+              data-testid="nav-pc-pricing"
+              className="text-sm hover-elevate rounded-md px-2 py-1"
+            >
+              מחירון
+            </a>
+          </div>
         </div>
       </header>
 

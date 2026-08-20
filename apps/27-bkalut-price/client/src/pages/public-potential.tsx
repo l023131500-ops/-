@@ -521,10 +521,19 @@ export default function PublicPotential() {
             <Logo size={28} showWordmark={false} />
             <span className="font-bold text-base mr-2">בקלות</span>
           </Link>
-          <Link href="/eligibility" className="inline-flex items-center gap-1 text-[13px] hover-elevate rounded-md px-2 py-1">
-            <ArrowRight className="w-4 h-4" />
-            לקטלוג הזכויות
-          </Link>
+          <div className="flex items-center gap-2">
+            <a
+              href="/subscribe?app=mechiron"
+              data-testid="nav-potential-pricing"
+              className="hover-elevate rounded-md px-2 py-1 text-[13px]"
+            >
+              מחירון
+            </a>
+            <Link href="/eligibility" className="inline-flex items-center gap-1 text-[13px] hover-elevate rounded-md px-2 py-1">
+              <ArrowRight className="w-4 h-4" />
+              לקטלוג הזכויות
+            </Link>
+          </div>
         </div>
       </header>
 

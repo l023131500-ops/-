@@ -134,9 +134,18 @@ export default function PublicProductCompare() {
       <header className="border-b border-border bg-card">
         <div className="max-w-4xl mx-auto px-4 py-4 flex items-center justify-between gap-3">
           <Link href="/" data-testid="link-compare-home"><a className="flex items-center gap-2"><Logo className="h-8 w-auto" /></a></Link>
-          <Link href="/price-comparison" data-testid="link-compare-back-search">
-            <a className="text-sm text-primary inline-flex items-center gap-1">חזרה לחיפוש <ArrowRight className="w-4 h-4" /></a>
-          </Link>
+          <div className="flex items-center gap-3">
+            <a
+              href="/subscribe?app=mechiron"
+              data-testid="nav-compare-pricing"
+              className="text-sm hover-elevate rounded-md px-2 py-1"
+            >
+              מחירון
+            </a>
+            <Link href="/price-comparison" data-testid="link-compare-back-search">
+              <a className="text-sm text-primary inline-flex items-center gap-1">חזרה לחיפוש <ArrowRight className="w-4 h-4" /></a>
+            </Link>
+          </div>
         </div>
       </header>
 
