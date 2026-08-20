@@ -7785,3 +7785,37 @@
      ראשוני+Tab-trap). אפשר להמשיך שם, לסרוק שוב 01-16 לעדשה נוספת,
      או לחזור ל-`core.project_tasks`/`core.project_bugs` (5 פריטים
      פתוחים, עדיין חסומים).
+
+## 20/08/2026 — סבב 148 (loop A)
+
+744. **סגרתי את המועמד האחרון** מתור ה-focus-trap (שנפתח בסבב 143):
+     `02-igud-transcribe`, `app/(admin)/admin/uploads/page.tsx` —
+     מודל פרטי העלאה עם `role="dialog"`/`aria-modal`/`aria-label`/
+     Escape-to-close קיימים, אך ללא ניהול focus ראשוני, Tab-trap או
+     שחזור focus. קראתי את הקובץ המלא לפני העריכה.
+745. **תיקון:** אותה תבנית מדויקת שהוכחה יעילה בסבבים 143-147
+     (`panelRef`/`closeButtonRef`/`previousFocusRef` עם `useRef`,
+     נוסף ל-import הקיים). בתוך ה-`useEffect` הקיים שכבר טיפל
+     ב-Escape: שמירת ה-element הפעיל לפני הפתיחה, `focus()` על כפתור
+     הסגירה עם הפתיחה, שחזור ה-focus הקודם בסגירה (cleanup), ומלכודת
+     Tab/Shift+Tab בתוך `panelRef`. חיבור `ref` ל-`div` של הפאנל
+     ולכפתור הסגירה הקיימים.
+746. **אפס רגרסיה מאומתת:** `git diff --stat` — קובץ אחד, 31+/4-
+     שורות; אין שינוי ל-`load`/`open`/`remove`/`copyTranscript`/
+     `downloadTranscriptTxt`/state/רינדור הטבלה מסביב, רק תוספת refs
+     + לוגיקת focus/Tab בתוך ה-`useEffect` הקיים. אין `tsc`/`npm`
+     בסביבה הזו — אימות איזון `{}`/`()`/`[]` בפייתון על הקובץ המלא:
+     78/78, 110/110, 21/21 — תואם. הקובץ עוקב ב-git אך חסום ע"י כלל
+     `apps/02-igud-transcribe/app` ב-`.gitignore` — נדרש
+     `git add -f`. Commit `04987029` על
+     `fix/a-icon-only-buttons-round2-0820`, יידחף ל-origin (מפעיל
+     פריסת Vercel תחת more30.com/tamlul).
+747. **זה סוגר לחלוטין את עדשת ה-focus-trap** שנפתחה בסבב 143 —
+     כל המועמדים שאותרו (01-torah-platform ×3 קבצים/4 מודלים,
+     03-igud-ads ×3 מודלים, 16-chatzor-connect Modal.tsx משותף,
+     02-igud-transcribe) טופלו. **הבא בתור:** לסרוק שוב 01-16 לעדשת
+     נגישות/UX נוספת (למשל: focus-visible outline, aria-live על
+     טעינות אסינכרוניות, `<label>` חסרים על שדות טופס), או לחזור
+     ל-`core.project_tasks`/`core.project_bugs` (5 פריטים פתוחים,
+     עדיין חסומים על secrets חסרים או החלטות merge/origin מחוץ
+     לסמכות הסוכן).
