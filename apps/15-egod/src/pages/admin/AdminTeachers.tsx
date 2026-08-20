@@ -127,41 +127,41 @@ const AdminTeachers = () => {
               </DialogHeader>
               <div className="space-y-3 mt-3">
                 <div>
-                  <label className="text-sm font-medium mb-1 block">סוג הפורטל *</label>
+                  <label htmlFor="adminteachers-portaltype" className="text-sm font-medium mb-1 block">סוג הפורטל *</label>
                   <Select value={form.portal_type} onValueChange={(v) => setForm(f => ({ ...f, portal_type: v }))}>
-                    <SelectTrigger><SelectValue /></SelectTrigger>
+                    <SelectTrigger id="adminteachers-portaltype"><SelectValue /></SelectTrigger>
                     <SelectContent>
                       {PORTAL_TYPES.map(p => <SelectItem key={p.value} value={p.value}>{p.label}</SelectItem>)}
                     </SelectContent>
                   </Select>
                 </div>
                 <div>
-                  <label className="text-sm font-medium mb-1 block">שם מלא *</label>
-                  <Input value={form.full_name} onChange={(e) => setForm(f => ({ ...f, full_name: e.target.value }))} placeholder="הרב ישראל ישראלי" />
+                  <label htmlFor="adminteachers-fullname" className="text-sm font-medium mb-1 block">שם מלא *</label>
+                  <Input id="adminteachers-fullname" value={form.full_name} onChange={(e) => setForm(f => ({ ...f, full_name: e.target.value }))} placeholder="הרב ישראל ישראלי" />
                 </div>
                 {form.portal_type !== "rabbi" && (
                   <div>
-                    <label className="text-sm font-medium mb-1 block">שם הארגון / בית הכנסת</label>
-                    <Input value={form.organization_name} onChange={(e) => setForm(f => ({ ...f, organization_name: e.target.value }))} placeholder="בית כנסת אהל יעקב" />
+                    <label htmlFor="adminteachers-orgname" className="text-sm font-medium mb-1 block">שם הארגון / בית הכנסת</label>
+                    <Input id="adminteachers-orgname" value={form.organization_name} onChange={(e) => setForm(f => ({ ...f, organization_name: e.target.value }))} placeholder="בית כנסת אהל יעקב" />
                   </div>
                 )}
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="text-sm font-medium mb-1 block">מייל *</label>
-                    <Input type="email" inputMode="email" autoComplete="email" value={form.email} onChange={(e) => setForm(f => ({ ...f, email: e.target.value }))} placeholder="email@example.com" dir="ltr" />
+                    <label htmlFor="adminteachers-email" className="text-sm font-medium mb-1 block">מייל *</label>
+                    <Input id="adminteachers-email" type="email" inputMode="email" autoComplete="email" value={form.email} onChange={(e) => setForm(f => ({ ...f, email: e.target.value }))} placeholder="email@example.com" dir="ltr" />
                   </div>
                   <div>
-                    <label className="text-sm font-medium mb-1 block">טלפון</label>
-                    <Input value={form.phone} onChange={(e) => setForm(f => ({ ...f, phone: e.target.value }))} placeholder="050-0000000" />
+                    <label htmlFor="adminteachers-phone" className="text-sm font-medium mb-1 block">טלפון</label>
+                    <Input id="adminteachers-phone" value={form.phone} onChange={(e) => setForm(f => ({ ...f, phone: e.target.value }))} placeholder="050-0000000" />
                   </div>
                 </div>
                 <div>
-                  <label className="text-sm font-semibold mb-1 flex items-center justify-between text-foreground">
+                  <label htmlFor="adminteachers-password" className="text-sm font-semibold mb-1 flex items-center justify-between text-foreground">
                     <span>סיסמה ראשונית *</span>
                     <button type="button" onClick={() => setForm(f => ({ ...f, initial_password: generatePassword() }))}
                       className="text-xs text-secondary hover:text-gold-dark font-medium hover:underline">צור סיסמה חדשה</button>
                   </label>
-                  <Input value={form.initial_password} onChange={(e) => setForm(f => ({ ...f, initial_password: e.target.value }))} dir="ltr" className="font-mono tracking-wider" />
+                  <Input id="adminteachers-password" value={form.initial_password} onChange={(e) => setForm(f => ({ ...f, initial_password: e.target.value }))} dir="ltr" className="font-mono tracking-wider" />
                 </div>
               </div>
               <DialogFooter className="mt-4 pt-3 border-t border-secondary/20">

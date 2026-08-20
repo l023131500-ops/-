@@ -60,14 +60,14 @@ const JoinTeacher = () => {
           </div>
           <form onSubmit={handleSubmit} className="bg-card rounded-3xl p-8 md:p-10 shadow-elegant border border-border space-y-5">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div><label className="text-sm font-medium text-foreground mb-1 block">שם מלא *</label><Input required aria-required="true" placeholder="הרב ישראל כהן" value={form.full_name} onChange={e => setForm(p => ({...p, full_name: e.target.value}))} /></div>
-              <div><label className="text-sm font-medium text-foreground mb-1 block">טלפון *</label><Input required aria-required="true" type="tel" inputMode="tel" autoComplete="tel" placeholder="050-0000000" value={form.phone} onChange={e => setForm(p => ({...p, phone: e.target.value}))} /></div>
+              <div><label htmlFor="jointeacher-fullname" className="text-sm font-medium text-foreground mb-1 block">שם מלא *</label><Input id="jointeacher-fullname" required aria-required="true" placeholder="הרב ישראל כהן" value={form.full_name} onChange={e => setForm(p => ({...p, full_name: e.target.value}))} /></div>
+              <div><label htmlFor="jointeacher-phone" className="text-sm font-medium text-foreground mb-1 block">טלפון *</label><Input id="jointeacher-phone" required aria-required="true" type="tel" inputMode="tel" autoComplete="tel" placeholder="050-0000000" value={form.phone} onChange={e => setForm(p => ({...p, phone: e.target.value}))} /></div>
             </div>
-            <div><label className="text-sm font-medium text-foreground mb-1 block">דוא"ל *</label><Input required aria-required="true" type="email" inputMode="email" autoComplete="email" placeholder="email@example.com" dir="ltr" value={form.email} onChange={e => setForm(p => ({...p, email: e.target.value}))} /></div>
-            <div><label className="text-sm font-medium text-foreground mb-1 block">אזור פעילות *</label><Input required aria-required="true" placeholder="עיר ושכונה" value={form.area} onChange={e => setForm(p => ({...p, area: e.target.value}))} /></div>
-            <div><label className="text-sm font-medium text-foreground mb-1 block">ניסיון</label>
+            <div><label htmlFor="jointeacher-email" className="text-sm font-medium text-foreground mb-1 block">דוא"ל *</label><Input id="jointeacher-email" required aria-required="true" type="email" inputMode="email" autoComplete="email" placeholder="email@example.com" dir="ltr" value={form.email} onChange={e => setForm(p => ({...p, email: e.target.value}))} /></div>
+            <div><label htmlFor="jointeacher-area" className="text-sm font-medium text-foreground mb-1 block">אזור פעילות *</label><Input id="jointeacher-area" required aria-required="true" placeholder="עיר ושכונה" value={form.area} onChange={e => setForm(p => ({...p, area: e.target.value}))} /></div>
+            <div><label htmlFor="jointeacher-experience" className="text-sm font-medium text-foreground mb-1 block">ניסיון</label>
               <Select value={form.experience} onValueChange={v => setForm(p => ({...p, experience: v}))}>
-                <SelectTrigger><SelectValue placeholder="בחר" /></SelectTrigger>
+                <SelectTrigger id="jointeacher-experience"><SelectValue placeholder="בחר" /></SelectTrigger>
                 <SelectContent>
                   <SelectItem value="new">חדש – רוצה להתחיל</SelectItem>
                   <SelectItem value="1-3">1-3 שנים</SelectItem>
@@ -87,11 +87,11 @@ const JoinTeacher = () => {
                 ))}
               </div>
               <div className="mt-3">
-                <label className="text-sm font-medium text-foreground mb-1 block">נושא נוסף (כתיבה חופשית)</label>
-                <Input value={otherSubject} onChange={(e) => setOtherSubject(e.target.value)} placeholder="למשל: מסילת ישרים, פרקי אבות..." />
+                <label htmlFor="jointeacher-othersubject" className="text-sm font-medium text-foreground mb-1 block">נושא נוסף (כתיבה חופשית)</label>
+                <Input id="jointeacher-othersubject" value={otherSubject} onChange={(e) => setOtherSubject(e.target.value)} placeholder="למשל: מסילת ישרים, פרקי אבות..." />
               </div>
             </div>
-            <div><label className="text-sm font-medium text-foreground mb-1 block">ספר לנו על עצמך</label><Textarea placeholder="ניסיון, סגנון הוראה..." rows={3} value={form.bio} onChange={e => setForm(p => ({...p, bio: e.target.value}))} /></div>
+            <div><label htmlFor="jointeacher-bio" className="text-sm font-medium text-foreground mb-1 block">ספר לנו על עצמך</label><Textarea id="jointeacher-bio" placeholder="ניסיון, סגנון הוראה..." rows={3} value={form.bio} onChange={e => setForm(p => ({...p, bio: e.target.value}))} /></div>
             <Button type="submit" size="lg" disabled={loading} className="w-full bg-gradient-gold text-primary font-bold hover:scale-[1.02] transition-smooth shadow-gold text-lg py-6 rounded-xl">
               <UserPlus className="w-5 h-5 ml-2" />{loading ? "שולח..." : "שלח בקשת הצטרפות"}
             </Button>
