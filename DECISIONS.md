@@ -10851,3 +10851,57 @@
       `12-smel-ndln`, או `16-chatzor-connect`), או לבדוק את שכבת
       התשתית המשותפת (gannenet/40, login/auth, super-admin, admin
       dashboard) שטרם עברה סבב סריקה ייעודי.
+
+## 20/08/2026 — סבב 215 (loop A) — `12-smel-ndln`: `fetchResearch` זרק `SyntaxError` גולמי במקום הודעת השגיאה בעברית
+
+1047. **בדקתי מחדש לפני שהתחלתי:** `core.run_progress` (סבב 214 האחרון,
+      commit `54f7b333`/`c52f1e2f`, תואם ל-HEAD). עקבתי אחרי ההמלצה
+      מ-1046 וסרקתי לעומק את `12-smel-ndln` שטרם נסרק בהיקף הזה — כל
+      קבצי הלקוח (`Home.tsx`, `Report.tsx`, `Premium.tsx`,
+      `DetailedReport.tsx`, `Header.tsx`, `ScoreGauge.tsx`, `theme.tsx`,
+      `app-state.tsx`, `research.ts`, `queryClient.ts`, `App.tsx`,
+      `nadlanApi.ts`) והשרת (`server/routes.ts`). האפליקציה כבר עברה
+      סבבי ניקוי קודמים (לא של loop A — ניכר מהערות `⚠️` הרבות בקוד
+      עצמו שמתעדות תיקוני accessibility/basePath/RTL קודמים), כך
+      שרוב המועמדים הראשוניים (listener כפול, false-success, race
+      conditions) התבררו כשגויים בבדיקה ישירה.
+1048. **הממצא שאומת ישירות בקוד:** `apps/12-smel-ndln/client/src/lib/
+      nadlanApi.ts`, `fetchResearch()` (שורה 90, לפני התיקון):
+      `return res.json();` — קריאה ל-Edge Function חיצוני
+      (`nadlan-smart-research`) ללא עטיפה. אם השרת מחזיר `200 OK` עם
+      גוף שאינו JSON תקין (תגובה חתוכה, דף שגיאה של proxy/CDN
+      שמתלבש על הבקשה, timeout חלקי) — `res.json()` זורק `SyntaxError`
+      גולמי ("Unexpected token..."). השגיאה הזו **כן** נתפסת בסופו
+      של דבר (`Home.tsx` שורה 76, `onError` של ה-`useMutation` מציג
+      `err?.message` ב-toast), כך שזה לא UI תקוע — אבל המשתמש רואה
+      טקסט שגיאת JavaScript גולמי במקום ההודעה העברית הידידותית
+      ("שירות המחקר אינו זמין כרגע") שכבר מוכנה ממש בענף ה-`!res.ok`
+      שתי שורות מעל. בדקתי שאין בעיה מקבילה ב-`submitLead()`
+      (לא קוראת ל-`res.json()` כלל — `Prefer: return=minimal`) או
+      ב-`fetchQuestionnaire()` (כבר עטופה ב-`try/catch` מלא, שורות
+      95-118, עם נפילה חזרה לשאלון ברירת המחדל).
+1049. **התיקון:** `res.json()` עטוף כעת ב-`try/catch`; כשל בפענוח
+      זורק את אותה הודעת השגיאה העברית שכבר קיימת בענף ה-`!res.ok`,
+      במקום לתת ל-`SyntaxError` הגולמי לצוף. נתיב ההצלחה (JSON תקין)
+      זהה לחלוטין — שום דבר אחר בפונקציה לא שונה.
+1050. **אפס רגרסיה מאומתת:** שינוי ממוקד בפונקציה אחת, תחביר
+      TypeScript תקין (נבדק ידנית — אין node/tsc זמינים להרצה ארוכה
+      בסבב הזה, לפי הנחיית ההרצה). `git diff --stat`: קובץ אחד,
+      +8/-1. `git ls-files` אישר שהקובץ כבר tracked; `git add` הרגיל
+      נתן שוב את אזהרת ה-`.gitignore` הכוזבת שתועדה בסבבים קודמים
+      (הפעם על `apps/12-smel-ndln/client`, `git check-ignore -v` לא
+      מצא כלל תואם בפועל) — `git add -f` פתר. לא נגעתי במערכות/
+      סכימות מוגנות (08/09/bkalut-app/bkalot-admin/zr_*/NEDARIM3873/
+      csj/csj_src/igud), ב-`main`, או במערכת מחוץ להיקף (רק 01-16/
+      gannenet/auth/super-admin/admin dashboard/homepage ordering/
+      pricing). Commit `33d70eda` על `fix/a-icon-only-buttons-round2-
+      0820`, יידחף ל-`origin` (מפעיל פריסת Vercel תחת `more30.com/
+      smel` — האתר הוא static build, `server/routes.ts` אינו רץ
+      בפרודקשן לפי ההערה בראש `nadlanApi.ts`, כך שכל תיקון בעל השפעה
+      חייב להיות בצד הלקוח, כפי שנעשה כאן).
+1051. **הבא בתור:** `12-smel-ndln` נסרק כעת במלואו (לקוח + שרת) —
+      לא נמצאו עוד באגים פעילים שם. מומלץ לסבב הבא: לעבור ל-
+      `04-imud-torani` או `16-chatzor-connect` (טרם נסרקו לעומק
+      בהיקף הזה), או לבדוק את שכבת התשתית המשותפת (gannenet/40,
+      login/auth, super-admin, admin dashboard) שטרם עברה סבב סריקה
+      ייעודי.
