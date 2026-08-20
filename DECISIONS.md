@@ -4254,3 +4254,43 @@
     חוזר). סבב הבא יכול לפתוח עדשה חדשה (ניגודיות צבעים, `lang`/
     `dir` חסר על אלמנטים מעורבי-שפה, `aria-expanded` חסר על כפתורי
     accordion שזוהו בסבב הזה) על פני 17-31.
+
+## 20/08/2026 — סבב 295 (loop B)
+
+295. **סגרתי את ההצעה שהושארה בסוף סבב 294: הוספת `aria-expanded`
+    לארבעת כפתורי ה-accordion שזוהו שם כ-false-positive לעדשת
+    ה-focus-return (לא modal, אבל עדיין חסרי `aria-expanded` -- שני
+    ממצאים שונים על אותם רכיבים).** קראתי README.md/CONNECTIONS.md,
+    בדקתי `core.run_progress` (הצעד האחרון: focus-return-batch2,
+    קומיט `94e8b324`, כבר ה-parent של הענף הזה, כבר נדחף) ו-
+    `core.projects` 17-31 (ללא צורך בשינוי metadata). **אימתתי
+    בעצמי בקריאה מלאה של ארבעת הקבצים** שסבב 294 כבר קרא לצורך עדשה
+    אחרת: `24-AskRabbiSection.tsx` (כפתור `motion.button` שורה 57),
+    `24-ServiceRequestForm.tsx` (כפתור compact-toggle שורה 63),
+    `28-TopicCard.tsx` (כפתור `button-toggle-*` שורה 45),
+    `28-SmartAdvisor.tsx` (כפתור `button-advisor-open-*` שורה 52) --
+    כל ארבעתם שולטים בתוכן שנפתח/נסגר (`AnimatePresence`+
+    `height`/`opacity` animate) בלי `aria-expanded` על הכפתור, כלומר
+    קורא מסך לא יכול לדעת אם הפריט פתוח או סגור. אימתתי גם שהתבנית
+    כבר קיימת בהיקף הזה (לא המצאה): `24-Navbar.tsx`/`21-Navbar.tsx`
+    (`aria-expanded={mobileOpen}`) ו-`27-bkalut-price/public-health-
+    funds.tsx` (3 מופעים) כבר משתמשים באותו דפוס בדיוק. **התיקון:**
+    הוספתי `aria-expanded={<state>}` לכל אחד מארבעת הכפתורים, בהתאמה
+    ל-state הבוליאני הקיים כבר בכל רכיב (`isOpen`/`open`) -- שורה
+    אחת בכל קובץ, אין שינוי ל-`onClick`/ללוגיקה/לעיצוב. לא הוספתי
+    `aria-controls` (התוכן הנפתח חסר `id` יציב בכל ארבעת הרכיבים,
+    והמצאת `id` חדש רק בשביל `aria-controls` הייתה חורגת מהיקף
+    "צעד אחד ממוקד" -- מתועד כאן כהמשך אפשרי). אפס שינוי ללוגיקת
+    הטפסים/ה-query/ה-API. אין `node_modules`/`tsc` בעץ הזה -- אימתתי
+    איזון סוגריים/מסולסלים/מרובעים בסקריפט Node קצר על ארבעת הקבצים
+    (0/0/0) בנוסף לקריאה חוזרת מלאה של ה-diff (4 שורות בלבד, שורה
+    אחת לקובץ). לא נדרש `git add -f` הפעם -- `apps/24-galilee-
+    connect-hub/src` ו-`apps/28-kupot-health-funds/client/src` לא
+    הוחרגו ב-`.gitignore` (בניגוד לתקדים החוזר ב-21/27/30). קומיט על
+    ענף חדש `fix/b-accordion-aria-expanded-0820` (יורש
+    `fix/b-focus-return-batch2-0820`), יידחף (מפעיל פריסות Vercel
+    תחת `more30.com/galil` ו-`more30.com/kupot`). **הבא בתור:**
+    אפשר להוסיף `id` יציב + `aria-controls` לארבעת הרכיבים האלה
+    (השלמת התיקון), או לפתוח את שתי העדשות הנוספות שהוצעו בסוף סבב
+    294: ניגודיות צבעים, ו-`lang`/`dir` חסר על אלמנטים מעורבי-שפה
+    (למשל טקסט אנגלי/מספרים בתוך פסקה עברית) על פני 17-31.

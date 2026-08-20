@@ -45,6 +45,7 @@ export function TopicCard({ topic, meta }: { topic: HfTopic; meta?: HfMeta }) {
       <button
         type="button"
         onClick={() => setOpen((o) => !o)}
+        aria-expanded={open}
         className="hover-elevate flex w-full items-center gap-3 px-4 py-3.5 text-right"
         data-testid={`button-toggle-${topic.id}`}
       >

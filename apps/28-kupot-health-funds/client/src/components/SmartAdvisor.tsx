@@ -53,6 +53,7 @@ export function SmartAdvisor({
           variant="ghost"
           className="w-full justify-start gap-2 text-primary hover:bg-primary/5"
           onClick={() => setOpen(true)}
+          aria-expanded={open}
           data-testid={`button-advisor-open-${topicId}`}
         >
           <Sparkles className="h-4 w-4" />

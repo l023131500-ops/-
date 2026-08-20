@@ -56,6 +56,7 @@ const AskRabbiSection = () => {
       <div className="container max-w-2xl">
         <motion.button
           onClick={() => setIsOpen(!isOpen)}
+          aria-expanded={isOpen}
           whileHover={{ scale: 1.03 }}
           whileTap={{ scale: 0.98 }}
           className={`w-full flex items-center justify-center gap-3 py-5 px-8 rounded-[2rem] font-display font-black text-lg transition-all duration-500 shadow-elevated ${

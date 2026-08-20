@@ -61,6 +61,7 @@ const ServiceRequestForm = ({ defaultType, compact }: ServiceRequestFormProps) =
     return (
       <div className="mt-3">
         <button onClick={() => setIsOpen(!isOpen)}
+          aria-expanded={isOpen}
           className="w-full flex items-center justify-center gap-2 py-2 rounded-xl bg-primary/10 text-primary font-bold text-xs hover:bg-primary/15 transition-colors border border-primary/20">
           <Send className="w-3.5 h-3.5" /> פנייה
           <motion.div animate={{ rotate: isOpen ? 180 : 0 }}><ChevronDown className="w-3 h-3" /></motion.div>
