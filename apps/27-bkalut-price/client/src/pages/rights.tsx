@@ -316,9 +316,9 @@ function FilterSelect({
 }) {
   return (
     <div className="flex flex-col gap-1.5">
-      <label className="text-xs font-medium text-muted-foreground">{label}</label>
+      <label htmlFor={testId} className="text-xs font-medium text-muted-foreground">{label}</label>
       <Select value={value} onValueChange={onChange} disabled={disabled}>
-        <SelectTrigger dir="rtl" data-testid={testId}>
+        <SelectTrigger id={testId} dir="rtl" data-testid={testId}>
           <SelectValue placeholder="הכל" />
         </SelectTrigger>
         <SelectContent dir="rtl">

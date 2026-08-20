@@ -645,30 +645,30 @@ const AdminRightsReference = () => {
               </DialogHeader>
               <div className="space-y-3 mt-2">
                 <div>
-                  <label className="text-xs text-muted-foreground">שם הנושא</label>
-                  <Input value={editRight.topic_name} onChange={(e) => setEditRight({ ...editRight, topic_name: e.target.value })} className="text-sm" />
+                  <label htmlFor="edit-right-topic-name" className="text-xs text-muted-foreground">שם הנושא</label>
+                  <Input id="edit-right-topic-name" value={editRight.topic_name} onChange={(e) => setEditRight({ ...editRight, topic_name: e.target.value })} className="text-sm" />
                 </div>
                 <div>
-                  <label className="text-xs text-muted-foreground">קטגוריה</label>
+                  <label htmlFor="edit-right-category" className="text-xs text-muted-foreground">קטגוריה</label>
                   <div className="flex gap-2">
                     <Select value={editRight.category} onValueChange={(v) => setEditRight({ ...editRight, category: v })}>
-                      <SelectTrigger className="text-sm"><SelectValue /></SelectTrigger>
+                      <SelectTrigger id="edit-right-category" className="text-sm"><SelectValue /></SelectTrigger>
                       <SelectContent>
                         {categories.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}
                       </SelectContent>
                     </Select>
-                    <Input placeholder="או קטגוריה חדשה" className="text-sm flex-1" onChange={(e) => {
+                    <Input aria-label="או קטגוריה חדשה" placeholder="או קטגוריה חדשה" className="text-sm flex-1" onChange={(e) => {
                       if (e.target.value.trim()) setEditRight({ ...editRight, category: e.target.value.trim() });
                     }} />
                   </div>
                 </div>
                 {DISPLAY_FIELDS.map(({ key, label }) => (
                   <div key={key}>
-                    <label className="text-xs text-muted-foreground">{label}</label>
+                    <label htmlFor={`edit-right-${key}`} className="text-xs text-muted-foreground">{label}</label>
                     {key === "economic_necessity" ? (
-                      <Input type="number" min={1} max={10} value={editRight[key] || ""} onChange={(e) => setEditRight({ ...editRight, [key]: parseInt(e.target.value) || null })} className="text-sm" />
+                      <Input id={`edit-right-${key}`} type="number" min={1} max={10} value={editRight[key] || ""} onChange={(e) => setEditRight({ ...editRight, [key]: parseInt(e.target.value) || null })} className="text-sm" />
                     ) : key === "service_link" ? (
-                      <Input value={editRight[key] || ""} onChange={(e) => setEditRight({ ...editRight, [key]: e.target.value })} className="text-sm" dir="ltr" />
+                      <Input id={`edit-right-${key}`} value={editRight[key] || ""} onChange={(e) => setEditRight({ ...editRight, [key]: e.target.value })} className="text-sm" dir="ltr" />
                     ) : (
                       <Textarea value={String(editRight[key] || "")} onChange={(e) => setEditRight({ ...editRight, [key]: e.target.value })} aria-label={label} className="text-sm" rows={2} />
                     )}

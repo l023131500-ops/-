@@ -111,27 +111,27 @@ const TeacherForm = ({ data, onChange }: TeacherFormProps) => {
             <div className="space-y-5">
               <h3 className="font-display text-xl font-bold text-card-foreground mb-6">פרטים אישיים</h3>
               <div>
-                <label className="font-body text-sm font-medium text-card-foreground mb-1.5 block">שם מלא *</label>
-                <Input value={data.fullName || ""} onChange={(e) => update("fullName", e.target.value)} placeholder="הרב ישראל ישראלי" />
+                <label htmlFor="teacher-full-name" className="font-body text-sm font-medium text-card-foreground mb-1.5 block">שם מלא *</label>
+                <Input id="teacher-full-name" value={data.fullName || ""} onChange={(e) => update("fullName", e.target.value)} placeholder="הרב ישראל ישראלי" />
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="font-body text-sm font-medium text-card-foreground mb-1.5 block">טלפון *</label>
-                  <Input value={data.phone || ""} onChange={(e) => update("phone", e.target.value)} placeholder="050-0000000" />
+                  <label htmlFor="teacher-phone" className="font-body text-sm font-medium text-card-foreground mb-1.5 block">טלפון *</label>
+                  <Input id="teacher-phone" value={data.phone || ""} onChange={(e) => update("phone", e.target.value)} placeholder="050-0000000" />
                 </div>
                 <div>
-                  <label className="font-body text-sm font-medium text-card-foreground mb-1.5 block">מייל</label>
-                  <Input value={data.email || ""} onChange={(e) => update("email", e.target.value)} placeholder="email@example.com" type="email" />
+                  <label htmlFor="teacher-email" className="font-body text-sm font-medium text-card-foreground mb-1.5 block">מייל</label>
+                  <Input id="teacher-email" value={data.email || ""} onChange={(e) => update("email", e.target.value)} placeholder="email@example.com" type="email" />
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="font-body text-sm font-medium text-card-foreground mb-1.5 block">עיר *</label>
-                  <Input value={data.city || ""} onChange={(e) => update("city", e.target.value)} placeholder="ירושלים" />
+                  <label htmlFor="teacher-city" className="font-body text-sm font-medium text-card-foreground mb-1.5 block">עיר *</label>
+                  <Input id="teacher-city" value={data.city || ""} onChange={(e) => update("city", e.target.value)} placeholder="ירושלים" />
                 </div>
                 <div>
-                  <label className="font-body text-sm font-medium text-card-foreground mb-1.5 block">שכונה</label>
-                  <Input value={data.neighborhood || ""} onChange={(e) => update("neighborhood", e.target.value)} placeholder="רמות" />
+                  <label htmlFor="teacher-neighborhood" className="font-body text-sm font-medium text-card-foreground mb-1.5 block">שכונה</label>
+                  <Input id="teacher-neighborhood" value={data.neighborhood || ""} onChange={(e) => update("neighborhood", e.target.value)} placeholder="רמות" />
                 </div>
               </div>
             </div>

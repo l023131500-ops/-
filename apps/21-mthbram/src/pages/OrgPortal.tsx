@@ -373,8 +373,9 @@ const OrgPortal = () => {
                       <Button variant="ghost" size="icon" aria-label="ביטול" onClick={() => setAddingNew(false)}><X className="w-4 h-4" /></Button>
                     </div>
                     <div>
-                      <label className="font-body text-xs font-medium text-muted-foreground mb-1 block">שם הרב *</label>
+                      <label htmlFor="new-lesson-rabbi-name" className="font-body text-xs font-medium text-muted-foreground mb-1 block">שם הרב *</label>
                       <select
+                        id="new-lesson-rabbi-name"
                         value={editData.rabbi_name || ""}
                         onChange={e => setEditData({ ...editData, rabbi_name: e.target.value })}
                         className="w-full rounded-md border border-gold/20 bg-background px-3 py-2 text-sm font-body"

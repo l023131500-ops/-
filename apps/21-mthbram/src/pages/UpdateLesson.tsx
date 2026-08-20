@@ -174,10 +174,10 @@ const UpdateLesson = () => {
               {/* Step 0: Rabbi Name */}
               <ProgressiveFormStep visible={step === 0} stepIndex={0} showSkip={false} showBack={false}>
                 <div className="space-y-3">
-                  <label className="font-display text-sm font-bold text-card-foreground flex items-center gap-2">
+                  <label htmlFor="update-lesson-rabbi-name" className="font-display text-sm font-bold text-card-foreground flex items-center gap-2">
                     <UserCircle className="w-4 h-4 text-gold" /> שם הרב / הרבנית
                   </label>
-                  <Input value={rabbiName} onChange={(e) => setRabbiName(e.target.value)} placeholder="שם מלא *" />
+                  <Input id="update-lesson-rabbi-name" value={rabbiName} onChange={(e) => setRabbiName(e.target.value)} placeholder="שם מלא *" />
                   <Button size="sm" className="bg-gradient-gold text-primary-foreground font-body hover:opacity-90" onClick={() => { if (rabbiName.trim()) autoAdvance(1); else toast.error("נא למלא שם"); }}>המשך ←</Button>
                 </div>
               </ProgressiveFormStep>

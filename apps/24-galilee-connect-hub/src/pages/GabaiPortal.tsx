@@ -217,32 +217,32 @@ const SynagogueManager = () => {
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-sm font-bold text-foreground mb-1">שם בית הכנסת *</label>
-                  <Input value={editing.name} onChange={e => setEditing({ ...editing, name: e.target.value })} placeholder="בית הכנסת הגדול" />
+                  <label htmlFor="synagogue-name" className="block text-sm font-bold text-foreground mb-1">שם בית הכנסת *</label>
+                  <Input id="synagogue-name" value={editing.name} onChange={e => setEditing({ ...editing, name: e.target.value })} placeholder="בית הכנסת הגדול" />
                 </div>
                 <div>
-                  <label className="block text-sm font-bold text-foreground mb-1">שכונה *</label>
-                  <Input value={editing.neighborhood} onChange={e => setEditing({ ...editing, neighborhood: e.target.value })} placeholder="מרכז העיר" />
+                  <label htmlFor="synagogue-neighborhood" className="block text-sm font-bold text-foreground mb-1">שכונה *</label>
+                  <Input id="synagogue-neighborhood" value={editing.neighborhood} onChange={e => setEditing({ ...editing, neighborhood: e.target.value })} placeholder="מרכז העיר" />
                 </div>
                 <div>
-                  <label className="block text-sm font-bold text-foreground mb-1">נוסח *</label>
-                  <Input value={editing.nusach} onChange={e => setEditing({ ...editing, nusach: e.target.value })} placeholder="עדות המזרח / אשכנז / ספרדי" />
+                  <label htmlFor="synagogue-nusach" className="block text-sm font-bold text-foreground mb-1">נוסח *</label>
+                  <Input id="synagogue-nusach" value={editing.nusach} onChange={e => setEditing({ ...editing, nusach: e.target.value })} placeholder="עדות המזרח / אשכנז / ספרדי" />
                 </div>
                 <div>
-                  <label className="block text-sm font-bold text-foreground mb-1">רב בית הכנסת</label>
-                  <Input value={editing.rabbi} onChange={e => setEditing({ ...editing, rabbi: e.target.value })} placeholder="הרב ..." />
+                  <label htmlFor="synagogue-rabbi" className="block text-sm font-bold text-foreground mb-1">רב בית הכנסת</label>
+                  <Input id="synagogue-rabbi" value={editing.rabbi} onChange={e => setEditing({ ...editing, rabbi: e.target.value })} placeholder="הרב ..." />
                 </div>
                 <div className="col-span-2">
-                  <label className="block text-sm font-bold text-foreground mb-1">כתובת *</label>
-                  <Input value={editing.address} onChange={e => setEditing({ ...editing, address: e.target.value })} placeholder="רחוב, מספר, חצור הגלילית" />
+                  <label htmlFor="synagogue-address" className="block text-sm font-bold text-foreground mb-1">כתובת *</label>
+                  <Input id="synagogue-address" value={editing.address} onChange={e => setEditing({ ...editing, address: e.target.value })} placeholder="רחוב, מספר, חצור הגלילית" />
                 </div>
                 <div>
-                  <label className="block text-sm font-bold text-foreground mb-1">קישור תרומה</label>
-                  <Input value={editing.donation_link} onChange={e => setEditing({ ...editing, donation_link: e.target.value })} placeholder="https://..." dir="ltr" />
+                  <label htmlFor="synagogue-donation-link" className="block text-sm font-bold text-foreground mb-1">קישור תרומה</label>
+                  <Input id="synagogue-donation-link" value={editing.donation_link} onChange={e => setEditing({ ...editing, donation_link: e.target.value })} placeholder="https://..." dir="ltr" />
                 </div>
                 <div>
-                  <label className="block text-sm font-bold text-foreground mb-1">תבנית רקע (1-5)</label>
-                  <Input type="number" min={1} max={5} value={editing.background_preset} onChange={e => setEditing({ ...editing, background_preset: parseInt(e.target.value) || 1 })} />
+                  <label htmlFor="synagogue-background-preset" className="block text-sm font-bold text-foreground mb-1">תבנית רקע (1-5)</label>
+                  <Input id="synagogue-background-preset" type="number" min={1} max={5} value={editing.background_preset} onChange={e => setEditing({ ...editing, background_preset: parseInt(e.target.value) || 1 })} />
                 </div>
               </div>
               <Button onClick={handleSave} disabled={saving || !editing.name.trim() || !editing.address.trim()}
@@ -626,20 +626,20 @@ const ContactInfoManager = () => {
       <div className="bg-card rounded-2xl p-6 shadow-card ornament-border space-y-4">
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className="block text-sm font-bold text-foreground mb-1">כתובת</label>
-            <Input value={address} onChange={e => setAddress(e.target.value)} placeholder="כתובת..." />
+            <label htmlFor="contact-address" className="block text-sm font-bold text-foreground mb-1">כתובת</label>
+            <Input id="contact-address" value={address} onChange={e => setAddress(e.target.value)} placeholder="כתובת..." />
           </div>
           <div>
-            <label className="block text-sm font-bold text-foreground mb-1">טלפון</label>
-            <Input value={contactPhone} onChange={e => setContactPhone(e.target.value)} placeholder="054-000-0000" dir="ltr" />
+            <label htmlFor="contact-phone" className="block text-sm font-bold text-foreground mb-1">טלפון</label>
+            <Input id="contact-phone" value={contactPhone} onChange={e => setContactPhone(e.target.value)} placeholder="054-000-0000" dir="ltr" />
           </div>
           <div>
-            <label className="block text-sm font-bold text-foreground mb-1">אימייל</label>
-            <Input value={contactEmail} onChange={e => setContactEmail(e.target.value)} placeholder="email@example.com" dir="ltr" />
+            <label htmlFor="contact-email" className="block text-sm font-bold text-foreground mb-1">אימייל</label>
+            <Input id="contact-email" value={contactEmail} onChange={e => setContactEmail(e.target.value)} placeholder="email@example.com" dir="ltr" />
           </div>
           <div>
-            <label className="block text-sm font-bold text-foreground mb-1">וואטסאפ (מספר בינלאומי)</label>
-            <Input value={whatsapp} onChange={e => setWhatsapp(e.target.value)} placeholder="972540000000" dir="ltr" />
+            <label htmlFor="contact-whatsapp" className="block text-sm font-bold text-foreground mb-1">וואטסאפ (מספר בינלאומי)</label>
+            <Input id="contact-whatsapp" value={whatsapp} onChange={e => setWhatsapp(e.target.value)} placeholder="972540000000" dir="ltr" />
           </div>
         </div>
         <Button onClick={handleSave} disabled={saving} className="w-full gap-2 font-bold bg-gradient-hero text-primary-foreground">
@@ -729,17 +729,17 @@ const HalachaManager = () => {
       <div className="bg-card rounded-2xl p-6 shadow-card ornament-border space-y-4">
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className="block text-sm font-bold text-foreground mb-1">כותרת *</label>
-            <Input value={title} onChange={e => setTitle(e.target.value)} placeholder="נושא ההלכה" />
+            <label htmlFor="halacha-title" className="block text-sm font-bold text-foreground mb-1">כותרת *</label>
+            <Input id="halacha-title" value={title} onChange={e => setTitle(e.target.value)} placeholder="נושא ההלכה" />
           </div>
           <div>
-            <label className="block text-sm font-bold text-foreground mb-1">תאריך עברי</label>
-            <Input value={hebrewDate} onChange={e => setHebrewDate(e.target.value)} placeholder={'י"ב אדר ב\' תשפ"ו'} />
+            <label htmlFor="halacha-hebrew-date" className="block text-sm font-bold text-foreground mb-1">תאריך עברי</label>
+            <Input id="halacha-hebrew-date" value={hebrewDate} onChange={e => setHebrewDate(e.target.value)} placeholder={'י"ב אדר ב\' תשפ"ו'} />
           </div>
         </div>
         <div>
-          <label className="block text-sm font-bold text-foreground mb-1">תוכן ההלכה *</label>
-          <textarea value={content} onChange={e => setContent(e.target.value)} placeholder="תוכן ההלכה..."
+          <label htmlFor="halacha-content" className="block text-sm font-bold text-foreground mb-1">תוכן ההלכה *</label>
+          <textarea id="halacha-content" value={content} onChange={e => setContent(e.target.value)} placeholder="תוכן ההלכה..."
             rows={4} className="w-full rounded-lg border border-input bg-background px-4 py-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring resize-none" />
         </div>
         <div className="flex items-center gap-4">
