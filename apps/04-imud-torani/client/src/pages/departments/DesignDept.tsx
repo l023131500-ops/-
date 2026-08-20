@@ -21,9 +21,9 @@ export function DesignDept({
     <div className="space-y-6">
       {/* ── פריסת עמוד ── */}
       <Group title="פריסת עמוד">
-        <Field label="גודל עמוד">
+        <Field label="גודל עמוד" id="dd-pagesize">
           <Select value={settings.pageSize} onValueChange={(v) => onChange({ pageSize: v as any })}>
-            <SelectTrigger data-testid="select-pagesize"><SelectValue /></SelectTrigger>
+            <SelectTrigger id="dd-pagesize" data-testid="select-pagesize"><SelectValue /></SelectTrigger>
             <SelectContent>
               <SelectItem value="a5">A5 (14.8×21 ס״מ)</SelectItem>
               <SelectItem value="a4">A4 (21×29.7 ס״מ)</SelectItem>
@@ -32,9 +32,9 @@ export function DesignDept({
             </SelectContent>
           </Select>
         </Field>
-        <Field label="מספר טורים">
+        <Field label="מספר טורים" id="dd-columns">
           <Select value={String(settings.columns)} onValueChange={(v) => onChange({ columns: Number(v) as 1 | 2 })}>
-            <SelectTrigger data-testid="select-columns"><SelectValue /></SelectTrigger>
+            <SelectTrigger id="dd-columns" data-testid="select-columns"><SelectValue /></SelectTrigger>
             <SelectContent>
               <SelectItem value="1">טור אחד</SelectItem>
               <SelectItem value="2">שני טורים</SelectItem>
@@ -59,9 +59,9 @@ export function DesignDept({
 
       {/* ── טיפוגרפיה ── */}
       <Group title="טיפוגרפיה">
-        <Field label="גופן הטקסט">
+        <Field label="גופן הטקסט" id="dd-font">
           <Select value={settings.fontFamily} onValueChange={(v) => onChange({ fontFamily: v })}>
-            <SelectTrigger data-testid="select-font"><SelectValue /></SelectTrigger>
+            <SelectTrigger id="dd-font" data-testid="select-font"><SelectValue /></SelectTrigger>
             <SelectContent>
               {fonts.map((f) => (
                 <SelectItem key={f.key} value={f.stack} style={{ fontFamily: f.stack }}>{f.label}</SelectItem>
@@ -81,9 +81,9 @@ export function DesignDept({
 
       {/* ── מיקרו-טיפוגרפיה ── */}
       <Group title="מיקרו-טיפוגרפיה">
-        <Field label="מילת פתיחה (אות/מילה ראשונה בולטת)">
+        <Field label="מילת פתיחה (אות/מילה ראשונה בולטת)" id="dd-openingword">
           <Select value={settings.openingWord} onValueChange={(v) => onChange({ openingWord: v as any })}>
-            <SelectTrigger data-testid="select-openingword"><SelectValue /></SelectTrigger>
+            <SelectTrigger id="dd-openingword" data-testid="select-openingword"><SelectValue /></SelectTrigger>
             <SelectContent>
               <SelectItem value="none">ללא</SelectItem>
               <SelectItem value="bold-word">מילה ראשונה מודגשת</SelectItem>
@@ -92,9 +92,9 @@ export function DesignDept({
             </SelectContent>
           </Select>
         </Field>
-        <Field label="יישור שורה אחרונה בכל מקטע">
+        <Field label="יישור שורה אחרונה בכל מקטע" id="dd-lastline">
           <Select value={settings.lastLineAlign} onValueChange={(v) => onChange({ lastLineAlign: v as any })}>
-            <SelectTrigger data-testid="select-lastline"><SelectValue /></SelectTrigger>
+            <SelectTrigger id="dd-lastline" data-testid="select-lastline"><SelectValue /></SelectTrigger>
             <SelectContent>
               <SelectItem value="justify">מיושר לשני הצדדים</SelectItem>
               <SelectItem value="center">ממורכזת</SelectItem>
@@ -111,9 +111,9 @@ export function DesignDept({
 
       {/* ── כותרות ── */}
       <Group title="כותרות">
-        <Field label="גופן כותרות">
+        <Field label="גופן כותרות" id="dd-headingfont">
           <Select value={settings.headingFont} onValueChange={(v) => onChange({ headingFont: v })}>
-            <SelectTrigger data-testid="select-headingfont"><SelectValue /></SelectTrigger>
+            <SelectTrigger id="dd-headingfont" data-testid="select-headingfont"><SelectValue /></SelectTrigger>
             <SelectContent>
               {fonts.map((f) => (
                 <SelectItem key={f.key} value={f.stack} style={{ fontFamily: f.stack }}>{f.label}</SelectItem>
@@ -127,9 +127,9 @@ export function DesignDept({
           <SliderField label="גודל כותרת משנה" value={settings.headingSizeH2} min={1} max={2} step={0.05} suffix="em"
             onChange={(v: number) => onChange({ headingSizeH2: v })} testid="slider-h2" />
         </div>
-        <Field label="יישור כותרות">
+        <Field label="יישור כותרות" id="dd-headingalign">
           <Select value={settings.headingAlign} onValueChange={(v) => onChange({ headingAlign: v as any })}>
-            <SelectTrigger data-testid="select-headingalign"><SelectValue /></SelectTrigger>
+            <SelectTrigger id="dd-headingalign" data-testid="select-headingalign"><SelectValue /></SelectTrigger>
             <SelectContent>
               <SelectItem value="center">ממורכז</SelectItem>
               <SelectItem value="right">לימין</SelectItem>
@@ -141,9 +141,9 @@ export function DesignDept({
 
       {/* ── מספור וכותרות רצות ── */}
       <Group title="מספור וכותרות רצות">
-        <Field label="סגנון מספור עמודים">
+        <Field label="סגנון מספור עמודים" id="dd-numbering">
           <Select value={settings.pageNumbering} onValueChange={(v) => onChange({ pageNumbering: v as any })}>
-            <SelectTrigger data-testid="select-numbering"><SelectValue /></SelectTrigger>
+            <SelectTrigger id="dd-numbering" data-testid="select-numbering"><SelectValue /></SelectTrigger>
             <SelectContent>
               <SelectItem value="gematria">גימטריה (א׳, ב׳, י״ד…)</SelectItem>
               <SelectItem value="letters">אותיות עבריות</SelectItem>
@@ -153,9 +153,9 @@ export function DesignDept({
           </Select>
         </Field>
         {settings.pageNumbering !== "none" && (
-          <Field label="מיקום מספר העמוד">
+          <Field label="מיקום מספר העמוד" id="dd-numside">
             <Select value={settings.pageNumberSide} onValueChange={(v) => onChange({ pageNumberSide: v as any })}>
-              <SelectTrigger data-testid="select-numside"><SelectValue /></SelectTrigger>
+              <SelectTrigger id="dd-numside" data-testid="select-numside"><SelectValue /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="outer">חיצוני</SelectItem>
                 <SelectItem value="inner">פנימי</SelectItem>
@@ -170,8 +170,8 @@ export function DesignDept({
           onChange={(v: boolean) => onChange({ runningHead: v })} testid="switch-runninghead" />
         {settings.runningHead && (
           <>
-            <Field label="טקסט כותרת רצה (ריק = שם הספר)">
-              <Input value={settings.runningHeadText} onChange={(e) => onChange({ runningHeadText: e.target.value })}
+            <Field label="טקסט כותרת רצה (ריק = שם הספר)" id="dd-runninghead-text">
+              <Input id="dd-runninghead-text" value={settings.runningHeadText} onChange={(e) => onChange({ runningHeadText: e.target.value })}
                 placeholder="שם הספר" data-testid="input-runninghead" />
             </Field>
             <ToggleField label="הצג שם פרק נוכחי בכותרת" checked={settings.runningHeadShowChapter}
@@ -180,9 +180,9 @@ export function DesignDept({
         )}
         <ToggleField label="תוכן עניינים אוטומטי" checked={settings.tableOfContents}
           onChange={(v: boolean) => onChange({ tableOfContents: v })} testid="switch-toc" />
-        <Field label="הערות שוליים — טורים">
+        <Field label="הערות שוליים — טורים" id="dd-fncols">
           <Select value={String(settings.footnoteColumns)} onValueChange={(v) => onChange({ footnoteColumns: Number(v) as 1 | 2 })}>
-            <SelectTrigger data-testid="select-fncols"><SelectValue /></SelectTrigger>
+            <SelectTrigger id="dd-fncols" data-testid="select-fncols"><SelectValue /></SelectTrigger>
             <SelectContent>
               <SelectItem value="1">טור אחד</SelectItem>
               <SelectItem value="2">שני טורים</SelectItem>
@@ -210,19 +210,20 @@ export function CoverDept({
       <Group title="עמוד השער">
         <ToggleField label="הפק עמוד שער" checked={settings.titlePage}
           onChange={(v: boolean) => onChange({ titlePage: v })} testid="switch-titlepage" />
-        <Field label="מחבר">
-          <Input value={author} onChange={(e) => onAuthor(e.target.value)} placeholder="שם המחבר" data-testid="input-author" />
+        <Field label="מחבר" id="cd-author">
+          <Input id="cd-author" value={author} onChange={(e) => onAuthor(e.target.value)} placeholder="שם המחבר" data-testid="input-author" />
         </Field>
-        <Field label="תת-כותרת בשער">
-          <Input value={settings.titlePageSubtitle} onChange={(e) => onChange({ titlePageSubtitle: e.target.value })}
+        <Field label="תת-כותרת בשער" id="cd-subtitle">
+          <Input id="cd-subtitle" value={settings.titlePageSubtitle} onChange={(e) => onChange({ titlePageSubtitle: e.target.value })}
             placeholder="למשל: חידושים וביאורים על…" data-testid="input-subtitle" />
         </Field>
       </Group>
 
       <Group title="כריכה">
-        <Field label="צבע כריכה">
+        <Field label="צבע כריכה" id="cd-covercolor">
           <div className="flex items-center gap-2">
             <input
+              id="cd-covercolor"
               type="color"
               value={settings.coverColor}
               onChange={(e) => onChange({ coverColor: e.target.value })}
@@ -230,7 +231,7 @@ export function CoverDept({
               data-testid="input-covercolor"
             />
             <Input value={settings.coverColor} onChange={(e) => onChange({ coverColor: e.target.value })}
-              dir="ltr" className="font-mono text-sm" data-testid="input-covercolor-hex" />
+              dir="ltr" className="font-mono text-sm" aria-label="צבע כריכה (קוד הקסדצימלי)" data-testid="input-covercolor-hex" />
           </div>
         </Field>
         {/* תצוגת כריכה מוקטנת */}
@@ -268,10 +269,10 @@ function Group({ title, children }: { title: string; children: React.ReactNode }
     </div>
   );
 }
-function Field({ label, children }: { label: string; children: React.ReactNode }) {
+function Field({ label, id, children }: { label: string; id?: string; children: React.ReactNode }) {
   return (
     <div>
-      <Label className="mb-1.5 block text-xs font-semibold text-foreground">{label}</Label>
+      <Label htmlFor={id} className="mb-1.5 block text-xs font-semibold text-foreground">{label}</Label>
       {children}
     </div>
   );
@@ -283,15 +284,16 @@ function SliderField({ label, value, min, max, step, suffix, onChange, testid }:
         <Label className="text-xs font-semibold text-foreground">{label}</Label>
         <span className="text-xs text-muted-foreground">{value}{suffix ? ` ${suffix}` : ""}</span>
       </div>
-      <Slider value={[value]} min={min} max={max} step={step} onValueChange={([v]) => onChange(v)} data-testid={testid} />
+      <Slider value={[value]} min={min} max={max} step={step} onValueChange={([v]) => onChange(v)} aria-label={label} data-testid={testid} />
     </div>
   );
 }
 function ToggleField({ label, checked, onChange, testid }: any) {
+  const id = `dd-toggle-${testid}`;
   return (
     <div className="flex items-center justify-between rounded-lg border border-border bg-card px-3 py-2">
-      <Label className="text-sm text-foreground">{label}</Label>
-      <Switch checked={checked} onCheckedChange={onChange} data-testid={testid} />
+      <Label htmlFor={id} className="text-sm text-foreground">{label}</Label>
+      <Switch id={id} checked={checked} onCheckedChange={onChange} data-testid={testid} />
     </div>
   );
 }

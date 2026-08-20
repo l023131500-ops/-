@@ -201,7 +201,7 @@ export default function CoverEditor({
         <div className="flex items-center gap-2 text-xs text-muted-foreground">
           <span>תצוגה</span>
           <div className="w-24">
-            <Slider value={[display]} min={260} max={480} step={20} onValueChange={([v]) => setDisplay(v)} />
+            <Slider value={[display]} min={260} max={480} step={20} onValueChange={([v]) => setDisplay(v)} aria-label="תצוגה" />
           </div>
         </div>
       </div>
@@ -306,7 +306,7 @@ export default function CoverEditor({
                   <span>גודל</span><span className="text-muted-foreground">{selected.fontSize}</span>
                 </div>
                 <Slider value={[selected.fontSize]} min={12} max={120} step={1}
-                  onValueChange={([v]) => patch(selected.id, { fontSize: v })} data-testid="slider-cover-size" />
+                  onValueChange={([v]) => patch(selected.id, { fontSize: v })} aria-label="גודל גופן" data-testid="slider-cover-size" />
               </div>
               <div className="flex gap-2">
                 <Button size="sm" variant={selected.fontStyle === "bold" ? "default" : "outline"}
