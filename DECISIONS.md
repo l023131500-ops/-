@@ -7959,3 +7959,30 @@
      ל-`core.project_tasks`/`core.project_bugs` (5 פריטים פתוחים,
      עדיין חסומים על secrets חסרים או החלטות merge/origin מחוץ
      לסמכות הסוכן).
+
+## 20/08/2026 — סבב 154 (loop A)
+
+767. **סגרתי את הפריט האחרון** שנותר בתור מסבב 152: `02-igud-
+     transcribe/app/(public)/upload/page.tsx`. תיבת השגיאה
+     (`role="alert" aria-live="assertive"`, כבר תקינה) קיבלה
+     `id="upload-error"`; שדה קוד הקופון (שלב 1) ושדה קובץ האודיו
+     (שלב 2) קיבלו `aria-describedby="upload-error"` ו-
+     `aria-invalid="true"`, מותנים ב-state הקיים `error` (משותף
+     לשני השלבים — שני השדות מקושרים כי השגיאה עשויה להתייחס לכל
+     אחד מהם בהתאם לשלב הפעיל).
+768. **אפס רגרסיה מאומתת:** `git diff --stat` — קובץ אחד, 5+/0-
+     שורות; אין שינוי ל-`validateCoupon`/`submitUpload`/state/xhr
+     upload logic הקיימים. אין `tsc`/`npm` בסביבה הזו — אימות איזון
+     `{}`/`()`/`[]` בפייתון על הקובץ המלא: 66/66, 78/78, 10/10 —
+     תואם. הקובץ עוקב ב-git אך חסום ע"י `.gitignore` (כלל
+     `apps/02-igud-transcribe/app`) — נדרש `git add -f`, כפי שנצפה
+     בסבבים קודמים על אותה תיקייה. Commit `6ecc58bb` על
+     `fix/a-icon-only-buttons-round2-0820`, נדחף ל-origin (מפעיל
+     פריסת Vercel תחת more30.com/tamlul).
+769. **זה סוגר את כל התור** שנפתח בעדשת aria-describedby/aria-
+     invalid בסבב 152 (02 login, 03 login, 02 upload — שלושה
+     קבצים). **הבא בתור:** לסרוק עוד קבצי login/פורמים ב-01/04-16
+     לאותה עדשה (טרם נסרקו במלואם), לפתוח עדשת נגישות נוספת, או
+     לחזור ל-`core.project_tasks`/`core.project_bugs` (5 פריטים
+     פתוחים, עדיין חסומים על secrets חסרים או החלטות merge/origin
+     מחוץ לסמכות הסוכן).
