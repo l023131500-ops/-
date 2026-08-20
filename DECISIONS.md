@@ -4468,3 +4468,59 @@
     צבעים / migrations שלא הוחלו). המועמד הרביעי מסבב 298
     (`24-galilee-connect-hub/ReligiousInfoPage.tsx:113`) כבר סומן
     ביטחון-נמוך ולא בראש התור.
+
+## 20/08/2026 — סבב 300 (loop B)
+
+300. **אימתתי ותיקנתי את המועמד הראשון שנותר מתור סבב 298/299:
+    `27-bkalut-price/client/src/pages/financial.tsx:322` — טלפון
+    לקוח בטבלת "לקוחות במערכת" (טאב Financial בממשק הניהול), בלי
+    `dir="ltr"`.** קראתי README.md/CONNECTIONS.md, בדקתי
+    `core.run_progress` (הצעד האחרון: zchuyotpro-crm messages.tsx
+    lang/dir fix, קומיט `898d746c`, כבר ה-HEAD, כבר נדחף) ו-
+    `core.projects` 17-31 (ללא צורך בשינוי metadata). ווידאתי ש-
+    `27-bkalut-price` אינו `bkalut-app`/`bkalot-admin` המוגנים
+    (CONNECTIONS.md מגדיר את הרשימה המוגנת במפורש — 27 אינו בה).
+    **אימתתי בעצמי, ובאופן חזק יותר מהרגיל:** לא רק שהאפליקציה
+    כולה RTL מלא (`client/index.html:2` —
+    `<html lang="he" dir="rtl">`, ועשרות `dir="rtl"` בכל הדפים),
+    אלא שהתבנית `<span dir="ltr">{phone}</span>` כבר מיושמת
+    **באותו קובץ עצמו** בשתי שורות אחרות — `financial.tsx:627`
+    (`{c.email || "ללא מייל"} · <span dir="ltr">{c.phone ||
+    "—"}</span> · ...`) ו-`financial.tsx:692` (`{l.fullName} ·
+    <span dir="ltr">{l.phone}</span>`) — כלומר זו לא רק תבנית-
+    אחות מקובץ אחר אלא שכחה בודדת בתוך קובץ שבו המפתחים כבר
+    פתרו בדיוק את אותה בעיה פעמיים. שורה 322 (`<p className="text
+    -xs text-muted-foreground">{c.phone} · {c.email || "—"} ·
+    {c.city || ""}</p>`) הייתה היחידה שלא עטפה את הטלפון. שמתי
+    לב שהתבנית המקומית הקיימת (627/692) עוטפת רק את הטלפון,
+    לא את האימייל — עקבתי אחריה במקום אחרי התבנית משלב 30-
+    zchuyotpro (שעטפה גם אימייל), כדי להישאר עקבי עם קונבנציית
+    הקובץ הספציפי הזה. **התיקון:** עטפתי את `{c.phone}` ב-`<span
+    dir="ltr">`, זהה לשתי השורות האחרות באותו קובץ; לא נגעתי
+    ב-email/city (טקסט/כתובת חופשיים, עקבי עם התבנית הקיימת).
+    שינוי של שורה בודדת. אין `node_modules`/`tsc` בעץ הזה —
+    אימתתי איזון סוגריים/מסולסלים/מרובעים בסקריפט Python קצר על
+    הקובץ המלא (442/442, 513/513, 72/72) בנוסף לקריאה חוזרת מלאה
+    של ה-diff (שורה אחת). נדרש `git add -f` (`apps/27-bkalut-
+    price/client` תפוס תחת `.gitignore` כללי — אותו תקדים חוזר,
+    אך הקובץ כבר tracked אז git הוסיף אותו בלי `-f` בפועל).
+    קומיט `973df6da` על ענף חדש `fix/b-bkalut-price-financial-
+    lang-dir-0820` (יורש `fix/b-zchuyotpro-crm-messages-lang-dir-
+    0820`), נדחף (מפעיל פריסת Vercel תחת `more30.com/bekalut`
+    או נתיב מקביל). **הערה חשובה:** קראתי גם את
+    `apps/27-bkalut-price/CLAUDE.md` (קובץ הוראות ייעודי לפרויקט
+    זה) — מזהיר מפני שינוי `isAdminSubdomain()`/`getPublicOrigin()`
+    /middleware חסימת `/api/admin`; התיקון הנוכחי לא נגע באף אחד
+    מהם (רק JSX תצוגה בדף client-facing בממשק ניהול פנימי), אז
+    אין קונפליקט, אך מתועד כאן כי סבבים עתידיים שנוגעים ב-27
+    צריכים לקרוא את אותו קובץ CLAUDE.md לפני שינוי. **הבא בתור:**
+    המועמד האחרון שנותר מתור סבב 298 —
+    `31-hebrew-bridge-crm/src/routes/_authenticated/admin/
+    content.tsx:473` (טלפון professional בטבלה, `(p.contact_info
+    as any)?.phone`) — קראתי אותו בסבב הזה (שורות 450-499) ונראה
+    מועמד תקף (אין `dir` על התא), אך טרם אומת מול lang/dir כלל-
+    האפליקציה של 31 ולא תוקן; סבב הבא צריך לאמת (בדיקת
+    `dir="rtl"` ברמת ה-root/App של 31 + חיפוש תבנית `dir="ltr"`
+    קיימת באפליקציה) ולתקן, או ל"סגור" את עדשת ה-lang/dir לגמרי
+    ולפתוח עדשה חדשה (ניגודיות צבעים / migrations שלא הוחלו /
+    בדיקת RLS על טבלאות נוספות מעבר למה שכבר תועד בסבב 296-ish).
