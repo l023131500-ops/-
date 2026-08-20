@@ -8025,3 +8025,60 @@
     תאריך/מספר ללא ולידציית טווח בצד לקוח, או `target="_blank"`
     בלי `rel` מגן שיטתי על כל 7 האפליקציות).
     via cloud server 167.99.131.167 [loop B]
+
+## 20/08/2026 — סבב 388 (loop B)
+
+388. **המשך עדשת ה-`label`/`htmlFor`: סריקת יתר הקבצים ב-21/22/24/27
+    שלא נבדקו במלואם (מתור מסבב 387) — נמצאו ותוקנו 4 ממצאים אמיתיים
+    ב-22/27, השאר (40+ ב-21, 26 ב-24) נשארים בתור.** סוכן Explore
+    סרק את כל 4 האפליקציות במלואן (כולל קבצים שלא עלו בסריקה
+    הראשונית), תוך החרגת מופעים שכבר תוקנו בסבב הקודם וקבוצות-תווית
+    שאין להן יעד `id` יחיד (כותרות מדור מעל קבוצת שדות, תוויות מעל
+    כפתורי-שבב מותאמים אישית).
+
+    **22-get-your-rights** (2 קבצים, 3 תוויות): `AdminLeads.tsx`
+    שורה 474 ("תיאור הטיפול") מול `Textarea` שכבר יש לו `aria-label`
+    אך לא `id` — `id="lead-handled-desc"`. שורה 583, בתוך
+    `EDITABLE_FIELDS.map` (טופס עריכת ליד, ענפי `select`/`Input`
+    דינמיים) — `id={\`edit-lead-${key}\`}` דינמי תואם ל-`htmlFor`.
+    `AdminRightsReference.tsx` שורה 692, דיאלוג "הוספת נושא חדש"
+    (נפרד מדיאלוג העריכה שכבר תוקן בסבב 387) — התווית "קטגוריה *"
+    קושרה ל-`SelectTrigger` דרך `id="add-right-category"`; שדה
+    הטקסט החופשי הסמוך קיבל `aria-label` נפרד, באותה גישה שכבר
+    ננקטה בדיאלוג העריכה.
+
+    **27-bkalut-price** (2 קבצים, 3 תוויות): `orgs.tsx` — קומפוננטת
+    `FilterSelect` המקומית (נפרדת מזו שכבר תוקנה ב-`rights.tsx`
+    בסבב 387, אותה ארכיטקטורה בדיוק) — אותו תיקון: שימוש חוזר ב-prop
+    `testId` הקיים כ-`id`/`htmlFor`. `health-funds-admin.tsx`, בתוך
+    לולאת שורות מיתוג (`switchDraft` per `l.id`) — "סטטוס טיפול"
+    (`<select>`) ו"הערת טיפול" (`Textarea`) קיבלו `id` דינמי ייחודי
+    לפי `l.id` (תואם לתבנית ה-`data-testid` הקיימת כבר בכל שורה),
+    כדי למנוע התנגשות `id` בין שורות מרובות באותו עמוד.
+
+    כל ממצא אומת ידנית: נבדק ש-`Input`/`Textarea`/`SelectTrigger`
+    המקומיים (shadcn) מעבירים `id` הלאה דרך `{...props}`
+    (`components/ui/input.tsx`/`textarea.tsx`/`select.tsx` בשתי
+    האפליקציות). `git diff --stat`: 4 קבצים, 14+/10-. איזון סוגריים
+    נבדק על כל 4 הקבצים לאחר העריכה: תקין בכולם. לא הופעל
+    build/dev-server (לפי הנחיות ההרצה). כל 4 הקבצים חסומים
+    ב-`.gitignore` אך כבר עוקבים, `git add -f` נדרש.
+
+    **לא תוקן הסבב הזה, נשאר בתור:** 21-mthbram (~40 מופעי `<label>`
+    בלי `id`, בעיקר `UpdateLesson.tsx`/`RequestLesson.tsx`/
+    `AdminDashboard.tsx`/`SeekerForm.tsx`/`PortalSettingsTab.tsx`/
+    `PrayerTimesTab.tsx`/`PublicContactForm.tsx`) ו-24-galilee-
+    connect-hub (~26 מופעים, בעיקר `GabaiPortal.tsx`/`ContactPage.tsx`/
+    `ServiceRequestForm.tsx`/`AskRabbiSection.tsx`) — היקף גדול מדי
+    לסבב אחד, נדרש עיבוד שיטתי קובץ-אחר-קובץ בסבבים הבאים. פירוט
+    מלא (קובץ+שורה+יעד) קיים ביומן הסוכן של סבב זה.
+
+    ענף `fix/b-label-htmlfor-a11y-0820`, קומיט `aa41b665`, נדחף
+    (מפעיל פריסת Vercel תחת `more30.com/zchuyot` ו-`more30.com/bkalut-price`).
+
+    **הבא בתור:** המשך תור ה-`<label>` על 21-mthbram (~40 מופעים) או
+    24-galilee-connect-hub (~26 מופעים), או נושא #250 (RLS על
+    21-mthbram, חסום MCP), או פתיחת עדשה חדשה (למשל: שדות תאריך/מספר
+    ללא ולידציית טווח בצד לקוח, או `target="_blank"` בלי `rel` מגן
+    שיטתי על כל 7 האפליקציות).
+    via cloud server 167.99.131.167 [loop B]
