@@ -78,6 +78,14 @@ export async function mikvaotNear(
     // למטה — limit נותן מרווח בטיחות של פי 3+ מעל 606, בלי סיכון לתקרת שורות.
     const res = await datastoreSearch(MIKVE_RESOURCE(), { limit: 2000 });
     records = res.records as Record<string, unknown>[];
+    // ⚠️ שסתום גדילה: אם המאגר צמח מעבר לעמוד אחד (total גדול ממה שהוחזר),
+    // הנחת "טוענים את כולו" נשברה — ממשיכים לעמוד הבא במקום להשמיט יישובים
+    // שלמים בשקט. כשל באמצע העימוד נופל ל-catch ומוחזר "לא זמין", לא חלקי.
+    while (records.length < res.total && records.length < 10000) {
+      const page = await datastoreSearch(MIKVE_RESOURCE(), { limit: 2000, offset: records.length });
+      if (!page.records.length) break;
+      records = records.concat(page.records as Record<string, unknown>[]);
+    }
   } catch {
     return [];
   }

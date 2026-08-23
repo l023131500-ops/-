@@ -123,6 +123,24 @@ function normCity(s: string | null | undefined): string {
 export async function findCitySymbol(cityName: string): Promise<{ symbol: number; name: string } | null> {
   const want = normCity(cityName);
   if (!want) return null;
+
+  // שלב א' — פילטר מדויק על "שם ישוב" (filters=, לא q=). החיפוש החופשי מדרג
+  // לפי רלוונטיות וחותך ב-limit, כך שיישוב אמיתי יכול להידחק מתחת לחיתוך
+  // ולהיעלם בשקט. אומת חי 23/08/2026: "חצור הגלילית" → סמל 2034, total=1.
+  // מנסים את הקלט כפי שהוקלד וגם את הצורה המנורמלת; כתיבים שהקובץ שומר
+  // אחרת (רווח כפול, "תל אביב  יפו") נתפסים בשלב ב'.
+  for (const v of [...new Set([cityName.trim(), want])].filter(Boolean)) {
+    try {
+      const res = await datastoreSearch(CITIES(), { filters: { 'שם ישוב': v }, limit: 1 });
+      const r = res.records[0];
+      const sym = Number(r?.['סמל ישוב']);
+      const nm = normCity(String(r?.['שם ישוב'] ?? ''));
+      if (Number.isFinite(sym) && nm) return { symbol: sym, name: nm };
+    } catch {
+      /* כתיב אחד שנכשל לא עוצר את השאר */
+    }
+  }
+
   try {
     // ⚠️ מקף שובר את החיפוש החופשי של CKAN ומחזיר 0 תוצאות — שולחים בלי מקפים.
     const res = await datastoreSearch(CITIES(), { q: want, limit: 60 });

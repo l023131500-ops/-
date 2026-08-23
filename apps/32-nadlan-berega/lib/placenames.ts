@@ -220,6 +220,20 @@ function searchTerm(s: string): string {
 // מטמון קודי יישוב — נשאלים בכל דוח ואינם משתנים.
 const cityCodeCache = new Map<string, number | null>();
 
+/**
+ * כתיבי היישוב שמנסים בפילטר המדויק: הקלט כפי שהוקלד, והצורה המנורמלת
+ * (בלי גרשיים/מקפים). המרשם עצמו שומר לעיתים מקף ("תל אביב - יפו "),
+ * ולכן הצורה המקורית נשלחת גם היא.
+ *
+ * ⚠️ המרשם מרפד את `city_name` ברווח סופי אחד — 'חצור הגלילית ' — נמדד חי
+ * 23/08/2026. פילטר מדויק בלי הרווח מחזיר 0, ולכן הצורה המרופדת נשלחת
+ * ראשונה; הצורה הלא-מרופדת נשמרת למקרה שהמאגר ינוקה ביום מן הימים.
+ */
+function cityNameVariants(cityName: string): string[] {
+  const base = [cityName.trim(), norm(cityName)].filter(Boolean);
+  return [...new Set(base.flatMap((v) => [`${v} `, v]))];
+}
+
 /** קוד היישוב במרשם הרחובות. */
 async function findCityCode(cityName: string): Promise<number | null> {
   const key = norm(cityName);
@@ -227,6 +241,29 @@ async function findCityCode(cityName: string): Promise<number | null> {
   if (cityCodeCache.has(key)) return cityCodeCache.get(key)!;
 
   let code: number | null = null;
+
+  // שלב א' — פילטר מדויק (filters=, לא q=). החיפוש החופשי של CKAN מדרג לפי
+  // רלוונטיות וחותך ב-limit, כך שיישוב אמיתי יכול להידחק מתחת לחיתוך ולהיעלם
+  // בשקט. פילטר מדויק מחזיר את היישוב או כלום — בלי דירוג ובלי ניחוש.
+  for (const v of cityNameVariants(cityName)) {
+    try {
+      const res = await datastoreSearch(STREETS_SYNONYMS, { filters: { city_name: v }, limit: 1 });
+      const r = res.records[0] ? clean(res.records[0]) : null;
+      if (r && Number.isFinite(r.city_code)) {
+        code = r.city_code;
+        break;
+      }
+    } catch {
+      /* כתיב אחד שנכשל לא עוצר את השאר */
+    }
+  }
+  if (code != null) {
+    cityCodeCache.set(key, code);
+    return code;
+  }
+
+  // שלב ב' — החיפוש החופשי, לכתיבים שהפילטר המדויק לא מכסה
+  // ("תל אביב" שהוקלד מול "תל אביב - יפו" שבמרשם).
   try {
     const res = await datastoreSearch(STREETS_SYNONYMS, { q: searchTerm(cityName), limit: 100 });
     // התאמה מדויקת קודמת; אחרת התאמה חלקית (למשל "תל אביב" מול "תל אביב - יפו").
