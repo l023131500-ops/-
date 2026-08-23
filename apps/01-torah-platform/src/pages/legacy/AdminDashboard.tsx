@@ -1084,14 +1084,16 @@ const AdminDashboard = () => {
                       />
                       <Button
                         onClick={async () => {
-                          if (!newRabbiName.trim()) return;
+                          if (busyId || !newRabbiName.trim()) return;
+                          setBusyId("create-rabbi-portal");
                           const { data, error } = await supabase.from("rabbi_portals").insert({ rabbi_name: newRabbiName.trim() }).select().single();
-                          if (!error && data) {
-                            setRabbiPortals(prev => [data, ...prev]);
-                            setNewRabbiName("");
-                            toast.success("קישור לרב נוצר!");
-                          }
+                          setBusyId(null);
+                          if (error || !data) { toast.error("שגיאה ביצירת קישור: " + (error?.message || "")); return; }
+                          setRabbiPortals(prev => [data, ...prev]);
+                          setNewRabbiName("");
+                          toast.success("קישור לרב נוצר!");
                         }}
+                        disabled={busyId === "create-rabbi-portal"}
                         className="bg-gradient-gold text-navy font-body font-bold gap-2"
                       >
                         <Plus className="w-4 h-4" /> צור קישור
@@ -1194,14 +1196,16 @@ const AdminDashboard = () => {
                       />
                       <Button
                         onClick={async () => {
-                          if (!newOrgName.trim()) return;
+                          if (busyId || !newOrgName.trim()) return;
+                          setBusyId("create-org-portal");
                           const { data, error } = await supabase.from("org_portals").insert({ org_name: newOrgName.trim() }).select().single();
-                          if (!error && data) {
-                            setOrgPortals(prev => [data, ...prev]);
-                            setNewOrgName("");
-                            toast.success("קישור לארגון נוצר!");
-                          }
+                          setBusyId(null);
+                          if (error || !data) { toast.error("שגיאה ביצירת קישור: " + (error?.message || "")); return; }
+                          setOrgPortals(prev => [data, ...prev]);
+                          setNewOrgName("");
+                          toast.success("קישור לארגון נוצר!");
                         }}
+                        disabled={busyId === "create-org-portal"}
                         className="bg-gradient-teal text-primary-foreground font-body font-bold gap-2"
                       >
                         <Plus className="w-4 h-4" /> צור קישור
