@@ -59,6 +59,7 @@ const Lessons = () => {
   const [showAdd, setShowAdd] = useState(false);
   const [form, setForm] = useState(emptyForm);
   const [step, setStep] = useState(1);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
 
   useEffect(() => { if (user) fetchData(); }, [user]);
 
@@ -138,10 +139,17 @@ const Lessons = () => {
   };
 
   const handleDelete = async (id: string) => {
-    const { error } = await supabase.from("lessons").delete().eq("id", id);
-    if (error) { toast.error("שגיאה במחיקה"); return; }
-    toast.success("השיעור נמחק");
-    fetchData();
+    if (deletingId) return;
+    if (!window.confirm("למחוק את השיעור? הפעולה אינה הפיכה.")) return;
+    setDeletingId(id);
+    try {
+      const { error } = await supabase.from("lessons").delete().eq("id", id);
+      if (error) { toast.error("שגיאה במחיקה"); return; }
+      toast.success("השיעור נמחק");
+      fetchData();
+    } finally {
+      setDeletingId(null);
+    }
   };
 
   const toggleActive = async (id: string, current: boolean) => {
@@ -314,7 +322,7 @@ const Lessons = () => {
                   <Button size="sm" variant={l.is_active ? "outline" : "default"} onClick={() => toggleActive(l.id, l.is_active)}>
                     {l.is_active ? "השבת" : "הפעל"}
                   </Button>
-                  <Button size="sm" variant="ghost" onClick={() => handleDelete(l.id)}>
+                  <Button size="sm" variant="ghost" onClick={() => handleDelete(l.id)} disabled={deletingId === l.id}>
                     <Trash2 className="w-4 h-4 text-destructive" />
                   </Button>
                 </div>
