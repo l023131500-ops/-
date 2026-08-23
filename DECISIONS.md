@@ -12883,3 +12883,47 @@
     מוטציה), ואז 23-haorech-torani/25-mor1-main-site (ריפו ריק). נושאים
     #62/#94/#115/#164/#169/#254/#312 נשארים חסומים.
     via cloud server 167.99.131.167 [loop B]
+
+## 23/08/2026 — סבב 485 (loop B)
+
+485. **התיקון בסבב זה: `PortalSettingsTab.tsx`** (כפי שסומן בסבב 484) —
+    אימתתי את שלוש הפונקציות שסומנו כחסרות guard: `selectPreset`
+    (בחירת רקע מוכן), `saveFontColor` (בחירת צבע גופן), ו-`deletePhoto`
+    (מחיקת תמונת פעילות). לכולן לא היה מצב "בתהליך" ולא `disabled`
+    בכפתורים, בניגוד ל-`saveAbout`/`saveContact`/`saveCustomSections`/
+    `saveDonationSettings` הסמוכים שכבר מוגנים. לחיצה כפולה מהירה על
+    אריח רקע יכולה לשלוח שתי בקשות `update` חופפות על `background_preset`;
+    אותו הדבר על כפתורי הגופן (`font_color`) ועל כפתור מחיקת תמונה
+    (`portal_photos` `delete`).
+
+    הוספתי שלושה state נפרדים: `applyingPreset`/`savingFontColor`/
+    `deletingPhotoId` — כל אחד עם guard מוקדם (`if (x) return`),
+    `try/finally`, ו-`disabled` תואם על הכפתורים הרלוונטיים (רשת אריחי
+    הרקע כולה נחסמת בזמן החלת פריסט; שני כפתורי הגופן נחסמים יחד; כפתור
+    המחיקה נחסם רק על התמונה הספציפית שנמחקת, לא כל הרשימה). כמו כן
+    `saveFontColor` עודכן כך שה-state המקומי (`setFontColor`) מתעדכן רק
+    אחרי הצלחת השמירה בשרת, במקום עדכון אופטימי לפני הבקשה — מונע מצב
+    לא עקבי אם השמירה נכשלת. דפוס עקבי עם `PortalMessagesTab.tsx`/
+    `PrayerTimesTab.tsx`/`FullAccessRequestsTab.tsx`/`AdminDashboard.tsx`.
+
+    **בדיקות תקינות:** קריאת קוד בלבד (ללא dev-server, לפי הנחיות ההרצה) —
+    קראתי מחדש את כל הקובץ אחרי העריכות, ווידאתי עם `grep` ששלושת ה-state
+    החדשים מופיעים בדיוק במקומות הצפויים (הצהרה, guard, ו-JSX disabled)
+    ושאין סוגריים לא מאוזנים.
+
+    לא נגעתי במערכות מוגנות 08/09/bkalut-app/bkalot-admin/zr_*/NEDARIM3873/
+    csj/csj_src/igud, ב-`main`, או במערכת מחוץ ל-scope (17-25/27/28 בלבד).
+
+    **הבא בתור:** `PortalSettingsTab.tsx` נקי כעת. ממשיכים לסרוק לפי
+    הרשימה מסבב 484: `ContactSection.tsx`, `FloatingChatBot.tsx`,
+    `BulkLessonForm/Table.tsx`, `ExcelImportExport.tsx` (bulk/synagogue/
+    studyday), `PublicContactForm.tsx`, `SeekerForm.tsx`/`TeacherForm.tsx`,
+    `StudyDayEventForm/Table.tsx`, `SynagogueFullAccessRequest.tsx`, ודפי
+    `BulkUpload/NedarimManagement/OrgPortal/RabbiPortal/RequestLesson/
+    StudyDayUpload/TeachersLanding/UpdateLesson.tsx`. **מועמד הבא:**
+    `ContactSection.tsx` — לבדוק אם יש בו קריאות מוטציה ללא guard. אחרי
+    שכל 21-mthbram נקי, לעבור ל-19-igud-shiurim-portal/20-igud-portal
+    (שלד, לבדוק אם יש פעולות מוטציה), ואז 23-haorech-torani/
+    25-mor1-main-site (ריפו ריק). נושאים #62/#94/#115/#164/#169/#254/#312
+    נשארים חסומים.
+    via cloud server 167.99.131.167 [loop B]
