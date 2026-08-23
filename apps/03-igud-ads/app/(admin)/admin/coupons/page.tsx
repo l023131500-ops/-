@@ -24,12 +24,23 @@ export default function CouponsPage() {
 
   async function generate() {
     setBusy(true);
-    const r = await fetch("/modaot/api/admin/coupons", {
-      method: "POST", headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ code: code || null, max_designs: maxD, expires_at: exp || null, note }),
-    });
-    setBusy(false);
-    if (r.ok) { setCode(""); setNote(""); setExp(""); setMaxD(3); load(); }
+    try {
+      const r = await fetch("/modaot/api/admin/coupons", {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ code: code || null, max_designs: maxD, expires_at: exp || null, note }),
+      });
+      if (!r.ok) {
+        const d = await r.json().catch(() => ({}));
+        alert(d.error || "יצירת הקופון נכשלה");
+        return;
+      }
+      setCode(""); setNote(""); setExp(""); setMaxD(3);
+      await load();
+    } catch {
+      alert("שגיאת רשת ביצירת הקופון");
+    } finally {
+      setBusy(false);
+    }
   }
   async function toggle(id: string, active: boolean) {
     if (busyId) return;
