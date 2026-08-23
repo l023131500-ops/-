@@ -651,6 +651,98 @@ export type Database = {
           },
         ]
       }
+      intake_inquiries: {
+        Row: {
+          body: string | null
+          channel: string
+          client_id: string | null
+          created_at: string
+          email: string | null
+          full_name: string
+          handled_at: string | null
+          handled_by: string | null
+          id: string
+          phone: string | null
+          referral_id: string | null
+          rejection_reason: string | null
+          source_meta: Json
+          status: string
+          subject: string | null
+          suggested_category: string | null
+          tenant_id: string
+          updated_at: string
+        }
+        Insert: {
+          body?: string | null
+          channel?: string
+          client_id?: string | null
+          created_at?: string
+          email?: string | null
+          full_name: string
+          handled_at?: string | null
+          handled_by?: string | null
+          id?: string
+          phone?: string | null
+          referral_id?: string | null
+          rejection_reason?: string | null
+          source_meta?: Json
+          status?: string
+          subject?: string | null
+          suggested_category?: string | null
+          tenant_id: string
+          updated_at?: string
+        }
+        Update: {
+          body?: string | null
+          channel?: string
+          client_id?: string | null
+          created_at?: string
+          email?: string | null
+          full_name?: string
+          handled_at?: string | null
+          handled_by?: string | null
+          id?: string
+          phone?: string | null
+          referral_id?: string | null
+          rejection_reason?: string | null
+          source_meta?: Json
+          status?: string
+          subject?: string | null
+          suggested_category?: string | null
+          tenant_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "intake_inquiries_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "intake_inquiries_referral_id_fkey"
+            columns: ["referral_id"]
+            isOneToOne: false
+            referencedRelation: "partner_referrals"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "intake_inquiries_handled_by_fkey"
+            columns: ["handled_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "intake_inquiries_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       message_templates: {
         Row: {
           body: string

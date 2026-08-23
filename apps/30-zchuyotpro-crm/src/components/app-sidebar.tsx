@@ -1,6 +1,6 @@
 import { Link, useRouterState } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { LayoutDashboard, Users, Handshake, ScrollText, MessageSquare, FileText, Settings, ShieldCheck, Send, Briefcase, CheckSquare, BarChart3 } from "lucide-react";
+import { LayoutDashboard, Users, Handshake, ScrollText, MessageSquare, FileText, Settings, ShieldCheck, Send, Briefcase, CheckSquare, BarChart3, Inbox } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -16,6 +16,7 @@ import { myPartnerQuery } from "@/features/partners/queries";
 
 const items = [
   { title: "לוח בקרה", url: "/dashboard", icon: LayoutDashboard },
+  { title: "פניות נכנסות", url: "/intake", icon: Inbox },
   { title: "לקוחות", url: "/clients", icon: Users },
   { title: "משימות", url: "/tasks", icon: CheckSquare },
   { title: "שותפים", url: "/partners", icon: Handshake },
