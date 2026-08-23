@@ -12586,3 +12586,62 @@
     ייתכן שאין עדיין קוד ממשי), 25-mor1-main-site (wip), 18-torah-editor-mvp.
     נושאים #62/#94/#115/#164/#169/#254 נשארים חסומים.
     via cloud server 167.99.131.167 [loop B]
+
+## 23/08/2026 — סבב 478 (loop B)
+
+478. **סרקתי לעומק כפי שהובטח בסבב 477: 18-torah-editor-mvp, 23-haorech-torani,
+    25-mor1-main-site.** 23/25 עדיין `wip` בלי קוד ממשי (`app.json` בלבד) —
+    אין מה לתקן. 18-torah-editor-mvp מלא קוד ורוב הטפסים כבר מוגנים היטב
+    (`isSaving`/`pendingPatch` ref ב-`editor/page.tsx`, `busy`/`deletingId`
+    ב-`documents/page.tsx`, `busy` בכל טופס ב-`htr/page.tsx`, `approve` בצד
+    שרת אפילו אידמפוטנטי עם `.neq('status','approved')`).
+
+    **מצאתי כן פער אמיתי אך חסום:** אף אחת מנקודות הקצה של HTR
+    (`api/htr/jobs`, `api/htr/jobs/[id]`, `.../approve`, `api/htr/process`)
+    לא בודקת שה-job שייך למשתמש המבקש — `getHubUserFromRequest` רק מוודא
+    "מחובר", לא "בעלים". הסיבה: `otvedaf.htr_jobs`
+    (`supabase/migrations/0001_htr_jobs.sql`) כלל לא כוללת עמודת `user_id`.
+    כל משתמש מחובר להאב יכול לראות/לערוך/לאשר job של כל משתמש אחר. **לא
+    תיקנתי**: הפרויקט הזה (`bieebmnmkffwbqlsfozh`) לא נגיש דרך ה-MCP כאן
+    (סומן "❌ other account" ב-CONNECTIONS.md) — כלומר אין דרך לאמת את
+    הסכימה החיה או להחיל מיגרציה בפועל. הוספת קוד שמסנן לפי `user_id` בלי
+    שהעמודה קיימת בפרודקשן הייתה שוברת כל קריאה לטבלה — בדיוק סוג הרגרסיה
+    שהכללים אוסרים, וגם בלתי ניתנת לאימות בסביבה הזו (אין דפדפן/שרת-פיתוח
+    לפי הנחיות ההרצה). נרשם כנושא חדש **#312** (חסום, ליד #62/#94/#115/
+    #164/#169/#254) — דורש שמישהו עם גישה לפרויקט `bieebmnmkffwbqlsfozh`
+    להחיל מיגרציה שמוסיפה `user_id` (ולמלא אותה מ-`approved_by`/רשומות
+    קיימות איפה שאפשר) לפני שאפשר לסגור את זה.
+
+    **התיקון שכן בוצע הסבב הזה:** חזרתי לדפוס "double-submit guards" מסבבים
+    456-470 באפליקציות שטרם נסרקו — 22-get-your-rights ו-24-galilee-connect-hub.
+    כמעט כל מוטציה בשתי האפליקציות כבר מוגנת (`saving`/`deletingId`/
+    `processingId` + `disabled` תואם), חוץ ממקום אחד: **`RabbiQuestionsManager`
+    ב-`apps/24-galilee-connect-hub/src/pages/GabaiPortal.tsx` (שורות 1475-1589)**
+    — הרכיב האח `ContactLeadsManager` ממש מעליו (שורות 1382-1472) כן מוגן
+    (`processingId` state, `if (processingId) return`, `disabled=
+    {processingId === lead.id}`), אבל `RabbiQuestionsManager` לא קיבל את
+    אותו טיפול מעולם: כפתורי "סמן כנקרא" ו"מחק" (שורות 1569,1576 לפני
+    התיקון) קראו ל-`supabase.from('rabbi_questions').update/.delete()` בלי
+    שום state guard ובלי `disabled` — לחיצה כפולה מהירה או רשת איטית יורות
+    שתי בקשות `update`/`delete` חופפות על אותה שורה.
+
+    **התיקון:** העתקתי בדיוק את הדפוס הקיים מ-`ContactLeadsManager` (state
+    `processingId`, guard מוקדם, `setProcessingId`/`disabled` תואמים)
+    ל-`RabbiQuestionsManager` — עקביות עם פתרון קיים כבר באותו קובץ, בלי
+    הפשטה חדשה.
+
+    **בדיקות תקינות:** קריאת קוד בלבד (ללא dev-server, לפי הנחיות ההרצה).
+    השוויתי צמוד מול `ContactLeadsManager` (דפוס זהה, רק שם המשתנה/הטבלה
+    שונים). `git diff --stat`: קובץ יחיד, +9/-2.
+
+    לא נגעתי במערכות מוגנות 08/09/bkalut-app/bkalot-admin/zr_*/NEDARIM3873/
+    csj/csj_src/igud, ב-`main`, או במערכת מחוץ ל-scope (17-25/27/28 בלבד).
+
+    ענף חדש `fix/b-24-rabbi-questions-double-submit-round478-0823` (שרשרת
+    הענפים היא המקור היחיד ל-loop B, לא `main`), נדחף.
+
+    **הבא בתור:** לסיים את סריקת ה-double-submit על שאר `GabaiPortal.tsx`
+    (יש עוד מנהלי-רשימות באותו קובץ שלא נבדקו כולם) ועל שאר הרכיבים
+    ב-22-get-your-rights שטרם נסרקו לעומק (admin panels נוספים אם יש).
+    נושאים #62/#94/#115/#164/#169/#254/**#312 (חדש)** נשארים חסומים.
+    via cloud server 167.99.131.167 [loop B]

@@ -1475,6 +1475,7 @@ const ContactLeadsManager = () => {
 const RabbiQuestionsManager = () => {
   const [questions, setQuestions] = useState<RabbiQuestion[]>([]);
   const [actionError, setActionError] = useState('');
+  const [processingId, setProcessingId] = useState<string | null>(null);
 
   const fetchQuestions = useCallback(async () => {
     const { data } = await supabase.from('rabbi_questions').select('*').order('created_at', { ascending: false });
@@ -1566,16 +1567,22 @@ const RabbiQuestionsManager = () => {
             </div>
             <div className="flex gap-2">
               {!q.is_read && (
-                <Button variant="outline" size="sm" className="gap-1.5 text-xs font-bold" onClick={async () => {
+                <Button variant="outline" size="sm" className="gap-1.5 text-xs font-bold" disabled={processingId === q.id} onClick={async () => {
+                  if (processingId) return;
+                  setProcessingId(q.id);
                   setActionError('');
                   const { error } = await supabase.from('rabbi_questions').update({ is_read: true }).eq('id', q.id);
+                  setProcessingId(null);
                   if (error) { setActionError('הפעולה נכשלה עקב תקלה. נסו שוב.'); return; }
                   fetchQuestions();
                 }}><Eye className="w-3.5 h-3.5" /> סמן כנקרא</Button>
               )}
-              <Button variant="ghost" size="sm" className="gap-1.5 text-xs font-bold text-destructive" onClick={async () => {
+              <Button variant="ghost" size="sm" className="gap-1.5 text-xs font-bold text-destructive" disabled={processingId === q.id} onClick={async () => {
+                if (processingId) return;
+                setProcessingId(q.id);
                 setActionError('');
                 const { error } = await supabase.from('rabbi_questions').delete().eq('id', q.id);
+                setProcessingId(null);
                 if (error) { setActionError('המחיקה נכשלה עקב תקלה. נסו שוב.'); return; }
                 fetchQuestions();
               }}><Trash2 className="w-3.5 h-3.5" /> מחק</Button>
