@@ -88,7 +88,7 @@ const SynagogueManager = () => {
       address: editing.address,
       donation_link: editing.donation_link || null,
       logo_url: editing.logo_url || null,
-      background_preset: editing.background_preset,
+      background_preset: Math.max(1, Math.min(5, editing.background_preset)),
     };
 
     const { error } = isNew
@@ -163,7 +163,7 @@ const SynagogueManager = () => {
         rabbi: row.rabbi || null,
         address: row.address || '',
         donation_link: row.donation_link || null,
-        background_preset: parseInt(row.background_preset) || 1,
+        background_preset: Math.max(1, Math.min(5, parseInt(row.background_preset) || 1)),
       });
       if (error) failedRows += 1;
     }
@@ -242,7 +242,7 @@ const SynagogueManager = () => {
                 </div>
                 <div>
                   <label htmlFor="synagogue-background-preset" className="block text-sm font-bold text-foreground mb-1">תבנית רקע (1-5)</label>
-                  <Input id="synagogue-background-preset" type="number" min={1} max={5} value={editing.background_preset} onChange={e => setEditing({ ...editing, background_preset: parseInt(e.target.value) || 1 })} />
+                  <Input id="synagogue-background-preset" type="number" min={1} max={5} value={editing.background_preset} onChange={e => setEditing({ ...editing, background_preset: Math.max(1, Math.min(5, parseInt(e.target.value) || 1)) })} />
                 </div>
               </div>
               <Button onClick={handleSave} disabled={saving || !editing.name.trim() || !editing.address.trim()}
