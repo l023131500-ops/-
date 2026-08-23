@@ -44,6 +44,7 @@ export default function UsersPage() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [busyId, setBusyId] = useState<string | null>(null);
+  const [listError, setListError] = useState<string | null>(null);
 
   const load = useCallback(async () => {
     const [ur, cr] = await Promise.all([
@@ -118,9 +119,16 @@ export default function UsersPage() {
   async function del(id: string) {
     if (busyId || !confirm("למחוק משתמש זה?")) return;
     setBusyId(id);
+    setListError(null);
     try {
-      await fetch(`/modaot/api/admin/users/${id}`, { method: "DELETE" });
+      const r = await fetch(`/modaot/api/admin/users/${id}`, { method: "DELETE" });
+      if (!r.ok) {
+        const j = await r.json().catch(() => ({}));
+        throw new Error(j.error || "שגיאה במחיקת המשתמש");
+      }
       await load();
+    } catch (e: unknown) {
+      setListError(e instanceof Error ? e.message : "שגיאה במחיקת המשתמש");
     } finally {
       setBusyId(null);
     }
@@ -129,13 +137,20 @@ export default function UsersPage() {
   async function toggleActive(u: AdUser) {
     if (busyId) return;
     setBusyId(u.id);
+    setListError(null);
     try {
-      await fetch(`/modaot/api/admin/users/${u.id}`, {
+      const r = await fetch(`/modaot/api/admin/users/${u.id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ is_active: !u.is_active }),
       });
+      if (!r.ok) {
+        const j = await r.json().catch(() => ({}));
+        throw new Error(j.error || "שגיאה בעדכון המשתמש");
+      }
       await load();
+    } catch (e: unknown) {
+      setListError(e instanceof Error ? e.message : "שגיאה בעדכון המשתמש");
     } finally {
       setBusyId(null);
     }
@@ -147,6 +162,10 @@ export default function UsersPage() {
         <h1 className="font-serif text-2xl font-bold text-brand-dark">ניהול משתמשים</h1>
         <button className="btn-primary" onClick={openNew}>+ משתמש חדש</button>
       </div>
+
+      {listError && (
+        <div role="alert" aria-live="assertive" className="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 rounded text-sm">{listError}</div>
+      )}
 
       <div className="bg-surface rounded-xl border overflow-x-auto">
         <table className="min-w-full text-sm">
