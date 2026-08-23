@@ -58,6 +58,7 @@ export default function TemplatesPage() {
   const [optStr, setOptStr] = useState("");
   const [colorsStr, setColorsStr] = useState("");
   const [busyId, setBusyId] = useState<string | null>(null);
+  const [listError, setListError] = useState<string | null>(null);
 
   const load = useCallback(async () => {
     const r = await fetch("/modaot/api/admin/templates");
@@ -137,9 +138,16 @@ export default function TemplatesPage() {
   async function del(id: string) {
     if (busyId || !confirm("למחוק תבנית זו לצמיתות?")) return;
     setBusyId(id);
+    setListError(null);
     try {
       const r = await fetch(`/modaot/api/admin/templates/${id}`, { method: "DELETE" });
-      if (r.ok) await load();
+      if (!r.ok) {
+        const j = await r.json().catch(() => ({}));
+        throw new Error(j.error || "שגיאה במחיקת התבנית");
+      }
+      await load();
+    } catch (e: unknown) {
+      setListError(e instanceof Error ? e.message : "שגיאה במחיקת התבנית");
     } finally {
       setBusyId(null);
     }
@@ -148,13 +156,20 @@ export default function TemplatesPage() {
   async function toggleActive(t: Template) {
     if (busyId) return;
     setBusyId(t.id);
+    setListError(null);
     try {
-      await fetch(`/modaot/api/admin/templates/${t.id}`, {
+      const r = await fetch(`/modaot/api/admin/templates/${t.id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ is_active: !t.is_active }),
       });
+      if (!r.ok) {
+        const j = await r.json().catch(() => ({}));
+        throw new Error(j.error || "שגיאה בעדכון סטטוס התבנית");
+      }
       await load();
+    } catch (e: unknown) {
+      setListError(e instanceof Error ? e.message : "שגיאה בעדכון סטטוס התבנית");
     } finally {
       setBusyId(null);
     }
@@ -166,6 +181,10 @@ export default function TemplatesPage() {
         <h1 className="font-serif text-2xl font-bold text-brand-dark">תבניות מודעה</h1>
         <button className="btn-primary" onClick={openNew}>+ תבנית חדשה</button>
       </div>
+
+      {listError && (
+        <div role="alert" aria-live="assertive" className="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 rounded text-sm">{listError}</div>
+      )}
 
       <div className="bg-surface rounded-xl border overflow-x-auto">
         <table className="min-w-full text-sm">
