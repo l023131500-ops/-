@@ -76,9 +76,16 @@ function DeliveryInner() {
     };
   }, [list.data]);
 
+  const sendingRef = useRef<Set<number>>(new Set());
   async function sendNow(row: DeliveryRow) {
-    await apiRequest("POST", `/api/admin/delivery/${row.id}/send`);
-    await queryClient.invalidateQueries({ queryKey: ["/api/admin/delivery"] });
+    if (sendingRef.current.has(row.id)) return;
+    sendingRef.current.add(row.id);
+    try {
+      await apiRequest("POST", `/api/admin/delivery/${row.id}/send`);
+      await queryClient.invalidateQueries({ queryKey: ["/api/admin/delivery"] });
+    } finally {
+      sendingRef.current.delete(row.id);
+    }
   }
   const removingRef = useRef<Set<number>>(new Set());
   async function remove(row: DeliveryRow) {

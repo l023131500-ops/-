@@ -83,6 +83,9 @@ export default function PriceComparisonAdmin() {
   const [jobs, setJobs] = useState<ImportJob[]>([]);
   const [jobLogs, setJobLogs] = useState<Record<number, Array<{ id: number; level: string; message: string }>>>({});
   const [runningFeed, setRunningFeed] = useState<number | null>(null);
+  const [runningDaily, setRunningDaily] = useState(false);
+  const togglingFeedRef = useRef<Set<number>>(new Set());
+  const togglingVolRef = useRef<Set<number>>(new Set());
   const [newFeed, setNewFeed] = useState({ chainName: "", chainId: "", sourceUrl: "", sourceType: "publishprice", sourceKind: "regulatory", feedFormat: "gz", feedKinds: "PriceFull", notes: "", adapter: "url", directFileUrl: "", discoveryUrl: "" });
   const [uploadFeedId, setUploadFeedId] = useState<string>("");
   const [uploadKind, setUploadKind] = useState<string>("PriceFull");
@@ -174,10 +177,13 @@ export default function PriceComparisonAdmin() {
     } finally { setCreatingVol(false); }
   }
   async function toggleVolToken(t: VoluntaryToken) {
+    if (togglingVolRef.current.has(t.id)) return;
+    togglingVolRef.current.add(t.id);
     try {
       await apiRequest("PATCH", `/api/pc/admin/voluntary-tokens/${t.id}`, { active: !t.active });
       await loadVolTokens();
     } catch { toast({ title: "העדכון נכשל", variant: "destructive" }); }
+    finally { togglingVolRef.current.delete(t.id); }
   }
 
   useEffect(() => { loadAll(); loadEtl(); loadVolTokens(); }, []);
@@ -194,10 +200,13 @@ export default function PriceComparisonAdmin() {
     } catch { toast({ title: "ההוספה נכשלה", variant: "destructive" }); }
   }
   async function toggleFeed(f: FeedSource, patch: Partial<FeedSource>) {
+    if (togglingFeedRef.current.has(f.id)) return;
+    togglingFeedRef.current.add(f.id);
     try {
       await apiRequest("PATCH", `/api/pc/admin/feeds/${f.id}`, patch);
       await loadEtl();
     } catch { toast({ title: "העדכון נכשל", variant: "destructive" }); }
+    finally { togglingFeedRef.current.delete(f.id); }
   }
   async function runFeed(id: number) {
     setRunningFeed(id);
@@ -212,12 +221,15 @@ export default function PriceComparisonAdmin() {
     } finally { setRunningFeed(null); }
   }
   async function runDaily() {
+    if (runningDaily) return;
+    setRunningDaily(true);
     try {
       const r = await apiRequest("POST", "/api/pc/admin/import/daily");
       const d = await r.json();
       toast({ title: "ייבוא יומי הופעל", description: d.summary });
       await loadEtl();
     } catch { toast({ title: "ההפעלה נכשלה", variant: "destructive" }); }
+    finally { setRunningDaily(false); }
   }
   async function loadJobLogs(jobId: number) {
     try {
@@ -444,7 +456,7 @@ export default function PriceComparisonAdmin() {
               <h3 className="font-semibold text-sm flex items-center gap-2"><Database className="w-4 h-4" /> מקורות נתונים (ETL)</h3>
               <div className="flex gap-2">
                 <Button size="sm" variant="outline" onClick={loadEtl} data-testid="button-pc-refresh-etl"><RefreshCw className="w-4 h-4 ml-1" /> רענון</Button>
-                <Button size="sm" onClick={runDaily} data-testid="button-pc-run-daily"><Play className="w-4 h-4 ml-1" /> ייבוא יומי (כל הפעילים)</Button>
+                <Button size="sm" onClick={runDaily} disabled={runningDaily} data-testid="button-pc-run-daily"><Play className="w-4 h-4 ml-1" /> {runningDaily ? "מייבא…" : "ייבוא יומי (כל הפעילים)"}</Button>
               </div>
             </div>
             <div className="text-xs rounded-md border border-amber-400/50 bg-amber-50 dark:bg-amber-950/30 p-3 space-y-1" data-testid="pc-live-import-notice">
