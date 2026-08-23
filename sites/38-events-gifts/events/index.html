@@ -132,6 +132,7 @@ td{padding:7px 8px;border-bottom:1px solid var(--line-2);vertical-align:middle}
       <div class="card feature"><b>אישורי הגעה (RSVP)</b><p>כל מוזמן מקבל קישור אישי: מגיע / לא / אולי + כמה מגיעים. אתם רואים הכל חי בלוח הבקרה.</p></div>
       <div class="card feature"><b>הזמנה דיגיטלית מעוצבת</b><p>בוחרים עיצוב מתוך תבניות יפות, כותבים מי מזמינים ומילים אישיות — והקישור האישי הופך להזמנה מעוצבת עם RSVP מובנה.</p></div>
       <div class="card feature"><b>מתנות באשראי</b><p>המוזמן נותן מתנה מהקישור שלו. מד "נאספו X ₪" בזמן אמת, פירוט מלא ומעקב תודות.</p></div>
+      <div class="card feature"><b>הזמנות ותזכורות בוואטסאפ</b><p>הודעה אישית מוכנה לכל מוזמן עם הקישור שלו — והמערכת זוכרת מי קיבל מה ומי טרם ענה. כולל תודות לנותני מתנה.</p></div>
       <div class="card feature"><b>דפי אולמות + לידים</b><p>דף נחיתה מעוצב לכל אולם עם טופס פנייה — כל פנייה נכנסת ללוח הלידים של בעל האולם.</p></div>
       <div class="card feature"><b>צ'ק-אין בכניסה</b><p>סימון הגעה בפועל ביום האירוע — ספירה חיה של מי שכבר בפנים.</p></div>
       <div class="card feature"><b>סידורי הושבה</b><p>שולחנות, קיבולות והושבת מוזמנים — השולחן מופיע בכרטיס הכניסה, והשער מכריז עליו בסריקה.</p></div>
@@ -271,6 +272,49 @@ td{padding:7px 8px;border-bottom:1px solid var(--line-2);vertical-align:middle}
       </table>
       </div>
 
+      <h3 style="margin-top:22px">מרכז הודעות — הזמנות ותזכורות בוואטסאפ</h3>
+      <p class="muted">כל הודעה נפתחת מוכנה בוואטסאפ שלכם, אישית לכל מוזמן ועם הקישור שלו — נשאר רק ללחוץ "שליחה".
+        המערכת זוכרת מי קיבל מה, אז רואים מיד מי טרם ענה ולא קיבל תזכורת.
+        למוזמן בלי טלפון ההודעה המוכנה מועתקת ללוח.</p>
+      <div class="grid c3">
+        <div>
+          <label for="tplInvite">נוסח ההזמנה</label>
+          <textarea id="tplInvite"></textarea>
+        </div>
+        <div>
+          <label for="tplReminder">נוסח התזכורת (למי שטרם ענו)</label>
+          <textarea id="tplReminder"></textarea>
+        </div>
+        <div>
+          <label for="tplThanks">נוסח התודה לנותני מתנה</label>
+          <textarea id="tplThanks"></textarea>
+        </div>
+      </div>
+      <p class="muted">אפשר לשלב בנוסח: <b>{שם}</b> · <b>{קישור}</b> · {אירוע} · {תאריך} · {שעה} · {מקום} · {מזמינים} · {סכום} (בתודה).
+        שדה ריק = הנוסח המובנה של המערכת.</p>
+      <div id="tplErr"></div>
+      <div class="rowline" style="justify-content:flex-start;margin-bottom:10px">
+        <button class="btn small" id="tplSave">שמירת נוסחים</button>
+        <select id="msgKind" style="width:auto;margin:0">
+          <option value="invite">שליחת הזמנות</option>
+          <option value="reminder">שליחת תזכורות</option>
+        </select>
+        <select id="msgAudience" style="width:auto;margin:0">
+          <option value="uninvited">עוד לא נשלחה להם הזמנה</option>
+          <option value="pending">טרם ענו</option>
+          <option value="pending_unreminded">טרם ענו ולא קיבלו תזכורת</option>
+          <option value="yes">אישרו הגעה</option>
+          <option value="all">כולם</option>
+        </select>
+      </div>
+      <div id="msgStats" class="muted" style="margin-bottom:6px"></div>
+      <div style="overflow-x:auto">
+      <table id="msgTable">
+        <thead><tr><th>מוזמן</th><th>סטטוס</th><th>נשלח עד כה</th><th></th></tr></thead>
+        <tbody></tbody>
+      </table>
+      </div>
+
       <h3 style="margin-top:22px">סידורי הושבה</h3>
       <p class="muted">מוסיפים שולחנות, ומושיבים כל מוזמן מעמודת "שולחן" בטבלה למעלה.
         השולחן מופיע אוטומטית בכרטיס הכניסה של המוזמן — והשער מכריז עליו בסריקה.</p>
@@ -289,7 +333,7 @@ td{padding:7px 8px;border-bottom:1px solid var(--line-2);vertical-align:middle}
       <h3 style="margin-top:22px">מתנות <span class="chip test" style="font-size:10px;padding:1px 8px">מצב טסט</span></h3>
       <div style="overflow-x:auto">
       <table id="mGiftsTable">
-        <thead><tr><th>מאת</th><th>סכום</th><th>ברכה</th><th>תאריך</th></tr></thead>
+        <thead><tr><th>מאת</th><th>סכום</th><th>ברכה</th><th>תאריך</th><th>תודה</th></tr></thead>
         <tbody></tbody>
       </table>
       </div>
@@ -388,6 +432,50 @@ const THEMES = [
   { id: 'olive-garden', label: 'גן ירוק', sw: 'linear-gradient(135deg,#F5F7EF 58%,#5F7434)' },
 ];
 let inviteTheme = 'midnight-gold';
+
+// ---------- messaging (מרכז הודעות) ----------
+// built-in wording, used whenever the per-event template field is empty
+const TPL_DEFAULTS = {
+  invite: 'שלום {שם} 💌\n{מזמינים}\nמזמינים אתכם ל{אירוע}\n📅 {תאריך} {שעה}\n📍 {מקום}\nכל הפרטים, אישור ההגעה וכרטיס הכניסה — בקישור האישי שלכם:\n{קישור}',
+  reminder: 'היי {שם} 💛\nתזכורת קטנה — טרם קיבלנו את אישור ההגעה שלכם ל{אירוע}.\nזה לוקח כמה שניות, בקישור האישי שלכם:\n{קישור}',
+  thanks: '{שם} היקרים 💛\nתודה ענקית על המתנה המרגשת ל{אירוע}!\nריגשתם אותנו — איזה כיף שאתם חלק מהשמחה שלנו.',
+};
+
+// Israeli local numbers → international for wa.me; already-international kept
+function waPhone(p) {
+  const d = String(p || '').replace(/\D/g, '');
+  if (!d) return null;
+  if (d.startsWith('972') && d.length >= 11) return d;
+  if (d.startsWith('0') && d.length >= 9) return '972' + d.slice(1);
+  return null;
+}
+
+// fills {placeholders}; lines whose placeholders all resolved empty (no
+// letters/digits left, e.g. "📅  " for an event without a date) are dropped
+function composeMsg(tpl, ev, fields) {
+  const map = {
+    '{אירוע}': ev.title || '',
+    '{תאריך}': ev.event_date ? new Date(ev.event_date + 'T00:00').toLocaleDateString('he-IL') : '',
+    '{שעה}': ev.event_time || '',
+    '{מקום}': ev.venue_name || '',
+    '{מזמינים}': ev.invite_hosts || '',
+    ...fields,
+  };
+  let out = String(tpl || '');
+  for (const [k, v] of Object.entries(map)) out = out.split(k).join(v);
+  return out.split('\n').map((l) => l.replace(/\s+/g, ' ').trim())
+    .filter((l) => /[\p{L}\p{N}]/u.test(l)).join('\n');
+}
+
+function guestMsg(kind, ev, g) {
+  const tpl = kind === 'invite'
+    ? (ev.msg_invite_tpl || TPL_DEFAULTS.invite)
+    : (ev.msg_reminder_tpl || TPL_DEFAULTS.reminder);
+  return composeMsg(tpl, ev, {
+    '{שם}': g.full_name,
+    '{קישור}': 'https://more30.com/events/g?t=' + g.personal_token,
+  });
+}
 
 function renderThemePick() {
   $('themePick').innerHTML = THEMES.map((t) => `
@@ -511,6 +599,14 @@ async function openEvent(id, opts = {}) {
     renderThemePick();
     $('invHosts').value = ev.invite_hosts || '';
     $('invMsg').value = ev.invite_message || '';
+    // message templates share the "designer inputs" rule: never wipe a
+    // half-typed wording on a seating/check-in/send refresh
+    $('tplInvite').value = ev.msg_invite_tpl || '';
+    $('tplReminder').value = ev.msg_reminder_tpl || '';
+    $('tplThanks').value = ev.msg_thanks_tpl || '';
+    $('tplInvite').placeholder = TPL_DEFAULTS.invite;
+    $('tplReminder').placeholder = TPL_DEFAULTS.reminder;
+    $('tplThanks').placeholder = TPL_DEFAULTS.thanks;
   }
   $('invPreview').href = 'https://more30.com/events/g?s=' + ev.share_token;
 
@@ -562,7 +658,31 @@ async function openEvent(id, opts = {}) {
       <td>${shekel(g.amount_agorot)}</td>
       <td class="muted">${esc(g.greeting || '')}</td>
       <td class="muted">${new Date(g.created_at).toLocaleDateString('he-IL')}</td>
-    </tr>`).join('') || '<tr><td colspan="4" class="muted">עדיין לא התקבלו מתנות.</td></tr>';
+      <td style="white-space:nowrap">${g.thanked_at
+        ? '<span class="pill yes">✓ נאמרה תודה</span>'
+        : '<button class="btn ghost small" data-thank="' + g.id + '">💛 תודה ' + (waPhone(g.donor_phone) ? 'בוואטסאפ' : '(העתקה)') + '</button>'}</td>
+    </tr>`).join('') || '<tr><td colspan="5" class="muted">עדיין לא התקבלו מתנות.</td></tr>';
+
+  for (const b of $('mGiftsTable').querySelectorAll('[data-thank]'))
+    b.addEventListener('click', () => guarded(b, 'thank' + b.dataset.thank, async () => {
+      const gift = (CURRENT_EVENT.gifts || []).find(x => x.id === b.dataset.thank);
+      if (!gift) return;
+      const msg = composeMsg(ev.msg_thanks_tpl || TPL_DEFAULTS.thanks, ev, {
+        '{שם}': gift.donor_name,
+        '{סכום}': shekel(gift.amount_agorot),
+        '{קישור}': '',
+      });
+      const ph = waPhone(gift.donor_phone);
+      // window.open must run inside the click gesture, before any await
+      if (ph) window.open('https://wa.me/' + ph + '?text=' + encodeURIComponent(msg), '_blank', 'noopener');
+      else await navigator.clipboard.writeText(msg);
+      await rpc('evg_gift_thank', { p_gift_id: gift.id, p_thanked: true });
+      await rpc('evg_message_log', {
+        p_event_id: ev.id, p_kind: 'thankyou', p_body: msg,
+        p_channel: ph ? 'whatsapp' : 'copy', p_gift_id: gift.id,
+      });
+      await openEvent(ev.id, { scroll: false, refreshInvite: false });
+    }));
 
   const w = d.wallet || {};
   $('mWallet').textContent = Object.keys(w).length
@@ -571,11 +691,89 @@ async function openEvent(id, opts = {}) {
       (w.hall ? ' · לאולם ' + shekel(w.hall) : '')
     : '';
 
+  renderMessages(d);
   renderSeating(d);
 
   if (opts.scroll !== false)
     $('managePanel').scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
+
+// ---------- messaging center (מרכז הודעות) ----------
+const shortDate = (ts) => ts
+  ? new Date(ts).toLocaleDateString('he-IL', { day: 'numeric', month: 'numeric' })
+  : null;
+
+function msgAudienceFilter(guests) {
+  switch ($('msgAudience').value) {
+    case 'uninvited': return guests.filter(g => !g.invite_sent_at);
+    case 'pending': return guests.filter(g => g.rsvp_status === 'pending');
+    case 'pending_unreminded':
+      return guests.filter(g => g.rsvp_status === 'pending' && !g.reminder_sent_at);
+    case 'yes': return guests.filter(g => g.rsvp_status === 'yes');
+    default: return guests;
+  }
+}
+
+function renderMessages(d) {
+  const ev = d.event, guests = msgAudienceFilter(d.guests || []);
+  const withWa = guests.filter(g => waPhone(g.phone)).length;
+  $('msgStats').textContent = guests.length
+    ? guests.length + ' מוזמנים בקהל הנבחר · ' + withWa + ' עם וואטסאפ' +
+      (guests.length - withWa ? ' · ' + (guests.length - withWa) + ' יקבלו העתקה ללוח' : '')
+    : '';
+  const kind = $('msgKind').value;
+  $('msgTable').querySelector('tbody').innerHTML = guests.map((g) => `
+    <tr>
+      <td><b>${esc(g.full_name)}</b>${g.phone ? '<div class="muted" style="direction:ltr;text-align:right">' + esc(g.phone) + '</div>' : '<div class="muted">בלי טלפון</div>'}</td>
+      <td><span class="pill ${g.rsvp_status}">${RSVP_LABEL[g.rsvp_status]}</span></td>
+      <td class="muted">${[
+        g.invite_sent_at ? 'הזמנה ' + shortDate(g.invite_sent_at) : null,
+        g.reminder_sent_at ? 'תזכורת ' + shortDate(g.reminder_sent_at) : null,
+      ].filter(Boolean).join(' · ') || '—'}</td>
+      <td><button class="btn ghost small" data-send="${g.id}">
+        ${kind === 'invite' ? '💌 הזמנה' : '⏰ תזכורת'} ${waPhone(g.phone) ? 'בוואטסאפ' : '(העתקה)'}
+      </button></td>
+    </tr>`).join('') || '<tr><td colspan="4" class="muted">אין מוזמנים בקהל הזה — אפשר לבחור קהל אחר למעלה.</td></tr>';
+
+  for (const b of $('msgTable').querySelectorAll('[data-send]'))
+    b.addEventListener('click', () => guarded(b, 'send' + b.dataset.send, async () => {
+      const g = (CURRENT_EVENT.guests || []).find(x => x.id === b.dataset.send);
+      if (!g) return;
+      const sendKind = $('msgKind').value;
+      const msg = guestMsg(sendKind, CURRENT_EVENT.event, g);
+      const ph = waPhone(g.phone);
+      // window.open must run inside the click gesture, before any await
+      if (ph) window.open('https://wa.me/' + ph + '?text=' + encodeURIComponent(msg), '_blank', 'noopener');
+      else await navigator.clipboard.writeText(msg);
+      await rpc('evg_message_log', {
+        p_event_id: CURRENT_EVENT.event.id, p_kind: sendKind, p_body: msg,
+        p_channel: ph ? 'whatsapp' : 'copy', p_guest_id: g.id,
+      });
+      await openEvent(CURRENT_EVENT.event.id, { scroll: false, refreshInvite: false });
+    }));
+}
+
+$('msgKind').addEventListener('change', () => {
+  // the natural audience follows the message type; still user-changeable
+  $('msgAudience').value = $('msgKind').value === 'invite' ? 'uninvited' : 'pending_unreminded';
+  if (CURRENT_EVENT) renderMessages(CURRENT_EVENT);
+});
+$('msgAudience').addEventListener('change', () => { if (CURRENT_EVENT) renderMessages(CURRENT_EVENT); });
+
+$('tplSave').addEventListener('click', () => guarded($('tplSave'), 'tplSave', async () => {
+  $('tplErr').innerHTML = '';
+  if (!CURRENT_EVENT) return;
+  try {
+    await rpc('evg_event_templates_set', {
+      p_event_id: CURRENT_EVENT.event.id,
+      p_invite: $('tplInvite').value.trim(),
+      p_reminder: $('tplReminder').value.trim(),
+      p_thanks: $('tplThanks').value.trim(),
+    });
+    $('tplErr').innerHTML = '<div class="ok-note">הנוסחים נשמרו — כל שליחה מעכשיו משתמשת בהם.</div>';
+    await openEvent(CURRENT_EVENT.event.id, { scroll: false });
+  } catch (e) { $('tplErr').innerHTML = '<div class="err">' + esc(e.message) + '</div>'; }
+}));
 
 // ---------- seating (סידורי הושבה) ----------
 // souls at the table: a confirmed party counts its RSVP size, a pending/maybe
