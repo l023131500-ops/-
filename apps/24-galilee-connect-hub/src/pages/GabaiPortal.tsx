@@ -551,7 +551,7 @@ const AdminPasswordManager = () => {
                   <Edit3 className="w-3 h-3" /> שנה
                 </Button>
                 {accounts.length > 1 && (
-                  <Button size="sm" variant="ghost" onClick={() => deleteAdmin(acc.id)} className="text-destructive">
+                  <Button size="sm" variant="ghost" onClick={() => deleteAdmin(acc.id)} disabled={loading} className="text-destructive">
                     <Trash2 className="w-3 h-3" />
                   </Button>
                 )}
