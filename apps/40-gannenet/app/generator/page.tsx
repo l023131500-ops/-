@@ -41,6 +41,7 @@ export default function Generator() {
   }
 
   async function generate() {
+    if (loading) return;
     if (!topic.trim()) { setErr("נא להזין נושא"); return; }
     const token = sessionToken();
     if (!token) {
