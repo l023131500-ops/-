@@ -152,6 +152,24 @@ const AdminDashboard = () => {
     }
   };
 
+  const approveStudyDay = async (id: string) => {
+    if (busyId) return;
+    setBusyId(`study-day:${id}`);
+    const { error } = await supabase.from("study_day_events").update({ is_approved: true, status: "approved" }).eq("id", id);
+    setBusyId(null);
+    if (error) toast.error("שגיאה: " + error.message);
+    else { toast.success("אושר"); fetchAll(); }
+  };
+
+  const rejectStudyDay = async (id: string) => {
+    if (busyId) return;
+    setBusyId(`study-day:${id}`);
+    const { error } = await supabase.from("study_day_events").update({ is_approved: false, status: "rejected" }).eq("id", id);
+    setBusyId(null);
+    if (error) toast.error("שגיאה: " + error.message);
+    else { toast.info("בוטל"); fetchAll(); }
+  };
+
   const startEditing = (lesson: any) => {
     setEditingLesson(lesson.id);
     setEditData({ ...lesson });
@@ -1387,18 +1405,12 @@ const AdminDashboard = () => {
                               <Download className="w-3 h-3" />
                             </Button>
                             {!ev.is_approved && (
-                              <Button size="sm" onClick={async () => {
-                                const { error } = await supabase.from("study_day_events").update({ is_approved: true, status: "approved" }).eq("id", ev.id);
-                                if (!error) { toast.success("אושר"); fetchAll(); }
-                              }} className="bg-gradient-teal text-primary-foreground gap-1 font-body font-bold">
+                              <Button size="sm" onClick={() => approveStudyDay(ev.id)} disabled={busyId === `study-day:${ev.id}`} className="bg-gradient-teal text-primary-foreground gap-1 font-body font-bold">
                                 <Check className="w-3 h-3" /> אשר
                               </Button>
                             )}
                             {ev.is_approved && (
-                              <Button size="sm" variant="outline" onClick={async () => {
-                                const { error } = await supabase.from("study_day_events").update({ is_approved: false, status: "rejected" }).eq("id", ev.id);
-                                if (!error) { toast.info("בוטל"); fetchAll(); }
-                              }} className="text-destructive gap-1 font-body border-destructive/30">
+                              <Button size="sm" variant="outline" onClick={() => rejectStudyDay(ev.id)} disabled={busyId === `study-day:${ev.id}`} className="text-destructive gap-1 font-body border-destructive/30">
                                 <X className="w-3 h-3" /> בטל
                               </Button>
                             )}
