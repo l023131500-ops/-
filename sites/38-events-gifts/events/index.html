@@ -91,6 +91,9 @@ td{padding:7px 8px;border-bottom:1px solid var(--line-2);vertical-align:middle}
 .hero{padding:46px 0 30px}
 .feature b{display:block;font-weight:500;color:var(--gold-soft);margin-bottom:4px}
 .feature p{margin:0;font-size:13px;color:var(--ink-2)}
+.seatchip{display:inline-block;border:1px solid var(--line-2);border-radius:999px;
+  padding:1px 10px;font-size:12px;color:var(--ink-2);margin:2px 2px 0 0;background:var(--night-2)}
+.tblcard .bar i.over{background:linear-gradient(90deg,var(--rose),#F08A83)}
 .backlink{font-size:13px}
 @media (max-width:640px){ .wrap{padding-inline:14px} th,td{padding:5px 5px} }
 </style>
@@ -123,6 +126,7 @@ td{padding:7px 8px;border-bottom:1px solid var(--line-2);vertical-align:middle}
       <div class="card feature"><b>מתנות באשראי</b><p>המוזמן נותן מתנה מהקישור שלו. מד "נאספו X ₪" בזמן אמת, פירוט מלא ומעקב תודות.</p></div>
       <div class="card feature"><b>דפי אולמות + לידים</b><p>דף נחיתה מעוצב לכל אולם עם טופס פנייה — כל פנייה נכנסת ללוח הלידים של בעל האולם.</p></div>
       <div class="card feature"><b>צ'ק-אין בכניסה</b><p>סימון הגעה בפועל ביום האירוע — ספירה חיה של מי שכבר בפנים.</p></div>
+      <div class="card feature"><b>סידורי הושבה</b><p>שולחנות, קיבולות והושבת מוזמנים — השולחן מופיע בכרטיס הכניסה, והשער מכריז עליו בסריקה.</p></div>
       <div class="card feature"><b>ארנקים ועמלות</b><p>כל מתנה מתפצלת אוטומטית: לבעל האירוע, לפלטפורמה, ולאולם אם רלוונטי. שקוף לחלוטין.</p></div>
       <div class="card feature"><b>בלי לגעת בכרטיס</b><p>הסליקה תמיד אצל ספק מוסמך (נדרים פלוס / PayMe). הפלטפורמה לא רואה מספרי כרטיס — לעולם.</p></div>
     </div>
@@ -234,9 +238,24 @@ td{padding:7px 8px;border-bottom:1px solid var(--line-2);vertical-align:middle}
       <h3 style="margin-top:22px">מוזמנים <span class="muted" id="mGuestCount"></span></h3>
       <div style="overflow-x:auto">
       <table id="mGuestsTable">
-        <thead><tr><th>שם</th><th>קבוצה</th><th>מוזמנים</th><th>סטטוס</th><th>הערה</th><th></th></tr></thead>
+        <thead><tr><th>שם</th><th>קבוצה</th><th>מוזמנים</th><th>סטטוס</th><th>שולחן</th><th>הערה</th><th></th></tr></thead>
         <tbody></tbody>
       </table>
+      </div>
+
+      <h3 style="margin-top:22px">סידורי הושבה</h3>
+      <p class="muted">מוסיפים שולחנות, ומושיבים כל מוזמן מעמודת "שולחן" בטבלה למעלה.
+        השולחן מופיע אוטומטית בכרטיס הכניסה של המוזמן — והשער מכריז עליו בסריקה.</p>
+      <div class="copybox" style="max-width:480px">
+        <input id="tblName" placeholder="שם השולחן (משפחת כהן, חברים…)" />
+        <input id="tblCap" type="number" min="1" max="200" value="10" title="קיבולת (נפשות)" style="max-width:86px" />
+        <button class="btn small" id="tblAdd">+ שולחן</button>
+      </div>
+      <div id="tblErr"></div>
+      <div class="grid c3" id="tablesGrid" style="margin-top:12px"></div>
+      <div id="seatingSummary" class="rowline" style="margin-top:8px">
+        <span class="muted" id="seatingStats"></span>
+        <button class="btn ghost small" id="seatingExport" hidden>⬇ ייצוא סידורי הושבה (CSV)</button>
       </div>
 
       <h3 style="margin-top:22px">מתנות <span class="chip test" style="font-size:10px;padding:1px 8px">מצב טסט</span></h3>
@@ -404,7 +423,7 @@ $('evCreate').addEventListener('click', () => guarded($('evCreate'), 'evCreate',
 }));
 
 // ---------- manage one event ----------
-async function openEvent(id) {
+async function openEvent(id, opts = {}) {
   // switching events while the gate is open would scan against the wrong event
   if (CURRENT_EVENT && CURRENT_EVENT.event.id !== id) gateShut();
   const d = await rpc('evg_event_dashboard', { p_event_id: id });
@@ -437,21 +456,31 @@ async function openEvent(id) {
   $('mShareUrl').value = 'https://more30.com/events/g?s=' + ev.share_token;
   $('mGuestCount').textContent = '(' + guests.length + ')';
 
+  const tables = d.tables || [];
+  const tableOptions = (sel) => '<option value="">— ללא —</option>' + tables.map(t =>
+    '<option value="' + t.id + '"' + (t.id === sel ? ' selected' : '') + '>' + esc(t.name) + '</option>').join('');
+
   $('mGuestsTable').querySelector('tbody').innerHTML = guests.map((g) => `
     <tr>
       <td><b>${esc(g.full_name)}</b>${g.phone ? '<div class="muted">' + esc(g.phone) + '</div>' : ''}</td>
       <td>${esc(g.group_name || '')}</td>
       <td>${g.rsvp_status === 'yes' ? (g.rsvp_count ?? g.invited_count) : g.invited_count}</td>
       <td><span class="pill ${g.rsvp_status}">${RSVP_LABEL[g.rsvp_status]}</span>${g.checkin_at ? ' <span class="pill yes">נכנסו</span>' : ''}</td>
+      <td><select data-seat="${g.id}" style="margin:0;width:auto;max-width:140px">${tableOptions(g.table_id)}</select></td>
       <td class="muted">${esc(g.rsvp_note || '')}</td>
       <td style="white-space:nowrap">
         <button class="btn ghost small" data-copy="${g.personal_token}">קישור</button>
         ${g.checkin_at ? '' : '<button class="btn ghost small" data-checkin="' + g.id + '">צ\'ק-אין</button>'}
         <button class="btn danger small" data-del="${g.id}">✕</button>
       </td>
-    </tr>`).join('') || '<tr><td colspan="6" class="muted">אין מוזמנים עדיין.</td></tr>';
+    </tr>`).join('') || '<tr><td colspan="7" class="muted">אין מוזמנים עדיין.</td></tr>';
 
   const tb = $('mGuestsTable').querySelector('tbody');
+  for (const sel of tb.querySelectorAll('[data-seat]'))
+    sel.addEventListener('change', () => guarded(sel, 'seat' + sel.dataset.seat, async () => {
+      await rpc('evg_guest_set_table', { p_guest_id: sel.dataset.seat, p_table_id: sel.value || null });
+      await openEvent(ev.id, { scroll: false });
+    }));
   for (const b of tb.querySelectorAll('[data-copy]'))
     b.addEventListener('click', () => {
       navigator.clipboard.writeText('https://more30.com/events/g?t=' + b.dataset.copy);
@@ -460,13 +489,13 @@ async function openEvent(id) {
   for (const b of tb.querySelectorAll('[data-checkin]'))
     b.addEventListener('click', () => guarded(b, 'ci' + b.dataset.checkin, async () => {
       await rpc('evg_guest_checkin', { p_guest_id: b.dataset.checkin });
-      await openEvent(ev.id);
+      await openEvent(ev.id, { scroll: false });
     }));
   for (const b of tb.querySelectorAll('[data-del]'))
     b.addEventListener('click', () => guarded(b, 'del' + b.dataset.del, async () => {
       if (!confirm('למחוק את המוזמן? הקישור האישי שלו יפסיק לעבוד.')) return;
       await rpc('evg_guest_delete', { p_guest_id: b.dataset.del });
-      await openEvent(ev.id); await refreshMe();
+      await openEvent(ev.id, { scroll: false }); await refreshMe();
     }));
 
   $('mGiftsTable').querySelector('tbody').innerHTML = gifts.map((g) => `
@@ -484,8 +513,107 @@ async function openEvent(id) {
       (w.hall ? ' · לאולם ' + shekel(w.hall) : '')
     : '';
 
-  $('managePanel').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  renderSeating(d);
+
+  if (opts.scroll !== false)
+    $('managePanel').scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
+
+// ---------- seating (סידורי הושבה) ----------
+// souls at the table: a confirmed party counts its RSVP size, a pending/maybe
+// party counts its invite size, a declined party takes no chairs
+const seatSouls = (g) => g.rsvp_status === 'no' ? 0 : (g.rsvp_count ?? g.invited_count);
+
+function renderSeating(d) {
+  const tables = d.tables || [], guests = d.guests || [];
+  $('tablesGrid').innerHTML = tables.map((t) => {
+    const seated = guests.filter(g => g.table_id === t.id);
+    const n = seated.reduce((s, g) => s + seatSouls(g), 0);
+    const pct = Math.min(100, Math.round(n * 100 / t.capacity));
+    const over = n > t.capacity;
+    return `
+      <div class="card tblcard">
+        <div class="rowline">
+          <b>${esc(t.name)}</b>
+          <span style="white-space:nowrap">
+            <button class="btn ghost small" data-tbl-edit="${t.id}" title="עריכת שם/קיבולת">✎</button>
+            <button class="btn danger small" data-tbl-del="${t.id}" title="מחיקת שולחן">✕</button>
+          </span>
+        </div>
+        <div class="muted">${n} מתוך ${t.capacity} נפשות${over ? ' · <span class="pill no">חריגה מהקיבולת</span>' : ''}</div>
+        <div class="bar"><i class="${over ? 'over' : ''}" style="width:${pct}%"></i></div>
+        <div>${seated.map(g => '<span class="seatchip">' + esc(g.full_name) + ' · ' + seatSouls(g) + '</span>').join('')
+              || '<span class="muted">עדיין לא הושיבו כאן אף אחד.</span>'}</div>
+      </div>`;
+  }).join('') || '<p class="muted">אין שולחנות עדיין — מוסיפים למעלה ומתחילים להושיב.</p>';
+
+  const unseated = guests.filter(g => !g.table_id && g.rsvp_status !== 'no');
+  $('seatingStats').textContent = tables.length
+    ? tables.length + ' שולחנות · ' + (unseated.length
+        ? unseated.length + ' מוזמנים עדיין ללא שולחן'
+        : 'כולם מושבים 🎉')
+    : '';
+  $('seatingExport').hidden = tables.length === 0;
+
+  for (const b of $('tablesGrid').querySelectorAll('[data-tbl-del]'))
+    b.addEventListener('click', () => guarded(b, 'tdel' + b.dataset.tblDel, async () => {
+      if (!confirm('למחוק את השולחן? המוזמנים שיושבים בו יחזרו ל"ללא שולחן".')) return;
+      await rpc('evg_table_delete', { p_table_id: b.dataset.tblDel });
+      await openEvent(CURRENT_EVENT.event.id, { scroll: false });
+    }));
+  for (const b of $('tablesGrid').querySelectorAll('[data-tbl-edit]'))
+    b.addEventListener('click', () => guarded(b, 'tedit' + b.dataset.tblEdit, async () => {
+      const t = (CURRENT_EVENT.tables || []).find(x => x.id === b.dataset.tblEdit);
+      const name = prompt('שם השולחן:', t?.name || '');
+      if (name === null) return;
+      const cap = prompt('קיבולת (נפשות):', t?.capacity ?? 10);
+      if (cap === null) return;
+      await rpc('evg_table_update', {
+        p_table_id: b.dataset.tblEdit,
+        p_name: name.trim() || null,
+        p_capacity: parseInt(cap, 10) || null,
+      });
+      await openEvent(CURRENT_EVENT.event.id, { scroll: false });
+    }));
+}
+
+$('tblAdd').addEventListener('click', () => guarded($('tblAdd'), 'tblAdd', async () => {
+  $('tblErr').innerHTML = '';
+  if (!CURRENT_EVENT) return;
+  const name = $('tblName').value.trim();
+  if (!name) { $('tblErr').innerHTML = '<div class="err">שם השולחן חובה.</div>'; return; }
+  try {
+    await rpc('evg_table_create', {
+      p_event_id: CURRENT_EVENT.event.id,
+      p_name: name,
+      p_capacity: parseInt($('tblCap').value, 10) || 10,
+    });
+    $('tblName').value = '';
+    await openEvent(CURRENT_EVENT.event.id, { scroll: false });
+  } catch (e) { $('tblErr').innerHTML = '<div class="err">' + esc(e.message) + '</div>'; }
+}));
+
+$('seatingExport').addEventListener('click', () => {
+  if (!CURRENT_EVENT) return;
+  const tables = CURRENT_EVENT.tables || [], guests = CURRENT_EVENT.guests || [];
+  const rows = [['שולחן', 'קיבולת', 'מוזמן', 'קבוצה', 'נפשות', 'סטטוס']];
+  for (const t of tables) {
+    const seated = guests.filter(g => g.table_id === t.id);
+    if (!seated.length) rows.push([t.name, t.capacity, '', '', '', '']);
+    for (const g of seated)
+      rows.push([t.name, t.capacity, g.full_name, g.group_name || '', seatSouls(g), RSVP_LABEL[g.rsvp_status]]);
+  }
+  for (const g of guests.filter(g => !g.table_id))
+    rows.push(['— ללא שולחן —', '', g.full_name, g.group_name || '', seatSouls(g), RSVP_LABEL[g.rsvp_status]]);
+  // BOM so Excel opens the Hebrew correctly
+  const csv = '\ufeff' + rows.map(r =>
+    r.map(c => '"' + String(c).replace(/"/g, '""') + '"').join(',')).join('\r\n');
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' }));
+  a.download = 'seating-' + (CURRENT_EVENT.event.title || 'event').replace(/[\\/:*?"<>|]/g, '_') + '.csv';
+  a.click();
+  URL.revokeObjectURL(a.href);
+});
 
 $('mClose').addEventListener('click', () => { gateShut(); $('managePanel').hidden = true; CURRENT_EVENT = null; });
 $('mShareCopy').addEventListener('click', () => {
@@ -507,7 +635,7 @@ $('mGuestsAdd').addEventListener('click', () => guarded($('mGuestsAdd'), 'guests
     const r = await rpc('evg_guests_add', { p_event_id: CURRENT_EVENT.event.id, p_guests: guests });
     $('mGuestsInput').value = '';
     $('mGuestsErr').innerHTML = '<div class="ok-note">נוספו ' + r.inserted + ' מוזמנים — לכל אחד קישור אישי (עמודת "קישור").</div>';
-    await openEvent(CURRENT_EVENT.event.id); await refreshMe();
+    await openEvent(CURRENT_EVENT.event.id, { scroll: false }); await refreshMe();
   } catch (e) { $('mGuestsErr').innerHTML = '<div class="err">' + esc(e.message) + '</div>'; }
 }));
 
@@ -540,11 +668,13 @@ async function gateCheckin(token) {
       const g = r.guest;
       $('gateResult').innerHTML = '<div class="scan-ok">✓ <b>' + esc(g.full_name) + '</b> נכנסו — ' +
         (g.rsvp_status === 'yes' && g.rsvp_count ? g.rsvp_count : g.invited_count) + ' נפשות' +
-        (g.group_name ? ' · ' + esc(g.group_name) : '') + '</div>';
+        (g.group_name ? ' · ' + esc(g.group_name) : '') +
+        (g.table_name ? '<br>🪑 <b>שולחן ' + esc(g.table_name) + '</b>' : '') + '</div>';
       navigator.vibrate?.(80);
     } else if (r.ok && r.already) {
       $('gateResult').innerHTML = '<div class="scan-warn">↺ <b>' + esc(r.guest.full_name) + '</b> כבר נכנסו (' +
-        new Date(r.guest.checkin_at).toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit' }) + ')</div>';
+        new Date(r.guest.checkin_at).toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit' }) + ')' +
+        (r.guest.table_name ? ' · 🪑 שולחן ' + esc(r.guest.table_name) : '') + '</div>';
     } else if (r.reason === 'wrong_event') {
       $('gateResult').innerHTML = '<div class="scan-bad">✗ הקוד שייך לאירוע אחר שלך — לא לאירוע הזה.</div>';
     } else {
@@ -637,7 +767,7 @@ $('gateOpen').addEventListener('click', () => {
 $('gateClose').addEventListener('click', () => guarded($('gateClose'), 'gateClose', async () => {
   gateShut();
   // pull the door scans into the guest table + the check-in stat
-  if (CURRENT_EVENT) await openEvent(CURRENT_EVENT.event.id);
+  if (CURRENT_EVENT) await openEvent(CURRENT_EVENT.event.id, { scroll: false });
 }));
 
 $('gateManualBtn').addEventListener('click', () => guarded($('gateManualBtn'), 'gateManual', async () => {

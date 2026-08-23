@@ -314,7 +314,8 @@ async function renderPass(g) {
     await QRCode.toCanvas($('qrCanvas'), 'https://more30.com/events/g?t=' + T,
       { width: 208, margin: 0, color: { dark: '#100D22', light: '#ffffff' } });
     $('passMeta').innerHTML = '<b>' + esc(g.full_name) + '</b> · ' +
-      (g.rsvp_status === 'yes' && g.rsvp_count ? g.rsvp_count : g.invited_count) + ' מוזמנים';
+      (g.rsvp_status === 'yes' && g.rsvp_count ? g.rsvp_count : g.invited_count) + ' מוזמנים' +
+      (g.table_name ? '<br>🪑 השולחן שלכם: <b>' + esc(g.table_name) + '</b>' : '');
     $('passCard').hidden = false;
   } catch { /* no QR — nothing breaks */ }
 }
