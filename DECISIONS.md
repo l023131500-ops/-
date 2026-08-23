@@ -12421,3 +12421,61 @@
     בדיקה נוספת (למשל `listCategories(NaN)` מול `null`). נושאים
     #62/#94/#115/#164/#169/#254 נשארים חסומים.
     via cloud server 167.99.131.167 [loop B]
+
+## 23/08/2026 — סבב 475 (loop B)
+
+475. **אותה משפחת באג בדיוק (`String(array)` על `req.query`) נמצאה
+    במערכת אחרת — `28-kupot-health-funds`, נקודת הקצה `/api/hf/report`
+    (`server/routes.ts`).** במקום להמשיך את ה"הבא בתור" של סבב 474
+    (`clientId`/`limit` ב-27-bkalut-price, שבהם `Number(array)` מפיק
+    `NaN` בגלוי ברוב המסלולים), שיגרתי חיפוש טרי על פני 18/23/24/25/28
+    — האפליקציות שלא נגעו בהן הסבבים האחרונים. שללתי תחילה שני מועמדים
+    חלשים: ה-autosave ב-`18-torah-editor-mvp/app/editor/page.tsx`
+    (מערכי התלויות ב-`save`/`useEffect` נכונים בפועל, לא באג), ו-404
+    במקום 400 על `:id` לא-מספרי ב-`28-kupot-health-funds/server/
+    routes.ts:57` (סמנטיקת HTTP משנית, לא שחיתות נתונים שקטה).
+
+    ה-handler של `/api/hf/report` (`routes.ts:71-96`, לפני התיקון)
+    השתמש ב-`String(req.query.category)`/`.fund`/`.search`/`.kind`/
+    `.print` — בדיוק הדפוס שתוקן פעמיים ב-27-bkalut-price. אם הלקוח
+    שולח `?category=` פעמיים (או קישור ישן/כפול), Express הופך את זה
+    למערך; `String([...])` מייצר `"א,ב"` שלא שווה לשום ערך `category`
+    אמיתי. `filterTopicsForReport` (`hf-report.ts:49`) עושה `t.category
+    !== opts.category` — שקט, בלי שגיאה: הדוח חוזר ריק (0 שורות) אף
+    שהנתונים קיימים, בדיוק כמו התיאור בבאג 27/473 (סינון נהרס בלי סימן
+    לבעיה). מקור הבקשה: `client/src/pages/home.tsx:140-147`
+    (`openReport()`) בונה `URLSearchParams` תקין בדפדפן הרגיל, כך
+    שהחשיפה דורשת URL בנוי-ידנית/קישור כפול — אבל אין שום אימות בצד
+    השרת שמונע זאת, ונקודת הקצה ציבורית (לא מוגנת `requireAdmin`).
+
+    **התיקון:** הוספתי `singleQueryParam(v)` — פונקציה מקומית ב-
+    `routes.ts` (אותו רעיון כמו `monthQueryParam`/`singleQueryParam`
+    ב-27-bkalut-price/server/fin-routes.ts, אך לא ייבוא משותף כי כל
+    אפליקציה בתיקיית `apps/` היא חבילה עצמאית) — ולוקח את האיבר
+    הראשון אם `req.query.X` הוא מערך. החלפתי את כל חמשת המופעים
+    (`kind`, `category`, `fund`, `search`, `print`) בקריאות אליה. אין
+    שינוי לחוזה ה-API בתרחיש הרגיל (פרמטר יחיד).
+
+    **בדיקות תקינות:** קריאת קוד בלבד (ללא dev-server/build/
+    `node_modules`, לפי הנחיות ההרצה — `node_modules` לא מותקן
+    באפליקציה הזו). אימתתי את `routes.ts:71-97` (אחרי התיקון), את
+    `filterTopicsForReport`/`renderHfReportHtml` ב-`hf-report.ts`
+    (כולל שה-`esc()` הקיים כבר מכסה XSS ב-`filtersLabel`, כך שזה לא
+    באג נוסף), ואת נקודת הקריאה מהלקוח ב-`home.tsx`. `grep` על כל
+    הקובץ אישר ש-5 המופעים היחידים של `req.query` בקובץ תוקנו.
+    `git diff --stat`: קובץ יחיד, +14/-5.
+
+    לא נגעתי במערכות מוגנות 08/09/bkalut-app/bkalot-admin/zr_*/
+    NEDARIM3873/csj/csj_src/igud, ב-`main`, או במערכת מחוץ ל-scope
+    (17-25/27/28 בלבד).
+
+    ענף חדש `fix/b-28-hf-report-query-array-round475-0823` (שרשרת
+    הענפים היא המקור היחיד ל-loop B, לא `main`), נדחף (קומיט
+    `e2795337`).
+
+    **הבא בתור:** לחזור ל"הבא בתור" של סבב 474 שנדחה — `clientId`
+    (שורות 182/253/438) ו-`limit` (שורה 549) ב-27-bkalut-price/server/
+    fin-routes.ts — ולסרוק שאר נקודות הקצה הציבוריות (לא-`requireAdmin`)
+    ב-scope לאותו דפוס `String(req.query...)`. נושאים
+    #62/#94/#115/#164/#169/#254 נשארים חסומים.
+    via cloud server 167.99.131.167 [loop B]
