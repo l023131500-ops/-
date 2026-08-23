@@ -251,8 +251,10 @@ function openLeadForm(context) {
     </form>`;
   document.getElementById('leadModal').classList.remove('hidden');
 
+  let leadSubmitting = false;
   document.getElementById('leadForm').onsubmit = async (e) => {
     e.preventDefault();
+    if (leadSubmitting) return;
     const msg = document.getElementById('lf_msg');
     const name = document.getElementById('lf_name').value.trim();
     const phone = document.getElementById('lf_phone').value.trim();
@@ -270,22 +272,27 @@ function openLeadForm(context) {
     phoneField.setAttribute('aria-invalid', 'false');
     if (!consent) { msg.textContent = 'יש לאשר יצירת קשר כדי שנוכל לחזור אליכם.'; msg.className = 'lead-msg err'; return; }
     const btn = e.target.querySelector('.lead-submit');
+    leadSubmitting = true;
     btn.disabled = true; btn.textContent = 'שולח...';
-    const ok = await submitLead({ name, phone, email, context });
-    if (ok) {
-      document.getElementById('leadContent').innerHTML = `
-        <div class="lead-success">
-          <svg width="64" height="64" viewBox="0 0 48 48" fill="none" style="color:var(--tip)" aria-hidden="true">
-            <circle cx="24" cy="24" r="21" stroke="currentColor" stroke-width="2.5"/>
-            <path d="M15 24 L21 30 L33 17" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-          <h3>הפרטים נשלחו בהצלחה</h3>
-          <p>צוות בקלות יחזור אליכם בהקדם עם המידע המדויק והמעודכן, ותזכורת אישית לביצוע. תודה שבחרתם בבקלות.</p>
-        </div>`;
-    } else {
-      msg.textContent = 'אירעה שגיאה בשליחה. נסו שוב או פנו אלינו ישירות.';
-      msg.className = 'lead-msg err';
-      btn.disabled = false; btn.textContent = 'שלחו לי את הפרטים והתזכורת ←';
+    try {
+      const ok = await submitLead({ name, phone, email, context });
+      if (ok) {
+        document.getElementById('leadContent').innerHTML = `
+          <div class="lead-success">
+            <svg width="64" height="64" viewBox="0 0 48 48" fill="none" style="color:var(--tip)" aria-hidden="true">
+              <circle cx="24" cy="24" r="21" stroke="currentColor" stroke-width="2.5"/>
+              <path d="M15 24 L21 30 L33 17" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <h3>הפרטים נשלחו בהצלחה</h3>
+            <p>צוות בקלות יחזור אליכם בהקדם עם המידע המדויק והמעודכן, ותזכורת אישית לביצוע. תודה שבחרתם בבקלות.</p>
+          </div>`;
+      } else {
+        msg.textContent = 'אירעה שגיאה בשליחה. נסו שוב או פנו אלינו ישירות.';
+        msg.className = 'lead-msg err';
+        btn.disabled = false; btn.textContent = 'שלחו לי את הפרטים והתזכורת ←';
+      }
+    } finally {
+      leadSubmitting = false;
     }
   };
 }
