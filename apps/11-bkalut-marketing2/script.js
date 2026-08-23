@@ -188,7 +188,15 @@
     }
   }
 
+  // Bumped on every call so an older in-flight search can tell it's been
+  // superseded — Enter twice, or two suggestion chips clicked in a row, fire
+  // two overlapping fetches, and without this the one that resolves last
+  // wins even if it started first, showing results for a query the user no
+  // longer has in the box.
+  let assistSeq = 0;
+
   async function runAssistantSearch(q) {
+    const seq = ++assistSeq;
     if (!q) {
       assistResults.innerHTML = "";
       return;
@@ -213,6 +221,7 @@
         // try next
       }
     }
+    if (seq !== assistSeq) return; // a newer search started; drop this result
     if (!json) {
       assistResults.innerHTML =
         '<div class="assistant-status assistant-status-err">לא הצלחנו להגיע למאגר ברגע זה. ' +
