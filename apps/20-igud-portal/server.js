@@ -35,8 +35,14 @@ app.get("/api/health", (_req, res) => {
   res.json({ ok: true, service: "igud-portal", time: new Date().toISOString() });
 });
 
+function singleQueryParam(v) {
+  return Array.isArray(v) ? v[0] : v;
+}
+
 app.get("/api/directory", async (req, res) => {
-  const { type, city, q } = req.query;
+  const type = singleQueryParam(req.query.type);
+  const city = singleQueryParam(req.query.city);
+  const q = singleQueryParam(req.query.q);
   const r = await callRpc("public_directory", {
     p_type: type || null,
     p_city: city || null,
