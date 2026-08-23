@@ -2595,6 +2595,91 @@ pre{
     return p;
   }
 
+  // ── מסמך ממותג — מערכת העיצוב (apps/29-bkalot-design) פוגשת את המכתב ─────
+  // העטיפה חיה כאן, בשכבת התצוגה/ההדפסה בלבד, ולא בשורת התבנית במסד: גוף
+  // המכתב ממשיך לנסוע לתור/שליחה כמו שהוא (0067) — CSS שתלוי בקובץ חיצוני
+  // אינו שורד אצל נמען דוא"ל, ועריכת body_html במסד הייתה משנה גם את מה
+  // שיישלח. bkalot-theme.css מספק כאן את הפונט הרשמי (--doc-font-body,
+  // David Libre), את מנוע ההדפסה bk-doc-* (A4, @page) ואת רקעי המותג
+  // (--bg-gradient-brand, --bg-pattern-wave) — אותו קובץ שכבר נטען למסך עצמו.
+  const THEME_HREF =
+    document.querySelector('link[href*="bkalot-theme"]')?.href ||
+    "https://bieebmnmkffwbqlsfozh.supabase.co/storage/v1/object/public/design/bkalot-theme.css";
+  // הבורח היחיד בקובץ: כל שאר המסך בנוי createElement/textContent, אבל srcdoc
+  // הוא מחרוזת, והמטא-דאטה (מפתח תבנית, kind) מגיעה מהמסד כטקסט חופשי.
+  const escDoc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => (
+    { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]
+  ));
+  function letterDocHtml(d, forPrint) {
+    // «טיוטה» גם על שורה חסומה בתור: מסמך שלא יישלח לעולם אסור שיודפס בלי
+    // הסימן — בדיוק הפער חסר-הסימפטום ש-0067 הוסיפה queue_status בשבילו.
+    const draft = !d.queued || d.queue_status === "blocked";
+    const stateLine = d.queued
+      ? `בתור #${escDoc(d.queue_id)} · ${d.queue_status === "blocked" ? "חסום — לא יישלח" : escDoc(d.queue_status)} · מצב ${escDoc(d.queue_mode)}`
+      : "לא נשלח — מצב טסט";
+    // window.print חייב לרוץ בתוך המסמך; «scr»+«ipt» כדי שהמחרוזת לא תסגור
+    // את בלוק הסקריפט של המסך הזה. ההמתנה ל-document.fonts — הפונט הרשמי
+    // נטען מרחוק, והדפסה לפניו הייתה תופסת את פונט הנפילה של מערכת ההפעלה.
+    const printScript =
+      "<scr" + "ipt>addEventListener('load',function(){" +
+      "(document.fonts&&document.fonts.ready?document.fonts.ready:Promise.resolve())" +
+      ".then(function(){setTimeout(function(){window.print()},150)})})" +
+      "</scr" + "ipt>";
+    return '<!doctype html><html lang="he" dir="rtl"><head><meta charset="utf-8">'
+      + '<link rel="stylesheet" href="' + escDoc(THEME_HREF) + '">'
+      + "<style>"
+      + "body{margin:0;background:var(--surface-2,#F2F0EB)}"
+      // פס המותג והרקעים מודפסים בכוונה — print-color-adjust, אחרת הדפדפן
+      // משמיט רקעים בהדפסה והמסמך חוזר להיות דף לבן חסר-זהות.
+      + ".bk-doc-page{position:relative;box-shadow:0 2px 14px rgba(20,40,40,.14);margin:14px auto;padding-top:0}"
+      + ".letter-band{height:7px;background:var(--bg-gradient-brand);margin:0 -14mm 12mm;print-color-adjust:exact;-webkit-print-color-adjust:exact}"
+      + ".letter-crest{height:12px;background-image:var(--bg-pattern-wave);margin:4px 0 14px;print-color-adjust:exact;-webkit-print-color-adjust:exact}"
+      + ".bk-doc-header{border-bottom:none;padding-bottom:0;margin-bottom:0}"
+      + ".bk-doc-header .bk-doc-meta{direction:rtl;text-align:left}"
+      // התבנית במסד נושאת font-family:system-ui בשורה (0063) — נכון לדוא"ל,
+      // אבל כאן שכבת המותג גוברת: !important הוא הדרך היחידה מעל סגנון-שורה.
+      + ".letter-body,.letter-body *{font-family:var(--doc-font-body,'David Libre',serif)!important}"
+      + ".letter-body{font-size:12pt}"
+      + "@media print{.letter-band{margin:0 0 12mm}.bk-doc-page{padding-top:0}}"
+      + "</style></head><body>"
+      + '<div class="bk-doc-page">'
+      + '<div class="letter-band"></div>'
+      + '<header class="bk-doc-header">'
+      + '<span class="bk-doc-logo">בקלות</span>'
+      + '<span class="bk-doc-meta">מסמך #' + escDoc(d.id)
+      + (d.kind ? " · " + escDoc(d.kind) : "")
+      + (d.template_key ? " · " + escDoc(d.template_key) : "")
+      + "<br>" + escDoc(fmtDate(d.created_at)) + "</span>"
+      + "</header>"
+      + '<div class="letter-crest"></div>'
+      + '<div class="letter-body">' + (d.body_html || "") + "</div>"
+      + '<footer class="bk-doc-footer"><span>בקלות — מיצוי זכויות</span><span>'
+      + stateLine + "</span></footer>"
+      // סימן-המים בתוך bk-doc-page ולא אחריו: כללי ההדפסה של הערכה מסתירים
+      // כל מה שמחוץ לדף (visibility), וטיוטה שמודפסת בלי «טיוטה» היא בדיוק
+      // התקלה שהסימן קיים למנוע. אחרון ב-DOM — כדי להיצבע מעל גוף המכתב.
+      + (draft ? '<div class="bk-doc-watermark">טיוטה</div>' : "")
+      + "</div>"
+      + (forPrint ? printScript : "")
+      + "</body></html>";
+  }
+  // הדפסה דורשת סקריפט בתוך המסמך, וסקריפט אסור לו לרוץ עם ההרשאות של מסך
+  // הניהול — הטוקן חי בזיכרון הדף הזה. לכן ה-iframe מקבל allow-scripts +
+  // allow-modals בלבד, בלי allow-same-origin: מקור אטום, בלי גישה ל-DOM של
+  // ההורה — אותה עמדת אי-אמון בגוף המכתב כמו בתצוגה (sandbox ריק), רק עם
+  // זכות הדפסה. iframe נסתר בגודל אפס: תבנית ההדפסה מפורסת לפי @page (A4)
+  // ולא לפי חלון ה-iframe, אותה טכניקה של ספריות print-frame מקובלות.
+  function openPrintFrame(d) {
+    document.getElementById("print-frame")?.remove();
+    const f = document.createElement("iframe");
+    f.id = "print-frame";
+    f.setAttribute("sandbox", "allow-scripts allow-modals");
+    f.style.cssText = "position:fixed;width:0;height:0;border:0";
+    f.title = "מסמך להדפסה";
+    f.srcdoc = letterDocHtml(d, true);
+    document.body.append(f);
+  }
+
   // ── גוף המסמך ─────────────────────────────────────────────────────────────
   // הגוף אינו מגיע עם הפנייה — bkalot_clone_admin_case מחזירה מטא-דאטה בלבד
   // במפורש (0060) — ולכן הוא נקרא לפי דרישה, בקריאה נפרדת מאחורי אותו שער.
@@ -2672,10 +2757,16 @@ pre{
       frame.className = "doc-html";
       frame.setAttribute("sandbox", "");
       frame.title = "תצוגת המסמך המעוצב";
-      frame.srcdoc = '<!doctype html><html lang="he" dir="rtl"><head><meta charset="utf-8">'
-        + '<style>body{margin:0;padding:14px;font:16px/1.65 system-ui,"Segoe UI",sans-serif;color:#171d1a;background:#fff}</style>'
-        + "</head><body>" + d.body_html + "</body></html>";
+      frame.srcdoc = letterDocHtml(d, false);
       panel.append(frame);
+      // ההדפסה מקבלת בדיוק את מה שהתצוגה מראה — אותו letterDocHtml, אותו
+      // עותק d — כדי ששני המסלולים לא ייפרדו זה מזה בשקט על אותו מסמך.
+      const printBtn = document.createElement("button");
+      printBtn.type = "button";
+      printBtn.className = "ghost";
+      printBtn.textContent = "הדפס / שמור כ-PDF";
+      printBtn.addEventListener("click", () => openPrintFrame(d));
+      panel.append(printBtn);
     }
     const sub = document.createElement("h3");
     sub.textContent = "גרסת הטקסט";
