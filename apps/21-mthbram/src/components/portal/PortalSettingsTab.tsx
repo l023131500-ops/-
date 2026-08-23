@@ -54,6 +54,9 @@ const PortalSettingsTab = ({ portalId, portalType, portalData, onUpdate }: Porta
   const [savingContact, setSavingContact] = useState(false);
   const [savingSections, setSavingSections] = useState(false);
   const [savingDonation, setSavingDonation] = useState(false);
+  const [applyingPreset, setApplyingPreset] = useState<string | null>(null);
+  const [savingFontColor, setSavingFontColor] = useState(false);
+  const [deletingPhotoId, setDeletingPhotoId] = useState<string | null>(null);
   const photoInputRef = useRef<HTMLInputElement>(null);
   const bgInputRef = useRef<HTMLInputElement>(null);
   const rabbiPhotoRef = useRef<HTMLInputElement>(null);
@@ -153,21 +156,33 @@ const PortalSettingsTab = ({ portalId, portalType, portalData, onUpdate }: Porta
   };
 
   const selectPreset = async (presetId: string) => {
-    const { error } = await supabase.from(tableName).update({ background_preset: presetId, custom_background_url: "" }).eq("id", portalId);
-    if (!error) {
-      setSelectedPreset(presetId);
-      toast.success("רקע נבחר!");
-      onUpdate({ ...portalData, background_preset: presetId, custom_background_url: "" });
-    } else toast.error("שגיאה בשמירה");
+    if (applyingPreset) return;
+    setApplyingPreset(presetId);
+    try {
+      const { error } = await supabase.from(tableName).update({ background_preset: presetId, custom_background_url: "" }).eq("id", portalId);
+      if (!error) {
+        setSelectedPreset(presetId);
+        toast.success("רקע נבחר!");
+        onUpdate({ ...portalData, background_preset: presetId, custom_background_url: "" });
+      } else toast.error("שגיאה בשמירה");
+    } finally {
+      setApplyingPreset(null);
+    }
   };
 
   const saveFontColor = async (color: string) => {
-    setFontColor(color);
-    const { error } = await supabase.from(tableName).update({ font_color: color }).eq("id", portalId);
-    if (!error) {
-      toast.success(color === "light" ? "גופן בהיר נבחר" : "גופן כהה נבחר");
-      onUpdate({ ...portalData, font_color: color });
-    } else toast.error("שגיאה בשמירה");
+    if (savingFontColor) return;
+    setSavingFontColor(true);
+    try {
+      const { error } = await supabase.from(tableName).update({ font_color: color }).eq("id", portalId);
+      if (!error) {
+        setFontColor(color);
+        toast.success(color === "light" ? "גופן בהיר נבחר" : "גופן כהה נבחר");
+        onUpdate({ ...portalData, font_color: color });
+      } else toast.error("שגיאה בשמירה");
+    } finally {
+      setSavingFontColor(false);
+    }
   };
 
   const saveDonationSettings = async () => {
@@ -240,12 +255,18 @@ const PortalSettingsTab = ({ portalId, portalType, portalData, onUpdate }: Porta
   };
 
   const deletePhoto = async (photoId: string) => {
+    if (deletingPhotoId) return;
     if (!confirm("למחוק את התמונה?")) return;
-    const { error } = await supabase.from("portal_photos").delete().eq("id", photoId);
-    if (!error) {
-      setPhotos(prev => prev.filter(p => p.id !== photoId));
-      toast.success("תמונה נמחקה");
-    } else toast.error("שגיאה במחיקה");
+    setDeletingPhotoId(photoId);
+    try {
+      const { error } = await supabase.from("portal_photos").delete().eq("id", photoId);
+      if (!error) {
+        setPhotos(prev => prev.filter(p => p.id !== photoId));
+        toast.success("תמונה נמחקה");
+      } else toast.error("שגיאה במחיקה");
+    } finally {
+      setDeletingPhotoId(null);
+    }
   };
 
   return (
@@ -284,7 +305,8 @@ const PortalSettingsTab = ({ portalId, portalType, portalData, onUpdate }: Porta
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={() => selectPreset(preset.id)}
-              className={`h-20 rounded-xl ${preset.css} border-2 transition-all flex items-center justify-center ${
+              disabled={!!applyingPreset}
+              className={`h-20 rounded-xl ${preset.css} border-2 transition-all flex items-center justify-center disabled:opacity-60 disabled:cursor-not-allowed ${
                 selectedPreset === preset.id ? "border-gold ring-2 ring-gold/30" : "border-border/50 hover:border-gold/30"
               }`}
             >
@@ -310,14 +332,16 @@ const PortalSettingsTab = ({ portalId, portalType, portalData, onUpdate }: Porta
         <div className="flex gap-3">
           <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}
             onClick={() => saveFontColor("light")}
-            className={`flex-1 py-4 rounded-xl border-2 transition-all flex items-center justify-center gap-2 font-body font-bold ${
+            disabled={savingFontColor}
+            className={`flex-1 py-4 rounded-xl border-2 transition-all flex items-center justify-center gap-2 font-body font-bold disabled:opacity-60 disabled:cursor-not-allowed ${
               fontColor === "light" ? "border-gold ring-2 ring-gold/30 bg-gray-900 text-white" : "border-border bg-gray-800 text-white/70 hover:border-gold/30"
             }`}>
             <Sun className="w-4 h-4" /> בהיר (לרקע כהה)
           </motion.button>
           <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}
             onClick={() => saveFontColor("dark")}
-            className={`flex-1 py-4 rounded-xl border-2 transition-all flex items-center justify-center gap-2 font-body font-bold ${
+            disabled={savingFontColor}
+            className={`flex-1 py-4 rounded-xl border-2 transition-all flex items-center justify-center gap-2 font-body font-bold disabled:opacity-60 disabled:cursor-not-allowed ${
               fontColor === "dark" ? "border-gold ring-2 ring-gold/30 bg-white text-gray-900" : "border-border bg-gray-100 text-gray-600 hover:border-gold/30"
             }`}>
             <Moon className="w-4 h-4" /> כהה (לרקע בהיר)
@@ -468,7 +492,8 @@ const PortalSettingsTab = ({ portalId, portalType, portalData, onUpdate }: Porta
               )}
               <button
                 onClick={() => deletePhoto(photo.id)}
-                className="absolute top-2 left-2 w-7 h-7 rounded-lg bg-destructive/80 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                disabled={deletingPhotoId === photo.id}
+                className="absolute top-2 left-2 w-7 h-7 rounded-lg bg-destructive/80 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity disabled:opacity-60 disabled:cursor-not-allowed"
               >
                 <Trash2 className="w-3.5 h-3.5" />
               </button>
