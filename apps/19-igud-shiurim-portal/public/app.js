@@ -1579,12 +1579,14 @@ async function renderAdmin(token) {
 
     const syncBtn = document.getElementById('sync-now-btn');
     if (syncBtn) syncBtn.onclick = async () => {
+      if (syncBtn.disabled) return;
       syncBtn.disabled = true; syncBtn.textContent = 'מסנכרן…';
       try {
         await api(`/api/admin/tenant/${encodeURIComponent(token)}/nedarim/sync`, { method: 'POST' });
         await drawBilling(content);
       } catch (err) {
         document.getElementById('billing-alert').innerHTML = `<div class="alert alert-error">${esc(err.message)}</div>`;
+        syncBtn.disabled = false; syncBtn.textContent = 'סנכרון עכשיו';
       }
     };
 
@@ -1794,12 +1796,14 @@ async function renderSynagogueAdmin(token) {
 
     const syncBtn = document.getElementById('sync-now-btn');
     if (syncBtn) syncBtn.onclick = async () => {
+      if (syncBtn.disabled) return;
       syncBtn.disabled = true; syncBtn.textContent = 'מסנכרן…';
       try {
         await api(`/api/admin/synagogue/${encodeURIComponent(token)}/nedarim/sync`, { method: 'POST' });
         await drawBilling(content);
       } catch (err) {
         document.getElementById('billing-alert').innerHTML = `<div class="alert alert-error">${esc(err.message)}</div>`;
+        syncBtn.disabled = false; syncBtn.textContent = 'סנכרון עכשיו';
       }
     };
   }
