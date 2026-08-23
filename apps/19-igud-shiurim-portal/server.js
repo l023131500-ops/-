@@ -324,6 +324,7 @@ app.put('/api/admin/tenant/:adminToken/profile', async (req, res) => {
 
 app.post('/api/admin/tenant/:adminToken/lessons', async (req, res) => {
   const b = req.body || {};
+  const durationMinutes = Number(b.duration_minutes);
   const result = await supabaseAnon.rpc('admin_upsert_lesson', {
     p_admin_token: req.params.adminToken,
     p_lesson_id: b.lesson_id || null,
@@ -334,7 +335,7 @@ app.post('/api/admin/tenant/:adminToken/lessons', async (req, res) => {
     p_topic: b.topic || null,
     p_day_of_week: b.day_of_week ?? null,
     p_start_time: b.start_time || null,
-    p_duration_minutes: b.duration_minutes || 45,
+    p_duration_minutes: Number.isFinite(durationMinutes) && durationMinutes > 0 ? durationMinutes : 45,
     p_is_active: b.is_active ?? true,
     p_logo_url: b.logo_url || null,
     p_audience: b.audience || 'men',
@@ -596,6 +597,7 @@ app.put('/api/admin/teacher/:adminToken/profile', async (req, res) => {
 
 app.post('/api/admin/teacher/:adminToken/lessons', async (req, res) => {
   const b = req.body || {};
+  const durationMinutes = Number(b.duration_minutes);
   const result = await supabaseAnon.rpc('admin_upsert_teacher_lesson', {
     p_admin_token: req.params.adminToken,
     p_lesson_id: b.id || null,
@@ -604,7 +606,7 @@ app.post('/api/admin/teacher/:adminToken/lessons', async (req, res) => {
     p_topic: b.topic || null,
     p_day_of_week: b.day_of_week ?? null,
     p_start_time: b.start_time || null,
-    p_duration_minutes: b.duration_minutes || 45,
+    p_duration_minutes: Number.isFinite(durationMinutes) && durationMinutes > 0 ? durationMinutes : 45,
     p_audience: b.audience || 'men',
     p_is_live: !!b.is_live,
     p_is_recorded: !!b.is_recorded,
@@ -1032,13 +1034,15 @@ app.get('/api/admin/tenant/:adminToken/subscription-payments/:paymentId/checkout
 
 app.post('/api/public/payments', async (req, res) => {
   const { payer_name, payer_phone, payer_email, payment_type, purpose, amount, currency } = req.body || {};
+  const amountNum = Number(amount);
+  if (!Number.isFinite(amountNum) || amountNum <= 0) return res.status(400).json({ error: 'סכום לא תקין' });
   const result = await supabaseAnon.rpc('public_create_subscription_payment', {
     p_payer_name: payer_name || null,
     p_payer_phone: payer_phone || null,
     p_payer_email: payer_email || null,
     p_payment_type: payment_type || 'one_time',
     p_purpose: purpose || null,
-    p_amount: amount,
+    p_amount: amountNum,
     p_currency: currency || 'ILS',
   });
   handleRpcResult(res, result, false);
@@ -1103,10 +1107,11 @@ app.get('/api/public/payments/:id/checkout', async (req, res) => {
 
 app.post('/api/superadmin/subscription-payments', requireAuth, async (req, res) => {
   const { tenant_id, amount, currency, payment_type, notes } = req.body || {};
-  if (!tenant_id || !amount) return res.status(400).json({ error: 'tenant_id וסכום הם שדות חובה' });
+  const amountNum = Number(amount);
+  if (!tenant_id || !Number.isFinite(amountNum) || amountNum <= 0) return res.status(400).json({ error: 'tenant_id וסכום חוקי הם שדות חובה' });
   const result = await req.supabase.rpc('sa_create_subscription_payment', {
     p_tenant_id: tenant_id,
-    p_amount: amount,
+    p_amount: amountNum,
     p_currency: currency || 'ILS',
     p_payment_type: payment_type || 'one_time',
     p_notes: notes || null,
