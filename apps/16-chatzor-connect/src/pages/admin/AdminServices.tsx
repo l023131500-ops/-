@@ -80,7 +80,7 @@ export function AdminServices() {
                     </div>
                     {s.description && <div className="truncate text-xs text-muted-foreground">{s.description}</div>}
                   </div>
-                  <button onClick={() => remove.mutate(s.id)} {...sampleRowProps(s.isSample)}><Trash2 className="h-4 w-4" /></button>
+                  <button onClick={() => remove.mutate(s.id)} {...sampleRowProps(s.isSample)} disabled={s.isSample || (remove.isPending && remove.variables === s.id)}><Trash2 className="h-4 w-4" /></button>
                 </li>
               ))}
             </ul>

@@ -92,7 +92,7 @@ export function GabaiPrayers() {
                     {p.isSample && <SampleBadge className="ms-2" />}
                   </div>
                   <span className="text-lg font-bold tabular-nums">{p.time}</span>
-                  <button onClick={() => remove.mutate(p.id)} {...sampleRowProps(p.isSample)}><Trash2 className="h-4 w-4" /></button>
+                  <button onClick={() => remove.mutate(p.id)} {...sampleRowProps(p.isSample)} disabled={p.isSample || (remove.isPending && remove.variables === p.id)}><Trash2 className="h-4 w-4" /></button>
                 </li>
               ))}
             </ul>

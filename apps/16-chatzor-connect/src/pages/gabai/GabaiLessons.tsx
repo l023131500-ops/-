@@ -85,7 +85,7 @@ export function GabaiLessons() {
                     </div>
                     <div className="text-xs text-muted-foreground">{[l.day, l.time, l.teacher, l.audience].filter(Boolean).join(" · ")}</div>
                   </div>
-                  <button onClick={() => remove.mutate(l.id)} {...sampleRowProps(l.isSample)}><Trash2 className="h-4 w-4" /></button>
+                  <button onClick={() => remove.mutate(l.id)} {...sampleRowProps(l.isSample)} disabled={l.isSample || (remove.isPending && remove.variables === l.id)}><Trash2 className="h-4 w-4" /></button>
                 </li>
               ))}
             </ul>

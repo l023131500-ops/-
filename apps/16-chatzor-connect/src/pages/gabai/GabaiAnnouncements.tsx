@@ -80,7 +80,7 @@ export function GabaiAnnouncements() {
                   </div>
                   {a.body && <p className="mt-1 text-sm text-muted-foreground">{a.body}</p>}
                 </div>
-                <button onClick={() => remove.mutate(a.id)} {...sampleRowProps(a.isSample)}><Trash2 className="h-4 w-4" /></button>
+                <button onClick={() => remove.mutate(a.id)} {...sampleRowProps(a.isSample)} disabled={a.isSample || (remove.isPending && remove.variables === a.id)}><Trash2 className="h-4 w-4" /></button>
               </div>
             ))}
           </div>

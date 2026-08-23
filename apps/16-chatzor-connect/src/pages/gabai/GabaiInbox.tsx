@@ -57,7 +57,11 @@ export function GabaiInbox() {
                   </div>
                 </div>
                 {!i.isRead && (
-                  <button onClick={() => markRead.mutate(i.id)} className="inline-flex items-center gap-1 rounded-md bg-secondary px-2 py-1 text-xs font-medium hover:brightness-95">
+                  <button
+                    onClick={() => markRead.mutate(i.id)}
+                    disabled={markRead.isPending && markRead.variables === i.id}
+                    className="inline-flex items-center gap-1 rounded-md bg-secondary px-2 py-1 text-xs font-medium hover:brightness-95 disabled:opacity-50"
+                  >
                     <Check className="h-3.5 w-3.5" /> נקרא
                   </button>
                 )}
