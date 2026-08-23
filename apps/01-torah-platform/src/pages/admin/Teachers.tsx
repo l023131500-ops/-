@@ -34,6 +34,7 @@ const AdminTeachers = () => {
   });
   const { toast } = useToast();
   const [featuresFor, setFeaturesFor] = useState<any | null>(null);
+  const [busyId, setBusyId] = useState<string | null>(null);
 
   // "Teacher"/portal invites run on the real tenant_invites + tenants tables
   // (the same ones activate-invite and MatchingGuru.tsx use) -- there is no
@@ -58,13 +59,19 @@ const AdminTeachers = () => {
       toast({ title: "לפרופיל זה אין פורטל (טננט) מקושר לאשר", variant: "destructive" });
       return;
     }
+    if (busyId) return;
+    setBusyId(p.id);
     const next = p.tenant.status === "active" ? "pending" : "active";
-    const { error } = await supabase.from("tenants").update({ status: next }).eq("id", p.tenant.id);
-    if (error) {
-      toast({ title: "שגיאה", description: error.message, variant: "destructive" });
-    } else {
-      toast({ title: next === "active" ? "המגיד אושר בהצלחה" : "המגיד הוסר מהאישור" });
-      fetchAll();
+    try {
+      const { error } = await supabase.from("tenants").update({ status: next }).eq("id", p.tenant.id);
+      if (error) {
+        toast({ title: "שגיאה", description: error.message, variant: "destructive" });
+      } else {
+        toast({ title: next === "active" ? "המגיד אושר בהצלחה" : "המגיד הוסר מהאישור" });
+        fetchAll();
+      }
+    } finally {
+      setBusyId(null);
     }
   };
 
@@ -285,7 +292,7 @@ const AdminTeachers = () => {
                       </span>
                     </td>
                     <td className="p-4">
-                      <Button size="sm" variant={p.tenant?.status === "active" ? "outline" : "default"} onClick={() => toggleApproval(p)}>
+                      <Button size="sm" variant={p.tenant?.status === "active" ? "outline" : "default"} disabled={busyId === p.id} onClick={() => toggleApproval(p)}>
                         {p.tenant?.status === "active" ? <><UserX className="w-4 h-4 ml-1" />בטל</> : <><UserCheck className="w-4 h-4 ml-1" />אשר</>}
                       </Button>
                       <Button size="sm" variant="outline" className="mr-1 gap-1" onClick={() => setFeaturesFor(p)}>
