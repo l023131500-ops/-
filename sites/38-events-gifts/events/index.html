@@ -101,6 +101,13 @@ td{padding:7px 8px;border-bottom:1px solid var(--line-2);vertical-align:middle}
 .theme-card.on{border-color:var(--gold);color:var(--gold-soft)}
 .theme-swatch{height:52px;border-radius:4px;margin-bottom:5px;border:1px solid var(--line-2)}
 .tblcard .bar i.over{background:linear-gradient(90deg,var(--rose),#F08A83)}
+.gchip{cursor:pointer;background:var(--night-2);border:1px solid var(--line-2);border-radius:999px;
+  padding:2px 12px;font-size:12px;color:var(--ink-2);font-family:inherit;transition:border-color .2s var(--ease)}
+.gchip:hover{border-color:var(--gold-soft)}
+.gchip.on{border-color:var(--gold);color:var(--gold-soft);background:rgba(217,179,108,.08)}
+.duperow td{background:rgba(224,87,78,.07)}
+tr.rowedit input{margin:0 0 4px;padding:5px 8px;font-size:13px}
+td .pickbox{width:auto;margin:0;accent-color:var(--gold)}
 .backlink{font-size:13px}
 @media (max-width:640px){ .wrap{padding-inline:14px} th,td{padding:5px 5px} }
 </style>
@@ -259,15 +266,27 @@ td{padding:7px 8px;border-bottom:1px solid var(--line-2);vertical-align:middle}
       </div>
 
       <h3 style="margin-top:22px">הוספת מוזמנים</h3>
-      <p class="muted">שורה לכל מוזמן: <b>שם, טלפון, קבוצה, כמות מוזמנים</b> (רק השם חובה). לכל מוזמן ייווצר קישור אישי.</p>
+      <p class="muted">שורה לכל מוזמן: <b>שם, טלפון, קבוצה, כמות מוזמנים, אימייל</b> (רק השם חובה). לכל מוזמן ייווצר קישור אישי.
+        אפשר להדביק ישירות מאקסל (טורים מופרדים בטאב מזוהים לבד) — <b>כפילויות מדולגות אוטומטית</b>:
+        אותו טלפון, או אותו שם כשאין טלפון להבדיל ביניהם.</p>
       <textarea id="mGuestsInput" placeholder="ישראל ישראלי, 0501234567, משפחה, 4&#10;דוד כהן, , חברים, 2"></textarea>
       <div id="mGuestsErr"></div>
-      <button class="btn small" id="mGuestsAdd">הוספת מוזמנים</button>
+      <div class="rowline" style="justify-content:flex-start">
+        <button class="btn small" id="mGuestsAdd">הוספת מוזמנים</button>
+        <button class="btn ghost small" id="mContactsPick" hidden>📇 ייבוא מאנשי הקשר</button>
+      </div>
 
       <h3 style="margin-top:22px">מוזמנים <span class="muted" id="mGuestCount"></span></h3>
+      <div class="rowline" style="justify-content:flex-start;gap:6px;margin-bottom:8px" id="groupChips"></div>
+      <div class="rowline" style="justify-content:flex-start;margin-bottom:8px" id="bulkBar" hidden>
+        <span class="muted" id="bulkCount"></span>
+        <button class="btn ghost small" id="bulkGroup">🗂 העברה לקבוצה…</button>
+        <button class="btn ghost small" id="bulkClear">ביטול בחירה</button>
+      </div>
+      <div id="mListErr"></div>
       <div style="overflow-x:auto">
       <table id="mGuestsTable">
-        <thead><tr><th>שם</th><th>קבוצה</th><th>מוזמנים</th><th>סטטוס</th><th>שולחן</th><th>הערה</th><th></th></tr></thead>
+        <thead><tr><th style="width:26px"><input type="checkbox" id="pickAll" class="pickbox" title="בחירת כל המוצגים"></th><th>שם</th><th>קבוצה</th><th>מוזמנים</th><th>סטטוס</th><th>שולחן</th><th>הערה</th><th></th></tr></thead>
         <tbody></tbody>
       </table>
       </div>
@@ -305,6 +324,9 @@ td{padding:7px 8px;border-bottom:1px solid var(--line-2);vertical-align:middle}
           <option value="pending_unreminded">טרם ענו ולא קיבלו תזכורת</option>
           <option value="yes">אישרו הגעה</option>
           <option value="all">כולם</option>
+        </select>
+        <select id="msgGroup" style="width:auto;margin:0" title="סינון הקהל לפי קבוצה">
+          <option value="">כל הקבוצות</option>
         </select>
       </div>
       <div id="msgStats" class="muted" style="margin-bottom:6px"></div>
@@ -599,7 +621,11 @@ $('evCreate').addEventListener('click', () => guarded($('evCreate'), 'evCreate',
 // ---------- manage one event ----------
 async function openEvent(id, opts = {}) {
   // switching events while the gate is open would scan against the wrong event
-  if (CURRENT_EVENT && CURRENT_EVENT.event.id !== id) gateShut();
+  if (CURRENT_EVENT && CURRENT_EVENT.event.id !== id) {
+    gateShut();
+    // selection/filter/edit state belongs to the event we're leaving
+    guestPick.clear(); guestEditId = null; guestGroupFilter = null; guestDupesOnly = false;
+  }
   const d = await rpc('evg_event_dashboard', { p_event_id: id });
   if (!d?.event) return;
   CURRENT_EVENT = d;
@@ -648,47 +674,7 @@ async function openEvent(id, opts = {}) {
   }
   $('invPreview').href = 'https://more30.com/events/g?s=' + ev.share_token;
 
-  const tables = d.tables || [];
-  const tableOptions = (sel) => '<option value="">— ללא —</option>' + tables.map(t =>
-    '<option value="' + t.id + '"' + (t.id === sel ? ' selected' : '') + '>' + esc(t.name) + '</option>').join('');
-
-  $('mGuestsTable').querySelector('tbody').innerHTML = guests.map((g) => `
-    <tr>
-      <td><b>${esc(g.full_name)}</b>${g.phone ? '<div class="muted">' + esc(g.phone) + '</div>' : ''}</td>
-      <td>${esc(g.group_name || '')}</td>
-      <td>${g.rsvp_status === 'yes' ? (g.rsvp_count ?? g.invited_count) : g.invited_count}</td>
-      <td><span class="pill ${g.rsvp_status}">${RSVP_LABEL[g.rsvp_status]}</span>${g.checkin_at ? ' <span class="pill yes">נכנסו</span>' : ''}</td>
-      <td><select data-seat="${g.id}" style="margin:0;width:auto;max-width:140px">${tableOptions(g.table_id)}</select></td>
-      <td class="muted">${esc(g.rsvp_note || '')}</td>
-      <td style="white-space:nowrap">
-        <button class="btn ghost small" data-copy="${g.personal_token}">קישור</button>
-        ${g.checkin_at ? '' : '<button class="btn ghost small" data-checkin="' + g.id + '">צ\'ק-אין</button>'}
-        <button class="btn danger small" data-del="${g.id}">✕</button>
-      </td>
-    </tr>`).join('') || '<tr><td colspan="7" class="muted">אין מוזמנים עדיין.</td></tr>';
-
-  const tb = $('mGuestsTable').querySelector('tbody');
-  for (const sel of tb.querySelectorAll('[data-seat]'))
-    sel.addEventListener('change', () => guarded(sel, 'seat' + sel.dataset.seat, async () => {
-      await rpc('evg_guest_set_table', { p_guest_id: sel.dataset.seat, p_table_id: sel.value || null });
-      await openEvent(ev.id, { scroll: false, refreshInvite: false });
-    }));
-  for (const b of tb.querySelectorAll('[data-copy]'))
-    b.addEventListener('click', () => {
-      navigator.clipboard.writeText('https://more30.com/events/g?t=' + b.dataset.copy);
-      b.textContent = 'הועתק ✓'; setTimeout(() => { b.textContent = 'קישור'; }, 1500);
-    });
-  for (const b of tb.querySelectorAll('[data-checkin]'))
-    b.addEventListener('click', () => guarded(b, 'ci' + b.dataset.checkin, async () => {
-      await rpc('evg_guest_checkin', { p_guest_id: b.dataset.checkin });
-      await openEvent(ev.id, { scroll: false, refreshInvite: false });
-    }));
-  for (const b of tb.querySelectorAll('[data-del]'))
-    b.addEventListener('click', () => guarded(b, 'del' + b.dataset.del, async () => {
-      if (!confirm('למחוק את המוזמן? הקישור האישי שלו יפסיק לעבוד.')) return;
-      await rpc('evg_guest_delete', { p_guest_id: b.dataset.del });
-      await openEvent(ev.id, { scroll: false, refreshInvite: false }); await refreshMe();
-    }));
+  renderGuests(d);
 
   $('mGiftsTable').querySelector('tbody').innerHTML = gifts.map((g) => `
     <tr>
@@ -736,12 +722,260 @@ async function openEvent(id, opts = {}) {
     $('managePanel').scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
+// ---------- smart guest list (ניהול מוזמנים חכם) ----------
+let guestGroupFilter = null;   // null = all · '·none·' = no group · else a group name
+let guestDupesOnly = false;
+let guestEditId = null;
+const guestPick = new Set();
+let listedGuestIds = [];       // ids currently visible under the active filter
+
+// mirror of events.norm_phone in the DB — the two must agree on what "same phone" means
+function normPhone(p) {
+  const d = String(p || '').replace(/\D/g, '');
+  if (!d) return null;
+  return (d.startsWith('972') && d.length >= 11) ? '0' + d.slice(3) : d;
+}
+
+// suspected duplicates, same rule as the import: a shared phone is always the
+// same person; a shared name counts only when someone in the clash has no
+// phone to tell them apart by (two real "דוד כהן" with distinct phones are fine)
+function findDupeIds(guests) {
+  const byPhone = new Map(), byName = new Map();
+  for (const g of guests) {
+    const pk = normPhone(g.phone);
+    if (pk) { if (!byPhone.has(pk)) byPhone.set(pk, []); byPhone.get(pk).push(g); }
+    const nk = g.full_name.trim().toLowerCase();
+    if (!byName.has(nk)) byName.set(nk, []);
+    byName.get(nk).push(g);
+  }
+  const ids = new Set();
+  for (const arr of byPhone.values()) if (arr.length > 1) arr.forEach(g => ids.add(g.id));
+  for (const arr of byName.values())
+    if (arr.length > 1 && arr.some(g => !normPhone(g.phone))) arr.forEach(g => ids.add(g.id));
+  return ids;
+}
+
+function renderGuests(d) {
+  const ev = d.event, guests = d.guests || [], tables = d.tables || [];
+
+  // prune state that points at guests that no longer exist
+  const alive = new Set(guests.map(g => g.id));
+  for (const id of [...guestPick]) if (!alive.has(id)) guestPick.delete(id);
+  if (guestEditId && !alive.has(guestEditId)) guestEditId = null;
+
+  const groups = new Map();
+  let noGroup = 0;
+  for (const g of guests) {
+    if (g.group_name) groups.set(g.group_name, (groups.get(g.group_name) || 0) + 1);
+    else noGroup++;
+  }
+  if (guestGroupFilter && guestGroupFilter !== '·none·' && !groups.has(guestGroupFilter)) guestGroupFilter = null;
+  if (guestGroupFilter === '·none·' && !noGroup) guestGroupFilter = null;
+  const dupeIds = findDupeIds(guests);
+  if (!dupeIds.size) guestDupesOnly = false;
+
+  $('groupChips').innerHTML = guests.length ? [
+    `<button type="button" class="gchip${!guestGroupFilter && !guestDupesOnly ? ' on' : ''}" data-grp="">הכל (${guests.length})</button>`,
+    ...[...groups.entries()].sort((a, b) => a[0].localeCompare(b[0], 'he')).map(([name, n]) =>
+      `<button type="button" class="gchip${guestGroupFilter === name ? ' on' : ''}" data-grp="${esc(name)}">${esc(name)} (${n})</button>`),
+    noGroup ? `<button type="button" class="gchip${guestGroupFilter === '·none·' ? ' on' : ''}" data-grp="·none·">בלי קבוצה (${noGroup})</button>` : '',
+    guestGroupFilter && guestGroupFilter !== '·none·'
+      ? `<button type="button" class="gchip" id="grpRename" title="שינוי שם הקבוצה לכל חבריה">✎ שינוי שם הקבוצה</button>` : '',
+    dupeIds.size
+      ? `<button type="button" class="gchip${guestDupesOnly ? ' on' : ''}" id="dupesChip" style="color:var(--rose)">⚠ כפילויות חשודות (${dupeIds.size})</button>` : '',
+  ].filter(Boolean).join('') : '';
+
+  let list = guests;
+  if (guestDupesOnly) list = guests.filter(g => dupeIds.has(g.id));
+  else if (guestGroupFilter === '·none·') list = guests.filter(g => !g.group_name);
+  else if (guestGroupFilter) list = guests.filter(g => g.group_name === guestGroupFilter);
+  listedGuestIds = list.map(g => g.id);
+
+  const tableOptions = (sel) => '<option value="">— ללא —</option>' + tables.map(t =>
+    '<option value="' + t.id + '"' + (t.id === sel ? ' selected' : '') + '>' + esc(t.name) + '</option>').join('');
+
+  // a half-typed edit survives background refreshes (every gate scan re-renders)
+  let draft = null;
+  if (guestEditId) {
+    const row = $('mGuestsTable').querySelector('tr.rowedit');
+    if (row) {
+      const dv = (k) => { const i = row.querySelector('[data-e="' + k + '"]'); return i ? i.value : ''; };
+      draft = { name: dv('name'), group: dv('group'), count: dv('count'), phone: dv('phone'), email: dv('email') };
+    }
+  }
+
+  $('mGuestsTable').querySelector('tbody').innerHTML = list.map((g) => g.id === guestEditId ? `
+    <tr class="rowedit">
+      <td></td>
+      <td><input data-e="name" value="${esc(draft ? draft.name : g.full_name)}" placeholder="שם" /></td>
+      <td><input data-e="group" value="${esc(draft ? draft.group : (g.group_name || ''))}" placeholder="קבוצה" style="max-width:110px" /></td>
+      <td><input data-e="count" type="number" min="1" max="50" value="${esc(draft ? draft.count : g.invited_count)}" style="max-width:64px" /></td>
+      <td colspan="3">
+        <input data-e="phone" value="${esc(draft ? draft.phone : (g.phone || ''))}" placeholder="טלפון" style="max-width:150px;direction:ltr" />
+        <input data-e="email" value="${esc(draft ? draft.email : (g.email || ''))}" placeholder="אימייל (לא חובה)" style="max-width:180px;direction:ltr" />
+      </td>
+      <td style="white-space:nowrap">
+        <button class="btn small" data-esave="${g.id}">שמירה</button>
+        <button class="btn ghost small" data-ecancel="1">ביטול</button>
+      </td>
+    </tr>` : `
+    <tr${guestDupesOnly && dupeIds.has(g.id) ? ' class="duperow"' : ''}>
+      <td><input type="checkbox" class="pickbox" data-pick="${g.id}"${guestPick.has(g.id) ? ' checked' : ''} /></td>
+      <td><b>${esc(g.full_name)}</b>${g.phone ? '<div class="muted" style="direction:ltr;text-align:right">' + esc(g.phone) + '</div>' : ''}</td>
+      <td>${esc(g.group_name || '')}</td>
+      <td>${g.rsvp_status === 'yes' ? (g.rsvp_count ?? g.invited_count) : g.invited_count}</td>
+      <td><span class="pill ${g.rsvp_status}">${RSVP_LABEL[g.rsvp_status]}</span>${g.checkin_at ? ' <span class="pill yes">נכנסו</span>' : ''}</td>
+      <td><select data-seat="${g.id}" style="margin:0;width:auto;max-width:140px">${tableOptions(g.table_id)}</select></td>
+      <td class="muted">${esc(g.rsvp_note || '')}</td>
+      <td style="white-space:nowrap">
+        <button class="btn ghost small" data-edit="${g.id}" title="עריכת המוזמן — הקישור האישי נשאר">✎</button>
+        <button class="btn ghost small" data-copy="${g.personal_token}">קישור</button>
+        ${g.checkin_at ? '' : '<button class="btn ghost small" data-checkin="' + g.id + '">צ\'ק-אין</button>'}
+        <button class="btn danger small" data-del="${g.id}">✕</button>
+      </td>
+    </tr>`).join('') ||
+    `<tr><td colspan="8" class="muted">${guests.length ? 'אין מוזמנים בסינון הזה.' : 'אין מוזמנים עדיין.'}</td></tr>`;
+
+  syncBulkBar();
+
+  const tb = $('mGuestsTable').querySelector('tbody');
+  for (const b of $('groupChips').querySelectorAll('[data-grp]'))
+    b.addEventListener('click', () => {
+      const v = b.dataset.grp;
+      guestGroupFilter = v || null; guestDupesOnly = false;
+      renderGuests(CURRENT_EVENT);
+    });
+  const rn = $('groupChips').querySelector('#grpRename');
+  if (rn) rn.addEventListener('click', () => guarded(rn, 'grpRename', async () => {
+    const from = guestGroupFilter;
+    const to = prompt('שם חדש לקבוצה "' + from + '" (ריק = הסרת הקבוצה מכל חבריה):', from);
+    if (to === null || to.trim() === from) return;
+    $('mListErr').innerHTML = '';
+    try {
+      const r = await rpc('evg_group_rename', { p_event_id: ev.id, p_from: from, p_to: to.trim() });
+      guestGroupFilter = to.trim() || null;
+      $('mListErr').innerHTML = '<div class="ok-note">' + (to.trim()
+        ? 'הקבוצה שונתה ל"' + esc(to.trim()) + '" (' + r.updated + ' מוזמנים).'
+        : 'הקבוצה הוסרה מ־' + r.updated + ' מוזמנים.') + '</div>';
+      await openEvent(ev.id, { scroll: false, refreshInvite: false });
+    } catch (e) { $('mListErr').innerHTML = '<div class="err">' + esc(e.message) + '</div>'; }
+  }));
+  const dc = $('groupChips').querySelector('#dupesChip');
+  if (dc) dc.addEventListener('click', () => {
+    guestDupesOnly = !guestDupesOnly;
+    if (guestDupesOnly) guestGroupFilter = null;
+    renderGuests(CURRENT_EVENT);
+  });
+
+  for (const c of tb.querySelectorAll('[data-pick]'))
+    c.addEventListener('change', () => {
+      if (c.checked) guestPick.add(c.dataset.pick); else guestPick.delete(c.dataset.pick);
+      syncBulkBar();
+    });
+  for (const b of tb.querySelectorAll('[data-edit]'))
+    b.addEventListener('click', () => { guestEditId = b.dataset.edit; renderGuests(CURRENT_EVENT); });
+  const ec = tb.querySelector('[data-ecancel]');
+  if (ec) ec.addEventListener('click', () => { guestEditId = null; renderGuests(CURRENT_EVENT); });
+  const es = tb.querySelector('[data-esave]');
+  if (es) es.addEventListener('click', () => guarded(es, 'esave' + es.dataset.esave, async () => {
+    $('mListErr').innerHTML = '';
+    const row = es.closest('tr');
+    const val = (k) => row.querySelector('[data-e="' + k + '"]').value.trim();
+    if (!val('name')) { $('mListErr').innerHTML = '<div class="err">שם המוזמן חובה.</div>'; return; }
+    try {
+      await rpc('evg_guest_update', {
+        p_guest_id: es.dataset.esave,
+        p_patch: {
+          full_name: val('name'), phone: val('phone'), email: val('email'),
+          group_name: val('group'), invited_count: parseInt(val('count'), 10) || 1,
+        },
+      });
+      guestEditId = null;
+      await openEvent(ev.id, { scroll: false, refreshInvite: false });
+    } catch (e) { $('mListErr').innerHTML = '<div class="err">' + esc(e.message) + '</div>'; }
+  }));
+  for (const sel of tb.querySelectorAll('[data-seat]'))
+    sel.addEventListener('change', () => guarded(sel, 'seat' + sel.dataset.seat, async () => {
+      await rpc('evg_guest_set_table', { p_guest_id: sel.dataset.seat, p_table_id: sel.value || null });
+      await openEvent(ev.id, { scroll: false, refreshInvite: false });
+    }));
+  for (const b of tb.querySelectorAll('[data-copy]'))
+    b.addEventListener('click', () => {
+      navigator.clipboard.writeText('https://more30.com/events/g?t=' + b.dataset.copy);
+      b.textContent = 'הועתק ✓'; setTimeout(() => { b.textContent = 'קישור'; }, 1500);
+    });
+  for (const b of tb.querySelectorAll('[data-checkin]'))
+    b.addEventListener('click', () => guarded(b, 'ci' + b.dataset.checkin, async () => {
+      await rpc('evg_guest_checkin', { p_guest_id: b.dataset.checkin });
+      await openEvent(ev.id, { scroll: false, refreshInvite: false });
+    }));
+  for (const b of tb.querySelectorAll('[data-del]'))
+    b.addEventListener('click', () => guarded(b, 'del' + b.dataset.del, async () => {
+      if (!confirm('למחוק את המוזמן? הקישור האישי שלו יפסיק לעבוד.')) return;
+      await rpc('evg_guest_delete', { p_guest_id: b.dataset.del });
+      await openEvent(ev.id, { scroll: false, refreshInvite: false }); await refreshMe();
+    }));
+}
+
+function syncBulkBar() {
+  $('bulkBar').hidden = !guestPick.size;
+  $('bulkCount').textContent = guestPick.size + ' נבחרו';
+  const all = $('pickAll');
+  all.checked = listedGuestIds.length > 0 && listedGuestIds.every(id => guestPick.has(id));
+}
+
+$('pickAll').addEventListener('change', () => {
+  if ($('pickAll').checked) listedGuestIds.forEach(id => guestPick.add(id));
+  else listedGuestIds.forEach(id => guestPick.delete(id));
+  if (CURRENT_EVENT) renderGuests(CURRENT_EVENT);
+});
+$('bulkClear').addEventListener('click', () => {
+  guestPick.clear();
+  if (CURRENT_EVENT) renderGuests(CURRENT_EVENT);
+});
+$('bulkGroup').addEventListener('click', () => guarded($('bulkGroup'), 'bulkGroup', async () => {
+  if (!CURRENT_EVENT || !guestPick.size) return;
+  const name = prompt('לאיזו קבוצה להעביר ' + guestPick.size + ' מוזמנים? (ריק = בלי קבוצה)');
+  if (name === null) return;
+  $('mListErr').innerHTML = '';
+  try {
+    const r = await rpc('evg_guests_set_group', {
+      p_event_id: CURRENT_EVENT.event.id, p_guest_ids: [...guestPick], p_group_name: name.trim(),
+    });
+    guestPick.clear();
+    $('mListErr').innerHTML = '<div class="ok-note">' + r.updated + ' מוזמנים ' +
+      (name.trim() ? 'הועברו לקבוצה "' + esc(name.trim()) + '".' : 'הוצאו מהקבוצה שלהם.') + '</div>';
+    await openEvent(CURRENT_EVENT.event.id, { scroll: false, refreshInvite: false });
+  } catch (e) { $('mListErr').innerHTML = '<div class="err">' + esc(e.message) + '</div>'; }
+}));
+
+// contact import — Contact Picker API (Android Chrome); progressive enhancement,
+// the button only appears where the browser supports it
+if ('contacts' in navigator && typeof navigator.contacts.select === 'function')
+  $('mContactsPick').hidden = false;
+$('mContactsPick').addEventListener('click', async () => {
+  try {
+    const picked = await navigator.contacts.select(['name', 'tel'], { multiple: true });
+    const lines = picked
+      .map(c => ({ name: (c.name || [])[0] || '', tel: (c.tel || [])[0] || '' }))
+      .filter(c => c.name)
+      .map(c => c.name + (c.tel ? ', ' + c.tel : ''));
+    if (!lines.length) return;
+    const cur = $('mGuestsInput').value.trim();
+    $('mGuestsInput').value = (cur ? cur + '\n' : '') + lines.join('\n');
+    $('mGuestsErr').innerHTML = '<div class="ok-note">נוספו ' + lines.length +
+      ' אנשי קשר לתיבה — אפשר להשלים קבוצה/כמות לכל שורה וללחוץ "הוספת מוזמנים".</div>';
+  } catch (e) { /* the user closed the picker — not an error */ }
+});
+
 // ---------- messaging center (מרכז הודעות) ----------
 const shortDate = (ts) => ts
   ? new Date(ts).toLocaleDateString('he-IL', { day: 'numeric', month: 'numeric' })
   : null;
 
 function msgAudienceFilter(guests) {
+  const grp = $('msgGroup').value;
+  if (grp) guests = guests.filter(g => grp === '·none·' ? !g.group_name : g.group_name === grp);
   switch ($('msgAudience').value) {
     case 'uninvited': return guests.filter(g => !g.invite_sent_at);
     case 'pending': return guests.filter(g => g.rsvp_status === 'pending');
@@ -753,6 +987,18 @@ function msgAudienceFilter(guests) {
 }
 
 function renderMessages(d) {
+  // keep the group filter's options in step with the live group list,
+  // preserving the current choice when it still exists
+  const allGroups = [...new Set((d.guests || []).map(g => g.group_name).filter(Boolean))]
+    .sort((a, b) => a.localeCompare(b, 'he'));
+  const hasNoGroup = (d.guests || []).some(g => !g.group_name);
+  const curGrp = $('msgGroup').value;
+  $('msgGroup').innerHTML = '<option value="">כל הקבוצות</option>' +
+    allGroups.map(g => '<option value="' + esc(g) + '">' + esc(g) + '</option>').join('') +
+    (hasNoGroup && allGroups.length ? '<option value="·none·">בלי קבוצה</option>' : '');
+  if (curGrp && (allGroups.includes(curGrp) || (curGrp === '·none·' && hasNoGroup)))
+    $('msgGroup').value = curGrp;
+
   const ev = d.event, guests = msgAudienceFilter(d.guests || []);
   const withWa = guests.filter(g => waPhone(g.phone)).length;
   $('msgStats').textContent = guests.length
@@ -797,6 +1043,7 @@ $('msgKind').addEventListener('change', () => {
   if (CURRENT_EVENT) renderMessages(CURRENT_EVENT);
 });
 $('msgAudience').addEventListener('change', () => { if (CURRENT_EVENT) renderMessages(CURRENT_EVENT); });
+$('msgGroup').addEventListener('change', () => { if (CURRENT_EVENT) renderMessages(CURRENT_EVENT); });
 
 $('tplSave').addEventListener('click', () => guarded($('tplSave'), 'tplSave', async () => {
   $('tplErr').innerHTML = '';
@@ -936,14 +1183,21 @@ $('mGuestsAdd').addEventListener('click', () => guarded($('mGuestsAdd'), 'guests
   const lines = $('mGuestsInput').value.split('\n').map(l => l.trim()).filter(Boolean);
   if (!lines.length) { $('mGuestsErr').innerHTML = '<div class="err">אין שורות להוספה.</div>'; return; }
   const guests = lines.map((l) => {
-    const [name, phone, group, count] = l.split(',').map(p => (p || '').trim());
+    // a pasted Excel range is tab-separated; hand-typed lines use commas
+    const [name, phone, group, count, email] = l.split(l.includes('\t') ? '\t' : ',').map(p => (p || '').trim());
     return { full_name: name, phone: phone || null, group_name: group || null,
-             invited_count: parseInt(count, 10) || 1 };
+             invited_count: parseInt(count, 10) || 1, email: email || null };
   }).filter(g => g.full_name);
+  if (!guests.length) { $('mGuestsErr').innerHTML = '<div class="err">לא זוהה אף שם — השם הוא הטור הראשון בכל שורה.</div>'; return; }
   try {
-    const r = await rpc('evg_guests_add', { p_event_id: CURRENT_EVENT.event.id, p_guests: guests });
+    const r = await rpc('evg_guests_import', { p_event_id: CURRENT_EVENT.event.id, p_guests: guests });
     $('mGuestsInput').value = '';
-    $('mGuestsErr').innerHTML = '<div class="ok-note">נוספו ' + r.inserted + ' מוזמנים — לכל אחד קישור אישי (עמודת "קישור").</div>';
+    const names = (r.skipped_names || []).slice(0, 8).join(', ') +
+      ((r.skipped_names || []).length > 8 ? '…' : '');
+    $('mGuestsErr').innerHTML = r.inserted
+      ? '<div class="ok-note">נוספו ' + r.inserted + ' מוזמנים — לכל אחד קישור אישי (עמודת "קישור").' +
+        (r.skipped ? ' דולגו ' + r.skipped + ' כפילויות: ' + esc(names) + '.' : '') + '</div>'
+      : '<div class="err">לא נוסף אף מוזמן — כל ' + r.skipped + ' השורות זוהו ככפילויות של מוזמנים קיימים: ' + esc(names) + '.</div>';
     await openEvent(CURRENT_EVENT.event.id, { scroll: false, refreshInvite: false }); await refreshMe();
   } catch (e) { $('mGuestsErr').innerHTML = '<div class="err">' + esc(e.message) + '</div>'; }
 }));
