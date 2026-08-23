@@ -12766,3 +12766,42 @@
     23-haorech-torani ו-25-mor1-main-site (ריפו ריק, ללא קוד).
     נושאים #62/#94/#115/#164/#169/#254/#312 נשארים חסומים.
     via cloud server 167.99.131.167 [loop B]
+
+## 23/08/2026 — סבב 482 (loop B)
+
+482. **המשכתי כמתוכנן בסבב 481 וסרקתי את `AdminDashboard.tsx` (1788 שורות)
+    ב-21-mthbram למשפחת double-submit.** מצאתי שכל ששת פעולות המוטציה
+    בקובץ — `approveLesson`/`rejectLesson`/`softDeleteLesson`/
+    `genericDelete`/`genericReject`/`approveNedarim` — לא עקבו אחרי מצב
+    "בתהליך" בכלל ולכפתורים שלהן לא היה `disabled`. זאת בניגוד לשלושת
+    פונקציות ה-bulk-approve באותו קובץ (`approveAllForRabbi` וכו') שכבר
+    מוגנות ב-`bulkApprovingRef` (Set מבוסס ref).
+
+    **הפער החמור ביותר: `approveNedarim`** — מכניס שורת `lessons` חדשה
+    (`insert`) ואז מעדכן את סטטוס הפנייה. לחיצה כפולה מהירה על "אשר ופרסם"
+    (יש לה שני כפתורים בקובץ — ברשימה הראשית ובדיאלוג הפרטים) יכולה ליצור
+    **שני שיעורים כפולים** מאותה פנייה בודדת, לא רק race על state.
+
+    **התיקון:** הוספתי state משותף `actionId` (string | null), guard מוקדם
+    (`if (actionId) return`) ו-`try/finally` בכל אחת משש הפונקציות, עם
+    `disabled={actionId === <id>}` תואם על כל אחד מ-11 הכפתורים שקוראים
+    להן (רשימת שיעורים, כרטיסי synagogue_portals/synagogues, רשימת/דיאלוג
+    nedarim_submissions) — דפוס עקבי עם `deletingId`/`saving` שכבר נמצא
+    בקבצים אחרים באותה מערכת (`FullAccessRequestsTab.tsx`).
+
+    **בדיקות תקינות:** קריאת קוד בלבד (ללא dev-server, לפי הנחיות ההרצה).
+    ספרתי סוגריים/סוגריים-מסולסלים/מרובעים בקובץ המלא לפני ואחרי — מאוזן.
+    `git diff --stat`: קובץ יחיד, +97/-59.
+
+    לא נגעתי במערכות מוגנות 08/09/bkalut-app/bkalot-admin/zr_*/NEDARIM3873/
+    csj/csj_src/igud, ב-`main`, או במערכת מחוץ ל-scope (17-25/27/28 בלבד).
+
+    ענף חדש `fix/b-21-mthbram-admindashboard-mutation-guards-round482-0823`
+    (שרשרת הענפים היא המקור היחיד ל-loop B, לא `main`), נדחף.
+
+    **הבא בתור:** `AdminDashboard.tsx` ו-`FullAccessRequestsTab.tsx` נסרקו
+    כעת במלואם. יש עוד קבצים ב-21-mthbram (157 קבצים סה"כ) שטרם נסרקו לעומק
+    — להמשיך שם, ואם נקי — לעבור ל-19-igud-shiurim-portal ו-20-igud-portal
+    (שלד, לבדוק אם יש פעולות מוטציה), ואז 23-haorech-torani/25-mor1-main-site
+    (ריפו ריק). נושאים #62/#94/#115/#164/#169/#254/#312 נשארים חסומים.
+    via cloud server 167.99.131.167 [loop B]
