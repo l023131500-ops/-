@@ -379,6 +379,43 @@ td{padding:7px 8px;border-bottom:1px solid var(--line-2);vertical-align:middle}
       </div>
     </div>
 
+    <!-- super-admin console — the fourth role of EVENTS_BUILD §1 -->
+    <div class="card gold" id="adminPanel" hidden>
+      <div class="rowline">
+        <h3 style="margin:0">מערכת הניהול — סופר-אדמין</h3>
+        <button class="btn ghost small" id="admRefresh">↻ רענון</button>
+      </div>
+      <p class="muted">כל הפלטפורמה במבט אחד: אישורי פרסום לאולמות, אירועים של כל הבעלים, מתנות, עמלות ולידים.
+        כל הסכומים במצב טסט — אף חיוב אמיתי לא מתבצע.</p>
+      <div id="admErr"></div>
+      <div class="grid c3" id="admKpis" style="margin:10px 0 16px"></div>
+
+      <h3 style="margin-top:8px">כל האולמות <span class="muted" id="admHallCount"></span></h3>
+      <p class="muted">אולם חדש נכנס לכאן כ"ממתין לאישור" — מכאן מאשרים פרסום וקובעים את נתח האולם מהמתנות.</p>
+      <div style="overflow-x:auto">
+      <table id="admHallsTable">
+        <thead><tr><th>אולם</th><th>בעלים</th><th>לידים</th><th>אירועים</th><th>נתח אולם</th><th>סטטוס</th><th></th></tr></thead>
+        <tbody></tbody>
+      </table>
+      </div>
+
+      <h3 style="margin-top:22px">כל האירועים <span class="muted" id="admEventCount"></span></h3>
+      <div style="overflow-x:auto">
+      <table id="admEventsTable">
+        <thead><tr><th>אירוע</th><th>בעלים</th><th>תאריך</th><th>מוזמנים</th><th>מתנות</th><th>עמלת פלטפורמה</th><th>סטטוס</th></tr></thead>
+        <tbody></tbody>
+      </table>
+      </div>
+
+      <h3 style="margin-top:22px">דוח הכנסות ועמלות לפי חודש <span class="chip test" style="font-size:10px;padding:1px 8px">מצב טסט</span></h3>
+      <div style="overflow-x:auto">
+      <table id="admRevTable">
+        <thead><tr><th>חודש</th><th>מתנות</th><th>סה"כ נאסף</th><th>לבעלי האירועים</th><th>עמלת פלטפורמה</th><th>לאולמות</th></tr></thead>
+        <tbody></tbody>
+      </table>
+      </div>
+    </div>
+
     <p class="backlink"><a href="https://more30.com/">→ חזרה ל-more30.com</a></p>
   </section>
 </div>
@@ -512,6 +549,7 @@ async function refreshMe() {
   $('adminChip').hidden = !ME.is_super_admin;
   renderEvents();
   renderHalls();
+  await renderAdmin();
 }
 
 // ---------- events list ----------
@@ -1050,6 +1088,98 @@ $('gateManualBtn').addEventListener('click', () => guarded($('gateManualBtn'), '
   $('gateManual').value = '';
   await gateCheckin(token);
 }));
+
+// ---------- super-admin console ----------
+const EV_STATUS_LABEL = { draft: 'טיוטה', active: 'פעיל', done: 'הסתיים', canceled: 'בוטל' };
+const EV_STATUS_PILL = { draft: 'pending', active: 'yes', done: 'maybe', canceled: 'no' };
+const bpsPct = (bps) => (bps / 100).toLocaleString('he-IL', { maximumFractionDigits: 2 }) + '%';
+
+async function renderAdmin() {
+  if (!ME?.is_super_admin) { $('adminPanel').hidden = true; return; }
+  $('adminPanel').hidden = false;
+  $('admErr').innerHTML = '';
+  let ov, halls, evs, rev;
+  try {
+    [ov, halls, evs, rev] = await Promise.all([
+      rpc('evg_admin_overview'),
+      rpc('evg_admin_halls_list'),
+      rpc('evg_admin_events_list', { p_limit: 100, p_offset: 0 }),
+      rpc('evg_admin_revenue_report', { p_months: 12 }),
+    ]);
+  } catch (e) {
+    $('admErr').innerHTML = '<div class="err">' + esc(e.message) + '</div>';
+    return;
+  }
+
+  $('admKpis').innerHTML = [
+    [ov.halls.published, 'אולמות מפורסמים'],
+    [ov.halls.pending, 'אולמות ממתינים לאישור'],
+    [ov.events.active, 'אירועים פעילים'],
+    [shekel(ov.gifts.total_agorot || 0), 'מתנות שנאספו (טסט)'],
+    [shekel((ov.wallet && ov.wallet.platform) || 0), 'עמלת פלטפורמה (טסט)'],
+    [ov.leads.new, 'לידים חדשים'],
+  ].map(([v, l]) => '<div><div class="stat">' + v + '</div><div class="statlbl">' + l + '</div></div>').join('');
+
+  $('admHallCount').textContent = '(' + halls.length + ')';
+  $('admHallsTable').querySelector('tbody').innerHTML = halls.map((h) => `
+    <tr>
+      <td><b>${esc(h.name)}</b><div class="muted">${esc(h.city || '')}${h.published ? ' · <a href="/events/hall?h=' + esc(h.slug) + '">לצפייה בדף</a>' : ''}</div></td>
+      <td class="muted" style="direction:ltr;text-align:right">${esc(h.owner_email || '')}</td>
+      <td>${h.leads_new ? '<span class="pill new">' + h.leads_new + ' חדשים</span> ' : ''}<span class="muted">${h.leads_total} סה"כ</span></td>
+      <td>${h.event_count}</td>
+      <td style="white-space:nowrap">${bpsPct(h.hall_share_bps)}
+        <button class="btn ghost small" data-adm-share="${h.id}" data-bps="${h.hall_share_bps}" title="שינוי נתח האולם מהמתנות">✎</button></td>
+      <td>${h.published ? '<span class="pill yes">מפורסם</span>' : '<span class="pill pending">ממתין לאישור</span>'}</td>
+      <td><button class="btn small${h.published ? ' ghost' : ''}" data-adm-pub="${h.id}" data-to="${!h.published}">
+        ${h.published ? 'הסרה מפרסום' : '✓ אישור פרסום'}</button></td>
+    </tr>`).join('') || '<tr><td colspan="7" class="muted">אין אולמות בפלטפורמה עדיין.</td></tr>';
+
+  for (const b of $('admHallsTable').querySelectorAll('[data-adm-pub]'))
+    b.addEventListener('click', () => guarded(b, 'apub' + b.dataset.admPub, async () => {
+      try {
+        await rpc('evg_hall_publish', { p_hall_id: b.dataset.admPub, p_published: b.dataset.to === 'true' });
+        await refreshMe();
+      } catch (e) { $('admErr').innerHTML = '<div class="err">' + esc(e.message) + '</div>'; }
+    }));
+  for (const b of $('admHallsTable').querySelectorAll('[data-adm-share]'))
+    b.addEventListener('click', () => guarded(b, 'ashare' + b.dataset.admShare, async () => {
+      const cur = (parseInt(b.dataset.bps, 10) || 0) / 100;
+      const pct = prompt('נתח האולם מכל מתנה באירועים שלו, באחוזים (0–20):', cur);
+      if (pct === null) return;
+      const bps = Math.round(parseFloat(pct.replace(',', '.')) * 100);
+      if (!Number.isFinite(bps) || bps < 0 || bps > 2000) {
+        $('admErr').innerHTML = '<div class="err">נתח האולם חייב להיות בין 0% ל-20%.</div>'; return;
+      }
+      try {
+        await rpc('evg_admin_hall_share_set', { p_hall_id: b.dataset.admShare, p_share_bps: bps });
+        await renderAdmin();
+      } catch (e) { $('admErr').innerHTML = '<div class="err">' + esc(e.message) + '</div>'; }
+    }));
+
+  $('admEventCount').textContent = '(' + evs.total + ')';
+  $('admEventsTable').querySelector('tbody').innerHTML = (evs.rows || []).map((e) => `
+    <tr>
+      <td><b>${esc(e.title)}</b><div class="muted">${TYPE_LABEL[e.event_type] || ''}${e.hall_name ? ' · ' + esc(e.hall_name) : ''}</div></td>
+      <td class="muted" style="direction:ltr;text-align:right">${esc(e.owner_email || '')}</td>
+      <td class="muted">${e.event_date ? new Date(e.event_date + 'T00:00').toLocaleDateString('he-IL') : '—'}</td>
+      <td>${e.guest_count}<span class="muted"> · ${e.yes_souls} אישרו</span></td>
+      <td>${e.gift_count}<span class="muted"> · ${shekel(e.gift_total_agorot)}</span></td>
+      <td>${shekel(e.commission_agorot)}<span class="muted"> (${bpsPct(e.platform_fee_bps)})</span></td>
+      <td><span class="pill ${EV_STATUS_PILL[e.status] || 'pending'}">${EV_STATUS_LABEL[e.status] || e.status}</span></td>
+    </tr>`).join('') || '<tr><td colspan="7" class="muted">אין אירועים בפלטפורמה עדיין.</td></tr>';
+
+  $('admRevTable').querySelector('tbody').innerHTML = (rev || []).map((r) => `
+    <tr>
+      <td><b>${esc(r.month)}</b></td>
+      <td>${r.gift_count}</td>
+      <td>${shekel(r.gift_total_agorot)}</td>
+      <td>${shekel(r.event_owner_agorot)}</td>
+      <td><b>${shekel(r.platform_agorot)}</b></td>
+      <td>${shekel(r.hall_agorot)}</td>
+    </tr>`).join('') || '<tr><td colspan="6" class="muted">עדיין לא נרשמו מתנות — הדוח יתמלא מהמתנה הראשונה.</td></tr>';
+}
+
+$('admRefresh').addEventListener('click', () => guarded($('admRefresh'), 'admRefresh', renderAdmin));
 
 // ---------- halls ----------
 function renderHalls() {
