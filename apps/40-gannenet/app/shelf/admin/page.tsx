@@ -51,6 +51,7 @@ export default function AdminPage() {
   const [drafts, setDrafts] = useState<Record<string, string>>({});
   const [hiddenDrafts, setHiddenDrafts] = useState<Record<string, boolean>>({});
   const [saving, setSaving] = useState<string>("");
+  const [loggingIn, setLoggingIn] = useState(false);
   const [msg, setMsg] = useState("");
   const [err, setErr] = useState("");
   const [q, setQ] = useState("");
@@ -71,6 +72,8 @@ export default function AdminPage() {
   }, []);
 
   async function login(k: string) {
+    if (loggingIn) return;
+    setLoggingIn(true);
     setErr("");
     try {
       const res = await fetch(withBase("/api/admin/list"), { method: "POST", headers: { "x-admin-key": k } });
@@ -94,6 +97,8 @@ export default function AdminPage() {
       loadUsage(k);
     } catch {
       setErr("שגיאת רשת.");
+    } finally {
+      setLoggingIn(false);
     }
   }
 
@@ -217,7 +222,7 @@ export default function AdminPage() {
               aria-label="סיסמת ניהול"
               value={key}
               onChange={(e) => setKey(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && login(key)}
+              onKeyDown={(e) => e.key === "Enter" && !loggingIn && login(key)}
               autoComplete="off"
               style={{ width: "100%", paddingInlineEnd: 44 }}
             />
@@ -259,8 +264,8 @@ export default function AdminPage() {
               )}
             </button>
           </div>
-          <button onClick={() => login(key)} className="btn btn-main" style={{ marginTop: 12, width: "100%" }}>
-            כניסה
+          <button onClick={() => login(key)} disabled={loggingIn} className="btn btn-main" style={{ marginTop: 12, width: "100%" }}>
+            {loggingIn ? "מתחבר…" : "כניסה"}
           </button>
           {err && <p style={{ color: "#a03a5c", fontSize: 13.5, marginTop: 10 }}>{err}</p>}
           <Link href="/shelf" style={{ display: "block", marginTop: 16, color: "#2b4a8b", fontSize: 13.5 }}>→ חזרה למדף</Link>
