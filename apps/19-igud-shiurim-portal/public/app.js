@@ -2475,19 +2475,33 @@ async function renderSuperadminDashboard(client) {
     });
 
     document.querySelectorAll('[data-toggle-status]').forEach(btn => btn.onclick = async () => {
+      if (btn.disabled) return;
+      btn.disabled = true;
       const newStatus = btn.dataset.status === 'active' ? 'inactive' : 'active';
-      await api(`/api/superadmin/tenants/${btn.dataset.toggleStatus}`, { method: 'PATCH', auth: true, body: JSON.stringify({ status: newStatus }) });
-      const t = tenants.find(x => String(x.id) === btn.dataset.toggleStatus);
-      if (t) t.status = newStatus;
-      draw();
+      try {
+        await api(`/api/superadmin/tenants/${btn.dataset.toggleStatus}`, { method: 'PATCH', auth: true, body: JSON.stringify({ status: newStatus }) });
+        const t = tenants.find(x => String(x.id) === btn.dataset.toggleStatus);
+        if (t) t.status = newStatus;
+        draw();
+      } catch (err) {
+        btn.disabled = false;
+        alert('שגיאה: ' + err.message);
+      }
     });
 
     document.querySelectorAll('[data-toggle-public]').forEach(btn => btn.onclick = async () => {
+      if (btn.disabled) return;
+      btn.disabled = true;
       const newVal = btn.dataset.public !== 'true';
-      await api(`/api/superadmin/tenants/${btn.dataset.togglePublic}`, { method: 'PATCH', auth: true, body: JSON.stringify({ is_public: newVal }) });
-      const t = tenants.find(x => String(x.id) === btn.dataset.togglePublic);
-      if (t) t.is_public = newVal;
-      draw();
+      try {
+        await api(`/api/superadmin/tenants/${btn.dataset.togglePublic}`, { method: 'PATCH', auth: true, body: JSON.stringify({ is_public: newVal }) });
+        const t = tenants.find(x => String(x.id) === btn.dataset.togglePublic);
+        if (t) t.is_public = newVal;
+        draw();
+      } catch (err) {
+        btn.disabled = false;
+        alert('שגיאה: ' + err.message);
+      }
     });
 
     document.querySelectorAll('.link-form').forEach(form => form.addEventListener('submit', async (e) => {
@@ -2510,10 +2524,17 @@ async function renderSuperadminDashboard(client) {
     }));
 
     document.querySelectorAll('[data-nr-status]').forEach(btn => btn.onclick = async () => {
-      await api(`/api/superadmin/national-requests/${btn.dataset.nrStatus}`, { method: 'PATCH', auth: true, body: JSON.stringify({ status: btn.dataset.next }) });
-      const n = nationalRequests.find(x => String(x.id) === btn.dataset.nrStatus);
-      if (n) n.status = btn.dataset.next;
-      draw();
+      if (btn.disabled) return;
+      btn.disabled = true;
+      try {
+        await api(`/api/superadmin/national-requests/${btn.dataset.nrStatus}`, { method: 'PATCH', auth: true, body: JSON.stringify({ status: btn.dataset.next }) });
+        const n = nationalRequests.find(x => String(x.id) === btn.dataset.nrStatus);
+        if (n) n.status = btn.dataset.next;
+        draw();
+      } catch (err) {
+        btn.disabled = false;
+        alert('שגיאה: ' + err.message);
+      }
     });
 
     document.getElementById('subpay-form').addEventListener('submit', async (e) => {
