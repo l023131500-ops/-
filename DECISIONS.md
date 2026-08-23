@@ -12684,3 +12684,40 @@
     לאפליקציה הבאה שטרם עברה סריקת double-submit מלאה: 17-chizukim-transcribe.
     נושאים #62/#94/#115/#164/#169/#254/#312 נשארים חסומים.
     via cloud server 167.99.131.167 [loop B]
+
+## 23/08/2026 — סבב 480 (loop B)
+
+480. **המשכתי את סריקת ה-double-submit ב-22-get-your-rights כפי שתוכנן בסבב
+    479, ובדקתי את שאר עמודי ה-admin (`AdminLeads.tsx`, `AdminRightsReference.tsx`,
+    `AdminSettings.tsx`).** `AdminLeads.tsx` ו-`AdminRightsReference.tsx` כבר
+    מוגנים היטב בכל הפעולות (מחיקה/שמירה/הוספה/ייבוא — כולן עם state ייעודי
+    ו-`disabled`).
+
+    **מצאתי פער אמיתי אחד:** ב-`AdminSettings.tsx`, פונקציית `deleteKey`
+    (מחיקת מפתח API) לא עקבה אחרי מצב "בתהליך מחיקה" בכלל — בניגוד לאחיותיה
+    `generateApiKey`/`saveWebhook`/שמירת n8n שכולן כבר שומרות `loading` flag
+    ומכבות את הכפתור בזמן הבקשה. כפתור המחיקה (אייקון פח) לא קיבל `disabled`
+    ולא נחסם בזמן קריאת הרשת, כך שלחיצות חוזרות/מהירות על כפתורי מחיקה של
+    כמה מפתחות בזה אחר זה (במיוחד ברשת איטית) יכולות לשלוח כמה בקשות מחיקה
+    חופפות בלי משוב חזותי שהפעולה כבר בביצוע.
+
+    **התיקון:** הוספתי `deletingKeyId` state, guard מוקדם (`if (deletingKeyId)
+    return`) ו-`disabled={!!deletingKeyId}` על כפתור המחיקה — אותו דפוס
+    שכבר קיים ב-`creating`/`webhookSaving`/`n8nSaving` באותו קובץ, בלי הפשטה
+    חדשה.
+
+    **בדיקות תקינות:** קריאת קוד בלבד (ללא dev-server, לפי הנחיות ההרצה).
+    השוויתי מול שאר כפתורי הפעולה באותו קובץ (דפוס `disabled={loading}` זהה).
+    `git diff --stat`: קובץ יחיד, +5/-1.
+
+    לא נגעתי במערכות מוגנות 08/09/bkalut-app/bkalot-admin/zr_*/NEDARIM3873/
+    csj/csj_src/igud, ב-`main`, או במערכת מחוץ ל-scope (17-25/27/28 בלבד).
+
+    ענף חדש `fix/b-22-admin-settings-apikey-delete-guard-round480-0823`
+    (שרשרת הענפים היא המקור היחיד ל-loop B, לא `main`), נדחף.
+
+    **הבא בתור:** כל ארבעת עמודי ה-admin ב-22-get-your-rights נסרקו כעת
+    במלואן למשפחת double-submit ואין פערים ידועים נוספים. לעבור לאפליקציה
+    הבאה שטרם עברה סריקת double-submit מלאה: 17-chizukim-transcribe.
+    נושאים #62/#94/#115/#164/#169/#254/#312 נשארים חסומים.
+    via cloud server 167.99.131.167 [loop B]
