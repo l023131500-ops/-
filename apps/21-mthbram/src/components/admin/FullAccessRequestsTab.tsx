@@ -13,6 +13,7 @@ export default function FullAccessRequestsTab() {
   const [loading, setLoading] = useState(true);
   const [drafts, setDrafts] = useState<Record<string, Record<string, boolean>>>({});
   const [saving, setSaving] = useState<string | null>(null);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -76,8 +77,11 @@ export default function FullAccessRequestsTab() {
   };
 
   const remove = async (id: string) => {
+    if (deletingId) return;
     if (!confirm("למחוק את הבקשה?")) return;
+    setDeletingId(id);
     const { error } = await supabase.from("synagogue_full_access_requests").delete().eq("id", id);
+    setDeletingId(null);
     if (error) return toast.error("שגיאה במחיקה");
     toast.success("נמחק");
     load();
@@ -113,8 +117,8 @@ export default function FullAccessRequestsTab() {
                 {req.note && <p className="font-body text-xs text-muted-foreground mt-2">💬 {req.note}</p>}
                 <p className="font-body text-xs text-muted-foreground/60 mt-1">{new Date(req.created_at).toLocaleString("he-IL")}</p>
               </div>
-              <Button size="sm" variant="outline" onClick={() => remove(req.id)} className="text-destructive border-destructive/30 gap-1">
-                <Trash2 className="w-3 h-3" /> מחק
+              <Button size="sm" variant="outline" onClick={() => remove(req.id)} disabled={deletingId === req.id} className="text-destructive border-destructive/30 gap-1">
+                <Trash2 className="w-3 h-3" /> {deletingId === req.id ? "מוחק..." : "מחק"}
               </Button>
             </div>
 
