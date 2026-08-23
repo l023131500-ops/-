@@ -13181,3 +13181,47 @@
     מוטציות async בקוד לקוח). נושאים #62/#94/#115/#164/#169/#254/#312
     נשארים חסומים.
     via cloud server 167.99.131.167 [loop B]
+
+## 23/08/2026 — סבב 492 (loop B)
+
+492. **המשך ישיר לפי הצבעת סבב 491: אימות ותיקון ארבעת ממצאי ה-double-submit
+    שדווחו ב-27-bkalut-price.** קראתי את שלושת הקבצים ידנית (לא רק דיווח
+    סוכן) ואישרתי שכל הממצאים אמיתיים:
+
+    - `community-admin.tsx` `toggleLink()` (שורה 179) — עדכן קישור שיתוף
+      דרך `Switch onCheckedChange` בלי שום guard, בזמן שאחותה `deleteLink()`
+      (שורה 188, מיד אחריה בקובץ) כבר עוקבת אחרי מזהים בטיפול עם
+      `deletingLinkRef`. תוקן: נוסף `togglingLinkRef` (אותו דפוס `Set<number>`
+      + early-return + ניקוי ב-`finally`).
+    - `params-topics.tsx` `save()` (שורה 106) — שומר טופס יחיד (הוספה/עריכה
+      של רשומת פרמטר) בלי מצב `isSaving`, בניגוד ליתר הכפתורים בקובץ. תוקן:
+      נוסף `isSaving` state, early-return בתחילת `save()`, `disabled={isSaving}`
+      על כפתורי "שמירה"/"ביטול", וטקסט "שומר…" בזמן השמירה (טופס יחיד ולא
+      רשימה, ולכן state מקומי מתאים יותר מ-ref של מזהים).
+    - `health-funds-admin.tsx` `toggleActive()` ו-`saveTopic()` (שורות
+      206/221) — שתיהן ללא guard, בזמן שהשכנה `removeTopic()` (שורה 232,
+      ~10 שורות מתחת) כבר משתמשת ב-`removingTopicRef`. תוקן: נוספו
+      `savingTopicRef` ו-`togglingTopicRef`, אותו דפוס `Set<number>` בדיוק.
+
+    כל התיקונים תוספת בלבד (guard + ניקוי ב-finally) — אין שינוי בהתנהגות
+    הבקשה עצמה, אין שינוי ב-API, אין הסרת פיצ'ר.
+
+    **בדיקות תקינות:** קריאת קוד בלבד (ללא dev-server/npm install, לפי
+    הנחיות ההרצה — `node_modules/` לא מותקן בסביבה הזו). `git diff --stat`:
+    3 קבצים, +23/-3. אימתתי ידנית שכל שימוש חדש (`useRef`/`useState`) כבר
+    מיובא בראש כל קובץ (לא נדרש import חדש).
+
+    לא נגעתי במערכות מוגנות 08/09/bkalut-app/bkalot-admin/zr_*/NEDARIM3873/
+    csj/csj_src/igud, ב-`main`, או במערכת מחוץ ל-scope (17-25/27/28 בלבד).
+
+    ענף חדש `fix/b-27-bkalut-price-double-submit-round492-0823` (שרשרת
+    הענפים היא המקור היחיד ל-loop B, לא `main`), נדחף.
+
+    **הבא בתור:** משפחת ה-double-submit נסרקה עד כה רק חלקית מחוץ ל-19/21/24/27
+    (19 תוקנה בסבבים 487-489, 21 בסבבים 481-486, 24 בסבבים 478-479 ודווחה
+    נקייה, 27 בסבב הזה). עדיין לא נסרקו באופן ממוקד לאותה משפחה: 17-chizukim-
+    transcribe, 18-torah-editor-mvp, 20-igud-portal, 22-get-your-rights (רק
+    `AdminSettings` בו נסרק/תוקן בסבב 480 — שאר לוחות הניהול, כמו `AdminLeads`,
+    טרם נבדקו). להריץ סריקת Explore ממוקדת על ארבעתם בסבב הבא. נושאים
+    #62/#94/#115/#164/#169/#254/#312 נשארים חסומים.
+    via cloud server 167.99.131.167 [loop B]
