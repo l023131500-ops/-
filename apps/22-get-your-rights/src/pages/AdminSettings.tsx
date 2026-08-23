@@ -33,6 +33,7 @@ const AdminSettings = () => {
   const [newKeyName, setNewKeyName] = useState("");
   const [generatedKey, setGeneratedKey] = useState<string | null>(null);
   const [creating, setCreating] = useState(false);
+  const [deletingKeyId, setDeletingKeyId] = useState<string | null>(null);
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -108,8 +109,11 @@ const AdminSettings = () => {
   };
 
   const deleteKey = async (id: string) => {
+    if (deletingKeyId) return;
     if (!confirm("האם למחוק את מפתח ה-API? פעולה זו תחסום מיידית כל שימוש קיים במפתח זה.")) return;
+    setDeletingKeyId(id);
     const { error } = await supabase.from("api_keys").delete().eq("id", id);
+    setDeletingKeyId(null);
     if (error) {
       toast({ title: "שגיאה", description: "מחיקת המפתח נכשלה", variant: "destructive" });
       return;
@@ -224,7 +228,7 @@ const AdminSettings = () => {
                           <span dir="ltr">{k.key_prefix}</span> · {k.last_used_at ? `שימוש אחרון: ${new Date(k.last_used_at).toLocaleDateString("he-IL")}` : "טרם נעשה שימוש"}
                         </p>
                       </div>
-                      <Button size="icon" variant="ghost" onClick={() => deleteKey(k.id)} className="text-destructive hover:text-destructive">
+                      <Button size="icon" variant="ghost" onClick={() => deleteKey(k.id)} disabled={!!deletingKeyId} className="text-destructive hover:text-destructive">
                         <Trash2 className="w-4 h-4" />
                       </Button>
                     </div>
