@@ -98,7 +98,7 @@ export function AdminSynagogues() {
                   <div className="flex flex-wrap items-center gap-1">
                     <button
                       onClick={() => togglePublish.mutate(s)}
-                      disabled={!!s.isSample}
+                      disabled={!!s.isSample || (togglePublish.isPending && togglePublish.variables?.id === s.id)}
                       title={s.isSample ? "שורת דוגמה — אינה במסד" : undefined}
                       className={cn(
                         "rounded-md px-2 py-1.5 text-xs font-medium text-muted-foreground",
@@ -127,6 +127,7 @@ export function AdminSynagogues() {
                     <button
                       onClick={() => { if (window.confirm(`למחוק את "${s.name}"?`)) deleteMutation.mutate(s.id); }}
                       {...sampleRowProps(s.isSample)}
+                      disabled={!!s.isSample || (deleteMutation.isPending && deleteMutation.variables === s.id)}
                     >
                       <Trash2 className="h-4 w-4" />
                     </button>
