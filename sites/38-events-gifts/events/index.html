@@ -1,0 +1,561 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>אירועים ומתנות · more30</title>
+<meta name="description" content="פלטפורמת אירועים: אישורי הגעה בקישור אישי, מתנות באשראי, דפי אולמות ולידים — הכל במקום אחד." />
+<meta name="theme-color" content="#100D22" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@400;600;800&family=Heebo:wght@300;400;500;700&display=swap"
+      rel="stylesheet" media="print" onload="this.media='all'" />
+<noscript><link href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@400;600;800&family=Heebo:wght@300;400;500;700&display=swap" rel="stylesheet" /></noscript>
+<style>
+:root{
+  color-scheme: dark;
+  --night:#100D22; --night-2:#181430; --night-3:#221C42;
+  --gold:#D9B36C; --gold-soft:#EBD09A; --emerald:#19BE8E; --rose:#E0574E; --sky:#6FA8F5;
+  --ink:#F0EDF9; --ink-2:#BDB8D9; --muted:#8B86AD;
+  --line:rgba(217,179,108,.22); --line-2:rgba(240,237,249,.10);
+  --ease:cubic-bezier(.22,.61,.36,1);
+}
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;background:var(--night);color:var(--ink);
+  font-family:'Heebo',system-ui,-apple-system,'Segoe UI',sans-serif;font-weight:300;line-height:1.7;
+  -webkit-font-smoothing:antialiased}
+[hidden]{display:none !important}
+a{color:var(--gold-soft)}
+.wrap{max-width:1040px;margin:0 auto;padding:28px 20px 90px}
+header.top{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:0 0 26px}
+.brand{font-family:'Frank Ruhl Libre',serif;font-weight:800;font-size:20px;letter-spacing:.5px}
+.brand span{color:var(--gold)}
+.chip{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:999px;
+  padding:3px 12px;font-size:12px;color:var(--gold-soft);background:rgba(217,179,108,.07)}
+.chip.test{border-color:rgba(111,168,245,.4);color:var(--sky);background:rgba(111,168,245,.08)}
+h1{font-family:'Frank Ruhl Libre',serif;font-weight:800;font-size:clamp(30px,5vw,46px);line-height:1.25;margin:0 0 14px}
+h1 em{font-style:normal;color:var(--gold)}
+h2{font-family:'Frank Ruhl Libre',serif;font-weight:600;font-size:22px;margin:0 0 6px}
+h3{font-family:'Frank Ruhl Libre',serif;font-weight:600;font-size:17px;margin:0 0 8px}
+.sub{color:var(--ink-2);font-size:16px;max-width:640px;margin:0 0 26px}
+.card{border:1px solid var(--line-2);border-radius:6px;padding:22px;background:rgba(240,237,249,.03);margin-bottom:18px}
+.card.gold{border-color:var(--line)}
+.grid{display:grid;gap:14px}
+.grid.c3{grid-template-columns:repeat(auto-fit,minmax(230px,1fr))}
+.grid.c2{grid-template-columns:repeat(auto-fit,minmax(320px,1fr))}
+label{display:block;font-size:13px;color:var(--ink-2);margin:0 0 5px}
+input,select,textarea{width:100%;background:var(--night-2);border:1px solid var(--line-2);border-radius:4px;
+  color:var(--ink);font-family:inherit;font-size:14px;padding:9px 12px;margin-bottom:12px}
+textarea{min-height:84px;resize:vertical}
+input:focus,select:focus,textarea:focus{outline:2px solid var(--gold);outline-offset:1px;border-color:var(--gold)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  font-family:'Heebo',sans-serif;font-size:15px;font-weight:500;padding:11px 24px;
+  border:1px solid var(--gold);border-radius:4px;background:var(--gold);color:var(--night);
+  cursor:pointer;transition:background .2s var(--ease),color .2s var(--ease);text-decoration:none}
+.btn:hover:not(:disabled){background:transparent;color:var(--gold-soft)}
+.btn.ghost{background:transparent;color:var(--gold-soft)}
+.btn.small{font-size:13px;padding:6px 14px}
+.btn.danger{border-color:var(--rose);background:transparent;color:var(--rose)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn:focus-visible,a:focus-visible{outline:3px solid var(--gold-soft);outline-offset:2px}
+.err{border:1px solid rgba(224,87,78,.5);background:rgba(224,87,78,.08);border-radius:4px;
+  padding:9px 13px;color:var(--ink-2);font-size:13px;margin:8px 0}
+.ok-note{border:1px solid rgba(25,190,142,.5);background:rgba(25,190,142,.08);border-radius:4px;
+  padding:9px 13px;color:var(--ink-2);font-size:13px;margin:8px 0}
+.loading{color:var(--muted);font-size:15px;text-align:center;padding:70px 0}
+.spinner{display:inline-block;width:14px;height:14px;border:2px solid var(--line-2);
+  border-top-color:var(--gold);border-radius:50%;animation:spin .7s linear infinite;
+  vertical-align:-2px;margin-inline-end:8px}
+@keyframes spin{to{transform:rotate(360deg)}}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{color:var(--muted);font-weight:400;text-align:right;padding:6px 8px;border-bottom:1px solid var(--line-2)}
+td{padding:7px 8px;border-bottom:1px solid var(--line-2);vertical-align:middle}
+.pill{display:inline-block;border-radius:999px;padding:1px 10px;font-size:12px}
+.pill.yes{background:rgba(25,190,142,.15);color:var(--emerald)}
+.pill.no{background:rgba(224,87,78,.15);color:var(--rose)}
+.pill.maybe{background:rgba(217,179,108,.15);color:var(--gold-soft)}
+.pill.pending{background:rgba(139,134,173,.15);color:var(--muted)}
+.pill.new{background:rgba(111,168,245,.15);color:var(--sky)}
+.stat{font-family:'Frank Ruhl Libre',serif;font-weight:800;font-size:26px;color:var(--gold)}
+.statlbl{font-size:12px;color:var(--muted)}
+.bar{height:8px;border-radius:999px;background:var(--night-3);overflow:hidden;margin:8px 0 4px}
+.bar i{display:block;height:100%;background:linear-gradient(90deg,var(--gold),var(--gold-soft));border-radius:999px;transition:width .6s var(--ease)}
+.rowline{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.muted{color:var(--muted);font-size:13px}
+.copybox{display:flex;gap:8px;align-items:center}
+.copybox input{margin:0;direction:ltr;font-size:12px}
+.hero{padding:46px 0 30px}
+.feature b{display:block;font-weight:500;color:var(--gold-soft);margin-bottom:4px}
+.feature p{margin:0;font-size:13px;color:var(--ink-2)}
+.backlink{font-size:13px}
+@media (max-width:640px){ .wrap{padding-inline:14px} th,td{padding:5px 5px} }
+</style>
+</head>
+<body>
+<main>
+<div class="wrap">
+  <header class="top">
+    <div class="brand">אירועים <span>&amp;</span> מתנות</div>
+    <div style="display:flex;gap:8px;align-items:center">
+      <span class="chip test" title="עד חיבור ספק סליקה מאושר — אף חיוב אמיתי לא מתבצע">מצב טסט</span>
+      <span id="userChip" class="chip" hidden></span>
+      <button id="logoutBtn" class="btn ghost small" hidden>יציאה</button>
+    </div>
+  </header>
+
+  <div id="loading" class="loading"><span class="spinner"></span>טוען…</div>
+
+  <!-- ============ signed-out: the front door ============ -->
+  <section id="landing" hidden>
+    <div class="hero">
+      <h1>כל האירוע שלך <em>בקישור אחד</em></h1>
+      <p class="sub">אישורי הגעה בקישור אישי לכל מוזמן — בלי הרשמה. מתנות באשראי עם מד התקדמות חי.
+        דפי נחיתה יפים לאולמות שמייצרים לידים. הכל תחת חשבון more30 אחד.</p>
+      <a class="btn" id="loginBtn" href="#">כניסה / הרשמה</a>
+      <span class="muted" style="margin-inline-start:12px">מצב טסט — אף חיוב אמיתי לא מתבצע.</span>
+    </div>
+    <div class="grid c3">
+      <div class="card feature"><b>אישורי הגעה (RSVP)</b><p>כל מוזמן מקבל קישור אישי: מגיע / לא / אולי + כמה מגיעים. אתם רואים הכל חי בלוח הבקרה.</p></div>
+      <div class="card feature"><b>מתנות באשראי</b><p>המוזמן נותן מתנה מהקישור שלו. מד "נאספו X ₪" בזמן אמת, פירוט מלא ומעקב תודות.</p></div>
+      <div class="card feature"><b>דפי אולמות + לידים</b><p>דף נחיתה מעוצב לכל אולם עם טופס פנייה — כל פנייה נכנסת ללוח הלידים של בעל האולם.</p></div>
+      <div class="card feature"><b>צ'ק-אין בכניסה</b><p>סימון הגעה בפועל ביום האירוע — ספירה חיה של מי שכבר בפנים.</p></div>
+      <div class="card feature"><b>ארנקים ועמלות</b><p>כל מתנה מתפצלת אוטומטית: לבעל האירוע, לפלטפורמה, ולאולם אם רלוונטי. שקוף לחלוטין.</p></div>
+      <div class="card feature"><b>בלי לגעת בכרטיס</b><p>הסליקה תמיד אצל ספק מוסמך (נדרים פלוס / PayMe). הפלטפורמה לא רואה מספרי כרטיס — לעולם.</p></div>
+    </div>
+  </section>
+
+  <!-- ============ signed-in: the product ============ -->
+  <section id="app" hidden>
+    <div class="rowline" style="margin-bottom:16px">
+      <h2 style="margin:0">שלום, <span id="helloName"></span></h2>
+      <span id="adminChip" class="chip" hidden>סופר-אדמין</span>
+    </div>
+
+    <!-- my events -->
+    <div class="card gold">
+      <div class="rowline">
+        <h3 style="margin:0">האירועים שלי</h3>
+        <button class="btn small" id="newEventToggle">+ אירוע חדש</button>
+      </div>
+      <div id="newEventForm" hidden style="margin-top:14px">
+        <div class="grid c2">
+          <div>
+            <label for="evTitle">שם האירוע *</label>
+            <input id="evTitle" placeholder="החתונה של …" />
+            <label for="evType">סוג</label>
+            <select id="evType">
+              <option value="wedding">חתונה</option>
+              <option value="bar_mitzvah">בר מצווה</option>
+              <option value="bat_mitzvah">בת מצווה</option>
+              <option value="brit">ברית</option>
+              <option value="engagement">אירוסין</option>
+              <option value="other">אחר</option>
+            </select>
+            <label for="evDate">תאריך</label>
+            <input id="evDate" type="date" />
+            <label for="evTime">שעה</label>
+            <input id="evTime" type="time" />
+          </div>
+          <div>
+            <label for="evVenue">מקום / אולם</label>
+            <input id="evVenue" placeholder="שם האולם או המקום" />
+            <label for="evAddress">כתובת</label>
+            <input id="evAddress" />
+            <label for="evGoal">יעד מתנות (₪, אופציונלי)</label>
+            <input id="evGoal" type="number" min="1" />
+            <label for="evDesc">כמה מילים למוזמנים</label>
+            <textarea id="evDesc"></textarea>
+          </div>
+        </div>
+        <div id="evErr"></div>
+        <button class="btn" id="evCreate">יצירת אירוע</button>
+      </div>
+      <div id="eventsList" style="margin-top:14px"></div>
+    </div>
+
+    <!-- manage one event -->
+    <div class="card gold" id="managePanel" hidden>
+      <div class="rowline">
+        <h3 style="margin:0" id="mTitle"></h3>
+        <button class="btn ghost small" id="mClose">סגירה</button>
+      </div>
+      <p class="muted" id="mMeta"></p>
+
+      <div class="grid c3" style="margin:10px 0 16px">
+        <div><div class="stat" id="mYes">0</div><div class="statlbl">אישרו הגעה (נפשות)</div></div>
+        <div><div class="stat" id="mGifts">₪0</div><div class="statlbl">מתנות שנאספו <span class="chip test" style="font-size:10px;padding:1px 8px">טסט</span></div></div>
+        <div><div class="stat" id="mCheckin">0</div><div class="statlbl">נכנסו בפועל (צ'ק-אין)</div></div>
+      </div>
+      <div id="mGoalWrap" hidden>
+        <div class="rowline"><span class="muted">התקדמות ליעד המתנות</span><span class="muted" id="mGoalTxt"></span></div>
+        <div class="bar"><i id="mGoalBar" style="width:0%"></i></div>
+      </div>
+
+      <h3 style="margin-top:18px">קישור שיתוף פתוח (לסטטוס / קבוצות)</h3>
+      <div class="copybox">
+        <input id="mShareUrl" readonly />
+        <button class="btn small" id="mShareCopy">העתקה</button>
+      </div>
+
+      <h3 style="margin-top:22px">הוספת מוזמנים</h3>
+      <p class="muted">שורה לכל מוזמן: <b>שם, טלפון, קבוצה, כמות מוזמנים</b> (רק השם חובה). לכל מוזמן ייווצר קישור אישי.</p>
+      <textarea id="mGuestsInput" placeholder="ישראל ישראלי, 0501234567, משפחה, 4&#10;דוד כהן, , חברים, 2"></textarea>
+      <div id="mGuestsErr"></div>
+      <button class="btn small" id="mGuestsAdd">הוספת מוזמנים</button>
+
+      <h3 style="margin-top:22px">מוזמנים <span class="muted" id="mGuestCount"></span></h3>
+      <div style="overflow-x:auto">
+      <table id="mGuestsTable">
+        <thead><tr><th>שם</th><th>קבוצה</th><th>מוזמנים</th><th>סטטוס</th><th>הערה</th><th></th></tr></thead>
+        <tbody></tbody>
+      </table>
+      </div>
+
+      <h3 style="margin-top:22px">מתנות <span class="chip test" style="font-size:10px;padding:1px 8px">מצב טסט</span></h3>
+      <div style="overflow-x:auto">
+      <table id="mGiftsTable">
+        <thead><tr><th>מאת</th><th>סכום</th><th>ברכה</th><th>תאריך</th></tr></thead>
+        <tbody></tbody>
+      </table>
+      </div>
+      <p class="muted" id="mWallet"></p>
+    </div>
+
+    <!-- my halls -->
+    <div class="card gold">
+      <div class="rowline">
+        <h3 style="margin:0">האולמות שלי</h3>
+        <button class="btn small" id="newHallToggle">+ אולם חדש</button>
+      </div>
+      <p class="muted">אולם חדש נוצר כטיוטה; דף הנחיתה שלו יוצג לציבור רק אחרי אישור מנהל המערכת.</p>
+      <div id="newHallForm" hidden style="margin-top:8px">
+        <div class="grid c2">
+          <div>
+            <label for="hName">שם האולם *</label>
+            <input id="hName" />
+            <label for="hSlug">כתובת באנגלית (slug) *</label>
+            <input id="hSlug" placeholder="lechaim-hall" style="direction:ltr" />
+          </div>
+          <div>
+            <label for="hCity">עיר</label>
+            <input id="hCity" />
+            <label for="hPhone">טלפון</label>
+            <input id="hPhone" />
+          </div>
+        </div>
+        <label for="hDesc">תיאור לדף הנחיתה</label>
+        <textarea id="hDesc"></textarea>
+        <div id="hErr"></div>
+        <button class="btn" id="hCreate">יצירת אולם</button>
+      </div>
+      <div id="hallsList" style="margin-top:14px"></div>
+      <div id="hallLeadsPanel" hidden style="margin-top:14px">
+        <h3 id="hlTitle"></h3>
+        <div style="overflow-x:auto">
+        <table>
+          <thead><tr><th>שם</th><th>טלפון</th><th>סוג</th><th>תאריך</th><th>הודעה</th><th>סטטוס</th></tr></thead>
+          <tbody id="hlBody"></tbody>
+        </table>
+        </div>
+      </div>
+    </div>
+
+    <p class="backlink"><a href="https://more30.com/">→ חזרה ל-more30.com</a></p>
+  </section>
+</div>
+</main>
+
+<script type="module">
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+
+const SUPABASE_URL = 'https://uhnrgujbdxhhmoxcjria.supabase.co';
+const SUPABASE_ANON =
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVobnJndWpiZHhoaG1veGNqcmlhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODMzNjE3MjgsImV4cCI6MjA5ODkzNzcyOH0.nHuOhw-WQEU17lNa7XOlORnBhVAYbJBHudKafWkSHBw';
+
+const sb = createClient(SUPABASE_URL, SUPABASE_ANON, {
+  auth: { persistSession: true, storageKey: 'more30-auth', detectSessionInUrl: true },
+});
+
+const $ = (id) => document.getElementById(id);
+const esc = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, (c) =>
+  ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const shekel = (agorot) => '₪' + (Math.round(agorot) / 100).toLocaleString('he-IL', { maximumFractionDigits: 0 });
+const TYPE_LABEL = { wedding: 'חתונה', bar_mitzvah: 'בר מצווה', bat_mitzvah: 'בת מצווה', brit: 'ברית', engagement: 'אירוסין', other: 'אירוע' };
+const RSVP_LABEL = { yes: 'מגיעים', no: 'לא מגיעים', maybe: 'אולי', pending: 'טרם ענו' };
+const LEAD_LABEL = { new: 'חדש', contacted: 'נוצר קשר', closed: 'סגור' };
+
+async function rpc(fn, args) {
+  const { data, error } = await sb.rpc(fn, args || {});
+  if (error) throw new Error(error.message);
+  return data;
+}
+
+// one shared in-flight guard for every mutation button (loop A/B house standard)
+const busy = new Set();
+async function guarded(btn, key, fn) {
+  if (busy.has(key)) return;
+  busy.add(key);
+  if (btn) btn.disabled = true;
+  try { await fn(); }
+  finally { busy.delete(key); if (btn) btn.disabled = false; }
+}
+
+let ME = null;
+let CURRENT_EVENT = null;
+
+// ---------- boot ----------
+const { data: sess } = await sb.auth.getSession();
+$('loginBtn').href = 'https://more30.com/login?from=' + encodeURIComponent('https://more30.com/events');
+$('loading').hidden = true;
+if (!sess?.session) {
+  $('landing').hidden = false;
+} else {
+  const email = sess.session.user.email || '';
+  $('userChip').textContent = email;
+  $('userChip').hidden = false;
+  $('logoutBtn').hidden = false;
+  $('app').hidden = false;
+  $('helloName').textContent = (sess.session.user.user_metadata?.full_name || email.split('@')[0]);
+  await refreshMe();
+}
+
+$('logoutBtn').addEventListener('click', () => guarded($('logoutBtn'), 'logout', async () => {
+  await sb.auth.signOut();
+  location.reload();
+}));
+
+async function refreshMe() {
+  ME = await rpc('evg_me');
+  $('adminChip').hidden = !ME.is_super_admin;
+  renderEvents();
+  renderHalls();
+}
+
+// ---------- events list ----------
+function renderEvents() {
+  const list = ME.events || [];
+  $('eventsList').innerHTML = list.length === 0
+    ? '<p class="muted">עדיין אין אירועים — זה הרגע ליצור את הראשון.</p>'
+    : list.map((e) => `
+      <div class="card" style="margin-bottom:10px">
+        <div class="rowline">
+          <div>
+            <b>${esc(e.title)}</b>
+            <span class="muted"> · ${TYPE_LABEL[e.event_type] || ''}${e.event_date ? ' · ' + new Date(e.event_date + 'T00:00').toLocaleDateString('he-IL') : ''}</span>
+            <div class="muted">${e.guest_count} מוזמנים · ${e.yes_count || 0} אישרו · ${shekel(e.gift_total_agorot || 0)} מתנות</div>
+          </div>
+          <button class="btn small" data-open="${e.id}">ניהול</button>
+        </div>
+      </div>`).join('');
+  for (const btn of $('eventsList').querySelectorAll('[data-open]'))
+    btn.addEventListener('click', () => openEvent(btn.dataset.open));
+}
+
+$('newEventToggle').addEventListener('click', () => { $('newEventForm').hidden = !$('newEventForm').hidden; });
+
+$('evCreate').addEventListener('click', () => guarded($('evCreate'), 'evCreate', async () => {
+  $('evErr').innerHTML = '';
+  const title = $('evTitle').value.trim();
+  if (!title) { $('evErr').innerHTML = '<div class="err">שם האירוע חובה.</div>'; return; }
+  const goalShekel = parseInt($('evGoal').value, 10);
+  try {
+    await rpc('evg_event_create', {
+      p_title: title,
+      p_event_type: $('evType').value,
+      p_event_date: $('evDate').value || null,
+      p_event_time: $('evTime').value || null,
+      p_venue_name: $('evVenue').value.trim() || null,
+      p_address: $('evAddress').value.trim() || null,
+      p_description: $('evDesc').value.trim() || null,
+      p_gift_goal_agorot: goalShekel > 0 ? goalShekel * 100 : null,
+    });
+    $('newEventForm').hidden = true;
+    for (const id of ['evTitle','evDate','evTime','evVenue','evAddress','evGoal','evDesc']) $(id).value = '';
+    await refreshMe();
+  } catch (e) { $('evErr').innerHTML = '<div class="err">' + esc(e.message) + '</div>'; }
+}));
+
+// ---------- manage one event ----------
+async function openEvent(id) {
+  const d = await rpc('evg_event_dashboard', { p_event_id: id });
+  if (!d?.event) return;
+  CURRENT_EVENT = d;
+  const ev = d.event;
+  $('managePanel').hidden = false;
+  $('mTitle').textContent = ev.title;
+  $('mMeta').textContent = [
+    TYPE_LABEL[ev.event_type],
+    ev.event_date ? new Date(ev.event_date + 'T00:00').toLocaleDateString('he-IL') : null,
+    ev.event_time, ev.venue_name, ev.address,
+  ].filter(Boolean).join(' · ');
+
+  const guests = d.guests || [], gifts = d.gifts || [];
+  const yes = guests.filter(g => g.rsvp_status === 'yes').reduce((s, g) => s + (g.rsvp_count || 0), 0);
+  const checkin = guests.filter(g => g.checkin_at).length;
+  const total = gifts.reduce((s, g) => s + g.amount_agorot, 0);
+  $('mYes').textContent = yes;
+  $('mCheckin').textContent = checkin;
+  $('mGifts').textContent = shekel(total);
+
+  if (ev.gift_goal_agorot) {
+    $('mGoalWrap').hidden = false;
+    const pct = Math.min(100, Math.round(total * 100 / ev.gift_goal_agorot));
+    $('mGoalBar').style.width = pct + '%';
+    $('mGoalTxt').textContent = shekel(total) + ' מתוך ' + shekel(ev.gift_goal_agorot) + ' (' + pct + '%)';
+  } else $('mGoalWrap').hidden = true;
+
+  $('mShareUrl').value = 'https://more30.com/events/g?s=' + ev.share_token;
+  $('mGuestCount').textContent = '(' + guests.length + ')';
+
+  $('mGuestsTable').querySelector('tbody').innerHTML = guests.map((g) => `
+    <tr>
+      <td><b>${esc(g.full_name)}</b>${g.phone ? '<div class="muted">' + esc(g.phone) + '</div>' : ''}</td>
+      <td>${esc(g.group_name || '')}</td>
+      <td>${g.rsvp_status === 'yes' ? (g.rsvp_count ?? g.invited_count) : g.invited_count}</td>
+      <td><span class="pill ${g.rsvp_status}">${RSVP_LABEL[g.rsvp_status]}</span>${g.checkin_at ? ' <span class="pill yes">נכנסו</span>' : ''}</td>
+      <td class="muted">${esc(g.rsvp_note || '')}</td>
+      <td style="white-space:nowrap">
+        <button class="btn ghost small" data-copy="${g.personal_token}">קישור</button>
+        ${g.checkin_at ? '' : '<button class="btn ghost small" data-checkin="' + g.id + '">צ\'ק-אין</button>'}
+        <button class="btn danger small" data-del="${g.id}">✕</button>
+      </td>
+    </tr>`).join('') || '<tr><td colspan="6" class="muted">אין מוזמנים עדיין.</td></tr>';
+
+  const tb = $('mGuestsTable').querySelector('tbody');
+  for (const b of tb.querySelectorAll('[data-copy]'))
+    b.addEventListener('click', () => {
+      navigator.clipboard.writeText('https://more30.com/events/g?t=' + b.dataset.copy);
+      b.textContent = 'הועתק ✓'; setTimeout(() => { b.textContent = 'קישור'; }, 1500);
+    });
+  for (const b of tb.querySelectorAll('[data-checkin]'))
+    b.addEventListener('click', () => guarded(b, 'ci' + b.dataset.checkin, async () => {
+      await rpc('evg_guest_checkin', { p_guest_id: b.dataset.checkin });
+      await openEvent(ev.id);
+    }));
+  for (const b of tb.querySelectorAll('[data-del]'))
+    b.addEventListener('click', () => guarded(b, 'del' + b.dataset.del, async () => {
+      if (!confirm('למחוק את המוזמן? הקישור האישי שלו יפסיק לעבוד.')) return;
+      await rpc('evg_guest_delete', { p_guest_id: b.dataset.del });
+      await openEvent(ev.id); await refreshMe();
+    }));
+
+  $('mGiftsTable').querySelector('tbody').innerHTML = gifts.map((g) => `
+    <tr>
+      <td><b>${esc(g.donor_name)}</b> <span class="chip test" style="font-size:10px;padding:0 7px">${g.mode === 'test' ? 'טסט' : 'אמיתי'}</span></td>
+      <td>${shekel(g.amount_agorot)}</td>
+      <td class="muted">${esc(g.greeting || '')}</td>
+      <td class="muted">${new Date(g.created_at).toLocaleDateString('he-IL')}</td>
+    </tr>`).join('') || '<tr><td colspan="4" class="muted">עדיין לא התקבלו מתנות.</td></tr>';
+
+  const w = d.wallet || {};
+  $('mWallet').textContent = Object.keys(w).length
+    ? 'חלוקת ארנקים (טסט): לבעל האירוע ' + shekel(w.event_owner || 0) +
+      ' · עמלת פלטפורמה ' + shekel(w.platform || 0) +
+      (w.hall ? ' · לאולם ' + shekel(w.hall) : '')
+    : '';
+
+  $('managePanel').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+$('mClose').addEventListener('click', () => { $('managePanel').hidden = true; CURRENT_EVENT = null; });
+$('mShareCopy').addEventListener('click', () => {
+  navigator.clipboard.writeText($('mShareUrl').value);
+  $('mShareCopy').textContent = 'הועתק ✓'; setTimeout(() => { $('mShareCopy').textContent = 'העתקה'; }, 1500);
+});
+
+$('mGuestsAdd').addEventListener('click', () => guarded($('mGuestsAdd'), 'guestsAdd', async () => {
+  $('mGuestsErr').innerHTML = '';
+  if (!CURRENT_EVENT) return;
+  const lines = $('mGuestsInput').value.split('\n').map(l => l.trim()).filter(Boolean);
+  if (!lines.length) { $('mGuestsErr').innerHTML = '<div class="err">אין שורות להוספה.</div>'; return; }
+  const guests = lines.map((l) => {
+    const [name, phone, group, count] = l.split(',').map(p => (p || '').trim());
+    return { full_name: name, phone: phone || null, group_name: group || null,
+             invited_count: parseInt(count, 10) || 1 };
+  }).filter(g => g.full_name);
+  try {
+    const r = await rpc('evg_guests_add', { p_event_id: CURRENT_EVENT.event.id, p_guests: guests });
+    $('mGuestsInput').value = '';
+    $('mGuestsErr').innerHTML = '<div class="ok-note">נוספו ' + r.inserted + ' מוזמנים — לכל אחד קישור אישי (עמודת "קישור").</div>';
+    await openEvent(CURRENT_EVENT.event.id); await refreshMe();
+  } catch (e) { $('mGuestsErr').innerHTML = '<div class="err">' + esc(e.message) + '</div>'; }
+}));
+
+// ---------- halls ----------
+function renderHalls() {
+  const halls = ME.halls || [];
+  $('hallsList').innerHTML = halls.length === 0
+    ? '<p class="muted">אין אולמות בחשבון הזה.</p>'
+    : halls.map((h) => `
+      <div class="card" style="margin-bottom:10px">
+        <div class="rowline">
+          <div>
+            <b>${esc(h.name)}</b> <span class="muted">· ${esc(h.city || '')}</span>
+            ${h.published
+              ? '<span class="pill yes">מפורסם</span> <a class="muted" href="/events/hall?h=' + esc(h.slug) + '">לצפייה בדף</a>'
+              : '<span class="pill pending">ממתין לאישור מנהל</span>'}
+            ${h.lead_count ? '<span class="pill new">' + h.lead_count + ' לידים חדשים</span>' : ''}
+          </div>
+          <div>
+            <button class="btn ghost small" data-leads="${h.id}" data-name="${esc(h.name)}">לידים</button>
+            ${ME.is_super_admin ? '<button class="btn small" data-pub="' + h.id + '" data-to="' + (!h.published) + '">' + (h.published ? 'הסרה מפרסום' : 'אישור פרסום') + '</button>' : ''}
+          </div>
+        </div>
+      </div>`).join('');
+  for (const b of $('hallsList').querySelectorAll('[data-leads]'))
+    b.addEventListener('click', () => openLeads(b.dataset.leads, b.dataset.name));
+  for (const b of $('hallsList').querySelectorAll('[data-pub]'))
+    b.addEventListener('click', () => guarded(b, 'pub' + b.dataset.pub, async () => {
+      await rpc('evg_hall_publish', { p_hall_id: b.dataset.pub, p_published: b.dataset.to === 'true' });
+      await refreshMe();
+    }));
+}
+
+$('newHallToggle').addEventListener('click', () => { $('newHallForm').hidden = !$('newHallForm').hidden; });
+
+$('hCreate').addEventListener('click', () => guarded($('hCreate'), 'hCreate', async () => {
+  $('hErr').innerHTML = '';
+  const name = $('hName').value.trim(), slug = $('hSlug').value.trim().toLowerCase();
+  if (!name || !slug) { $('hErr').innerHTML = '<div class="err">שם ו-slug חובה.</div>'; return; }
+  if (!/^[a-z0-9][a-z0-9-]{1,48}[a-z0-9]$/.test(slug)) {
+    $('hErr').innerHTML = '<div class="err">slug באנגלית קטנה, ספרות ומקפים בלבד (3–50 תווים).</div>'; return;
+  }
+  try {
+    await rpc('evg_hall_create', {
+      p_name: name, p_slug: slug,
+      p_city: $('hCity').value.trim() || null,
+      p_phone: $('hPhone').value.trim() || null,
+      p_description: $('hDesc').value.trim() || null,
+    });
+    $('newHallForm').hidden = true;
+    for (const id of ['hName','hSlug','hCity','hPhone','hDesc']) $(id).value = '';
+    await refreshMe();
+  } catch (e) { $('hErr').innerHTML = '<div class="err">' + esc(e.message) + '</div>'; }
+}));
+
+async function openLeads(hallId, name) {
+  const leads = await rpc('evg_hall_leads_list', { p_hall_id: hallId });
+  $('hallLeadsPanel').hidden = false;
+  $('hlTitle').textContent = 'לידים — ' + name;
+  $('hlBody').innerHTML = (leads || []).map((l) => `
+    <tr>
+      <td><b>${esc(l.full_name)}</b></td>
+      <td style="direction:ltr">${esc(l.phone)}</td>
+      <td>${TYPE_LABEL[l.event_type] || ''}</td>
+      <td>${l.event_date ? new Date(l.event_date + 'T00:00').toLocaleDateString('he-IL') : ''}</td>
+      <td class="muted">${esc(l.message || '')}</td>
+      <td>
+        <select data-lead="${l.id}" style="margin:0;width:auto">
+          ${['new','contacted','closed'].map(s => '<option value="' + s + '"' + (l.status === s ? ' selected' : '') + '>' + LEAD_LABEL[s] + '</option>').join('')}
+        </select>
+      </td>
+    </tr>`).join('') || '<tr><td colspan="6" class="muted">אין לידים עדיין.</td></tr>';
+  for (const sel of $('hlBody').querySelectorAll('[data-lead]'))
+    sel.addEventListener('change', () => guarded(sel, 'lead' + sel.dataset.lead, async () => {
+      await rpc('evg_hall_lead_status', { p_lead_id: sel.dataset.lead, p_status: sel.value });
+      await refreshMe();
+    }));
+}
+</script>
+</body>
+</html>

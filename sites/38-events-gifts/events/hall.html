@@ -1,0 +1,223 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>דף אולם · אירועים ומתנות</title>
+<meta name="theme-color" content="#100D22" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@400;600;800&family=Heebo:wght@300;400;500;700&display=swap"
+      rel="stylesheet" media="print" onload="this.media='all'" />
+<noscript><link href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@400;600;800&family=Heebo:wght@300;400;500;700&display=swap" rel="stylesheet" /></noscript>
+<style>
+:root{
+  color-scheme: dark;
+  --night:#100D22; --night-2:#181430; --night-3:#221C42;
+  --gold:#D9B36C; --gold-soft:#EBD09A; --emerald:#19BE8E; --rose:#E0574E;
+  --ink:#F0EDF9; --ink-2:#BDB8D9; --muted:#8B86AD;
+  --line:rgba(217,179,108,.22); --line-2:rgba(240,237,249,.10);
+  --ease:cubic-bezier(.22,.61,.36,1);
+}
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;background:var(--night);color:var(--ink);
+  font-family:'Heebo',system-ui,sans-serif;font-weight:300;line-height:1.7;-webkit-font-smoothing:antialiased}
+[hidden]{display:none !important}
+a{color:var(--gold-soft)}
+.wrap{max-width:860px;margin:0 auto;padding:28px 18px 90px}
+.brand{font-family:'Frank Ruhl Libre',serif;font-weight:800;font-size:15px;color:var(--muted);padding:0 0 22px}
+.brand b{color:var(--gold)}
+.cover{position:relative;border:1px solid var(--line);border-radius:10px;overflow:hidden;
+  min-height:300px;display:flex;align-items:flex-end;margin-bottom:20px;
+  background:
+    radial-gradient(ellipse 100% 70% at 50% 0%, rgba(217,179,108,.16), transparent 60%),
+    radial-gradient(ellipse 60% 50% at 15% 100%, rgba(111,168,245,.10), transparent 70%),
+    linear-gradient(180deg, var(--night-3), var(--night-2))}
+.cover img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.55}
+.cover .inner{position:relative;padding:34px 30px;width:100%;
+  background:linear-gradient(0deg, rgba(16,13,34,.92), transparent)}
+h1{font-family:'Frank Ruhl Libre',serif;font-weight:800;font-size:clamp(30px,6vw,44px);margin:0 0 4px}
+.city{color:var(--gold-soft);font-size:16px}
+h2{font-family:'Frank Ruhl Libre',serif;font-weight:600;font-size:21px;margin:0 0 10px}
+.card{border:1px solid var(--line-2);border-radius:6px;padding:24px;background:rgba(240,237,249,.03);margin-bottom:16px}
+.grid{display:grid;gap:16px;grid-template-columns:1fr;align-items:start}
+@media (min-width:760px){ .grid{grid-template-columns:1.2fr .9fr} }
+.desc{white-space:pre-line;color:var(--ink-2);font-size:15px}
+.meta{color:var(--muted);font-size:14px;margin-top:12px}
+.meta b{color:var(--ink-2);font-weight:500}
+.gallery{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px;margin-top:14px}
+.gallery img{width:100%;height:110px;object-fit:cover;border-radius:5px;border:1px solid var(--line-2)}
+label{display:block;font-size:13px;color:var(--ink-2);margin:0 0 5px}
+input,select,textarea{width:100%;background:var(--night-2);border:1px solid var(--line-2);border-radius:4px;
+  color:var(--ink);font-family:inherit;font-size:14px;padding:9px 12px;margin-bottom:12px}
+textarea{min-height:80px;resize:vertical}
+input:focus,select:focus,textarea:focus{outline:2px solid var(--gold);outline-offset:1px;border-color:var(--gold)}
+.btn{display:inline-flex;align-items:center;justify-content:center;width:100%;font-size:15px;font-weight:500;
+  padding:12px 24px;border:1px solid var(--gold);border-radius:4px;background:var(--gold);color:var(--night);
+  cursor:pointer;transition:all .2s var(--ease)}
+.btn:hover:not(:disabled){background:transparent;color:var(--gold-soft)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn:focus-visible{outline:3px solid var(--gold-soft);outline-offset:2px}
+.err{border:1px solid rgba(224,87,78,.5);background:rgba(224,87,78,.08);border-radius:4px;
+  padding:9px 13px;color:var(--ink-2);font-size:13px;margin:8px 0}
+.state{border-radius:6px;padding:26px;text-align:center}
+.state.ok{border:1px solid rgba(25,190,142,.5);background:rgba(25,190,142,.08)}
+.state.bad{border:1px solid rgba(224,87,78,.5);background:rgba(224,87,78,.08)}
+.state h2{margin:0 0 6px}
+.state p{margin:0;color:var(--ink-2);font-size:14px}
+.loading{color:var(--muted);text-align:center;padding:90px 0}
+.spinner{display:inline-block;width:14px;height:14px;border:2px solid var(--line-2);
+  border-top-color:var(--gold);border-radius:50%;animation:spin .7s linear infinite;vertical-align:-2px;margin-inline-end:8px}
+@keyframes spin{to{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+<main>
+<div class="wrap">
+  <div class="brand"><a href="/events" style="text-decoration:none;color:inherit">אירועים <b>&amp;</b> מתנות <span>· more30</span></a></div>
+
+  <div id="loading" class="loading"><span class="spinner"></span>טוען…</div>
+
+  <div id="notFound" hidden>
+    <div class="state bad" role="status">
+      <h2>הדף לא נמצא</h2>
+      <p>האולם המבוקש אינו קיים או שטרם פורסם.</p>
+    </div>
+  </div>
+
+  <div id="content" hidden>
+    <div class="cover" id="cover">
+      <div class="inner">
+        <h1 id="hallName"></h1>
+        <div class="city" id="hallCity"></div>
+      </div>
+    </div>
+
+    <div class="grid">
+      <div class="card">
+        <h2>על האולם</h2>
+        <div class="desc" id="hallDesc"></div>
+        <div class="meta" id="hallMeta"></div>
+        <div class="gallery" id="gallery" hidden></div>
+      </div>
+
+      <div class="card" id="leadCard">
+        <h2>בדיקת תאריך פנוי</h2>
+        <label for="lName">שם מלא *</label>
+        <input id="lName" autocomplete="name" maxlength="120" />
+        <label for="lPhone">טלפון *</label>
+        <input id="lPhone" autocomplete="tel" maxlength="30" />
+        <label for="lEmail">אימייל</label>
+        <input id="lEmail" type="email" autocomplete="email" maxlength="160" />
+        <label for="lType">סוג האירוע</label>
+        <select id="lType">
+          <option value="">בחירה…</option>
+          <option value="wedding">חתונה</option>
+          <option value="bar_mitzvah">בר מצווה</option>
+          <option value="bat_mitzvah">בת מצווה</option>
+          <option value="brit">ברית</option>
+          <option value="engagement">אירוסין</option>
+          <option value="other">אחר</option>
+        </select>
+        <label for="lDate">תאריך מבוקש</label>
+        <input id="lDate" type="date" />
+        <label for="lMsg">הודעה</label>
+        <textarea id="lMsg" maxlength="2000"></textarea>
+        <div id="lErr"></div>
+        <button class="btn" id="lSubmit">שליחת פנייה</button>
+        <div id="lDone" class="state ok" hidden style="margin-top:12px" role="status">
+          <h2>הפנייה נשלחה ✓</h2>
+          <p>צוות האולם קיבל את הפרטים ויחזור אליכם בהקדם.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</main>
+
+<script type="module">
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+
+const SUPABASE_URL = 'https://uhnrgujbdxhhmoxcjria.supabase.co';
+const SUPABASE_ANON =
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVobnJndWpiZHhoaG1veGNqcmlhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODMzNjE3MjgsImV4cCI6MjA5ODkzNzcyOH0.nHuOhw-WQEU17lNa7XOlORnBhVAYbJBHudKafWkSHBw';
+
+const sb = createClient(SUPABASE_URL, SUPABASE_ANON, { auth: { persistSession: false } });
+
+const $ = (id) => document.getElementById(id);
+const esc = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, (c) =>
+  ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+
+async function rpc(fn, args) {
+  const { data, error } = await sb.rpc(fn, args || {});
+  if (error) throw new Error(error.message);
+  return data;
+}
+
+const busy = new Set();
+async function guarded(btn, key, fn) {
+  if (busy.has(key)) return;
+  busy.add(key);
+  if (btn) btn.disabled = true;
+  try { await fn(); }
+  finally { busy.delete(key); if (btn) btn.disabled = false; }
+}
+
+const SLUG = (new URLSearchParams(location.search).get('h') || '').trim().toLowerCase();
+
+function isSafeUrl(u) { return typeof u === 'string' && /^https:\/\//.test(u); }
+
+try {
+  if (!SLUG) throw new Error('no slug');
+  const h = await rpc('evg_hall_public', { p_slug: SLUG });
+  if (!h) throw new Error('not found');
+
+  document.title = h.name + ' · אירועים ומתנות';
+  $('hallName').textContent = h.name;
+  $('hallCity').textContent = h.city || '';
+  $('hallDesc').textContent = h.description || 'פרטים נוספים — בטופס הפנייה.';
+  const meta = [];
+  if (h.address) meta.push('<div><b>כתובת:</b> ' + esc(h.address) + '</div>');
+  if (h.phone) meta.push('<div><b>טלפון:</b> <bdo dir="ltr">' + esc(h.phone) + '</bdo></div>');
+  $('hallMeta').innerHTML = meta.join('');
+
+  if (isSafeUrl(h.cover_url)) {
+    const img = document.createElement('img');
+    img.src = h.cover_url; img.alt = '';
+    $('cover').prepend(img);
+  }
+  const gallery = Array.isArray(h.gallery) ? h.gallery.filter(isSafeUrl).slice(0, 12) : [];
+  if (gallery.length) {
+    $('gallery').hidden = false;
+    $('gallery').innerHTML = gallery.map(u => '<img src="' + esc(u) + '" alt="" loading="lazy" />').join('');
+  }
+
+  $('loading').hidden = true;
+  $('content').hidden = false;
+} catch {
+  $('loading').hidden = true;
+  $('notFound').hidden = false;
+}
+
+$('lSubmit').addEventListener('click', () => guarded($('lSubmit'), 'lead', async () => {
+  $('lErr').innerHTML = '';
+  const name = $('lName').value.trim(), phone = $('lPhone').value.trim();
+  if (name.length < 2) { $('lErr').innerHTML = '<div class="err">שם מלא חובה.</div>'; return; }
+  if (phone.length < 7) { $('lErr').innerHTML = '<div class="err">טלפון תקין חובה.</div>'; return; }
+  try {
+    await rpc('evg_hall_lead_create', {
+      p_slug: SLUG,
+      p_full_name: name,
+      p_phone: phone,
+      p_email: $('lEmail').value.trim() || null,
+      p_event_type: $('lType').value || null,
+      p_event_date: $('lDate').value || null,
+      p_message: $('lMsg').value.trim() || null,
+    });
+    $('lDone').hidden = false;
+    $('lSubmit').hidden = true;
+  } catch (e) { $('lErr').innerHTML = '<div class="err">' + esc(e.message) + '</div>'; }
+}));
+</script>
+</body>
+</html>

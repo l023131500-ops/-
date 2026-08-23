@@ -1,0 +1,317 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>הזמנה לאירוע · אירועים ומתנות</title>
+<meta name="robots" content="noindex, nofollow" />
+<meta name="theme-color" content="#100D22" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@400;600;800&family=Heebo:wght@300;400;500;700&display=swap"
+      rel="stylesheet" media="print" onload="this.media='all'" />
+<noscript><link href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@400;600;800&family=Heebo:wght@300;400;500;700&display=swap" rel="stylesheet" /></noscript>
+<style>
+:root{
+  color-scheme: dark;
+  --night:#100D22; --night-2:#181430; --night-3:#221C42;
+  --gold:#D9B36C; --gold-soft:#EBD09A; --emerald:#19BE8E; --rose:#E0574E; --sky:#6FA8F5;
+  --ink:#F0EDF9; --ink-2:#BDB8D9; --muted:#8B86AD;
+  --line:rgba(217,179,108,.22); --line-2:rgba(240,237,249,.10);
+  --ease:cubic-bezier(.22,.61,.36,1);
+}
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;background:var(--night);color:var(--ink);
+  font-family:'Heebo',system-ui,sans-serif;font-weight:300;line-height:1.7;-webkit-font-smoothing:antialiased}
+[hidden]{display:none !important}
+.wrap{max-width:620px;margin:0 auto;padding:40px 18px 90px}
+.brand{font-family:'Frank Ruhl Libre',serif;font-weight:800;font-size:15px;color:var(--muted);padding:0 0 22px}
+.brand b{color:var(--gold)}
+.hero{border:1px solid var(--line);border-radius:8px;padding:34px 28px;text-align:center;
+  background:
+    radial-gradient(ellipse 90% 60% at 50% 0%, rgba(217,179,108,.13), transparent 65%),
+    linear-gradient(180deg, var(--night-2), var(--night));
+  margin-bottom:18px}
+.hero .kicker{font-size:13px;letter-spacing:2px;color:var(--gold-soft);margin-bottom:8px}
+h1{font-family:'Frank Ruhl Libre',serif;font-weight:800;font-size:clamp(26px,6vw,36px);margin:0 0 8px;line-height:1.3}
+.when{color:var(--ink-2);font-size:16px}
+.where{color:var(--muted);font-size:14px;margin-top:4px}
+.desc{color:var(--ink-2);font-size:14px;margin-top:14px;white-space:pre-line}
+.card{border:1px solid var(--line-2);border-radius:6px;padding:22px;background:rgba(240,237,249,.03);margin-bottom:16px}
+h2{font-family:'Frank Ruhl Libre',serif;font-weight:600;font-size:19px;margin:0 0 10px}
+label{display:block;font-size:13px;color:var(--ink-2);margin:0 0 5px}
+input,select,textarea{width:100%;background:var(--night-2);border:1px solid var(--line-2);border-radius:4px;
+  color:var(--ink);font-family:inherit;font-size:14px;padding:9px 12px;margin-bottom:12px}
+textarea{min-height:70px;resize:vertical}
+input:focus,select:focus,textarea:focus{outline:2px solid var(--gold);outline-offset:1px;border-color:var(--gold)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;font-size:15px;font-weight:500;
+  padding:11px 24px;border:1px solid var(--gold);border-radius:4px;background:var(--gold);color:var(--night);
+  cursor:pointer;transition:all .2s var(--ease)}
+.btn:hover:not(:disabled){background:transparent;color:var(--gold-soft)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn:focus-visible{outline:3px solid var(--gold-soft);outline-offset:2px}
+.rsvp-row{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px}
+.rsvp-btn{flex:1;min-width:100px;padding:13px 8px;border-radius:5px;border:1px solid var(--line-2);
+  background:var(--night-2);color:var(--ink);font-family:inherit;font-size:15px;cursor:pointer;transition:all .2s var(--ease)}
+.rsvp-btn:hover{border-color:var(--gold)}
+.rsvp-btn.on-yes{border-color:var(--emerald);background:rgba(25,190,142,.14);color:var(--emerald)}
+.rsvp-btn.on-no{border-color:var(--rose);background:rgba(224,87,78,.14);color:var(--rose)}
+.rsvp-btn.on-maybe{border-color:var(--gold);background:rgba(217,179,108,.14);color:var(--gold-soft)}
+.amounts{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.amount-btn{padding:10px 18px;border-radius:5px;border:1px solid var(--line-2);background:var(--night-2);
+  color:var(--ink);font-family:inherit;font-size:15px;cursor:pointer;transition:all .2s var(--ease)}
+.amount-btn:hover{border-color:var(--gold)}
+.amount-btn.on{border-color:var(--gold);background:rgba(217,179,108,.14);color:var(--gold-soft)}
+.chip{display:inline-flex;align-items:center;border:1px solid rgba(111,168,245,.4);border-radius:999px;
+  padding:2px 11px;font-size:12px;color:var(--sky);background:rgba(111,168,245,.08)}
+.bar{height:9px;border-radius:999px;background:var(--night-3);overflow:hidden;margin:8px 0 4px}
+.bar i{display:block;height:100%;background:linear-gradient(90deg,var(--gold),var(--gold-soft));border-radius:999px;transition:width .6s var(--ease)}
+.err{border:1px solid rgba(224,87,78,.5);background:rgba(224,87,78,.08);border-radius:4px;
+  padding:9px 13px;color:var(--ink-2);font-size:13px;margin:8px 0}
+.state{border-radius:6px;padding:24px;text-align:center;margin:14px 0}
+.state.ok{border:1px solid rgba(25,190,142,.5);background:rgba(25,190,142,.08)}
+.state.bad{border:1px solid rgba(224,87,78,.5);background:rgba(224,87,78,.08)}
+.state h2{margin:0 0 6px}
+.state p{margin:0;color:var(--ink-2);font-size:14px}
+.loading{color:var(--muted);text-align:center;padding:80px 0}
+.spinner{display:inline-block;width:14px;height:14px;border:2px solid var(--line-2);
+  border-top-color:var(--gold);border-radius:50%;animation:spin .7s linear infinite;vertical-align:-2px;margin-inline-end:8px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.muted{color:var(--muted);font-size:13px}
+</style>
+</head>
+<body>
+<main>
+<div class="wrap">
+  <div class="brand">אירועים <b>&amp;</b> מתנות <span>· more30</span></div>
+
+  <div id="loading" class="loading"><span class="spinner"></span>טוען את פרטי האירוע…</div>
+
+  <div id="notFound" hidden>
+    <div class="state bad" role="status">
+      <h2>הקישור אינו תקף</h2>
+      <p>ייתכן שהקישור שגוי או שהאירוע כבר אינו פעיל. בדקו את הקישור שקיבלתם ממארגני האירוע.</p>
+    </div>
+  </div>
+
+  <div id="content" hidden>
+    <div class="hero">
+      <div class="kicker" id="typeKicker"></div>
+      <h1 id="title"></h1>
+      <div class="when" id="when"></div>
+      <div class="where" id="where"></div>
+      <div class="desc" id="desc" hidden></div>
+    </div>
+
+    <div class="card" id="rsvpCard" hidden>
+      <h2>אישור הגעה — <span id="guestName"></span></h2>
+      <div class="rsvp-row" role="group" aria-label="אישור הגעה">
+        <button class="rsvp-btn" id="rsvpYes">מגיעים 🎉</button>
+        <button class="rsvp-btn" id="rsvpMaybe">אולי</button>
+        <button class="rsvp-btn" id="rsvpNo">לא נגיע</button>
+      </div>
+      <div id="countWrap" hidden>
+        <label for="rsvpCount">כמה תגיעו?</label>
+        <select id="rsvpCount"></select>
+      </div>
+      <label for="rsvpNote">הערה למארגנים (אופציונלי)</label>
+      <input id="rsvpNote" maxlength="500" />
+      <div id="rsvpErr"></div>
+      <button class="btn" id="rsvpSubmit">שליחת התשובה</button>
+      <div id="rsvpDone" class="state ok" hidden role="status">
+        <h2>התשובה התקבלה 🎉</h2>
+        <p>אפשר לחזור לקישור הזה בכל רגע ולעדכן.</p>
+      </div>
+    </div>
+
+    <div class="card" id="giftCard" hidden>
+      <h2>מתנה לאירוע <span class="chip" title="עד חיבור ספק סליקה מאושר — אף חיוב אמיתי לא מתבצע">מצב טסט — ללא חיוב</span></h2>
+      <div id="goalWrap" hidden>
+        <div class="muted" id="goalTxt"></div>
+        <div class="bar"><i id="goalBar" style="width:0%"></i></div>
+      </div>
+      <div class="amounts" role="group" aria-label="בחירת סכום">
+        <button class="amount-btn" data-amt="180">₪180</button>
+        <button class="amount-btn" data-amt="360">₪360</button>
+        <button class="amount-btn" data-amt="520">₪520</button>
+        <button class="amount-btn" data-amt="1000">₪1,000</button>
+      </div>
+      <label for="giftAmount">או סכום אחר (₪)</label>
+      <input id="giftAmount" type="number" min="1" max="100000" />
+      <label for="giftName">שם נותן/ת המתנה *</label>
+      <input id="giftName" maxlength="120" />
+      <label for="giftGreeting">ברכה (תופיע אצל בעלי השמחה)</label>
+      <textarea id="giftGreeting" maxlength="1000"></textarea>
+      <div id="giftErr"></div>
+      <button class="btn" id="giftSubmit">נתינת מתנה (טסט)</button>
+      <p class="muted" style="margin-top:10px">בגרסה המלאה התשלום יתבצע בטופס מאובטח של ספק הסליקה (נדרים פלוס / PayMe) —
+        פרטי האשראי לעולם לא עוברים דרך הפלטפורמה.</p>
+      <div id="giftDone" class="state ok" hidden role="status">
+        <h2>המתנה נרשמה 💛</h2>
+        <p id="giftDoneTxt"></p>
+      </div>
+    </div>
+  </div>
+</div>
+</main>
+
+<script type="module">
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+
+const SUPABASE_URL = 'https://uhnrgujbdxhhmoxcjria.supabase.co';
+const SUPABASE_ANON =
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVobnJndWpiZHhoaG1veGNqcmlhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODMzNjE3MjgsImV4cCI6MjA5ODkzNzcyOH0.nHuOhw-WQEU17lNa7XOlORnBhVAYbJBHudKafWkSHBw';
+
+const sb = createClient(SUPABASE_URL, SUPABASE_ANON, { auth: { persistSession: false } });
+
+const $ = (id) => document.getElementById(id);
+const esc = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, (c) =>
+  ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const shekel = (agorot) => '₪' + (Math.round(agorot) / 100).toLocaleString('he-IL', { maximumFractionDigits: 0 });
+const TYPE_LABEL = { wedding: 'שמחים להזמין אתכם לחתונה', bar_mitzvah: 'שמחים להזמין אתכם לבר המצווה',
+  bat_mitzvah: 'שמחים להזמין אתכם לבת המצווה', brit: 'שמחים להזמין אתכם לברית',
+  engagement: 'שמחים להזמין אתכם לאירוסין', other: 'שמחים להזמין אתכם' };
+
+async function rpc(fn, args) {
+  const { data, error } = await sb.rpc(fn, args || {});
+  if (error) throw new Error(error.message);
+  return data;
+}
+
+const busy = new Set();
+async function guarded(btn, key, fn) {
+  if (busy.has(key)) return;
+  busy.add(key);
+  if (btn) btn.disabled = true;
+  try { await fn(); }
+  finally { busy.delete(key); if (btn) btn.disabled = false; }
+}
+
+const qs = new URLSearchParams(location.search);
+const T = (qs.get('t') || '').trim();   // guest personal token
+const S = (qs.get('s') || '').trim();   // event share token
+let DATA = null;
+let rsvpChoice = null;
+
+function renderEvent(d) {
+  $('typeKicker').textContent = TYPE_LABEL[d.event_type] || TYPE_LABEL.other;
+  $('title').textContent = d.title;
+  $('when').textContent = [
+    d.event_date ? new Date(d.event_date + 'T00:00').toLocaleDateString('he-IL',
+      { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }) : null,
+    d.event_time ? 'בשעה ' + d.event_time : null,
+  ].filter(Boolean).join(' · ');
+  $('where').textContent = [d.venue_name, d.address].filter(Boolean).join(' · ');
+  if (d.description) { $('desc').textContent = d.description; $('desc').hidden = false; }
+
+  if (d.gifts_enabled) {
+    $('giftCard').hidden = false;
+    if (d.gift_goal_agorot) {
+      $('goalWrap').hidden = false;
+      const pct = Math.min(100, Math.round(d.gift_total_agorot * 100 / d.gift_goal_agorot));
+      $('goalBar').style.width = pct + '%';
+      $('goalTxt').textContent = 'נאספו עד כה ' + shekel(d.gift_total_agorot) +
+        ' מתוך יעד של ' + shekel(d.gift_goal_agorot) + ' · ' + d.gift_count + ' מתנות';
+    } else if (d.gift_count > 0) {
+      $('goalWrap').hidden = false;
+      $('goalTxt').textContent = 'נאספו עד כה ' + shekel(d.gift_total_agorot) + ' · ' + d.gift_count + ' מתנות';
+      $('goalBar').style.width = '100%';
+    }
+  }
+}
+
+function renderGuest(g, rsvpEnabled) {
+  if (!rsvpEnabled) return;
+  $('rsvpCard').hidden = false;
+  $('guestName').textContent = g.full_name;
+  const sel = $('rsvpCount');
+  sel.innerHTML = '';
+  for (let i = 1; i <= Math.max(g.invited_count, g.rsvp_count || 0, 10); i++) {
+    const o = document.createElement('option');
+    o.value = i; o.textContent = i;
+    if (i === (g.rsvp_count || g.invited_count)) o.selected = true;
+    sel.appendChild(o);
+  }
+  if (g.rsvp_note) $('rsvpNote').value = g.rsvp_note;
+  if (g.rsvp_status !== 'pending') setChoice(g.rsvp_status);
+  $('giftName').value = g.full_name;
+}
+
+function setChoice(c) {
+  rsvpChoice = c;
+  $('rsvpYes').className = 'rsvp-btn' + (c === 'yes' ? ' on-yes' : '');
+  $('rsvpMaybe').className = 'rsvp-btn' + (c === 'maybe' ? ' on-maybe' : '');
+  $('rsvpNo').className = 'rsvp-btn' + (c === 'no' ? ' on-no' : '');
+  $('countWrap').hidden = c !== 'yes';
+}
+
+$('rsvpYes').addEventListener('click', () => setChoice('yes'));
+$('rsvpMaybe').addEventListener('click', () => setChoice('maybe'));
+$('rsvpNo').addEventListener('click', () => setChoice('no'));
+
+$('rsvpSubmit').addEventListener('click', () => guarded($('rsvpSubmit'), 'rsvp', async () => {
+  $('rsvpErr').innerHTML = '';
+  if (!rsvpChoice) { $('rsvpErr').innerHTML = '<div class="err">בחרו קודם: מגיעים / אולי / לא.</div>'; return; }
+  try {
+    await rpc('evg_rsvp_submit', {
+      p_token: T, p_status: rsvpChoice,
+      p_count: rsvpChoice === 'yes' ? parseInt($('rsvpCount').value, 10) : 0,
+      p_note: $('rsvpNote').value.trim() || null,
+    });
+    $('rsvpDone').hidden = false;
+  } catch (e) { $('rsvpErr').innerHTML = '<div class="err">' + esc(e.message) + '</div>'; }
+}));
+
+let pickedAmount = null;
+for (const b of document.querySelectorAll('.amount-btn'))
+  b.addEventListener('click', () => {
+    pickedAmount = parseInt(b.dataset.amt, 10);
+    $('giftAmount').value = '';
+    for (const x of document.querySelectorAll('.amount-btn')) x.classList.toggle('on', x === b);
+  });
+$('giftAmount').addEventListener('input', () => {
+  pickedAmount = null;
+  for (const x of document.querySelectorAll('.amount-btn')) x.classList.remove('on');
+});
+
+$('giftSubmit').addEventListener('click', () => guarded($('giftSubmit'), 'gift', async () => {
+  $('giftErr').innerHTML = '';
+  const shekelAmt = pickedAmount || parseInt($('giftAmount').value, 10);
+  const name = $('giftName').value.trim();
+  if (!shekelAmt || shekelAmt < 1) { $('giftErr').innerHTML = '<div class="err">בחרו סכום.</div>'; return; }
+  if (!name) { $('giftErr').innerHTML = '<div class="err">שם נותן המתנה חובה.</div>'; return; }
+  try {
+    await rpc('evg_gift_create', {
+      p_token: T || S,
+      p_donor_name: name,
+      p_amount_agorot: shekelAmt * 100,
+      p_greeting: $('giftGreeting').value.trim() || null,
+    });
+    $('giftDone').hidden = false;
+    $('giftDoneTxt').textContent = 'מתנה של ' + shekel(shekelAmt * 100) +
+      ' נרשמה במצב טסט — לא בוצע חיוב אמיתי. בעלי השמחה רואים אותה בלוח שלהם.';
+    $('giftSubmit').hidden = true;
+  } catch (e) { $('giftErr').innerHTML = '<div class="err">' + esc(e.message) + '</div>'; }
+}));
+
+// ---------- boot ----------
+try {
+  if (T) {
+    DATA = await rpc('evg_guest_view', { p_token: T });
+    if (!DATA) throw new Error('not found');
+    renderEvent(DATA);
+    renderGuest(DATA.guest, DATA.rsvp_enabled);
+  } else if (S) {
+    DATA = await rpc('evg_event_public', { p_share_token: S });
+    if (!DATA) throw new Error('not found');
+    renderEvent(DATA);
+  } else throw new Error('no token');
+  $('loading').hidden = true;
+  $('content').hidden = false;
+} catch {
+  $('loading').hidden = true;
+  $('notFound').hidden = false;
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,17 @@
+{
+  "number": "38",
+  "slug": "events-gifts",
+  "name": "Events & Gifts",
+  "name_he": "אירועים ומתנות",
+  "category": "events",
+  "department": "community",
+  "live": false,
+  "is_deployed": false,
+  "path": "events",
+  "supabase": {
+    "project": "uhnrgujbdxhhmoxcjria",
+    "schema": "events"
+  },
+  "source": "sites/38-events-gifts",
+  "note": "שלב 0 (23/08 Loop C, Fable). סכימת events חיה על ה-hub: halls/hall_leads/events/guests/gifts/wallet_entries — RLS מלא ל-4 התפקידים (סופר-אדמין דרך more30_is_super_admin, בעל אולם, בעל אירוע, מוזמן/נותן-מתנה דרך טוקן אישי בלבד, בלי חשבון). שכבת public.evg_* RPC (17 פונקציות, אותה קונבנציה כמו maatefet_*/np_*) כי הסכימה לא ב-exposed schemas. חיוב live חסום בטריגר DB (guard_no_live_charges) עד אישור ספק סליקה — NEEDS_USER. UI ראשון ב-sites/38-events-gifts/events (index=מוצר+דשבורד, g=קישור אישי RSVP+מתנה, hall=דף נחיתה+ליד). עדיין אין פרויקט Vercel + rewrite ב-portal — /events טרם חי, כמו שלב-0 של maatefet. שלב הלכידה (EVENTS_CAPTURE.md) עדיין חסום על המשתמש; הבנייה לפי EVENTS_BUILD.md §5.1 מהתיאור."
+}
