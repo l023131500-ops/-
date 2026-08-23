@@ -28,7 +28,7 @@ const PublicRabbiPage = () => {
   const fetchData = async (token: string, isCancelled: () => boolean) => {
     const { data: portalData, error } = await supabase
       .from("rabbi_portals")
-      .select("*")
+      .select("id,rabbi_name,about_text,rabbi_photo_url,logo_url,donation_link,lesson_download_url,background_preset,font_color,custom_background_url,custom_sections,contact_phone,contact_whatsapp,contact_email,contact_fax,contact_address,contact_mailing_address")
       .eq("public_token", token)
       .single();
 

@@ -31,7 +31,7 @@ const PublicOrgPage = () => {
   const fetchData = async (token: string, isCancelled: () => boolean) => {
     const { data: portalData, error } = await supabase
       .from("org_portals")
-      .select("*")
+      .select("id,org_name,about_text,logo_url,background_preset,font_color,custom_background_url,custom_sections,features_enabled,contact_phone,contact_whatsapp,contact_email,contact_fax,contact_address,contact_mailing_address")
       .eq("public_token", token)
       .single();
 

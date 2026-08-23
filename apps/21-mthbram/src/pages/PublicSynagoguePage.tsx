@@ -22,7 +22,7 @@ export default function PublicSynagoguePage() {
     (async () => {
       const { data: p } = await supabase
         .from("synagogue_portals")
-        .select("*")
+        .select("id,synagogue_name,city,neighborhood,about_text,logo_url,donation_link,background_preset,font_color,custom_background_url,contact_phone,contact_whatsapp,contact_email,contact_address")
         .eq("public_token", publicToken)
         .maybeSingle();
       if (cancelled) return;
@@ -32,6 +32,7 @@ export default function PublicSynagoguePage() {
         .from("study_day_events")
         .select("*")
         .eq("session_id", p.id)
+        .eq("is_approved", true)
         .order("created_at", { ascending: false });
       if (cancelled) return;
       setEvents(e ?? []);
