@@ -42,6 +42,7 @@ export default function UploadsPage() {
   const [loading, setLoading] = useState(true);
   const [selected, setSelected] = useState<UploadDetail | null>(null);
   const [copied, setCopied] = useState(false);
+  const [busyId, setBusyId] = useState<string | null>(null);
   const panelRef = useRef<HTMLDivElement | null>(null);
   const closeButtonRef = useRef<HTMLButtonElement | null>(null);
   const previousFocusRef = useRef<HTMLElement | null>(null);
@@ -112,14 +113,22 @@ export default function UploadsPage() {
   };
 
   const remove = async (id: string) => {
+    if (busyId) return;
     if (!confirm("למחוק העלאה זו וכל הקבצים שלה?")) return;
-    const res = await fetch(`/tamlul/api/admin/uploads?id=${id}`, { method: "DELETE" });
-    if (res.ok) {
-      setSelected(null);
-      load();
-    } else {
-      const d = await res.json().catch(() => ({}));
-      alert(d.error || "שגיאה במחיקה");
+    setBusyId(id);
+    try {
+      const res = await fetch(`/tamlul/api/admin/uploads?id=${id}`, { method: "DELETE" });
+      if (res.ok) {
+        setSelected(null);
+        load();
+      } else {
+        const d = await res.json().catch(() => ({}));
+        alert(d.error || "שגיאה במחיקה");
+      }
+    } catch {
+      alert("שגיאת רשת במחיקה");
+    } finally {
+      setBusyId(null);
     }
   };
 
@@ -165,8 +174,12 @@ export default function UploadsPage() {
                     <button onClick={() => open(u.id)} className="text-brand-blue hover:underline">
                       צפה
                     </button>
-                    <button onClick={() => remove(u.id)} className="text-red-600 hover:underline">
-                      מחק
+                    <button
+                      onClick={() => remove(u.id)}
+                      disabled={busyId === u.id}
+                      className="text-red-600 hover:underline disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      {busyId === u.id ? "מוחק…" : "מחק"}
                     </button>
                   </td>
                 </tr>
