@@ -15,6 +15,7 @@ const AdminTips = () => {
   const [content, setContent] = useState("");
   const [open, setOpen] = useState(false);
   const [busyId, setBusyId] = useState<string | null>(null);
+  const [saving, setSaving] = useState(false);
   const { toast } = useToast();
 
   const fetchTips = async () => {
@@ -25,14 +26,21 @@ const AdminTips = () => {
   useEffect(() => { fetchTips(); }, []);
 
   const addTip = async () => {
-    if (!title || !content) return;
-    const { error } = await supabase.from("tips").insert({ title, content });
-    if (error) {
-      toast({ title: "שגיאה", description: error.message, variant: "destructive" });
-    } else {
-      toast({ title: "הטיפ נוסף בהצלחה" });
-      setTitle(""); setContent(""); setOpen(false);
-      fetchTips();
+    if (!title || !content || saving) return;
+    setSaving(true);
+    try {
+      const { error } = await supabase.from("tips").insert({ title, content });
+      if (error) {
+        toast({ title: "שגיאה", description: error.message, variant: "destructive" });
+      } else {
+        toast({ title: "הטיפ נוסף בהצלחה" });
+        setTitle(""); setContent(""); setOpen(false);
+        fetchTips();
+      }
+    } catch (e: any) {
+      toast({ title: "שגיאה", description: e?.message || "שגיאת רשת", variant: "destructive" });
+    } finally {
+      setSaving(false);
     }
   };
 
@@ -87,7 +95,7 @@ const AdminTips = () => {
               <div className="space-y-4">
                 <Input placeholder="כותרת הטיפ" value={title} onChange={e => setTitle(e.target.value)} />
                 <Textarea placeholder="תוכן הטיפ" value={content} onChange={e => setContent(e.target.value)} rows={4} />
-                <Button onClick={addTip} className="w-full">שמור</Button>
+                <Button onClick={addTip} disabled={saving} className="w-full">{saving ? "שומר..." : "שמור"}</Button>
               </div>
             </DialogContent>
           </Dialog>
