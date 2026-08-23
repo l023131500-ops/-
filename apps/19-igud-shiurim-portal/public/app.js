@@ -1449,6 +1449,8 @@ async function renderAdmin(token) {
       </div>
     `;
     content.querySelectorAll('[data-toggle-read]').forEach(btn => btn.onclick = async () => {
+      if (btn.disabled) return;
+      btn.disabled = true;
       const newVal = btn.dataset.current !== 'true';
       try {
         await api(`/api/admin/tenant/${encodeURIComponent(token)}/messages/${btn.dataset.toggleRead}`, {
@@ -1456,6 +1458,7 @@ async function renderAdmin(token) {
         });
         await refresh(); draw();
       } catch (err) {
+        btn.disabled = false;
         document.getElementById('messages-alert').innerHTML = `<div class="alert alert-error">${esc(err.message)}</div>`;
       }
     });
@@ -2173,10 +2176,13 @@ async function renderTeacherAdmin(token) {
       </div>
     `;
     content.querySelectorAll('[data-mark-read]').forEach(btn => btn.onclick = async () => {
+      if (btn.disabled) return;
+      btn.disabled = true;
       try {
         await api(`/api/admin/teacher/${encodeURIComponent(token)}/messages/${btn.dataset.markRead}/read`, { method: 'POST' });
         await refresh(); draw();
       } catch (err) {
+        btn.disabled = false;
         document.getElementById('messages-alert').innerHTML = `<div class="alert alert-error">${esc(err.message)}</div>`;
       }
     });
