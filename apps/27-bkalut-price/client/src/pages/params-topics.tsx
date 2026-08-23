@@ -50,6 +50,7 @@ function ParamsTopicsInner() {
   const [category, setCategory] = useState<string | null>(null);
   const [editId, setEditId] = useState<number | null>(null);
   const [draft, setDraft] = useState<Partial<ParamTopic>>({});
+  const [isSaving, setIsSaving] = useState(false);
 
   const rows = data ?? [];
 
@@ -104,6 +105,7 @@ function ParamsTopicsInner() {
   }
 
   async function save() {
+    if (isSaving) return;
     const isNew = editId === 0;
     const payload = {
       title: draft.title ?? "",
@@ -116,6 +118,7 @@ function ParamsTopicsInner() {
       source: draft.source ?? "",
       notes: draft.notes ?? "",
     };
+    setIsSaving(true);
     try {
       if (isNew) {
         await apiRequest("POST", "/api/admin/params-topics", payload);
@@ -127,6 +130,8 @@ function ParamsTopicsInner() {
       closeEdit();
     } catch (err: any) {
       toast({ title: "שגיאה", description: err?.message || "נסו שוב", variant: "destructive" });
+    } finally {
+      setIsSaving(false);
     }
   }
 
@@ -215,9 +220,9 @@ function ParamsTopicsInner() {
           <div className="flex items-center justify-between flex-wrap gap-2">
             <h2 className="font-semibold">{editId === 0 ? "רשומה חדשה" : `עריכה #${editId}`}</h2>
             <div className="flex items-center gap-2">
-              <Button variant="outline" size="sm" onClick={closeEdit}>ביטול</Button>
-              <Button size="sm" onClick={save} data-testid="params-save">
-                <Save className="w-4 h-4 ml-1" /> שמירה
+              <Button variant="outline" size="sm" onClick={closeEdit} disabled={isSaving}>ביטול</Button>
+              <Button size="sm" onClick={save} disabled={isSaving} data-testid="params-save">
+                <Save className="w-4 h-4 ml-1" /> {isSaving ? "שומר…" : "שמירה"}
               </Button>
             </div>
           </div>

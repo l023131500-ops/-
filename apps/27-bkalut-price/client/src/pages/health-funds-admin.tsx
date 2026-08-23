@@ -203,7 +203,10 @@ export default function HealthFundsAdmin() {
     setNewTier({ col: "", fund: "", fundKey: "", tier: "", prog: "", value: "" });
   }
 
+  const savingTopicRef = useRef<Set<number>>(new Set());
   async function saveTopic(id: number) {
+    if (savingTopicRef.current.has(id)) return;
+    savingTopicRef.current.add(id);
     try {
       const patch: any = { ...draft };
       if (patch.rangeMin === "" ) patch.rangeMin = null;
@@ -215,16 +218,23 @@ export default function HealthFundsAdmin() {
       await loadTopics();
     } catch {
       toast({ title: "שמירה נכשלה", variant: "destructive" });
+    } finally {
+      savingTopicRef.current.delete(id);
     }
   }
 
+  const togglingTopicRef = useRef<Set<number>>(new Set());
   async function toggleActive(t: HfTopic, active: boolean) {
+    if (togglingTopicRef.current.has(t.id)) return;
+    togglingTopicRef.current.add(t.id);
     try {
       const r = await apiRequest("PATCH", `/api/hf/admin/topics/${t.id}`, { active });
       if (!r.ok) throw new Error();
       setTopics((prev) => prev.map((x) => (x.id === t.id ? { ...x, active } : x)));
     } catch {
       toast({ title: "העדכון נכשל", variant: "destructive" });
+    } finally {
+      togglingTopicRef.current.delete(t.id);
     }
   }
 

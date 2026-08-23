@@ -176,12 +176,17 @@ export default function CommunityAdmin() {
       toast({ title: "הוספת הקישור נכשלה", variant: "destructive" });
     }
   }
+  const togglingLinkRef = useRef<Set<number>>(new Set());
   async function toggleLink(l: Link_) {
+    if (togglingLinkRef.current.has(l.id)) return;
+    togglingLinkRef.current.add(l.id);
     try {
       await apiRequest("PATCH", `/api/community/admin/links/${l.id}`, { active: !l.active });
       if (detail) loadDetail(detail.questionnaire.id);
     } catch {
       toast({ title: "עדכון הקישור נכשל", variant: "destructive" });
+    } finally {
+      togglingLinkRef.current.delete(l.id);
     }
   }
   const deletingLinkRef = useRef<Set<number>>(new Set());
