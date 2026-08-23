@@ -12536,3 +12536,53 @@
     ללא guard-מערך, כדי לוודא שלא נשארו עוד מופעים לפני שעוברים לקטגוריית
     באג אחרת. נושאים #62/#94/#115/#164/#169/#254 נשארים חסומים.
     via cloud server 167.99.131.167 [loop B]
+
+## 23/08/2026 — סבב 477 (loop B)
+
+477. **אימתתי את "הבא בתור" מסבב 476 (`limit` בשורה 571 של
+    `fin-routes.ts`) ואז המשכתי לסריקה הרחבה שהובטחה.** `Math.min(Number(
+    req.query.limit) || 100, 1000)` — כש-`req.query.limit` הוא מערך (פרמטר
+    כפול), `Number([...])` על יותר מאיבר אחד מפיק `NaN`, אבל `NaN || 100`
+    נופל בבטחה ל-100 (לא "שקט-מסוכן": אין ערך שגוי שנראה תקין, פשוט חוזר
+    לברירת המחדל). **אין צורך בתיקון כאן**, כפי שנחזה.
+
+    הסריקה הרחבה (grep על `req.query\.` בכל אפליקציה ב-scope: 17-25/27/28)
+    חשפה מופע שלא תוקן מהמשפחה שכבר תוקנה: **`27-bkalut-price/server/
+    api-external.ts` — 8 נקודות קצה עם אותו דפוס `req.query.clientId ?
+    Number(req.query.clientId) : undefined`** (שורות 253,258,263,268,273,
+    279,284 — `/api/external/financial/{tasks,messages,documents,plans,
+    activity,reminders,reports}`). זהו ה-API החיצוני/אוטומציה (n8n/Make,
+    מוגן טוקן) — אותה בעיית `Number(array)`→`NaN` שתוקנה ב-`fin-routes.ts`
+    בסבב 476, אבל בקובץ אחר, לא תוקנה שם. `finStorage.list*(clientId)`
+    מתנהגות שונה כל אחת (חלקן מחזירות ריק, חלקן נופלות ל"הכל") — אותה
+    משפחת "תוצאה שקטה ולא נכונה" כמו בסבב 476.
+
+    **התיקון:** ייצאתי את `clientIdQueryParam` הקיימת מ-`fin-routes.ts`
+    (`export function`) והחלפתי את כל 8 המופעים ב-`api-external.ts` לקרוא
+    לה במקום לשכפל את הלוגיקה — עקביות עם הפתרון שכבר קיים באותה אפליקציה
+    במקום לכתוב helper מקומי נוסף. אין שינוי לחוזה ה-API בתרחיש הרגיל
+    (פרמטר יחיד).
+
+    **בדיקות תקינות:** קריאת קוד בלבד (ללא dev-server/build, לפי הנחיות
+    ההרצה — אין `node_modules`/`tsc` זמינים בסביבה). `grep` על הקובץ אישר
+    ש-`req.query.clientId` לא נקרא יותר ישירות ב-`api-external.ts`, רק דרך
+    ה-helper המיובא. `git diff --stat`: שני קבצים, `api-external.ts`
+    (+8/-7, כולל ייבוא), `fin-routes.ts` (+1/-1, `export`).
+
+    לא נגעתי במערכות מוגנות 08/09/bkalut-app/bkalot-admin/zr_*/NEDARIM3873/
+    csj/csj_src/igud, ב-`main`, או במערכת מחוץ ל-scope (17-25/27/28 בלבד).
+
+    ענף חדש `fix/b-27-clientid-query-array-api-external-round477-0823`
+    (שרשרת הענפים היא המקור היחיד ל-loop B, לא `main`), נדחף.
+
+    **הבא בתור:** סריקת ה-`req.query.` שבוצעה כיסתה את כל הקבצים הרלוונטיים
+    ב-scope (`19-igud-shiurim-portal/server.js` ו-`28-kupot-health-funds/
+    server/routes.ts` כבר משתמשים ב-guard מסוג `typeof x === "string"` /
+    `singleQueryParam` בכל מקום; `google-auth.ts` משתמש ב-`String(single
+    value)` על פרמטרי OAuth שלא חוזרים על עצמם במשיכה רגילה) — משפחת הבאג
+    הזו נראית סגורה עכשיו ב-scope. הבא: לעבור לקטגוריית באג אחרת (למשל
+    double-submit guards / race conditions על מוטציות, בדומה לסבבים
+    456-470) באפליקציות שעדיין לא נסרקו לעומק: 23-haorech-torani (wip,
+    ייתכן שאין עדיין קוד ממשי), 25-mor1-main-site (wip), 18-torah-editor-mvp.
+    נושאים #62/#94/#115/#164/#169/#254 נשארים חסומים.
+    via cloud server 167.99.131.167 [loop B]
