@@ -61,6 +61,7 @@ export default function AdminPage() {
   // `undefined` = עוד לא נטען, `null` = הספירה נכשלה. שני מצבים שונים, ושניהם
   // אינם "0 מתוך 200" — אותה הבחנה שהשרת עושה.
   const [usage, setUsage] = useState<Usage | null | undefined>(undefined);
+  const [usageLoading, setUsageLoading] = useState(false);
 
   useEffect(() => {
     const saved = sessionStorage.getItem("gannenet_admin_key");
@@ -106,6 +107,8 @@ export default function AdminPage() {
   // פעם אחת, והמכסה משתנה תוך כדי היום וצריכה רענון בלי לטעון אותו שוב. כישלון
   // כאן לא מפיל את מסך הניהול — הוא רק מסתיר את השורה.
   async function loadUsage(k: string) {
+    if (usageLoading) return;
+    setUsageLoading(true);
     try {
       const res = await fetch(withBase("/api/admin/usage"), { method: "POST", headers: { "x-admin-key": k } });
       if (!res.ok) {
@@ -116,6 +119,8 @@ export default function AdminPage() {
       setUsage(data.usage as Usage);
     } catch {
       setUsage(null);
+    } finally {
+      setUsageLoading(false);
     }
   }
 
@@ -296,8 +301,8 @@ export default function AdminPage() {
           <div className="card" style={{ padding: 14, marginTop: 14, borderInlineStartWidth: 4, borderInlineStartStyle: "solid", borderInlineStartColor: tone }}>
             <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", flexWrap: "wrap", gap: 8 }}>
               <b style={{ fontSize: 14.5, color: "#2b4a8b" }}>מחולל דפי המשימה — שימוש היום</b>
-              <button onClick={() => loadUsage(key)} className="btn btn-ghost" style={{ fontSize: 12.5, padding: ".3rem .6rem" }}>
-                רענון
+              <button onClick={() => loadUsage(key)} disabled={usageLoading} className="btn btn-ghost" style={{ fontSize: 12.5, padding: ".3rem .6rem" }}>
+                {usageLoading ? "טוען…" : "רענון"}
               </button>
             </div>
             <div style={{ fontSize: 14, color: tone, fontWeight: 700, marginTop: 8 }}>
@@ -333,8 +338,8 @@ export default function AdminPage() {
       {usage === null && (
         <p style={{ color: "#9a9cb0", fontSize: 12.5, marginTop: 14 }}>
           לא ניתן לקרוא כרגע את שימוש המחולל.{" "}
-          <button onClick={() => loadUsage(key)} className="btn btn-ghost" style={{ fontSize: 12, padding: ".2rem .5rem" }}>
-            נסו שוב
+          <button onClick={() => loadUsage(key)} disabled={usageLoading} className="btn btn-ghost" style={{ fontSize: 12, padding: ".2rem .5rem" }}>
+            {usageLoading ? "טוען…" : "נסו שוב"}
           </button>
         </p>
       )}
