@@ -35,11 +35,18 @@ export default function CouponsPage() {
     if (busyId) return;
     setBusyId(id);
     try {
-      await fetch("/modaot/api/admin/coupons", {
+      const r = await fetch("/modaot/api/admin/coupons", {
         method: "PATCH", headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ id, is_active: !active }),
       });
+      if (!r.ok) {
+        const d = await r.json().catch(() => ({}));
+        alert(d.error || "עדכון הקופון נכשל");
+        return;
+      }
       await load();
+    } catch {
+      alert("שגיאת רשת בעדכון הקופון");
     } finally {
       setBusyId(null);
     }
@@ -48,8 +55,15 @@ export default function CouponsPage() {
     if (busyId || !confirm("למחוק קופון זה?")) return;
     setBusyId(id);
     try {
-      await fetch(`/modaot/api/admin/coupons?id=${id}`, { method: "DELETE" });
+      const r = await fetch(`/modaot/api/admin/coupons?id=${id}`, { method: "DELETE" });
+      if (!r.ok) {
+        const d = await r.json().catch(() => ({}));
+        alert(d.error || "מחיקת הקופון נכשלה");
+        return;
+      }
       await load();
+    } catch {
+      alert("שגיאת רשת במחיקת הקופון");
     } finally {
       setBusyId(null);
     }
