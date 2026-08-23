@@ -78,7 +78,7 @@ import { getCategory } from "@shared/knowledge";
 import { getStyle } from "@shared/styles";
 import { FORMATS, getFormat } from "@shared/formats";
 import { downloadPNG, downloadPDF, downloadSVG } from "@/lib/exporter";
-import { exportPromoVideo, downloadBlob } from "@/lib/videoExport";
+import { exportPromoVideo, downloadBlob, videoFileExtension } from "@/lib/videoExport";
 import { downloadIDML } from "@/lib/idmlExporter";
 import { apiRequest, hasAuthSession } from "@/lib/queryClient";
 import { nextId } from "@shared/layers";
@@ -785,7 +785,8 @@ export default function Editor() {
   }
 
   // וידאו קידום — מרכיב Ken Burns + פס הקריינות (lib/videoExport.ts) מתוך אותו
-  // stage ברזולוציה מלאה ש-handleDownloadPNG/PDF כבר משתמשים בו, מוריד webm.
+  // stage ברזולוציה מלאה ש-handleDownloadPNG/PDF כבר משתמשים בו. הפורמט נקבע
+  // לפי הדפדפן (webm בכרום/פיירפוקס, mp4 בספארי) וסיומת הקובץ בהתאם.
   // דורש שיהיה לפחות מקור-קול אחד (קריינות או מוזיקת רקע) כדי שהוידאו לא יהיה
   // שקט-סתמי — הכפתור נעול כשאין אף אחד מהשניים (ר' תנאי התצוגה בדיאלוג).
   async function handleExportVideo() {
@@ -812,7 +813,7 @@ export default function Editor() {
         })),
         onProgress: (fraction) => setVideoProgress(Math.round(fraction * 100)),
       });
-      downloadBlob(blob, `${selected?.name ?? "modaa"}.webm`);
+      downloadBlob(blob, `${selected?.name ?? "modaa"}.${videoFileExtension(blob)}`);
       toast({ title: "הוידאו מוכן להורדה" });
     } catch (err: any) {
       toast({
@@ -2063,7 +2064,7 @@ export default function Editor() {
                 disabled={videoExporting || translatingCaptions || narrationStale || captionEnStale}
                 data-testid="button-export-video"
               >
-                <Video className="h-4 w-4" /> {videoExporting ? `מרכיב וידאו... ${videoProgress}%` : "ייצוא וידאו קידום (webm)"}
+                <Video className="h-4 w-4" /> {videoExporting ? `מרכיב וידאו... ${videoProgress}%` : "ייצוא וידאו קידום"}
               </Button>
               {videoExporting && <Progress value={videoProgress} className="h-2" />}
             </div>

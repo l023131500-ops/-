@@ -43,11 +43,32 @@ function easeInOut(t: number): number {
 }
 
 function pickMimeType(): string {
-  const candidates = ["video/webm;codecs=vp9,opus", "video/webm;codecs=vp8,opus", "video/webm"];
-  for (const c of candidates) {
-    if (typeof MediaRecorder !== "undefined" && MediaRecorder.isTypeSupported?.(c)) return c;
+  // webm קודם (Chrome/Firefox/Edge — התנהגות זהה לקודם), ואז MP4: ספארי
+  // (macOS/iPhone/iPad) לא מקליט webm בכלל — כל שלושת מועמדי ה-webm נדחים —
+  // ועד עכשיו הפונקציה החזירה "video/webm" בכל זאת, ובניית MediaRecorder זרקה
+  // NotSupportedError: ייצוא הוידאו נכשל תמיד אצל כל משתמש ספארי. ספארי כן
+  // מקליט video/mp4 (H.264/AAC), אז הוא המועמד הבא.
+  const candidates = [
+    "video/webm;codecs=vp9,opus",
+    "video/webm;codecs=vp8,opus",
+    "video/webm",
+    "video/mp4;codecs=avc1.42E01E,mp4a.40.2",
+    "video/mp4",
+  ];
+  if (typeof MediaRecorder !== "undefined" && MediaRecorder.isTypeSupported) {
+    for (const c of candidates) {
+      if (MediaRecorder.isTypeSupported(c)) return c;
+    }
+    // אף פורמט לא דוּוח כנתמך — עדיף לתת לדפדפן לבחור את ברירת המחדל שלו
+    // (MediaRecorder בלי mimeType) מאשר לכפות מחרוזת שהוא הרגע דחה.
+    return "";
   }
   return "video/webm";
+}
+
+/** סיומת הקובץ להורדה לפי מה שהוקלט בפועל — ספארי מפיק mp4, השאר webm. */
+export function videoFileExtension(blob: Blob): "mp4" | "webm" {
+  return blob.type.includes("mp4") ? "mp4" : "webm";
 }
 
 /** ממתין למשך האודיו האמיתי. data URL טעון במלואו בזיכרון (לא סטרימינג), ולכן
@@ -513,6 +534,9 @@ export async function exportPromoVideo(
   const canvasStream = (recordCanvas as HTMLCanvasElement & { captureStream: (fps?: number) => MediaStream }).captureStream(FPS);
   const tracks: MediaStreamTrack[] = [...canvasStream.getVideoTracks()];
   let audioCtx: AudioContext | null = null;
+  // נשמר מחוץ ל-try כדי שאפשר יהיה לתזמן עמעום-סיום אחרי שהניגון מתחיל בפועל.
+  let musicGainNode: GainNode | null = null;
+  let musicBaseGain = 0;
   if (musicEl) {
     // יש מוזיקה — יש לערבב אותה עם הקריינות (אם קיימת) לפס-קול אחד יחיד, כי
     // MediaRecorder לא מקליט שני tracks אודיו מקבילים בצורה אמינה בכל דפדפן.
@@ -532,12 +556,18 @@ export async function exportPromoVideo(
       const musicSrc = audioCtx.createMediaElementSource(musicEl);
       musicSrc.connect(musicGain).connect(dest);
       musicGain.connect(audioCtx.destination);
+      musicGainNode = musicGain;
+      musicBaseGain = musicGain.gain.value;
+      // AudioContext שנוצר במצב suspended (מדיניות autoplay) מזרים שקט ל-dest —
+      // וידאו שלם היה יוצא אילם. הייצוא מופעל מלחיצת כפתור, אז resume מותר.
+      if (audioCtx.state === "suspended") audioCtx.resume().catch(() => {});
       tracks.push(...dest.stream.getAudioTracks());
     } catch {
       // AudioContext/createMediaElementSource לא נתמכים — נופלים לפס הקריינות
       // הישיר בלבד (בלי מוזיקה), אותה התנהגות כמו לפני התוספת.
       if (audioCtx) audioCtx.close().catch(() => {});
       audioCtx = null;
+      musicGainNode = null;
       if (audioEl && typeof (audioEl as any).captureStream === "function") {
         try {
           tracks.push(...((audioEl as any).captureStream() as MediaStream).getAudioTracks());
@@ -556,13 +586,23 @@ export async function exportPromoVideo(
   }
 
   const mimeType = pickMimeType();
-  const recorder = new MediaRecorder(new MediaStream(tracks), { mimeType, videoBitsPerSecond: 5_000_000 });
+  // mimeType ריק = "לא נמצא מועמד נתמך": בונים בלי mimeType כדי שהדפדפן יקליט
+  // בפורמט הטבעי שלו במקום לזרוק, וקוראים את recorder.mimeType לסוג ה-Blob.
+  const recorder = new MediaRecorder(
+    new MediaStream(tracks),
+    mimeType ? { mimeType, videoBitsPerSecond: 5_000_000 } : { videoBitsPerSecond: 5_000_000 },
+  );
   const chunks: BlobPart[] = [];
   recorder.ondataavailable = (e) => {
     if (e.data.size > 0) chunks.push(e.data);
   };
   const stopped = new Promise<Blob>((resolve) => {
-    recorder.onstop = () => resolve(new Blob(chunks, { type: mimeType.split(";")[0] }));
+    // recorder.mimeType מאוכלס בוודאות רק אחרי start() — לכן סוג ה-Blob נקרא
+    // כאן, בעצירה, ולא בזמן הבנייה (חשוב במסלול ה-mimeType הריק).
+    recorder.onstop = () => {
+      const containerType = (mimeType || recorder.mimeType || "video/webm").split(";")[0];
+      resolve(new Blob(chunks, { type: containerType }));
+    };
   });
 
   recorder.start();
@@ -573,6 +613,16 @@ export async function exportPromoVideo(
   if (musicEl) {
     musicEl.currentTime = 0;
     await musicEl.play().catch(() => {});
+    // עמעום-סיום למוזיקה: הקליפ נגמר כשהקריינות נגמרת (או בתום קליפ-מוזיקה
+    // קבוע), והמוזיקה המתנגנת בלולאה פשוט נקטעה באמצע תו — סיום חובבני בוידאו
+    // שאמור להיות שיווקי. מתוזמן מרגע תחילת הניגון בפועל, רק במסלול הערבוב
+    // (יש GainNode); במסלול-הנפילה בלי AudioContext אין ידית עוצמה לעמעם בה.
+    if (musicGainNode && audioCtx) {
+      const fadeSec = Math.min(1.5, duration * 0.2);
+      const now = audioCtx.currentTime;
+      musicGainNode.gain.setValueAtTime(musicBaseGain, now + Math.max(0, duration - fadeSec));
+      musicGainNode.gain.linearRampToValueAtTime(0.0001, now + duration);
+    }
   }
 
   const startTime = performance.now();
