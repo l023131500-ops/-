@@ -69,7 +69,7 @@ const RabbiPortal = () => {
   };
 
   const uploadLogo = async (file: File) => {
-    if (!portal) return;
+    if (!portal || uploadingLogo) return;
     setUploadingLogo(true);
     try {
       const ext = file.name.split(".").pop();
@@ -163,12 +163,13 @@ const RabbiPortal = () => {
           <div className="flex items-center gap-3">
             {portal?.logo_url ? (
               <div
-                className="relative group cursor-pointer"
-                onClick={() => logoInputRef.current?.click()}
+                className={`relative group cursor-pointer ${uploadingLogo ? "opacity-60 pointer-events-none" : ""}`}
+                onClick={() => !uploadingLogo && logoInputRef.current?.click()}
                 role="button"
                 tabIndex={0}
                 aria-label="החלפת לוגו"
-                onKeyDown={e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); logoInputRef.current?.click(); } }}
+                aria-disabled={uploadingLogo}
+                onKeyDown={e => { if (!uploadingLogo && (e.key === "Enter" || e.key === " ")) { e.preventDefault(); logoInputRef.current?.click(); } }}
               >
                 <img src={portal.logo_url} alt={portal.rabbi_name ? `לוגו ${portal.rabbi_name}` : "לוגו"} className="w-10 h-10 rounded-xl object-contain" />
                 <div className="absolute inset-0 bg-navy/60 rounded-xl opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
@@ -180,8 +181,8 @@ const RabbiPortal = () => {
                 <div className="w-10 h-10 rounded-xl bg-muted/30 flex items-center justify-center">
                   <UserCircle className="w-5 h-5 text-gold/60" />
                 </div>
-                <Button variant="ghost" size="sm" onClick={() => logoInputRef.current?.click()} className="text-gold hover:text-gold text-xs gap-1">
-                  <Image className="w-3.5 h-3.5" /> העלאת לוגו
+                <Button variant="ghost" size="sm" disabled={uploadingLogo} onClick={() => logoInputRef.current?.click()} className="text-gold hover:text-gold text-xs gap-1">
+                  <Image className="w-3.5 h-3.5" /> {uploadingLogo ? "מעלה..." : "העלאת לוגו"}
                 </Button>
               </div>
             )}
