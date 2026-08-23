@@ -16,6 +16,7 @@ const AdminMatching = () => {
   const [selectedTeacher, setSelectedTeacher] = useState<any | null>(null);
   const [aiLoading, setAiLoading] = useState(false);
   const [aiSuggestions, setAiSuggestions] = useState<string[]>([]);
+  const [assigning, setAssigning] = useState<string | null>(null);
 
   const load = async () => {
     const [{ data: l }, { data: m }] = await Promise.all([
@@ -83,11 +84,17 @@ const AdminMatching = () => {
       toast.error("מועמד זה הגיע מטופס ההצטרפות ועדיין לא נפתח לו פורטל. יש ליצור עבורו פורטל קודם.");
       return;
     }
-    const { error } = await supabase.from("leads").update({ assigned_teacher_user_id: teacherId, status: "assigned" }).eq("id", leadId);
-    if (error) return toast.error(error.message);
-    toast.success("הליד שויך למגיד שיעור");
-    load();
-    setSelectedLead(null);
+    if (assigning === leadId) return;
+    setAssigning(leadId);
+    try {
+      const { error } = await supabase.from("leads").update({ assigned_teacher_user_id: teacherId, status: "assigned" }).eq("id", leadId);
+      if (error) return toast.error(error.message);
+      toast.success("הליד שויך למגיד שיעור");
+      load();
+      setSelectedLead(null);
+    } finally {
+      setAssigning(null);
+    }
   };
 
   const aiMatch = async () => {
@@ -171,8 +178,9 @@ const AdminMatching = () => {
                       {l.message && <p><strong>הודעה:</strong> {l.message}</p>}
                       {selectedTeacher && (
                         <Button size="sm" className="w-full mt-2 bg-gradient-to-l from-secondary to-gold-dark text-secondary-foreground gap-1"
+                          disabled={assigning === l.id}
                           onClick={(e) => { e.stopPropagation(); assign(l.id, selectedTeacher.id); }}>
-                          <ArrowLeftRight className="w-3 h-3" />שייך ל‑{selectedTeacher.full_name}
+                          <ArrowLeftRight className="w-3 h-3" />{assigning === l.id ? "משייך..." : `שייך ל‑${selectedTeacher.full_name}`}
                         </Button>
                       )}
                     </div>
@@ -204,8 +212,9 @@ const AdminMatching = () => {
                   </div>
                   {selectedTeacher?.id === t.id && selectedLead && (
                     <Button size="sm" className="w-full mt-2 bg-gradient-to-l from-secondary to-gold-dark text-secondary-foreground gap-1"
+                      disabled={assigning === selectedLead.id}
                       onClick={(e) => { e.stopPropagation(); assign(selectedLead.id, t.id); }}>
-                      <ArrowLeftRight className="w-3 h-3" />שייך את {selectedLead.full_name} →
+                      <ArrowLeftRight className="w-3 h-3" />{assigning === selectedLead.id ? "משייך..." : `שייך את ${selectedLead.full_name} →`}
                     </Button>
                   )}
                 </div>
