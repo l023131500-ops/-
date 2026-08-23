@@ -44,6 +44,7 @@ export default function Editor() {
   const [dept, setDept] = useState<Dept>("edit");
   const [dirty, setDirty] = useState(false);
   const [focusBlockId, setFocusBlockId] = useState<string | null>(null);
+  const [exporting, setExporting] = useState(false);
   const iframeRef = useRef<HTMLIFrameElement>(null);
 
   useQuery({
@@ -128,29 +129,35 @@ export default function Editor() {
   }
 
   async function exportWord() {
+    if (exporting) return;
+    setExporting(true);
     try {
-      if (dirty) await save.mutateAsync();
-    } catch {
-      toast({ title: "שגיאה בשמירה לפני הייצוא", variant: "destructive" });
-      return;
-    }
-    toast({ title: "מייצא Word…", description: "ההורדה תתחיל בעוד רגע." });
-    // הורדה ניווטית רגילה (a.click) לא נושאת כותרות מותאמות, ולכן החיפוש
-    // בשרת היה נופל תמיד ל-"anon" — עם בידוד לפי מבקר זה כבר לא מוצא את
-    // הספר. מביאים את הקובץ דרך apiRequest (עם X-Visitor-Id) ומורידים Blob.
-    try {
-      const res = await apiRequest("GET", `/api/books/${id}/docx`);
-      const blob = await res.blob();
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = `${title || "ספר"}.docx`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-    } catch {
-      toast({ title: "שגיאה בייצוא Word", variant: "destructive" });
+      try {
+        if (dirty) await save.mutateAsync();
+      } catch {
+        toast({ title: "שגיאה בשמירה לפני הייצוא", variant: "destructive" });
+        return;
+      }
+      toast({ title: "מייצא Word…", description: "ההורדה תתחיל בעוד רגע." });
+      // הורדה ניווטית רגילה (a.click) לא נושאת כותרות מותאמות, ולכן החיפוש
+      // בשרת היה נופל תמיד ל-"anon" — עם בידוד לפי מבקר זה כבר לא מוצא את
+      // הספר. מביאים את הקובץ דרך apiRequest (עם X-Visitor-Id) ומורידים Blob.
+      try {
+        const res = await apiRequest("GET", `/api/books/${id}/docx`);
+        const blob = await res.blob();
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `${title || "ספר"}.docx`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      } catch {
+        toast({ title: "שגיאה בייצוא Word", variant: "destructive" });
+      }
+    } finally {
+      setExporting(false);
     }
   }
 
@@ -208,8 +215,8 @@ export default function Editor() {
             <Save className="ms-1.5 h-4 w-4" />
             {save.isPending ? "שומר…" : "שמור"}
           </Button>
-          <Button variant="outline" size="sm" onClick={exportWord} disabled={save.isPending} data-testid="button-export-word">
-            <FileType className="ms-1.5 h-4 w-4" /> ייצא Word
+          <Button variant="outline" size="sm" onClick={exportWord} disabled={save.isPending || exporting} data-testid="button-export-word">
+            <FileType className="ms-1.5 h-4 w-4" /> {exporting ? "מייצא…" : "ייצא Word"}
           </Button>
           <Button size="sm" onClick={exportPdf} data-testid="button-export">
             <FileDown className="ms-1.5 h-4 w-4" /> ייצא PDF
