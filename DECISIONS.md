@@ -13038,3 +13038,41 @@
     23-haorech-torani/25-mor1-main-site (ריפו ריק, לאמת שאין קוד). נושאים
     #62/#94/#115/#164/#169/#254/#312 נשארים חסומים.
     via cloud server 167.99.131.167 [loop B]
+
+## 23/08/2026 — סבב 489 (loop B)
+
+489. המשך ישיר לפי הצבעת סבב 488: בדקתי את `data-pay` (שורה ~1591) ואת
+    כפתורי `syncBtn` (שורות ~1580/1797) ב-`public/app.js` של
+    19-igud-shiurim-portal. `data-pay` כבר תקין לגמרי — יש לו
+    `if (btn.disabled) return`, `btn.disabled = true` לפני ה-`await`,
+    ו-`finally { btn.disabled = false }`, בדיוק לפי התבנית.
+
+    מצאתי פער אמיתי בשני ה-`syncBtn` handlers (אחד ב-`renderAdmin()` עבור
+    דשבורד הארגון, אחד ב-`renderSynagogueAdmin()` עבור דשבורד בית הכנסת —
+    אותו קוד מועתק פעמיים): שניהם הופכים את הכפתור ל-`disabled = true` עם
+    טקסט "מסנכרן…" לפני הקריאה ל-`/nedarim/sync`, אבל משחזרים את המצב רק
+    בנתיב ההצלחה (`drawBilling()` מצייר מחדש ומחליף את הכפתור). ב-`catch`
+    הוצג רק `alert` בתוך `billing-alert`, בלי לשחזר `disabled`/`textContent`
+    — כשל אמיתי בקריאה ל-Nedarim (רשת, timeout, שגיאת שרת) היה משאיר את
+    כפתור הסנכרון נעול לצמיתות עם "מסנכרן…" עד רענון מלא של הדף, בלי שום
+    דרך לנסות שוב מלבד F5.
+
+    תיקנתי את שני ה-handlers: הוספתי `if (syncBtn.disabled) return` בתחילת
+    ה-handler, ושחזור `syncBtn.disabled = false; syncBtn.textContent =
+    'סנכרון עכשיו'` בתוך ה-`catch` (הטקסט המקורי לפי ה-template של הכפתור
+    בשני הדשבורדים).
+
+    **בדיקות תקינות:** קריאת קוד בלבד (ללא dev-server, לפי הנחיות ההרצה) —
+    `node --check public/app.js` עבר בהצלחה, ו-`git diff` נבדק ידנית: 1
+    קובץ, +4/-0, שני האתרים תוקנו באותה צורה בדיוק.
+
+    לא נגעתי במערכות מוגנות 08/09/bkalut-app/bkalot-admin/zr_*/NEDARIM3873/
+    csj/csj_src/igud, ב-`main`, או במערכת מחוץ ל-scope (17-25/27/28 בלבד).
+
+    **הבא בתור:** 19-igud-shiurim-portal נראה כעת סרוק במלואו למוטציות
+    ללא guard (superadmin toggles, messages toggle-read/mark-read, data-pay,
+    syncBtn — כולם תוקנו). לעבור ל-20-igud-portal (444 שורות, פחות
+    מוטציות) לאותה בדיקה, ואז 23-haorech-torani/25-mor1-main-site (ריפו
+    ריק, לאמת שאין קוד). נושאים #62/#94/#115/#164/#169/#254/#312 נשארים
+    חסומים.
+    via cloud server 167.99.131.167 [loop B]
