@@ -1151,9 +1151,14 @@ const AdminDashboard = () => {
                               <label className="flex items-center gap-2 font-body text-xs text-muted-foreground">
                                 <Switch
                                   checked={fe.settings === true}
+                                  disabled={busyId === `rabbi_portals:${p.id}`}
                                   onCheckedChange={async (v) => {
+                                    if (busyId) return;
+                                    setBusyId(`rabbi_portals:${p.id}`);
                                     const newFe = { ...fe, settings: v };
-                                    await supabase.from("rabbi_portals").update({ features_enabled: newFe }).eq("id", p.id);
+                                    const { error } = await supabase.from("rabbi_portals").update({ features_enabled: newFe }).eq("id", p.id);
+                                    setBusyId(null);
+                                    if (error) { toast.error("שגיאה: " + error.message); return; }
                                     setRabbiPortals(prev => prev.map(x => x.id === p.id ? { ...x, features_enabled: newFe } : x));
                                     toast.success(v ? "הגדרות מתקדמות הופעלו" : "הגדרות מתקדמות כובו");
                                   }}
@@ -1256,9 +1261,14 @@ const AdminDashboard = () => {
                               <label className="flex items-center gap-2 font-body text-xs text-muted-foreground">
                                 <Switch
                                   checked={fe.settings === true}
+                                  disabled={busyId === `org_portals:${p.id}`}
                                   onCheckedChange={async (v) => {
+                                    if (busyId) return;
+                                    setBusyId(`org_portals:${p.id}`);
                                     const newFe = { ...fe, settings: v };
-                                    await supabase.from("org_portals").update({ features_enabled: newFe }).eq("id", p.id);
+                                    const { error } = await supabase.from("org_portals").update({ features_enabled: newFe }).eq("id", p.id);
+                                    setBusyId(null);
+                                    if (error) { toast.error("שגיאה: " + error.message); return; }
                                     setOrgPortals(prev => prev.map(x => x.id === p.id ? { ...x, features_enabled: newFe } : x));
                                     toast.success(v ? "הגדרות מתקדמות הופעלו" : "הגדרות מתקדמות כובו");
                                   }}
@@ -1268,9 +1278,14 @@ const AdminDashboard = () => {
                               <label className="flex items-center gap-2 font-body text-xs text-muted-foreground">
                                 <Switch
                                   checked={fe.prayer_times === true}
+                                  disabled={busyId === `org_portals:${p.id}`}
                                   onCheckedChange={async (v) => {
+                                    if (busyId) return;
+                                    setBusyId(`org_portals:${p.id}`);
                                     const newFe = { ...fe, prayer_times: v };
-                                    await supabase.from("org_portals").update({ features_enabled: newFe }).eq("id", p.id);
+                                    const { error } = await supabase.from("org_portals").update({ features_enabled: newFe }).eq("id", p.id);
+                                    setBusyId(null);
+                                    if (error) { toast.error("שגיאה: " + error.message); return; }
                                     setOrgPortals(prev => prev.map(x => x.id === p.id ? { ...x, features_enabled: newFe } : x));
                                     toast.success(v ? "זמני תפילות הופעלו" : "זמני תפילות כובו");
                                   }}
