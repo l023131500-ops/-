@@ -12479,3 +12479,60 @@
     ב-scope לאותו דפוס `String(req.query...)`. נושאים
     #62/#94/#115/#164/#169/#254 נשארים חסומים.
     via cloud server 167.99.131.167 [loop B]
+
+## 23/08/2026 — סבב 476 (loop B)
+
+476. **המשכתי בדיוק את ה"הבא בתור" שנדחה פעמיים (סבב 474 → 475): `clientId`
+    ב-`27-bkalut-price/server/fin-routes.ts` סובל מאותה בעיית `Number(array)`
+    שכבר תוקנה עבור `month`/`from`/`to`.** שלושה נקודות קצה בנו `clientId`
+    באותו דפוס: `req.query.clientId ? Number(req.query.clientId) : undefined`
+    (שורות 192 `/api/financial/categories`, 263 `/api/financial/opportunities`,
+    448 `/api/financial/tasks`). `?clientId=` כפול הופך ל-Express למערך;
+    `Number([...])` על יותר מאיבר אחד מפיק `NaN`.
+
+    החמורה מביניהן: **`/api/financial/categories` היא נקודת קצה ציבורית
+    לגמרי — ללא `requireAdmin`.** `finStorage.listCategories(clientId)`
+    (`fin-storage.ts:173-176`) מסננת `c.clientId === null ||
+    (clientId != null && c.clientId === clientId)`. כש-`clientId` הוא `NaN`:
+    `NaN != null` הוא `true`, אבל `c.clientId === NaN` הוא **תמיד `false`**
+    (NaN לא שווה לעצמו) — הביטוי כולו מתכווץ בשקט ל-`c.clientId === null`
+    בלבד, כך שכל הקטגוריות המותאמות-אישית של הלקוח נעלמות מהתשובה ונשארות
+    רק הקטגוריות הגלובליות של המערכת, בלי שגיאה או סימן לבעיה — בדיוק
+    "שקט-מסוכן" מאותה משפחה שתוקנה בסבבים 473-475.
+
+    שתי הנקודות הנוספות מוגנות `requireAdmin` (חומרה נמוכה יותר) אך אותה
+    בעיה: `/api/financial/opportunities` → `listOpportunities` (`fin-storage.ts:
+    298-300`) `clientId == null ? all : filter(o.clientId === clientId)` — עם
+    `NaN` מחזירה מערך ריק בשקט (לא "הכל", לא הלקוח הנכון — כלום).
+    `/api/financial/tasks` → `listTasks` (`fin-storage.ts:611-613`) — כאן
+    ההפך: `if (clientId)` על `NaN` הוא falsy, כך שהיא נופלת ל-fallback
+    ומחזירה **את כל המשימות של כל הלקוחות** במקום לסנן — חשיפת-יתר במקום
+    השמטה, אך עדיין תוצאה שגויה שקטה.
+
+    **התיקון:** הוספתי `clientIdQueryParam(req)` — אותו דפוס בדיוק כמו
+    `monthQueryParam`/`singleQueryParam` הקיימות באותו קובץ (לוקח את האיבר
+    הראשון אם `req.query.clientId` הוא מערך, לפני ה-`Number()`) — והחלפתי את
+    שלושת המופעים הזהים. אין שינוי לחוזה ה-API בתרחיש הרגיל (פרמטר יחיד).
+
+    **בדיקות תקינות:** קריאת קוד בלבד (ללא dev-server/build, לפי הנחיות
+    ההרצה). אימתתי את שלוש נקודות הקריאה (`fin-routes.ts:204,275,460`) ואת
+    שלוש פונקציות ה-storage (`fin-storage.ts:173-176,298-300,611-613`).
+    `grep` על כל הקובץ אישר ש-`req.query.clientId` נקרא רק דרך
+    `clientIdQueryParam` כעת (3 מופעים בפונקציה עצמה + 3 קריאות). `git diff
+    --stat`: קובץ יחיד, +15/-3.
+
+    לא נגעתי במערכות מוגנות 08/09/bkalut-app/bkalot-admin/zr_*/NEDARIM3873/
+    csj/csj_src/igud, ב-`main`, או במערכת מחוץ ל-scope (17-25/27/28 בלבד).
+
+    ענף חדש `fix/b-27-clientid-query-array-round476-0823` (שרשרת הענפים
+    היא המקור היחיד ל-loop B, לא `main`), נדחף (קומיט בהמשך).
+
+    **הבא בתור:** `limit` בשורה 559 (`/api/financial/clients/:clientId/
+    activity`, `Math.min(Number(req.query.limit) || 100, 1000)`) — `Number`
+    על מערך רב-איברים מפיק `NaN`, ו-`NaN || 100` נופל בבטחה ל-100 (לא
+    "שקט-מסוכן" — ה-`|| 100` כבר מגן), כך שכנראה לא צריך תיקון, אך ראוי
+    לאימות סופי. אחרי זה — לסרוק עם grep רחב יותר על פני כל אפליקציה
+    ב-scope (17-25/27/28) לדפוס `Number(req.query.X)`/`String(req.query.X)`
+    ללא guard-מערך, כדי לוודא שלא נשארו עוד מופעים לפני שעוברים לקטגוריית
+    באג אחרת. נושאים #62/#94/#115/#164/#169/#254 נשארים חסומים.
+    via cloud server 167.99.131.167 [loop B]
