@@ -93,6 +93,13 @@ td{padding:7px 8px;border-bottom:1px solid var(--line-2);vertical-align:middle}
 .feature p{margin:0;font-size:13px;color:var(--ink-2)}
 .seatchip{display:inline-block;border:1px solid var(--line-2);border-radius:999px;
   padding:1px 10px;font-size:12px;color:var(--ink-2);margin:2px 2px 0 0;background:var(--night-2)}
+.themes{display:flex;gap:10px;flex-wrap:wrap;margin:10px 0 14px}
+.theme-card{cursor:pointer;border:2px solid var(--line-2);border-radius:6px;padding:6px 6px 4px;
+  background:none;width:104px;text-align:center;font-family:inherit;color:var(--ink-2);font-size:12px;
+  transition:border-color .2s var(--ease)}
+.theme-card:hover{border-color:var(--gold-soft)}
+.theme-card.on{border-color:var(--gold);color:var(--gold-soft)}
+.theme-swatch{height:52px;border-radius:4px;margin-bottom:5px;border:1px solid var(--line-2)}
 .tblcard .bar i.over{background:linear-gradient(90deg,var(--rose),#F08A83)}
 .backlink{font-size:13px}
 @media (max-width:640px){ .wrap{padding-inline:14px} th,td{padding:5px 5px} }
@@ -123,6 +130,7 @@ td{padding:7px 8px;border-bottom:1px solid var(--line-2);vertical-align:middle}
     </div>
     <div class="grid c3">
       <div class="card feature"><b>אישורי הגעה (RSVP)</b><p>כל מוזמן מקבל קישור אישי: מגיע / לא / אולי + כמה מגיעים. אתם רואים הכל חי בלוח הבקרה.</p></div>
+      <div class="card feature"><b>הזמנה דיגיטלית מעוצבת</b><p>בוחרים עיצוב מתוך תבניות יפות, כותבים מי מזמינים ומילים אישיות — והקישור האישי הופך להזמנה מעוצבת עם RSVP מובנה.</p></div>
       <div class="card feature"><b>מתנות באשראי</b><p>המוזמן נותן מתנה מהקישור שלו. מד "נאספו X ₪" בזמן אמת, פירוט מלא ומעקב תודות.</p></div>
       <div class="card feature"><b>דפי אולמות + לידים</b><p>דף נחיתה מעוצב לכל אולם עם טופס פנייה — כל פנייה נכנסת ללוח הלידים של בעל האולם.</p></div>
       <div class="card feature"><b>צ'ק-אין בכניסה</b><p>סימון הגעה בפועל ביום האירוע — ספירה חיה של מי שכבר בפנים.</p></div>
@@ -227,6 +235,26 @@ td{padding:7px 8px;border-bottom:1px solid var(--line-2);vertical-align:middle}
       <div class="copybox">
         <input id="mShareUrl" readonly />
         <button class="btn small" id="mShareCopy">העתקה</button>
+      </div>
+
+      <h3 style="margin-top:22px">הזמנה דיגיטלית מעוצבת</h3>
+      <p class="muted">בוחרים עיצוב, כותבים מי מזמינים ומילים אישיות — וכל קישור אישי (וקישור השיתוף)
+        נפתח כהזמנה מעוצבת עם אישור הגעה, מתנה וכרטיס כניסה מובנים.</p>
+      <div class="themes" id="themePick"></div>
+      <div class="grid c2">
+        <div>
+          <label for="invHosts">מי מזמינים (שורת הפתיחה של ההזמנה)</label>
+          <input id="invHosts" maxlength="200" placeholder="משפחות כהן ולוי מזמינות באהבה" />
+        </div>
+        <div>
+          <label for="invMsg">מילים אישיות למוזמנים</label>
+          <textarea id="invMsg" maxlength="600" placeholder="נרגשים לחגוג אתכם את היום הגדול…"></textarea>
+        </div>
+      </div>
+      <div id="invErr"></div>
+      <div class="rowline" style="justify-content:flex-start">
+        <button class="btn small" id="invSave">שמירת ההזמנה</button>
+        <a class="btn ghost small" id="invPreview" target="_blank" rel="noopener">👁 תצוגה מקדימה</a>
       </div>
 
       <h3 style="margin-top:22px">הוספת מוזמנים</h3>
@@ -350,6 +378,26 @@ async function guarded(btn, key, fn) {
 let ME = null;
 let CURRENT_EVENT = null;
 
+// invitation themes — must match the DB check (events_invite_theme_check)
+// and the palette blocks in g.html
+const THEMES = [
+  { id: 'midnight-gold', label: 'זהב חצות', sw: 'linear-gradient(135deg,#100D22 58%,#D9B36C)' },
+  { id: 'ivory-gold', label: 'שנהב קלאסי', sw: 'linear-gradient(135deg,#FBF7ED 58%,#A8823C)' },
+  { id: 'blush-rose', label: 'רומנטי', sw: 'linear-gradient(135deg,#FDF6F4 58%,#B3565C)' },
+  { id: 'royal-navy', label: 'כחול מלכותי', sw: 'linear-gradient(135deg,#0C1730 58%,#A9C4F2)' },
+  { id: 'olive-garden', label: 'גן ירוק', sw: 'linear-gradient(135deg,#F5F7EF 58%,#5F7434)' },
+];
+let inviteTheme = 'midnight-gold';
+
+function renderThemePick() {
+  $('themePick').innerHTML = THEMES.map((t) => `
+    <button type="button" class="theme-card${t.id === inviteTheme ? ' on' : ''}" data-theme="${t.id}">
+      <div class="theme-swatch" style="background:${t.sw}"></div>${t.label}
+    </button>`).join('');
+  for (const b of $('themePick').querySelectorAll('[data-theme]'))
+    b.addEventListener('click', () => { inviteTheme = b.dataset.theme; renderThemePick(); });
+}
+
 // ---------- boot ----------
 const { data: sess } = await sb.auth.getSession();
 $('loginBtn').href = 'https://more30.com/login?from=' + encodeURIComponent('https://more30.com/events');
@@ -456,6 +504,16 @@ async function openEvent(id, opts = {}) {
   $('mShareUrl').value = 'https://more30.com/events/g?s=' + ev.share_token;
   $('mGuestCount').textContent = '(' + guests.length + ')';
 
+  // repopulate the designer only when entering the event (or after its own
+  // save) — a seating/check-in refresh must not wipe a half-typed invitation
+  if (opts.refreshInvite !== false) {
+    inviteTheme = THEMES.some((t) => t.id === ev.invite_theme) ? ev.invite_theme : 'midnight-gold';
+    renderThemePick();
+    $('invHosts').value = ev.invite_hosts || '';
+    $('invMsg').value = ev.invite_message || '';
+  }
+  $('invPreview').href = 'https://more30.com/events/g?s=' + ev.share_token;
+
   const tables = d.tables || [];
   const tableOptions = (sel) => '<option value="">— ללא —</option>' + tables.map(t =>
     '<option value="' + t.id + '"' + (t.id === sel ? ' selected' : '') + '>' + esc(t.name) + '</option>').join('');
@@ -479,7 +537,7 @@ async function openEvent(id, opts = {}) {
   for (const sel of tb.querySelectorAll('[data-seat]'))
     sel.addEventListener('change', () => guarded(sel, 'seat' + sel.dataset.seat, async () => {
       await rpc('evg_guest_set_table', { p_guest_id: sel.dataset.seat, p_table_id: sel.value || null });
-      await openEvent(ev.id, { scroll: false });
+      await openEvent(ev.id, { scroll: false, refreshInvite: false });
     }));
   for (const b of tb.querySelectorAll('[data-copy]'))
     b.addEventListener('click', () => {
@@ -489,13 +547,13 @@ async function openEvent(id, opts = {}) {
   for (const b of tb.querySelectorAll('[data-checkin]'))
     b.addEventListener('click', () => guarded(b, 'ci' + b.dataset.checkin, async () => {
       await rpc('evg_guest_checkin', { p_guest_id: b.dataset.checkin });
-      await openEvent(ev.id, { scroll: false });
+      await openEvent(ev.id, { scroll: false, refreshInvite: false });
     }));
   for (const b of tb.querySelectorAll('[data-del]'))
     b.addEventListener('click', () => guarded(b, 'del' + b.dataset.del, async () => {
       if (!confirm('למחוק את המוזמן? הקישור האישי שלו יפסיק לעבוד.')) return;
       await rpc('evg_guest_delete', { p_guest_id: b.dataset.del });
-      await openEvent(ev.id, { scroll: false }); await refreshMe();
+      await openEvent(ev.id, { scroll: false, refreshInvite: false }); await refreshMe();
     }));
 
   $('mGiftsTable').querySelector('tbody').innerHTML = gifts.map((g) => `
@@ -559,7 +617,7 @@ function renderSeating(d) {
     b.addEventListener('click', () => guarded(b, 'tdel' + b.dataset.tblDel, async () => {
       if (!confirm('למחוק את השולחן? המוזמנים שיושבים בו יחזרו ל"ללא שולחן".')) return;
       await rpc('evg_table_delete', { p_table_id: b.dataset.tblDel });
-      await openEvent(CURRENT_EVENT.event.id, { scroll: false });
+      await openEvent(CURRENT_EVENT.event.id, { scroll: false, refreshInvite: false });
     }));
   for (const b of $('tablesGrid').querySelectorAll('[data-tbl-edit]'))
     b.addEventListener('click', () => guarded(b, 'tedit' + b.dataset.tblEdit, async () => {
@@ -573,7 +631,7 @@ function renderSeating(d) {
         p_name: name.trim() || null,
         p_capacity: parseInt(cap, 10) || null,
       });
-      await openEvent(CURRENT_EVENT.event.id, { scroll: false });
+      await openEvent(CURRENT_EVENT.event.id, { scroll: false, refreshInvite: false });
     }));
 }
 
@@ -589,7 +647,7 @@ $('tblAdd').addEventListener('click', () => guarded($('tblAdd'), 'tblAdd', async
       p_capacity: parseInt($('tblCap').value, 10) || 10,
     });
     $('tblName').value = '';
-    await openEvent(CURRENT_EVENT.event.id, { scroll: false });
+    await openEvent(CURRENT_EVENT.event.id, { scroll: false, refreshInvite: false });
   } catch (e) { $('tblErr').innerHTML = '<div class="err">' + esc(e.message) + '</div>'; }
 }));
 
@@ -615,6 +673,21 @@ $('seatingExport').addEventListener('click', () => {
   URL.revokeObjectURL(a.href);
 });
 
+$('invSave').addEventListener('click', () => guarded($('invSave'), 'invSave', async () => {
+  $('invErr').innerHTML = '';
+  if (!CURRENT_EVENT) return;
+  try {
+    await rpc('evg_event_invite_set', {
+      p_event_id: CURRENT_EVENT.event.id,
+      p_theme: inviteTheme,
+      p_hosts: $('invHosts').value.trim(),
+      p_message: $('invMsg').value.trim(),
+    });
+    $('invErr').innerHTML = '<div class="ok-note">ההזמנה נשמרה — כל הקישורים האישיים מציגים אותה מעכשיו. "תצוגה מקדימה" פותחת אותה כמו שמוזמן יראה.</div>';
+    await openEvent(CURRENT_EVENT.event.id, { scroll: false });
+  } catch (e) { $('invErr').innerHTML = '<div class="err">' + esc(e.message) + '</div>'; }
+}));
+
 $('mClose').addEventListener('click', () => { gateShut(); $('managePanel').hidden = true; CURRENT_EVENT = null; });
 $('mShareCopy').addEventListener('click', () => {
   navigator.clipboard.writeText($('mShareUrl').value);
@@ -635,7 +708,7 @@ $('mGuestsAdd').addEventListener('click', () => guarded($('mGuestsAdd'), 'guests
     const r = await rpc('evg_guests_add', { p_event_id: CURRENT_EVENT.event.id, p_guests: guests });
     $('mGuestsInput').value = '';
     $('mGuestsErr').innerHTML = '<div class="ok-note">נוספו ' + r.inserted + ' מוזמנים — לכל אחד קישור אישי (עמודת "קישור").</div>';
-    await openEvent(CURRENT_EVENT.event.id, { scroll: false }); await refreshMe();
+    await openEvent(CURRENT_EVENT.event.id, { scroll: false, refreshInvite: false }); await refreshMe();
   } catch (e) { $('mGuestsErr').innerHTML = '<div class="err">' + esc(e.message) + '</div>'; }
 }));
 
@@ -767,7 +840,7 @@ $('gateOpen').addEventListener('click', () => {
 $('gateClose').addEventListener('click', () => guarded($('gateClose'), 'gateClose', async () => {
   gateShut();
   // pull the door scans into the guest table + the check-in stat
-  if (CURRENT_EVENT) await openEvent(CURRENT_EVENT.event.id, { scroll: false });
+  if (CURRENT_EVENT) await openEvent(CURRENT_EVENT.event.id, { scroll: false, refreshInvite: false });
 }));
 
 $('gateManualBtn').addEventListener('click', () => guarded($('gateManualBtn'), 'gateManual', async () => {
