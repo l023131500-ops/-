@@ -34,6 +34,7 @@ const AdminTeachers = () => {
   });
   const { toast } = useToast();
   const [featuresFor, setFeaturesFor] = useState<any | null>(null);
+  const [busyId, setBusyId] = useState<string | null>(null);
 
   const fetchAll = async () => {
     const [{ data: p }, { data: i }] = await Promise.all([
@@ -47,12 +48,18 @@ const AdminTeachers = () => {
   useEffect(() => { fetchAll(); }, []);
 
   const toggleApproval = async (id: string, current: boolean) => {
-    const { error } = await supabase.from("profiles").update({ is_approved: !current }).eq("id", id);
-    if (error) {
-      toast({ title: "שגיאה", description: error.message, variant: "destructive" });
-    } else {
-      toast({ title: current ? "המגיד הוסר מהאישור" : "המגיד אושר בהצלחה" });
-      fetchAll();
+    if (busyId) return;
+    setBusyId(id);
+    try {
+      const { error } = await supabase.from("profiles").update({ is_approved: !current }).eq("id", id);
+      if (error) {
+        toast({ title: "שגיאה", description: error.message, variant: "destructive" });
+      } else {
+        toast({ title: current ? "המגיד הוסר מהאישור" : "המגיד אושר בהצלחה" });
+        fetchAll();
+      }
+    } finally {
+      setBusyId(null);
     }
   };
 
@@ -258,7 +265,7 @@ const AdminTeachers = () => {
                       </span>
                     </td>
                     <td className="p-4">
-                      <Button size="sm" variant={p.is_approved ? "outline" : "default"} onClick={() => toggleApproval(p.id, p.is_approved)}>
+                      <Button size="sm" variant={p.is_approved ? "outline" : "default"} disabled={busyId === p.id} onClick={() => toggleApproval(p.id, p.is_approved)}>
                         {p.is_approved ? <><UserX className="w-4 h-4 ml-1" />בטל</> : <><UserCheck className="w-4 h-4 ml-1" />אשר</>}
                       </Button>
                       <Button size="sm" variant="outline" className="mr-1 gap-1" onClick={() => setFeaturesFor(p)}>
