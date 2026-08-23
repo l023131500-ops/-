@@ -31,6 +31,15 @@ async function readTopic(id: number): Promise<HfTopic | undefined> {
   return useSupabaseStore() ? fetchTopicFromSupabase(id) : storage.getTopic(id);
 }
 
+// Express הופך פרמטר query שחוזר על עצמו (?category=a&category=b) למערך;
+// String(array) מחבר בפסיקים לערך ש"נראה" תקין אבל לא תואם שום קטגוריה/קופה
+// אמיתית ומשתיק את הסינון בלי שגיאה. לוקח את הערך הראשון בלבד, כמו
+// monthQueryParam/singleQueryParam ב-27-bkalut-price/server/fin-routes.ts.
+function singleQueryParam(v: unknown): string | undefined {
+  const raw = Array.isArray(v) ? v[0] : v;
+  return typeof raw === "string" ? raw : raw != null ? String(raw) : undefined;
+}
+
 export async function registerRoutes(
   httpServer: Server,
   app: Express
@@ -70,11 +79,11 @@ export async function registerRoutes(
   // בדפדפן, בלי תלות כבדה בספריית PDF.
   app.get("/api/hf/report", async (req, res) => {
     try {
-      const kindRaw = String(req.query.kind || "fund");
+      const kindRaw = singleQueryParam(req.query.kind) || "fund";
       const kind = ["fund", "gov", "ngo"].includes(kindRaw) ? kindRaw : "fund";
-      const category = req.query.category ? String(req.query.category) : undefined;
-      const fund = req.query.fund ? String(req.query.fund) : undefined;
-      const search = req.query.search ? String(req.query.search) : undefined;
+      const category = singleQueryParam(req.query.category) || undefined;
+      const fund = singleQueryParam(req.query.fund) || undefined;
+      const search = singleQueryParam(req.query.search) || undefined;
       const topics = await readTopics();
       const rows = filterTopicsForReport(topics, { kind, category, fund, search });
       const parts: string[] = [];
@@ -85,7 +94,7 @@ export async function registerRoutes(
         kind,
         rows,
         filtersLabel: parts.join(" · ") || "כל הנושאים",
-        autoPrint: String(req.query.print || "") === "1",
+        autoPrint: singleQueryParam(req.query.print) === "1",
       });
       res.setHeader("content-type", "text/html; charset=utf-8");
       res.send(html);
