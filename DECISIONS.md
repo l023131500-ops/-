@@ -12721,3 +12721,48 @@
     הבאה שטרם עברה סריקת double-submit מלאה: 17-chizukim-transcribe.
     נושאים #62/#94/#115/#164/#169/#254/#312 נשארים חסומים.
     via cloud server 167.99.131.167 [loop B]
+
+## 23/08/2026 — סבב 481 (loop B)
+
+481. **סרקתי את 17-chizukim-transcribe במלואה למשפחת double-submit ומצאתי
+    שהיא נקייה** — אין בה כפתורי מחיקה כלל (`grep -i delete/remove` על
+    `client/`+`server/` לא העלה שום פעולת מחיקה אמיתית), ושתי הפעולות
+    המשתנות היחידות (`תמלל`/`שמירה` ב-`recording-detail.tsx`/`recordings.tsx`)
+    כבר מוגנות ב-`disabled={mutation.isPending}`/`disabled={save.isPending}`.
+    גם `admin-page.ts` (HTML+JS מוטבע) לא כולל פעולת מחיקה.
+
+    בדקתי גם את `18-torah-editor-mvp` (27 קבצים) — כל פעולות המחיקה/שמירה/
+    אישור ב-`documents/page.tsx` ו-`htr/page.tsx` כבר מוגנות ב-state ייעודי
+    (`deletingId`/`busy`) עם guard מוקדם ו-`disabled` תואם. גם היא נקייה.
+
+    **מצאתי פער אמיתי ב-21-mthbram** (157 קבצים, טרם נסרקה בסבבים קודמים):
+    ב-`src/components/admin/FullAccessRequestsTab.tsx`, פונקציית `remove`
+    (מחיקת בקשת הרחבת ממשק) לא עקבה אחרי מצב "בתהליך מחיקה" ולכפתור המחיקה
+    לא היה `disabled` בכלל — בניגוד לאחותה `save` שכבר שומרת `saving` state
+    ומכבה את כפתור השמירה בזמן הבקשה. לחיצות מהירות/כפולות (על אותה שורה או
+    על שתי שורות שונות בו-זמנית) יכולות לשלוח כמה בקשות DELETE חופפות
+    ולגרום ל-`load()` לרוץ פעמיים במקביל עם מצב רשימה לא עקבי.
+
+    **התיקון:** הוספתי `deletingId` state, guard מוקדם (`if (deletingId)
+    return`) ו-`disabled={deletingId === req.id}` על כפתור המחיקה — אותו
+    דפוס בדיוק כמו `saving`/`saving === req.id` הקיים כבר ב-`save`, בלי
+    הפשטה חדשה.
+
+    **בדיקות תקינות:** קריאת קוד בלבד (ללא dev-server, לפי הנחיות ההרצה).
+    השוויתי מול כפתור השמירה באותו קובץ (דפוס `disabled` זהה). `git diff
+    --stat`: קובץ יחיד, +6/-2.
+
+    לא נגעתי במערכות מוגנות 08/09/bkalut-app/bkalot-admin/zr_*/NEDARIM3873/
+    csj/csj_src/igud, ב-`main`, או במערכת מחוץ ל-scope (17-25/27/28 בלבד).
+
+    ענף חדש `fix/b-21-mthbram-fullaccessrequests-delete-guard-round481-0823`
+    (שרשרת הענפים היא המקור היחיד ל-loop B, לא `main`), נדחף.
+
+    **הבא בתור:** להמשיך לסרוק את שאר `21-mthbram` (`AdminDashboard.tsx`
+    כולל `approveLesson`/`rejectLesson`/`genericDelete`/`softDeleteLesson`
+    נראים חשודים לאותו דפוס לפי סקירה ראשונית ודורשים בדיקה מדוקדקת בסבב
+    הבא), ולאחר מכן שאר האפליקציות שטרם נסרקו: 19-igud-shiurim-portal ו-
+    20-igud-portal (שלד, 2 קבצים כל אחת — לבדוק אם יש בכלל פעולות מוטציה),
+    23-haorech-torani ו-25-mor1-main-site (ריפו ריק, ללא קוד).
+    נושאים #62/#94/#115/#164/#169/#254/#312 נשארים חסומים.
+    via cloud server 167.99.131.167 [loop B]
