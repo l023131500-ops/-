@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 type Entry = {
   id: string;
@@ -24,12 +24,17 @@ export default function GlossaryPage() {
   const [showForm, setShowForm] = useState(false);
   const [form, setForm] = useState({ style: "litvish", term: "", replacement: "", notes: "" });
   const [busyId, setBusyId] = useState<string | null>(null);
+  const loadSeq = useRef(0);
 
   const load = async () => {
+    const seq = ++loadSeq.current;
     const url = filter ? `/modaot/api/admin/transcribe/glossary?style=${filter}` : "/modaot/api/admin/transcribe/glossary";
     const res = await fetch(url, { cache: "no-store" });
-    if (res.ok) setEntries(await res.json());
-    setLoading(false);
+    if (res.ok) {
+      const data = await res.json();
+      if (seq === loadSeq.current) setEntries(data);
+    }
+    if (seq === loadSeq.current) setLoading(false);
   };
 
   useEffect(() => { load(); }, [filter]);
