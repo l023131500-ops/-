@@ -195,7 +195,9 @@ export default function PublicHealthFunds() {
     fetch(`${API_BASE}/api/hf/public/meta`)
       .then((r) => r.json())
       .then((m: HfMeta) => setMeta(m))
-      .catch(() => {});
+      .catch(() => {
+        toast({ title: "חלק מהנתונים לא נטענו", description: "אפשרויות הסינון עשויות להיות חסרות. נסו לרענן את הדף." });
+      });
     runSearch(emptyFilters);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

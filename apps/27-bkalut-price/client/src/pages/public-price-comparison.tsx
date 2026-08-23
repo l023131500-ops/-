@@ -258,13 +258,17 @@ export default function PublicPriceComparison() {
     // serve one request at a time on a cold resume, so a parallel burst causes
     // 503s. Fetch light metadata first, then the (heavier) catalog last.
     (async () => {
+      let metaFailed = false;
       try {
         const s: PcPublicSettings = await fetchApi(`/api/pc/public/settings`).then((r) => r.json());
         setSettings(s);
         if (s && s.enabled === false) { setDisabled(true); setLoading(false); return; }
-        await fetchApi(`/api/pc/public/meta`).then((r) => r.json()).then((d: PcPublicMeta) => setPcMeta(d)).catch(() => {});
-        await fetchApi(`/api/pc/public/filters`).then((r) => r.json()).then((d) => setMeta(d)).catch(() => {});
+        await fetchApi(`/api/pc/public/meta`).then((r) => r.json()).then((d: PcPublicMeta) => setPcMeta(d)).catch(() => { metaFailed = true; });
+        await fetchApi(`/api/pc/public/filters`).then((r) => r.json()).then((d) => setMeta(d)).catch(() => { metaFailed = true; });
         await fetchApi(`/api/pc/public/promotions`).then((r) => r.json()).then((d) => setPromotions(Array.isArray(d) ? d : [])).catch(() => setPromotions([]));
+        if (metaFailed) {
+          toast({ title: "חלק מהנתונים לא נטענו", description: "אפשרויות הסינון עשויות להיות חסרות. נסו לרענן את הדף." });
+        }
         await runSearch(emptyFilters);
       } catch {
         await runSearch(emptyFilters);
