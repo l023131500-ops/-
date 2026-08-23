@@ -30,6 +30,7 @@ export default function Leads() {
       if (error) throw error;
     },
     onSuccess: () => { toast.success("עודכן"); qc.invalidateQueries({ queryKey: ["leads-all"] }); },
+    onError: (e: Error) => toast.error(e.message),
   });
   return (
     <div>
@@ -44,7 +45,7 @@ export default function Leads() {
               </div>
               <div className="flex gap-2 items-center">
                 <Badge variant="secondary">{TYPE_LABELS[l.kind] || l.kind}</Badge>
-                <Select value={l.status} onValueChange={(s) => update.mutate({ id: l.id, status: s })}>
+                <Select value={l.status} onValueChange={(s) => update.mutate({ id: l.id, status: s })} disabled={update.isPending && update.variables?.id === l.id}>
                   <SelectTrigger className="w-32"><SelectValue /></SelectTrigger>
                   <SelectContent>
                     <SelectItem value="new">חדש</SelectItem>
