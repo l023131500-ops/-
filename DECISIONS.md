@@ -13124,3 +13124,60 @@
     לאותן תבניות באגים. נושאים #62/#94/#115/#164/#169/#254/#312 נשארים
     חסומים.
     via cloud server 167.99.131.167 [loop B]
+
+## 23/08/2026 — סבב 491 (loop B)
+
+491. **המשך ישיר לפי הצבעת סבב 490: בדקתי את 23-haorech-torani ו-
+    25-mor1-main-site.** `23-haorech-torani` מכיל למעשה `index.html` בן
+    417 שורות — אבל זהו מסמך ארכיטקטורה/תוכנית מימוש סטטי (RTL, ללא JS
+    מוטציה מלבד אנימציית fade-in ב-`IntersectionObserver`), לא אפליקציה
+    אינטראקטיבית — אין בו שום כפתור מוטציה או קריאת API לבדוק. `25-mor1-
+    main-site` אכן ריפו ריק לגמרי (רק `app.json`, בלי שום קובץ מקור) —
+    שני הפריטים מאושרים כ"אין מה לתקן" ולא "עדיין לא נסרק".
+
+    שלחתי Explore agent לסרוק את שאר האפליקציות ב-scope (24/27/28 למשפחת
+    double-submit, ו-17/18/19/21/22/24 למשפחת query-array) כדי לאתר את
+    המשימה הבאה. הממצא המשמעותי ביותר: **19-igud-shiurim-portal
+    `server.js` (1160+ שורות) מכיל בדיוק אותה משפחת באג שתוקנה הרגע
+    ב-20-igud-portal** — `GET /api/directory` (שורה 131) פירק
+    `const { type, city, q } = req.query` ושלח ישירות ל-RPC `public_directory`
+    כ-`p_type`/`p_city`/`p_search`. בסריקה מקיפה של שאר הקובץ מצאתי עוד
+    7 מופעים זהים באותה משפחה: `GET /api/ads` (p_city), `GET
+    /api/search/lessons` (topic/city/audience/q), `GET
+    /api/superadmin/tenants` (p_city, מאומת), `GET
+    /api/superadmin/national-requests` (p_request_type, מאומת), שני
+    נתיבי `.../nedarim/donations` (from/to/limit, tenant+synagogue),
+    ו-`GET /api/superadmin/subscription-payments` (tenant_id/status,
+    מאומת). **החמור מכולם:** `GET /api/public/payments/:id/status` ו-
+    `GET /api/public/payments/:id/checkout` (שורות 1036/1050 לפני התיקון)
+    השתמשו ב-`req.query.token` ישירות כ-`p_correlation_token` מול RPC
+    התשלום הציבורי `public_get_subscription_payment_for_checkout` — טוקן
+    כפול בכתובת היה מגיע כמערך במקום מחרוזת.
+
+    **התיקון:** אותו דפוס בדיוק כמו סבב 490 — הוספתי `singleQueryParam()`
+    (לוקח את האיבר הראשון אם הערך מערך) ליד `handleRpcResult`, והחלתי
+    אותו על כל 9 המקומות שנמצאו (8 נתיבים, כולל שני פרמטרי תשלום). תוספת
+    בלבד, אין שינוי בחוזה ה-API עבור שימוש רגיל (ערך יחיד).
+
+    **בדיקות תקינות:** קריאת קוד בלבד (ללא dev-server, לפי הנחיות ההרצה) —
+    `node --check server.js` עבר בהצלחה. `git diff --stat`: קובץ אחד,
+    +27/-11.
+
+    לא נגעתי במערכות מוגנות 08/09/bkalut-app/bkalot-admin/zr_*/NEDARIM3873/
+    csj/csj_src/igud, ב-`main`, או במערכת מחוץ ל-scope (17-25/27/28 בלבד).
+
+    ענף חדש `fix/b-19-igud-shiurim-portal-query-array-round491-0823`
+    (שרשרת הענפים היא המקור היחיד ל-loop B, לא `main`), נדחף.
+
+    **הבא בתור:** Explore agent דיווח גם על משפחת ה-double-submit ב-
+    **27-bkalut-price**: `community-admin.tsx` (`toggleLink`, ~שורה 179/352,
+    ללא guard כמו אחותה `deleteLink`), `params-topics.tsx` (`save`, ~שורה
+    106/219, ללא `isSaving` state) ו-`health-funds-admin.tsx`
+    (`toggleActive`+`saveTopic`, ~שורות 206/221/485/611, אותו חוסר). כל
+    ארבעת הממצאים טרם אומתו ידנית (רק דיווח סוכן) — לאמת ולתקן בסבב הבא
+    לפי אותו דפוס עקבי (`disabled`/state guard לפני ה-`await`,
+    early-return, שחזור ב-catch). 24-galilee-connect-hub דווח כבר נקי
+    (כל המוטציות מוגנות), 28-kupot-health-funds דווח כבר נקי (אין
+    מוטציות async בקוד לקוח). נושאים #62/#94/#115/#164/#169/#254/#312
+    נשארים חסומים.
+    via cloud server 167.99.131.167 [loop B]
