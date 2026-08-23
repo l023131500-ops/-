@@ -49,6 +49,17 @@ const ALLOWED_AUDIO = [
 // limit here only bought a longer wait before the same refusal, on a path that
 // buffers the whole file in memory first.
 const MAX_UPLOAD_BYTES = 50 * 1024 * 1024;
+
+// `file_size_bytes`/`duration_seconds` reach these routes straight from the
+// client (register) or a raw multipart field (fallback upload) with no other
+// validation layer in front — a negative or non-numeric value would otherwise
+// persist as-is and corrupt the recording's metadata (e.g. formatDuration()
+// rendering a negative timestamp).
+function nonNegativeNumberOrNull(value: unknown): number | null {
+  if (value === null || value === undefined || value === "") return null;
+  const n = Number(value);
+  return Number.isFinite(n) && n >= 0 ? n : null;
+}
 const upload = multer({
   storage: multer.memoryStorage(),
   limits: { fileSize: MAX_UPLOAD_BYTES },
@@ -242,8 +253,8 @@ export async function registerRoutes(
           original_name: original_name || objectPath,
           audio_path: objectPath,
           audio_url: audioUrl,
-          file_size_bytes: file_size_bytes ?? null,
-          duration_seconds: duration_seconds ?? null,
+          file_size_bytes: nonNegativeNumberOrNull(file_size_bytes),
+          duration_seconds: nonNegativeNumberOrNull(duration_seconds),
           topic: topic || null,
           parsha_or_date: parsha_or_date || null,
           status: "uploaded",
@@ -271,8 +282,7 @@ export async function registerRoutes(
 
         const topic = (req.body.topic as string) || null;
         const parsha = (req.body.parsha_or_date as string) || null;
-        const durationRaw = req.body.duration_seconds;
-        const duration = durationRaw ? Number(durationRaw) : null;
+        const duration = nonNegativeNumberOrNull(req.body.duration_seconds);
 
         const seq = await nextSeq();
         const ext = extFromName(file.originalname);
