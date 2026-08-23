@@ -142,13 +142,19 @@
       const mark = (ok) => ok ? '<span class="has">✓</span>' : '<span class="miss">חסר</span>';
 
       let timer = null;
+      // מונע גזרת מסך: מקלדת מהירה או מעבר בין מקורות יכולים לשלוח כמה בקשות
+      // בו-זמנית, וללא השוואה כאן תשובה ישנה שחוזרת מאוחר יותר הייתה יכולה
+      // לדרוס תוצאה חדשה יותר על המסך.
+      let reqId = 0;
 
       async function load() {
+        const myReqId = ++reqId;
         const { data, error } = await sb.rpc('more30_admin_rights', {
           p_q: $('q').value || null,
           p_src: $('src').value || null,
           p_limit: 60,
         });
+        if (myReqId !== reqId) return;
         if (error) {
           $('tagline').textContent = 'הדף פתוח לסופר-אדמין בלבד.';
           $('denied').innerHTML =
