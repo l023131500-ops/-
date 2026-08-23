@@ -22,6 +22,7 @@ import { loadAll } from "./data-loader";
 import * as paramsTopics from "./params-topics";
 import * as potential from "./potential-scanner";
 import { finStorage } from "./fin-storage";
+import { clientIdQueryParam } from "./fin-routes";
 
 const AUTOMATION_API_KEY = "automation_api";
 
@@ -249,38 +250,38 @@ export function registerExternalApi(app: Express) {
   });
 
   app.get("/api/external/financial/tasks", gate, async (req, res) => {
-    const clientId = req.query.clientId ? Number(req.query.clientId) : undefined;
+    const clientId = clientIdQueryParam(req);
     res.json(finStorage.listTasks(clientId));
   });
 
   app.get("/api/external/financial/messages", gate, async (req, res) => {
-    const clientId = req.query.clientId ? Number(req.query.clientId) : undefined;
+    const clientId = clientIdQueryParam(req);
     res.json(finStorage.listMessages(clientId));
   });
 
   app.get("/api/external/financial/documents", gate, async (req, res) => {
-    const clientId = req.query.clientId ? Number(req.query.clientId) : undefined;
+    const clientId = clientIdQueryParam(req);
     res.json(finStorage.listDocuments(clientId));
   });
 
   app.get("/api/external/financial/plans", gate, async (req, res) => {
-    const clientId = req.query.clientId ? Number(req.query.clientId) : undefined;
+    const clientId = clientIdQueryParam(req);
     res.json(finStorage.listAllPlans(clientId));
   });
 
   app.get("/api/external/financial/activity", gate, async (req, res) => {
-    const clientId = req.query.clientId ? Number(req.query.clientId) : undefined;
+    const clientId = clientIdQueryParam(req);
     const limit = Math.min(Number(req.query.limit) || 200, 1000);
     res.json(finStorage.listActivity(clientId, limit));
   });
 
   app.get("/api/external/financial/reminders", gate, async (req, res) => {
-    const clientId = req.query.clientId ? Number(req.query.clientId) : undefined;
+    const clientId = clientIdQueryParam(req);
     res.json(finStorage.listReminders(clientId));
   });
 
   app.get("/api/external/financial/reports", gate, async (req, res) => {
-    const clientId = req.query.clientId ? Number(req.query.clientId) : undefined;
+    const clientId = clientIdQueryParam(req);
     res.json(finStorage.listReports(clientId));
   });
 }

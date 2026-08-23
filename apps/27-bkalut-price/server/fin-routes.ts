@@ -34,7 +34,7 @@ function singleQueryParam(req: Request, key: string): string | undefined {
 // always false, so the filter silently collapses to "no client match" instead of
 // throwing or falling back to "all clients" — categories/opportunities the caller
 // should see quietly disappear from the response.
-function clientIdQueryParam(req: Request): number | undefined {
+export function clientIdQueryParam(req: Request): number | undefined {
   const raw = req.query.clientId;
   const single = Array.isArray(raw) ? raw[0] : raw;
   return single ? Number(single) : undefined;
