@@ -100,6 +100,13 @@ app.get('/api/config', (req, res) => {
   res.json({ supabaseUrl: SUPABASE_URL, supabaseAnonKey: SUPABASE_ANON_KEY });
 });
 
+// req.query.X מגיע כמערך אם הפרמטר חוזר בכתובת (?type=a&type=b) - RPC-ים
+// מצפים לערך טקסט יחיד, אז לוקחים את האיבר הראשון (אותו דפוס שכבר תוקן
+// ב-20-igud-portal /api/directory, סבב 490).
+function singleQueryParam(v) {
+  return Array.isArray(v) ? (v[0] ?? null) : v;
+}
+
 function handleRpcResult(res, { data, error }, notFoundIfNull = true) {
   if (error) {
     console.error(error);
@@ -129,7 +136,9 @@ function handleBooleanRpcResult(res, { data, error }, errorMessage = 'קישור
 // ----------------------------------------------------------------------------
 
 app.get('/api/directory', async (req, res) => {
-  const { type, city, q } = req.query;
+  const type = singleQueryParam(req.query.type);
+  const city = singleQueryParam(req.query.city);
+  const q = singleQueryParam(req.query.q);
   const result = await supabaseAnon.rpc('public_directory', {
     p_type: type || null,
     p_city: city || null,
@@ -140,7 +149,7 @@ app.get('/api/directory', async (req, res) => {
 
 // באנר פרסומות ציבורי לדף הבית - מכל הארגונים המפרסמים כרגע
 app.get('/api/ads', async (req, res) => {
-  const result = await supabaseAnon.rpc('public_active_ads', { p_city: req.query.city || null });
+  const result = await supabaseAnon.rpc('public_active_ads', { p_city: singleQueryParam(req.query.city) || null });
   handleRpcResult(res, result, false);
 });
 
@@ -210,7 +219,10 @@ app.get('/api/city/:city/prayer-feed', async (req, res) => {
 });
 
 app.get('/api/search/lessons', async (req, res) => {
-  const { topic, city, audience, q } = req.query;
+  const topic = singleQueryParam(req.query.topic);
+  const city = singleQueryParam(req.query.city);
+  const audience = singleQueryParam(req.query.audience);
+  const q = singleQueryParam(req.query.q);
   const result = await supabaseAnon.rpc('national_lesson_search', {
     p_topic: topic || null,
     p_city: city || null,
@@ -659,7 +671,7 @@ app.get('/api/superadmin/stats', requireAuth, async (req, res) => {
 });
 
 app.get('/api/superadmin/tenants', requireAuth, async (req, res) => {
-  const result = await req.supabase.rpc('sa_list_tenants', { p_city: req.query.city || null });
+  const result = await req.supabase.rpc('sa_list_tenants', { p_city: singleQueryParam(req.query.city) || null });
   handleRpcResult(res, result, false);
 });
 
@@ -693,7 +705,7 @@ app.get('/api/superadmin/join-requests', requireAuth, async (req, res) => {
 
 app.get('/api/superadmin/national-requests', requireAuth, async (req, res) => {
   const result = await req.supabase.rpc('sa_list_national_requests', {
-    p_request_type: req.query.type || null,
+    p_request_type: singleQueryParam(req.query.type) || null,
   });
   handleRpcResult(res, result, false);
 });
@@ -759,7 +771,9 @@ app.get('/api/admin/tenant/:adminToken/nedarim/config', async (req, res) => {
 
 // רשימת תרומות מסונכרנות (עם סינון תאריכים אופציונלי) + סכום כולל
 app.get('/api/admin/tenant/:adminToken/nedarim/donations', async (req, res) => {
-  const { from, to, limit } = req.query;
+  const from = singleQueryParam(req.query.from);
+  const to = singleQueryParam(req.query.to);
+  const limit = singleQueryParam(req.query.limit);
   const result = await supabaseAnon.rpc('admin_list_donations', {
     p_admin_token: req.params.adminToken,
     p_from: from || null,
@@ -891,7 +905,9 @@ app.get('/api/admin/synagogue/:adminToken/nedarim/config', async (req, res) => {
 });
 
 app.get('/api/admin/synagogue/:adminToken/nedarim/donations', async (req, res) => {
-  const { from, to, limit } = req.query;
+  const from = singleQueryParam(req.query.from);
+  const to = singleQueryParam(req.query.to);
+  const limit = singleQueryParam(req.query.limit);
   const result = await supabaseAnon.rpc('admin_list_synagogue_donations', {
     p_admin_token: req.params.adminToken,
     p_from: from || null,
@@ -1033,7 +1049,7 @@ app.post('/api/public/payments', async (req, res) => {
 // אכן הושלם, לפני שמציגים למשתמש הודעת הצלחה. אף פעם לא מסתמכים על postMessage
 // מהאייפרם בלבד לצורך הודעת הצלחה - זה עלול לקרות גם בלי שהתשלום הושלם בפועל.
 app.get('/api/public/payments/:id/status', async (req, res) => {
-  const token = req.query.token;
+  const token = singleQueryParam(req.query.token);
   if (!token) return res.status(400).json({ error: 'חסר טוקן גישה' });
   const result = await supabaseAnon.rpc('public_get_subscription_payment_for_checkout', {
     p_id: req.params.id,
@@ -1047,7 +1063,7 @@ app.get('/api/public/payments/:id/checkout', async (req, res) => {
   if (!PLATFORM_NEDARIM_MOSAD || !PLATFORM_NEDARIM_API_VALID) {
     return res.status(503).json({ error: 'סליקת האיגוד טרם הוגדרה (חסרים משתני סביבה בשרת)' });
   }
-  const token = req.query.token;
+  const token = singleQueryParam(req.query.token);
   if (!token) return res.status(400).json({ error: 'חסר טוקן גישה' });
   const result = await supabaseAnon.rpc('public_get_subscription_payment_for_checkout', {
     p_id: req.params.id,
@@ -1100,8 +1116,8 @@ app.post('/api/superadmin/subscription-payments', requireAuth, async (req, res) 
 
 app.get('/api/superadmin/subscription-payments', requireAuth, async (req, res) => {
   const result = await req.supabase.rpc('sa_list_subscription_payments', {
-    p_tenant_id: req.query.tenant_id || null,
-    p_status: req.query.status || null,
+    p_tenant_id: singleQueryParam(req.query.tenant_id) || null,
+    p_status: singleQueryParam(req.query.status) || null,
   });
   handleRpcResult(res, result, false);
 });
