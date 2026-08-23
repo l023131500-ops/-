@@ -13225,3 +13225,59 @@
     טרם נבדקו). להריץ סריקת Explore ממוקדת על ארבעתם בסבב הבא. נושאים
     #62/#94/#115/#164/#169/#254/#312 נשארים חסומים.
     via cloud server 167.99.131.167 [loop B]
+
+## 23/08/2026 — סבב 493 (loop B)
+
+493. **בדקתי מחדש את הצבעת סבב 492 לפני שהמשכתי לפיה — התבררה כשגויה.**
+    סבב 492 הצביע על 17-chizukim-transcribe/18-torah-editor-mvp/20-igud-portal/
+    22-get-your-rights כ"עדיין לא נסרקו" למשפחת ה-double-submit. אבל קריאה
+    חוזרת ב-DECISIONS.md מראה שכל ארבעתם **כבר** נסרקו ותוקנו במלואן:
+    17+18 בסבב 481 (17 ללא פעולות מחיקה בכלל; 18 — 27 קבצים, כולם מוגנים),
+    20 בסבב 490 (המוטציה היחידה כבר מוגנת), 22 בסבבים 479-480 (כל 4 לוחות
+    הניהול, כולל `AdminLeads`, מוגנים). כלומר הצבעת 492 הייתה טעות עובדתית,
+    לא משימה אמיתית ממתינה.
+
+    שלחתי סוכן Explore טרי לסרוק שוב את כל ה-scope (17/18/19/20/21/22/24/27/28,
+    ללא 23/25 — שלדים ריקים מאומתים) למשפחת ה-double-submit, עם דגש על 17/18
+    (הכי פחות נסרקו לעומק) ובדיקת שפיות על השאר. הסוכן אישר ש-17/18 אכן נקיים
+    לגמרי, ומצא **4 פערים אמיתיים וחדשים ב-27-bkalut-price** שלא נמצאו בסבבים
+    קודמים (אלה לא היו חלק מ-community-admin/params-topics/health-funds-admin
+    שתוקנו בסבב 492):
+
+    - `price-comparison-admin.tsx` `runDaily()` (כפתור "ייבוא יומי (כל
+      הפעילים)") — ללא שום guard, בזמן שאחותה `runFeed()` (מיד מעליה בקובץ)
+      כבר עוקבת עם `runningFeed` state + `finally`.
+    - `price-comparison-admin.tsx` `toggleFeed()` — משמשת שלושה בקרים
+      נפרדים באותה שורה (select + 2 מתגי Switch), ללא guard כלל, בזמן
+      ש-`reviewSubmission`/`createVolToken` באותו קובץ כבר עוקבות.
+    - `price-comparison-admin.tsx` `toggleVolToken()` — אותו חוסר.
+    - `delivery.tsx` `sendNow()` — ללא שום try/catch/guard, בזמן שאחותה
+      `remove()` (ממש מתחתיה) כבר משתמשת ב-`removingRef` (Set-based guard).
+
+    אימתתי כל ממצא ידנית (קריאת קוד, לא רק דיווח סוכן) לפני התיקון. תיקנתי
+    באותו דפוס בדיוק שכבר קיים בקבצים האלה: `togglingFeedRef`/`togglingVolRef`
+    (Set<number> + early-return + ניקוי ב-finally) לטוגלים, `runningDaily`
+    state + `disabled`/טקסט "מייבא…" על הכפתור עבור `runDaily` (פעולה
+    בודדת, לא רשימה), ו-`sendingRef` (Set-based, תואם ל-`removingRef`
+    השכן) עבור `sendNow`. כל התיקונים תוספת בלבד.
+
+    **בדיקות תקינות:** קריאת קוד בלבד (אין node_modules מותקן, לפי הנחיות
+    ההרצה) — בדיקת איזון סוגריים/תבניות ב-Python עברה בשני הקבצים, וקראתי
+    את ה-diff המלא ידנית. `git diff --stat`: 2 קבצים, +22/-3.
+
+    לא נגעתי במערכות מוגנות 08/09/bkalut-app/bkalot-admin/zr_*/NEDARIM3873/
+    csj/csj_src/igud, ב-`main`, או במערכת מחוץ ל-scope.
+
+    ענף חדש `fix/b-27-bkalut-price-pc-admin-delivery-double-submit-round493-0823`
+    (שרשרת הענפים היא המקור היחיד ל-loop B, לא `main`), נדחף.
+
+    **הבא בתור:** משפחת ה-double-submit נראית כעת סרוקה ומתוקנת באופן
+    ממצה בכל ה-scope (17/18/19/20/21/22/24/27/28, 23/25 שלדים). כדאי לבדוק
+    בסבב הבא: (1) האם ה-rebrand ("עולם הסטארטאפים" דרך `auth-button.js`)
+    ו-TEST mode של תשלומים/Nedarim מיושמים בפועל בכל מערכת ב-scope — טרם
+    נבדק ישירות ברמת קוד השרת (רק ה-HTML footer script נבדק). (2) משפחת
+    באג חדשה: error-swallowing (catch ריק בלי toast/feedback למשתמש) —
+    נראתה כמה פעמים אגב סריקות קודמות (`catch { /* non-fatal */ }`) אך
+    לא נסרקה שיטתית. נושאים #62/#94/#115/#164/#169/#254/#312 נשארים
+    חסומים.
+    via cloud server 167.99.131.167 [loop B]
