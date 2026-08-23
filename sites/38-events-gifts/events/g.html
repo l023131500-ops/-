@@ -73,6 +73,9 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--gold);outline-of
 .state.bad{border:1px solid rgba(224,87,78,.5);background:rgba(224,87,78,.08)}
 .state h2{margin:0 0 6px}
 .state p{margin:0;color:var(--ink-2);font-size:14px}
+.qrbox{background:#fff;border-radius:8px;padding:14px;width:max-content;margin:12px auto 8px;line-height:0}
+.pass-meta{text-align:center;color:var(--ink-2);font-size:14px}
+.pass-meta b{color:var(--gold-soft);font-weight:500}
 .loading{color:var(--muted);text-align:center;padding:80px 0}
 .spinner{display:inline-block;width:14px;height:14px;border:2px solid var(--line-2);
   border-top-color:var(--gold);border-radius:50%;animation:spin .7s linear infinite;vertical-align:-2px;margin-inline-end:8px}
@@ -122,6 +125,14 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--gold);outline-of
         <h2>התשובה התקבלה 🎉</h2>
         <p>אפשר לחזור לקישור הזה בכל רגע ולעדכן.</p>
       </div>
+    </div>
+
+    <div class="card" id="passCard" hidden>
+      <h2>כרטיס הכניסה שלך</h2>
+      <p class="muted" style="margin:0">מציגים את הקוד בכניסה לאירוע — הצוות סורק, ואתם בפנים.
+        אפשר גם ישר מהמסך הזה, בלי להדפיס.</p>
+      <div class="qrbox"><canvas id="qrCanvas" aria-label="קוד QR לכניסה לאירוע" role="img"></canvas></div>
+      <div class="pass-meta" id="passMeta"></div>
     </div>
 
     <div class="card" id="giftCard" hidden>
@@ -294,6 +305,20 @@ $('giftSubmit').addEventListener('click', () => guarded($('giftSubmit'), 'gift',
   } catch (e) { $('giftErr').innerHTML = '<div class="err">' + esc(e.message) + '</div>'; }
 }));
 
+// entry pass: the personal link itself, as a scannable QR. If the QR lib CDN
+// is unreachable the card simply stays hidden — the link still works manually
+// at the gate (the scanner accepts a pasted link too).
+async function renderPass(g) {
+  try {
+    const { default: QRCode } = await import('https://esm.sh/qrcode@1.5.4');
+    await QRCode.toCanvas($('qrCanvas'), 'https://more30.com/events/g?t=' + T,
+      { width: 208, margin: 0, color: { dark: '#100D22', light: '#ffffff' } });
+    $('passMeta').innerHTML = '<b>' + esc(g.full_name) + '</b> · ' +
+      (g.rsvp_status === 'yes' && g.rsvp_count ? g.rsvp_count : g.invited_count) + ' מוזמנים';
+    $('passCard').hidden = false;
+  } catch { /* no QR — nothing breaks */ }
+}
+
 // ---------- boot ----------
 try {
   if (T) {
@@ -301,6 +326,7 @@ try {
     if (!DATA) throw new Error('not found');
     renderEvent(DATA);
     renderGuest(DATA.guest, DATA.rsvp_enabled);
+    renderPass(DATA.guest);
   } else if (S) {
     DATA = await rpc('evg_event_public', { p_share_token: S });
     if (!DATA) throw new Error('not found');

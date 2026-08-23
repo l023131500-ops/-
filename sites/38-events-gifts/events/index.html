@@ -84,6 +84,10 @@ td{padding:7px 8px;border-bottom:1px solid var(--line-2);vertical-align:middle}
 .muted{color:var(--muted);font-size:13px}
 .copybox{display:flex;gap:8px;align-items:center}
 .copybox input{margin:0;direction:ltr;font-size:12px}
+#gateVideo{width:100%;max-height:340px;border-radius:6px;background:#000;object-fit:cover;margin:6px 0}
+.scan-ok{border:1px solid rgba(25,190,142,.55);background:rgba(25,190,142,.1);border-radius:6px;padding:12px 16px;margin:8px 0;font-size:15px}
+.scan-warn{border:1px solid rgba(217,179,108,.55);background:rgba(217,179,108,.1);border-radius:6px;padding:12px 16px;margin:8px 0;font-size:15px}
+.scan-bad{border:1px solid rgba(224,87,78,.55);background:rgba(224,87,78,.1);border-radius:6px;padding:12px 16px;margin:8px 0;font-size:15px}
 .hero{padding:46px 0 30px}
 .feature b{display:block;font-weight:500;color:var(--gold-soft);margin-bottom:4px}
 .feature p{margin:0;font-size:13px;color:var(--ink-2)}
@@ -189,6 +193,30 @@ td{padding:7px 8px;border-bottom:1px solid var(--line-2);vertical-align:middle}
       <div id="mGoalWrap" hidden>
         <div class="rowline"><span class="muted">התקדמות ליעד המתנות</span><span class="muted" id="mGoalTxt"></span></div>
         <div class="bar"><i id="mGoalBar" style="width:0%"></i></div>
+      </div>
+
+      <div style="margin:14px 0 4px">
+        <button class="btn small" id="gateOpen">📷 מצב שער — צ'ק-אין ב-QR</button>
+        <span class="muted" style="margin-inline-start:10px">כל מוזמן מקבל כרטיס כניסה עם QR בקישור האישי שלו.</span>
+      </div>
+      <div class="card" id="gatePanel" hidden>
+        <div class="rowline">
+          <h3 style="margin:0">שער כניסה</h3>
+          <button class="btn ghost small" id="gateClose">סגירת השער</button>
+        </div>
+        <p class="muted">מכוונים את המצלמה אל ה-QR שבכרטיס הכניסה של המוזמן. אין מצלמה? מדביקים את הקישור האישי למטה.</p>
+        <div class="grid c3" style="margin:8px 0 12px">
+          <div><div class="stat" id="gParties">0</div><div class="statlbl">הזמנות שנכנסו</div></div>
+          <div><div class="stat" id="gSouls">0</div><div class="statlbl">נפשות בפנים</div></div>
+          <div><div class="stat" id="gLeft">0</div><div class="statlbl">טרם הגיעו</div></div>
+        </div>
+        <div id="gateResult" aria-live="polite"></div>
+        <video id="gateVideo" playsinline muted hidden></video>
+        <div id="gateCamNote"></div>
+        <div class="copybox" style="margin-top:10px">
+          <input id="gateManual" placeholder="הדבקת קישור אישי או קוד…" />
+          <button class="btn small" id="gateManualBtn">צ'ק-אין</button>
+        </div>
       </div>
 
       <h3 style="margin-top:18px">קישור שיתוף פתוח (לסטטוס / קבוצות)</h3>
@@ -377,6 +405,8 @@ $('evCreate').addEventListener('click', () => guarded($('evCreate'), 'evCreate',
 
 // ---------- manage one event ----------
 async function openEvent(id) {
+  // switching events while the gate is open would scan against the wrong event
+  if (CURRENT_EVENT && CURRENT_EVENT.event.id !== id) gateShut();
   const d = await rpc('evg_event_dashboard', { p_event_id: id });
   if (!d?.event) return;
   CURRENT_EVENT = d;
@@ -457,7 +487,7 @@ async function openEvent(id) {
   $('managePanel').scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
-$('mClose').addEventListener('click', () => { $('managePanel').hidden = true; CURRENT_EVENT = null; });
+$('mClose').addEventListener('click', () => { gateShut(); $('managePanel').hidden = true; CURRENT_EVENT = null; });
 $('mShareCopy').addEventListener('click', () => {
   navigator.clipboard.writeText($('mShareUrl').value);
   $('mShareCopy').textContent = 'הועתק ✓'; setTimeout(() => { $('mShareCopy').textContent = 'העתקה'; }, 1500);
@@ -479,6 +509,145 @@ $('mGuestsAdd').addEventListener('click', () => guarded($('mGuestsAdd'), 'guests
     $('mGuestsErr').innerHTML = '<div class="ok-note">נוספו ' + r.inserted + ' מוזמנים — לכל אחד קישור אישי (עמודת "קישור").</div>';
     await openEvent(CURRENT_EVENT.event.id); await refreshMe();
   } catch (e) { $('mGuestsErr').innerHTML = '<div class="err">' + esc(e.message) + '</div>'; }
+}));
+
+// ---------- gate mode: QR check-in at the door ----------
+let gateStream = null, gateTimer = null, gateBusy = false;
+let gateLastToken = '', gateLastAt = 0;
+
+// accepts a full personal link or a bare token (32-hex from events.new_token,
+// but stay liberal: any long url-safe run)
+function gateTokenFrom(text) {
+  const m = /[?&]t=([A-Za-z0-9_-]{16,})/.exec(text || '');
+  if (m) return m[1];
+  const t = (text || '').trim();
+  return /^[A-Za-z0-9_-]{16,}$/.test(t) ? t : null;
+}
+
+function gateCounts(c) {
+  $('gParties').textContent = c.checked_in;
+  $('gSouls').textContent = c.souls_in;
+  $('gLeft').textContent = Math.max(0, c.total - c.checked_in);
+}
+
+async function gateCheckin(token) {
+  if (gateBusy || !CURRENT_EVENT) return;
+  gateBusy = true;
+  try {
+    const r = await rpc('evg_guest_checkin_by_token',
+      { p_event_id: CURRENT_EVENT.event.id, p_token: token });
+    if (r.ok && !r.already) {
+      const g = r.guest;
+      $('gateResult').innerHTML = '<div class="scan-ok">✓ <b>' + esc(g.full_name) + '</b> נכנסו — ' +
+        (g.rsvp_status === 'yes' && g.rsvp_count ? g.rsvp_count : g.invited_count) + ' נפשות' +
+        (g.group_name ? ' · ' + esc(g.group_name) : '') + '</div>';
+      navigator.vibrate?.(80);
+    } else if (r.ok && r.already) {
+      $('gateResult').innerHTML = '<div class="scan-warn">↺ <b>' + esc(r.guest.full_name) + '</b> כבר נכנסו (' +
+        new Date(r.guest.checkin_at).toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit' }) + ')</div>';
+    } else if (r.reason === 'wrong_event') {
+      $('gateResult').innerHTML = '<div class="scan-bad">✗ הקוד שייך לאירוע אחר שלך — לא לאירוע הזה.</div>';
+    } else {
+      $('gateResult').innerHTML = '<div class="scan-bad">✗ קוד לא מוכר לאירוע הזה.</div>';
+    }
+    if (r.counts) gateCounts(r.counts);
+  } catch (e) {
+    $('gateResult').innerHTML = '<div class="scan-bad">✗ ' + esc(e.message) + '</div>';
+  } finally { gateBusy = false; }
+}
+
+function gateOnDecoded(text) {
+  if (gateBusy) return; // don't burn the dedup window on a scan we won't send
+  const token = gateTokenFrom(text);
+  if (!token) return;
+  const now = Date.now();
+  if (token === gateLastToken && now - gateLastAt < 4000) return; // same code still in frame
+  gateLastToken = token; gateLastAt = now;
+  gateCheckin(token);
+}
+
+async function gateStartCamera() {
+  const video = $('gateVideo');
+  try {
+    gateStream = await navigator.mediaDevices.getUserMedia({
+      video: { facingMode: 'environment' }, audio: false });
+  } catch {
+    $('gateCamNote').innerHTML = '<div class="err">אין גישה למצלמה — אפשר להמשיך עם הדבקת קישור ידנית למטה.</div>';
+    return;
+  }
+  video.srcObject = gateStream;
+  video.hidden = false;
+  await video.play();
+
+  let detect;
+  const bdFormats = 'BarcodeDetector' in window
+    ? await window.BarcodeDetector.getSupportedFormats?.().catch(() => []) || []
+    : [];
+  if (bdFormats.includes('qr_code')) {
+    const det = new window.BarcodeDetector({ formats: ['qr_code'] });
+    detect = async () => {
+      const codes = await det.detect(video).catch(() => []);
+      if (codes[0]?.rawValue) gateOnDecoded(codes[0].rawValue);
+    };
+  } else {
+    // Safari/Firefox: decode frames in JS
+    let jsQR;
+    try { jsQR = (await import('https://esm.sh/jsqr@1.4.0')).default; }
+    catch {
+      $('gateCamNote').innerHTML = '<div class="err">הדפדפן הזה לא תומך בסריקה — מדביקים קישור ידנית למטה.</div>';
+      return;
+    }
+    const cv = document.createElement('canvas');
+    const cx = cv.getContext('2d', { willReadFrequently: true });
+    detect = () => {
+      if (!video.videoWidth) return;
+      cv.width = video.videoWidth; cv.height = video.videoHeight;
+      cx.drawImage(video, 0, 0);
+      const code = jsQR(cx.getImageData(0, 0, cv.width, cv.height).data, cv.width, cv.height);
+      if (code?.data) gateOnDecoded(code.data);
+    };
+  }
+  gateTimer = setInterval(detect, 350);
+}
+
+function gateShut() {
+  if (gateTimer) { clearInterval(gateTimer); gateTimer = null; }
+  if (gateStream) { for (const t of gateStream.getTracks()) t.stop(); gateStream = null; }
+  const v = $('gateVideo');
+  v.srcObject = null; v.hidden = true;
+  $('gatePanel').hidden = true;
+}
+
+$('gateOpen').addEventListener('click', () => {
+  if (!CURRENT_EVENT) return;
+  const guests = CURRENT_EVENT.guests || [];
+  gateCounts({
+    checked_in: guests.filter(g => g.checkin_at).length,
+    total: guests.length,
+    souls_in: guests.filter(g => g.checkin_at)
+      .reduce((s, g) => s + (g.rsvp_count ?? g.invited_count), 0),
+  });
+  $('gateResult').innerHTML = '';
+  $('gateCamNote').innerHTML = '';
+  $('gatePanel').hidden = false;
+  $('gatePanel').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  gateStartCamera();
+});
+
+$('gateClose').addEventListener('click', () => guarded($('gateClose'), 'gateClose', async () => {
+  gateShut();
+  // pull the door scans into the guest table + the check-in stat
+  if (CURRENT_EVENT) await openEvent(CURRENT_EVENT.event.id);
+}));
+
+$('gateManualBtn').addEventListener('click', () => guarded($('gateManualBtn'), 'gateManual', async () => {
+  const token = gateTokenFrom($('gateManual').value);
+  if (!token) {
+    $('gateResult').innerHTML = '<div class="scan-bad">✗ לא זוהה קוד — מדביקים את הקישור האישי המלא או את הקוד שבסופו.</div>';
+    return;
+  }
+  $('gateManual').value = '';
+  await gateCheckin(token);
 }));
 
 // ---------- halls ----------
