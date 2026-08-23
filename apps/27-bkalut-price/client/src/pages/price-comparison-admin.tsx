@@ -318,6 +318,7 @@ export default function PriceComparisonAdmin() {
   }
   async function addPrice() {
     if (!selectedProduct || !newPrice.storeId || !newPrice.price) return;
+    if (!Number.isFinite(Number(newPrice.price)) || Number(newPrice.price) <= 0) return;
     try {
       await apiRequest("POST", "/api/pc/admin/prices", {
         productId: selectedProduct.id, storeId: Number(newPrice.storeId),

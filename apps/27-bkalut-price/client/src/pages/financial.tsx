@@ -338,6 +338,7 @@ function TransactionsTab({ client }: { client: FinClient }) {
   const { data: list = [] } = useQuery<FinTransaction[]>({ queryKey: [`/api/financial/clients/${client.id}/transactions`] });
   const { data: cats = [] } = useQuery<FinCategory[]>({ queryKey: ["/api/financial/categories"] });
   const [form, setForm] = useState({ kind: "expense", amount: "", categoryId: "", description: "", occurredOn: new Date().toISOString().slice(0, 10) });
+  const amountValid = Number.isFinite(Number(form.amount)) && Number(form.amount) > 0;
   const create = useMutation({
     mutationFn: async () => (await apiRequest("POST", "/api/financial/transactions", { ...form, amount: Number(form.amount), categoryId: form.categoryId ? Number(form.categoryId) : null, clientId: client.id })).json(),
     onSuccess: () => { queryClient.invalidateQueries({ queryKey: [`/api/financial/clients/${client.id}/transactions`] }); setForm((f) => ({ ...f, amount: "", description: "" })); },
@@ -365,7 +366,7 @@ function TransactionsTab({ client }: { client: FinClient }) {
           <Input type="date" value={form.occurredOn} onChange={(e) => setForm((f) => ({ ...f, occurredOn: e.target.value }))} />
           <Input placeholder="הערה (לא חובה)" value={form.description} onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))} />
         </div>
-        <Button onClick={() => create.mutate()} disabled={!form.amount || create.isPending} data-testid="button-create-tx">
+        <Button onClick={() => create.mutate()} disabled={!amountValid || create.isPending} data-testid="button-create-tx">
           <Plus className="w-4 h-4 ml-1" /> הוספה
         </Button>
       </Card>
@@ -403,6 +404,7 @@ function BudgetsTab({ client }: { client: FinClient }) {
   const { data: list = [] } = useQuery<FinBudget[]>({ queryKey: [`/api/financial/clients/${client.id}/budgets`] });
   const { data: cats = [] } = useQuery<FinCategory[]>({ queryKey: ["/api/financial/categories"] });
   const [form, setForm] = useState({ categoryId: "", monthlyLimit: "", note: "" });
+  const monthlyLimitValid = Number.isFinite(Number(form.monthlyLimit)) && Number(form.monthlyLimit) > 0;
   const create = useMutation({
     mutationFn: async () => (await apiRequest("POST", "/api/financial/budgets", { clientId: client.id, categoryId: Number(form.categoryId), monthlyLimit: Number(form.monthlyLimit), note: form.note })).json(),
     onSuccess: () => { queryClient.invalidateQueries({ queryKey: [`/api/financial/clients/${client.id}/budgets`] }); setForm({ categoryId: "", monthlyLimit: "", note: "" }); },
@@ -424,7 +426,7 @@ function BudgetsTab({ client }: { client: FinClient }) {
           </select>
           <Input type="number" placeholder="תקציב חודשי ₪" value={form.monthlyLimit} onChange={(e) => setForm((f) => ({ ...f, monthlyLimit: e.target.value }))} />
           <Input placeholder="הערה" value={form.note} onChange={(e) => setForm((f) => ({ ...f, note: e.target.value }))} />
-          <Button onClick={() => create.mutate()} disabled={!form.categoryId || !form.monthlyLimit || create.isPending}><Plus className="w-4 h-4 ml-1" /> {create.isPending ? "מוסיף..." : "הוספה"}</Button>
+          <Button onClick={() => create.mutate()} disabled={!form.categoryId || !monthlyLimitValid || create.isPending}><Plus className="w-4 h-4 ml-1" /> {create.isPending ? "מוסיף..." : "הוספה"}</Button>
         </div>
       </Card>
       <Card className="p-5">
@@ -455,6 +457,7 @@ function RecurringTab({ client }: { client: FinClient }) {
   const { toast } = useToast();
   const { data: list = [] } = useQuery<FinRecurring[]>({ queryKey: [`/api/financial/clients/${client.id}/recurring`] });
   const [form, setForm] = useState({ title: "", amount: "", kind: "reminder", cadence: "monthly", nextDate: new Date().toISOString().slice(0, 10), description: "" });
+  const amountValid = form.amount.trim() === "" || (Number.isFinite(Number(form.amount)) && Number(form.amount) > 0);
   const create = useMutation({
     mutationFn: async () => (await apiRequest("POST", "/api/financial/recurring", { ...form, amount: form.amount ? Number(form.amount) : null, clientId: client.id })).json(),
     onSuccess: () => { queryClient.invalidateQueries({ queryKey: [`/api/financial/clients/${client.id}/recurring`] }); setForm({ title: "", amount: "", kind: "reminder", cadence: "monthly", nextDate: new Date().toISOString().slice(0, 10), description: "" }); },
@@ -488,7 +491,7 @@ function RecurringTab({ client }: { client: FinClient }) {
           </select>
           <Input placeholder="פירוט" value={form.description} onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))} />
         </div>
-        <Button onClick={() => create.mutate()} disabled={!form.title || !form.nextDate || create.isPending}><Plus className="w-4 h-4 ml-1" /> {create.isPending ? "מוסיף..." : "הוספה"}</Button>
+        <Button onClick={() => create.mutate()} disabled={!form.title || !form.nextDate || !amountValid || create.isPending}><Plus className="w-4 h-4 ml-1" /> {create.isPending ? "מוסיף..." : "הוספה"}</Button>
       </Card>
       <Card className="p-5">
         <h3 className="font-semibold mb-3">תזכורות פעילות</h3>

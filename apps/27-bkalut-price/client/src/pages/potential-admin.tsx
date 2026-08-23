@@ -469,7 +469,7 @@ export default function PotentialAdminPage() {
                     </div>
                     <div className="md:col-span-1">
                       <Label className="text-xs">משקל</Label>
-                      <Input type="number" min={0} max={5} value={r.weight ?? 1} onChange={(e) => updateRule(idx, { weight: Number(e.target.value) })} />
+                      <Input type="number" min={0} max={5} value={r.weight ?? 1} onChange={(e) => { const v = Number(e.target.value); updateRule(idx, { weight: Number.isFinite(v) ? Math.min(5, Math.max(0, v)) : 0 }); }} />
                     </div>
                     <div className="md:col-span-1 flex items-end">
                       <Button variant="ghost" size="icon" className="text-destructive" onClick={() => removeRule(idx)}>

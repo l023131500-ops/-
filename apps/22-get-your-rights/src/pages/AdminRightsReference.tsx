@@ -677,7 +677,7 @@ const AdminRightsReference = () => {
                   <div key={key}>
                     <label htmlFor={`edit-right-${key}`} className="text-xs text-muted-foreground">{label}</label>
                     {key === "economic_necessity" ? (
-                      <Input id={`edit-right-${key}`} type="number" min={1} max={10} value={editRight[key] || ""} onChange={(e) => setEditRight({ ...editRight, [key]: parseInt(e.target.value) || null })} className="text-sm" />
+                      <Input id={`edit-right-${key}`} type="number" min={1} max={10} value={editRight[key] || ""} onChange={(e) => { const v = parseInt(e.target.value); setEditRight({ ...editRight, [key]: Number.isFinite(v) ? Math.min(10, Math.max(1, v)) : null }); }} className="text-sm" />
                     ) : key === "service_link" ? (
                       <Input id={`edit-right-${key}`} value={editRight[key] || ""} onChange={(e) => setEditRight({ ...editRight, [key]: e.target.value })} className="text-sm" dir="ltr" />
                     ) : (
@@ -717,7 +717,7 @@ const AdminRightsReference = () => {
             {DISPLAY_FIELDS.map(({ key, label }) => (
               <div key={key}>
                 {key === "economic_necessity" ? (
-                  <Input placeholder={label} type="number" min={1} max={10} value={newRight[key] || ""} onChange={(e) => setNewRight({ ...newRight, [key]: parseInt(e.target.value) || 0 })} className="text-sm" />
+                  <Input placeholder={label} type="number" min={1} max={10} value={newRight[key] || ""} onChange={(e) => { const v = parseInt(e.target.value); setNewRight({ ...newRight, [key]: Number.isFinite(v) ? Math.min(10, Math.max(1, v)) : 0 }); }} className="text-sm" />
                 ) : key === "service_link" ? (
                   <Input placeholder={label} value={newRight[key]} onChange={(e) => setNewRight({ ...newRight, [key]: e.target.value })} className="text-sm" dir="ltr" />
                 ) : (

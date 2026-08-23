@@ -374,8 +374,8 @@ export default function HealthFundsAdmin() {
     }
     try {
       const payload: any = { ...newTopic };
-      payload.rangeMin = newTopic.rangeMin ? Number(newTopic.rangeMin) : null;
-      payload.rangeMax = newTopic.rangeMax ? Number(newTopic.rangeMax) : null;
+      payload.rangeMin = newTopic.rangeMin && Number.isFinite(Number(newTopic.rangeMin)) ? Math.max(0, Number(newTopic.rangeMin)) : null;
+      payload.rangeMax = newTopic.rangeMax && Number.isFinite(Number(newTopic.rangeMax)) ? Math.max(0, Number(newTopic.rangeMax)) : null;
       const r = await apiRequest("POST", "/api/hf/admin/topics", payload);
       if (!r.ok) throw new Error();
       const created = await r.json();
@@ -514,11 +514,11 @@ export default function HealthFundsAdmin() {
                         ))}
                         <label className="space-y-1 block">
                           <span className="text-xs font-medium text-muted-foreground">סכום מינימום (למיון/טווח)</span>
-                          <Input type="number" value={(draft.rangeMin as any) ?? ""} onChange={(e) => setDraft({ ...draft, rangeMin: e.target.value === "" ? null : Number(e.target.value) })} />
+                          <Input type="number" value={(draft.rangeMin as any) ?? ""} onChange={(e) => { const v = Number(e.target.value); setDraft({ ...draft, rangeMin: e.target.value === "" ? null : (Number.isFinite(v) ? Math.max(0, v) : draft.rangeMin ?? null) }); }} />
                         </label>
                         <label className="space-y-1 block">
                           <span className="text-xs font-medium text-muted-foreground">סכום מקסימום (למיון/טווח)</span>
-                          <Input type="number" value={(draft.rangeMax as any) ?? ""} onChange={(e) => setDraft({ ...draft, rangeMax: e.target.value === "" ? null : Number(e.target.value) })} />
+                          <Input type="number" value={(draft.rangeMax as any) ?? ""} onChange={(e) => { const v = Number(e.target.value); setDraft({ ...draft, rangeMax: e.target.value === "" ? null : (Number.isFinite(v) ? Math.max(0, v) : draft.rangeMax ?? null) }); }} />
                         </label>
                       </div>
 

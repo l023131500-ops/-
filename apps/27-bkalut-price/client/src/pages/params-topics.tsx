@@ -246,7 +246,7 @@ function ParamsTopicsInner() {
                 min={0}
                 max={100}
                 value={Number.isFinite(draft.priority) ? Number(draft.priority) : 50}
-                onChange={(e) => setDraft({ ...draft, priority: Number(e.target.value) })}
+                onChange={(e) => { const v = Number(e.target.value); setDraft({ ...draft, priority: Number.isFinite(v) ? Math.min(100, Math.max(0, v)) : 0 }); }}
               />
             </div>
             <div className="md:col-span-2">
