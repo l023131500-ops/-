@@ -19,16 +19,20 @@ const PublicRabbiPage = () => {
   const [selectedLesson, setSelectedLesson] = useState<any>(null);
 
   useEffect(() => {
-    if (publicToken) fetchData();
+    if (!publicToken) return;
+    let cancelled = false;
+    fetchData(publicToken, () => cancelled);
+    return () => { cancelled = true; };
   }, [publicToken]);
 
-  const fetchData = async () => {
+  const fetchData = async (token: string, isCancelled: () => boolean) => {
     const { data: portalData, error } = await supabase
       .from("rabbi_portals")
       .select("*")
-      .eq("public_token", publicToken)
+      .eq("public_token", token)
       .single();
 
+    if (isCancelled()) return;
     if (error || !portalData) { setNotFound(true); setLoading(false); return; }
     setPortal(portalData);
 
@@ -36,6 +40,7 @@ const PublicRabbiPage = () => {
       supabase.from("lessons").select("*").eq("rabbi_name", portalData.rabbi_name).eq("is_approved", true).order("created_at", { ascending: false }),
       supabase.from("portal_photos").select("*").eq("portal_type", "rabbi").eq("portal_id", portalData.id).order("created_at", { ascending: false }),
     ]);
+    if (isCancelled()) return;
     setLessons(lessonsRes.data || []);
     setPhotos(photosRes.data || []);
     setLoading(false);

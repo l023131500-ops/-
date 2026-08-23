@@ -22,20 +22,25 @@ const PublicOrgPage = () => {
   const [selectedLesson, setSelectedLesson] = useState<any>(null);
 
   useEffect(() => {
-    if (publicToken) fetchData();
+    if (!publicToken) return;
+    let cancelled = false;
+    fetchData(publicToken, () => cancelled);
+    return () => { cancelled = true; };
   }, [publicToken]);
 
-  const fetchData = async () => {
+  const fetchData = async (token: string, isCancelled: () => boolean) => {
     const { data: portalData, error } = await supabase
       .from("org_portals")
       .select("*")
-      .eq("public_token", publicToken)
+      .eq("public_token", token)
       .single();
 
+    if (isCancelled()) return;
     if (error || !portalData) { setNotFound(true); setLoading(false); return; }
     setPortal(portalData);
 
     const { data: rabbisData } = await supabase.from("org_rabbis").select("*").eq("org_id", portalData.id);
+    if (isCancelled()) return;
     setRabbis(rabbisData || []);
     const rabbiNames = (rabbisData || []).map((r: any) => r.rabbi_name);
 
@@ -45,6 +50,7 @@ const PublicOrgPage = () => {
         : Promise.resolve({ data: [] }),
       supabase.from("portal_photos").select("*").eq("portal_type", "org").eq("portal_id", portalData.id).order("created_at", { ascending: false }),
     ]);
+    if (isCancelled()) return;
     setLessons(lessonsRes.data || []);
     setPhotos(photosRes.data || []);
     setLoading(false);

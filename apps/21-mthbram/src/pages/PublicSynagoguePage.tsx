@@ -18,12 +18,14 @@ export default function PublicSynagoguePage() {
 
   useEffect(() => {
     if (!publicToken) return;
+    let cancelled = false;
     (async () => {
       const { data: p } = await supabase
         .from("synagogue_portals")
         .select("*")
         .eq("public_token", publicToken)
         .maybeSingle();
+      if (cancelled) return;
       if (!p) { setNotFound(true); setLoading(false); return; }
       setPortal(p);
       const { data: e } = await supabase
@@ -31,9 +33,11 @@ export default function PublicSynagoguePage() {
         .select("*")
         .eq("session_id", p.id)
         .order("created_at", { ascending: false });
+      if (cancelled) return;
       setEvents(e ?? []);
       setLoading(false);
     })();
+    return () => { cancelled = true; };
   }, [publicToken]);
 
   if (loading) return (
