@@ -212,6 +212,7 @@ th{color:var(--muted);font-weight:400;font-size:12px;text-transform:uppercase;le
       <button class="tab" id="tab-directories" data-view="directories" role="tab" aria-selected="false" aria-controls="viewDirectories">דירקטוריז</button>
       <button class="tab" id="tab-weddingOrg" data-view="weddingOrg" role="tab" aria-selected="false" aria-controls="viewWeddingOrg">ארגון החתונה</button>
       <button class="tab" id="tab-studyTracker" data-view="studyTracker" role="tab" aria-selected="false" aria-controls="viewStudyTracker">מעקב לימודי</button>
+      <button class="tab" id="tab-ai" data-view="ai" role="tab" aria-selected="false" aria-controls="viewAI">עוזר AI</button>
     </div>
 
     <section id="viewClients" role="tabpanel" aria-labelledby="tab-clients" tabindex="0">
@@ -588,6 +589,52 @@ th{color:var(--muted);font-weight:400;font-size:12px;text-transform:uppercase;le
       <div class="card">
         <h2>תוכנית הלימוד</h2>
         <div id="siTable"><div class="empty">טוען…</div></div>
+      </div>
+    </section>
+
+    <section id="viewAI" role="tabpanel" aria-labelledby="tab-ai" tabindex="0" hidden>
+      <p class="sub">עוזר כתיבה למדריך/ה — טיוטת מערך שיעור, ניסוח תזכורת מכובדת, וסיכום מפגש עם פריטי פעולה. התוצר הוא <strong>טיוטה בלבד</strong>: עברו עליה לפני כל שימוש, והכרעות הלכתיות נשארות תמיד אצל הרב/הפוסק. הטקסט שתשלחו מעובד בשירות AI חיצוני (Anthropic) ואינו נשמר במערכת — ובכל זאת, הימנעו מפרטים מזהים שאינם נדרשים. <span id="aiQuota"></span></p>
+      <div class="card">
+        <h2>מה להכין?</h2>
+        <label for="aiAction">כלי</label>
+        <select id="aiAction">
+          <option value="lesson_plan">טיוטת מערך שיעור</option>
+          <option value="reminder">ניסוח תזכורת לזוג</option>
+          <option value="summary">סיכום מפגש + פריטי פעולה</option>
+        </select>
+        <div id="aiFieldsLesson">
+          <label for="aiTopic">נושא השיעור *</label>
+          <input id="aiTopic" placeholder="לדוגמה: שלום בית — תקשורת בשנה הראשונה" />
+          <div class="row">
+            <div>
+              <label for="aiCommunity">עדה/קהילה (אופציונלי)</label>
+              <input id="aiCommunity" placeholder="לדוגמה: ספרדי, ליטאי, חסידי, דתי-לאומי" />
+            </div>
+            <div>
+              <label for="aiDuration">משך בדקות</label>
+              <input id="aiDuration" type="number" value="45" min="15" max="240" />
+            </div>
+          </div>
+          <label for="aiLevel">רקע הזוג (אופציונלי)</label>
+          <input id="aiLevel" placeholder="לדוגמה: חתן בעל תשובה, רקע בסיסי בהלכה" />
+        </div>
+        <div id="aiFieldsReminder" hidden>
+          <label for="aiRemAbout">על מה התזכורת? *</label>
+          <input id="aiRemAbout" placeholder="לדוגמה: מפגש שלישי ביום ראשון ב-19:00, להביא את חוברת ההדרכה" />
+          <label for="aiRemName">שם פרטי של הנמען/ת (אופציונלי)</label>
+          <input id="aiRemName" />
+        </div>
+        <div id="aiFieldsSummary" hidden>
+          <label for="aiNotes">רישום חופשי מהמפגש *</label>
+          <textarea id="aiNotes" rows="7" placeholder="הדביקו כאן את הרישום שלכם מהמפגש — נקודות, דברים שעלו, מה סוכם…"></textarea>
+        </div>
+        <div id="aiErr" role="alert" aria-live="polite"></div>
+        <button class="btn" id="aiGo">הכנת טיוטה</button>
+      </div>
+      <div class="card" id="aiOutCard" hidden>
+        <h2>הטיוטה</h2>
+        <div id="aiOut" style="white-space:pre-wrap"></div>
+        <button class="btn btn-sm btn-quiet" id="aiCopy">העתקת הטיוטה</button>
       </div>
     </section>
   </div>
@@ -1651,8 +1698,92 @@ async function renderStudyItems() {
   }
 }
 
+/* ── dashboard: AI drafting assistant (Edge Function maatefet-ai) ───────── */
+// הקריאה עוברת דרך Edge Function ולא ישירות ל-API של Anthropic: המפתח לעולם
+// לא מגיע לדפדפן, והפונקציה אוכפת מדריך/ה מאומת/ת + aal2 + מכסה יומית ב-DB.
+const AI_URL = SUPABASE_URL + '/functions/v1/maatefet-ai';
+const AI_FIELDS = { lesson_plan: 'aiFieldsLesson', reminder: 'aiFieldsReminder', summary: 'aiFieldsSummary' };
+
+function aiQuotaText(used, cap) {
+  return 'נוצלו ' + used + ' מתוך ' + cap + ' הכנות היום.';
+}
+
+async function renderAiQuota() {
+  try {
+    const q = await rpc('maatefet_ai_my_usage');
+    $('aiQuota').textContent = aiQuotaText(q.used, q.cap);
+  } catch { /* המכסה היא תצוגה בלבד — הכלי עצמו עדיין עובד, והאכיפה בשרת */ }
+}
+
+$('aiAction').addEventListener('change', () => {
+  for (const [action, id] of Object.entries(AI_FIELDS)) $(id).hidden = action !== $('aiAction').value;
+  $('aiErr').innerHTML = '';
+});
+
+function aiInput(action) {
+  if (action === 'lesson_plan') {
+    return {
+      topic: $('aiTopic').value.trim(), community: $('aiCommunity').value.trim(),
+      level: $('aiLevel').value.trim(), duration_minutes: $('aiDuration').value,
+    };
+  }
+  if (action === 'reminder') {
+    return { about: $('aiRemAbout').value.trim(), recipient_name: $('aiRemName').value.trim() };
+  }
+  return { notes: $('aiNotes').value.trim() };
+}
+
+const AI_REQUIRED = {
+  lesson_plan: ['topic', 'יש למלא את נושא השיעור.'],
+  reminder: ['about', 'יש למלא על מה התזכורת.'],
+  summary: ['notes', 'יש להדביק רישום מהמפגש.'],
+};
+
+$('aiGo').addEventListener('click', async () => {
+  const action = $('aiAction').value;
+  const input = aiInput(action);
+  const [reqKey, reqMsg] = AI_REQUIRED[action];
+  if (!input[reqKey]) { $('aiErr').innerHTML = '<div class="err">' + reqMsg + '</div>'; return; }
+  $('aiErr').innerHTML = '';
+  $('aiGo').disabled = true;
+  $('aiGo').textContent = 'מכינים טיוטה… (עד חצי דקה)';
+  try {
+    const { data: sess } = await sb.auth.getSession();
+    const token = sess?.session?.access_token;
+    if (!token) throw new Error('פג תוקף החיבור — יש לרענן את הדף ולהתחבר שוב.');
+    const res = await fetch(AI_URL, {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        apikey: SUPABASE_ANON,
+        Authorization: 'Bearer ' + token,
+      },
+      body: JSON.stringify({ action, input }),
+    });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error(data.error || 'שגיאה בשירות ה-AI (' + res.status + ').');
+    $('aiOut').textContent = data.text;
+    $('aiOutCard').hidden = false;
+    if (typeof data.used === 'number') $('aiQuota').textContent = aiQuotaText(data.used, data.cap);
+    $('aiOutCard').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  } catch (e) {
+    $('aiErr').innerHTML = '<div class="err">' + esc(e.message) + '</div>';
+  } finally {
+    $('aiGo').disabled = false;
+    $('aiGo').textContent = 'הכנת טיוטה';
+  }
+});
+
+$('aiCopy').addEventListener('click', async () => {
+  try {
+    await navigator.clipboard.writeText($('aiOut').textContent);
+    $('aiCopy').textContent = 'הועתק ✓';
+    setTimeout(() => { $('aiCopy').textContent = 'העתקת הטיוטה'; }, 1500);
+  } catch { alert('ההעתקה נחסמה על ידי הדפדפן — סמנו את הטקסט והעתיקו ידנית.'); }
+});
+
 /* ── tabs ───────────────────────────────────────────────────────────────── */
-const VIEWS = { clients: 'viewClients', invites: 'viewInvites', calendar: 'viewCalendar', reminders: 'viewReminders', content: 'viewContent', profile: 'viewProfile', forum: 'viewForum', followups: 'viewFollowups', directories: 'viewDirectories', weddingOrg: 'viewWeddingOrg', studyTracker: 'viewStudyTracker' };
+const VIEWS = { clients: 'viewClients', invites: 'viewInvites', calendar: 'viewCalendar', reminders: 'viewReminders', content: 'viewContent', profile: 'viewProfile', forum: 'viewForum', followups: 'viewFollowups', directories: 'viewDirectories', weddingOrg: 'viewWeddingOrg', studyTracker: 'viewStudyTracker', ai: 'viewAI' };
 for (const tab of document.querySelectorAll('.tab')) {
   tab.addEventListener('click', () => {
     for (const t of document.querySelectorAll('.tab')) {
@@ -1671,6 +1802,7 @@ for (const tab of document.querySelectorAll('.tab')) {
     if (tab.dataset.view === 'directories') renderDirectories();
     if (tab.dataset.view === 'weddingOrg') renderWeddingTasks();
     if (tab.dataset.view === 'studyTracker') renderStudyItems();
+    if (tab.dataset.view === 'ai') renderAiQuota();
   });
 }
 
