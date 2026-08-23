@@ -12805,3 +12805,40 @@
     (שלד, לבדוק אם יש פעולות מוטציה), ואז 23-haorech-torani/25-mor1-main-site
     (ריפו ריק). נושאים #62/#94/#115/#164/#169/#254/#312 נשארים חסומים.
     via cloud server 167.99.131.167 [loop B]
+
+## 23/08/2026 — סבב 483 (loop B)
+
+483. **המשכתי את הסריקה ב-21-mthbram (כפי שסומן בסבב 482) לקבצים הנותרים
+    מחוץ ל-`AdminDashboard.tsx`/`FullAccessRequestsTab.tsx`.** מצאתי שני
+    קבצים נוספים עם אותה משפחת באג double-submit: `PrayerTimesTab.tsx`
+    ו-`PortalMessagesTab.tsx` (שניהם בתוך `src/components/portal/`).
+
+    **התיקון בסבב זה: `PrayerTimesTab.tsx`.** לכל חמש פונקציות המוטציה
+    (`addSynagogue`/`updateSynagogue`/`deleteSynagogue`/`addPrayerTime`/
+    `deletePrayerTime`) לא היה שום מצב "בתהליך" ולכפתורים שלהן לא היה
+    `disabled` — בניגוד לרוב שאר הרכיבים באותה מערכת שכבר מוגנים. לחיצה
+    כפולה מהירה על "שמור" יוצרת שורת `synagogues`/`prayer_times` כפולה
+    (insert), ולחיצה כפולה על מחיקה/עדכון שולחת שתי בקשות חופפות (השנייה
+    עלולה להחזיר שגיאה גולמית או לדרוס עדכון חלקי).
+
+    הוספתי חמישה state נפרדים (`savingSynagogue`, `updatingSynId`,
+    `deletingSynId`, `savingPrayerId`, `deletingPrayerId`) — כל אחד עם
+    guard מוקדם (`if (x) return`) ו-`try/finally`, ו-`disabled` תואם על
+    כל אחד מחמשת הכפתורים (כולל כפתור המחיקה הקטן בתוך ה-badge שהוא
+    `<button>` גולמי, לא `Button`). דפוס עקבי עם `savingId`/`deletingId`
+    שכבר נמצא בקבצים אחרים באותה מערכת.
+
+    **בדיקות תקינות:** קריאת קוד בלבד (ללא dev-server, לפי הנחיות ההרצה) —
+    ה-repo לא היה מותקן (`node_modules` חסר) כך שלא הרצתי `tsc`. קראתי
+    מחדש את כל הקובץ אחרי העריכות ווידאתי שכל state/guard/disabled תואמים
+    ושאין סוגריים לא מאוזנים.
+
+    לא נגעתי במערכות מוגנות 08/09/bkalut-app/bkalot-admin/zr_*/NEDARIM3873/
+    csj/csj_src/igud, ב-`main`, או במערכת מחוץ ל-scope (17-25/27/28 בלבד).
+
+    **הבא בתור:** `PortalMessagesTab.tsx` (אותה משפחת באג, `cycleStatus`/
+    `deleteMessage` ללא guard) — לתקן בסבב הבא. אחרי זה להמשיך לסרוק את
+    שאר הקבצים ב-21-mthbram, ואז 19-igud-shiurim-portal/20-igud-portal
+    (שלד, לבדוק אם יש פעולות מוטציה), ואז 23-haorech-torani/25-mor1-main-site
+    (ריפו ריק). נושאים #62/#94/#115/#164/#169/#254/#312 נשארים חסומים.
+    via cloud server 167.99.131.167 [loop B]

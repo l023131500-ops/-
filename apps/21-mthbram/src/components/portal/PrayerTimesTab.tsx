@@ -23,6 +23,11 @@ const PrayerTimesTab = ({ orgId }: PrayerTimesTabProps) => {
   const [synForm, setSynForm] = useState({ name: "", address: "", city: "", neighborhood: "", phone: "", notes: "" });
   const [addingPrayer, setAddingPrayer] = useState<string | null>(null); // synagogue_id
   const [prayerForm, setPrayerForm] = useState({ prayer_type: "שחרית", day_of_week: "יומי", time: "", notes: "", custom_category: "" });
+  const [savingSynagogue, setSavingSynagogue] = useState(false);
+  const [updatingSynId, setUpdatingSynId] = useState<string | null>(null);
+  const [deletingSynId, setDeletingSynId] = useState<string | null>(null);
+  const [savingPrayerId, setSavingPrayerId] = useState<string | null>(null); // synagogue_id
+  const [deletingPrayerId, setDeletingPrayerId] = useState<string | null>(null);
 
   useEffect(() => { fetchData(); }, [orgId]);
 
@@ -40,57 +45,87 @@ const PrayerTimesTab = ({ orgId }: PrayerTimesTabProps) => {
   };
 
   const addSynagogue = async () => {
+    if (savingSynagogue) return;
     if (!synForm.name.trim()) { toast.error("שם בית הכנסת הוא שדה חובה"); return; }
-    const { data, error } = await supabase.from("synagogues").insert({ ...synForm, org_id: orgId }).select().single();
-    if (!error && data) {
-      setSynagogues(prev => [data, ...prev]);
-      setSynForm({ name: "", address: "", city: "", neighborhood: "", phone: "", notes: "" });
-      setAddingSynagogue(false);
-      toast.success("בית כנסת נוסף!");
-    } else toast.error("שגיאה");
+    setSavingSynagogue(true);
+    try {
+      const { data, error } = await supabase.from("synagogues").insert({ ...synForm, org_id: orgId }).select().single();
+      if (!error && data) {
+        setSynagogues(prev => [data, ...prev]);
+        setSynForm({ name: "", address: "", city: "", neighborhood: "", phone: "", notes: "" });
+        setAddingSynagogue(false);
+        toast.success("בית כנסת נוסף!");
+      } else toast.error("שגיאה");
+    } finally {
+      setSavingSynagogue(false);
+    }
   };
 
   const updateSynagogue = async (id: string) => {
-    const { error } = await supabase.from("synagogues").update(synForm).eq("id", id);
-    if (!error) {
-      setSynagogues(prev => prev.map(s => s.id === id ? { ...s, ...synForm } : s));
-      setEditingSynagogue(null);
-      toast.success("בית כנסת עודכן!");
-    } else toast.error("שגיאה");
+    if (updatingSynId) return;
+    setUpdatingSynId(id);
+    try {
+      const { error } = await supabase.from("synagogues").update(synForm).eq("id", id);
+      if (!error) {
+        setSynagogues(prev => prev.map(s => s.id === id ? { ...s, ...synForm } : s));
+        setEditingSynagogue(null);
+        toast.success("בית כנסת עודכן!");
+      } else toast.error("שגיאה");
+    } finally {
+      setUpdatingSynId(null);
+    }
   };
 
   const deleteSynagogue = async (id: string) => {
+    if (deletingSynId) return;
     if (!confirm("למחוק את בית הכנסת לצמיתות? כל זמני התפילה שלו יימחקו גם הם.")) return;
-    const { error } = await supabase.from("synagogues").delete().eq("id", id);
-    if (!error) {
-      setSynagogues(prev => prev.filter(s => s.id !== id));
-      setPrayerTimes(prev => prev.filter(pt => pt.synagogue_id !== id));
-      toast.success("בית כנסת נמחק");
+    setDeletingSynId(id);
+    try {
+      const { error } = await supabase.from("synagogues").delete().eq("id", id);
+      if (!error) {
+        setSynagogues(prev => prev.filter(s => s.id !== id));
+        setPrayerTimes(prev => prev.filter(pt => pt.synagogue_id !== id));
+        toast.success("בית כנסת נמחק");
+      }
+    } finally {
+      setDeletingSynId(null);
     }
   };
 
   const addPrayerTime = async (synagogueId: string) => {
+    if (savingPrayerId) return;
     if (!prayerForm.time.trim()) { toast.error("שעה היא שדה חובה"); return; }
-    const insertData: any = { ...prayerForm, synagogue_id: synagogueId };
-    // If "אחר" is selected, use custom_category as the display name
-    if (prayerForm.prayer_type === "אחר" && prayerForm.custom_category.trim()) {
-      insertData.custom_category = prayerForm.custom_category.trim();
+    setSavingPrayerId(synagogueId);
+    try {
+      const insertData: any = { ...prayerForm, synagogue_id: synagogueId };
+      // If "אחר" is selected, use custom_category as the display name
+      if (prayerForm.prayer_type === "אחר" && prayerForm.custom_category.trim()) {
+        insertData.custom_category = prayerForm.custom_category.trim();
+      }
+      const { data, error } = await supabase.from("prayer_times").insert(insertData).select().single();
+      if (!error && data) {
+        setPrayerTimes(prev => [data, ...prev]);
+        setPrayerForm({ prayer_type: "שחרית", day_of_week: "יומי", time: "", notes: "", custom_category: "" });
+        setAddingPrayer(null);
+        toast.success("זמן תפילה / פעילות נוספה!");
+      } else toast.error("שגיאה");
+    } finally {
+      setSavingPrayerId(null);
     }
-    const { data, error } = await supabase.from("prayer_times").insert(insertData).select().single();
-    if (!error && data) {
-      setPrayerTimes(prev => [data, ...prev]);
-      setPrayerForm({ prayer_type: "שחרית", day_of_week: "יומי", time: "", notes: "", custom_category: "" });
-      setAddingPrayer(null);
-      toast.success("זמן תפילה / פעילות נוספה!");
-    } else toast.error("שגיאה");
   };
 
   const deletePrayerTime = async (id: string) => {
+    if (deletingPrayerId) return;
     if (!confirm("למחוק את זמן התפילה / הפעילות הזה לצמיתות?")) return;
-    const { error } = await supabase.from("prayer_times").delete().eq("id", id);
-    if (!error) {
-      setPrayerTimes(prev => prev.filter(pt => pt.id !== id));
-      toast.success("זמן תפילה נמחק");
+    setDeletingPrayerId(id);
+    try {
+      const { error } = await supabase.from("prayer_times").delete().eq("id", id);
+      if (!error) {
+        setPrayerTimes(prev => prev.filter(pt => pt.id !== id));
+        toast.success("זמן תפילה נמחק");
+      }
+    } finally {
+      setDeletingPrayerId(null);
     }
   };
 
@@ -121,7 +156,7 @@ const PrayerTimesTab = ({ orgId }: PrayerTimesTabProps) => {
             <Button variant="ghost" size="icon" aria-label="ביטול" onClick={() => setAddingSynagogue(false)}><X className="w-4 h-4" /></Button>
           </div>
           <SynagogueForm form={synForm} onChange={setSynForm} idPrefix="syn-add" />
-          <Button onClick={addSynagogue} className="w-full bg-gradient-teal text-primary-foreground font-body font-bold gap-2">
+          <Button onClick={addSynagogue} disabled={savingSynagogue} className="w-full bg-gradient-teal text-primary-foreground font-body font-bold gap-2">
             <Save className="w-4 h-4" /> שמור
           </Button>
         </motion.div>
@@ -148,7 +183,7 @@ const PrayerTimesTab = ({ orgId }: PrayerTimesTabProps) => {
                       <Button variant="ghost" size="icon" aria-label="ביטול עריכה" onClick={() => setEditingSynagogue(null)}><X className="w-4 h-4" /></Button>
                     </div>
                     <SynagogueForm form={synForm} onChange={setSynForm} idPrefix="syn-edit" />
-                    <Button onClick={() => updateSynagogue(syn.id)} className="w-full bg-gradient-brand text-primary-foreground font-body font-bold gap-2">
+                    <Button onClick={() => updateSynagogue(syn.id)} disabled={updatingSynId === syn.id} className="w-full bg-gradient-brand text-primary-foreground font-body font-bold gap-2">
                       <Save className="w-4 h-4" /> עדכן
                     </Button>
                   </div>
@@ -172,7 +207,7 @@ const PrayerTimesTab = ({ orgId }: PrayerTimesTabProps) => {
                           className="text-gold hover:bg-gold/10">
                           <Edit3 className="w-4 h-4" />
                         </Button>
-                        <Button variant="ghost" size="icon" onClick={() => deleteSynagogue(syn.id)} className="text-destructive hover:bg-destructive/10">
+                        <Button variant="ghost" size="icon" onClick={() => deleteSynagogue(syn.id)} disabled={deletingSynId === syn.id} className="text-destructive hover:bg-destructive/10">
                           <Trash2 className="w-4 h-4" />
                         </Button>
                       </div>
@@ -209,7 +244,7 @@ const PrayerTimesTab = ({ orgId }: PrayerTimesTabProps) => {
                               placeholder="שם הפעילות / קטגוריה..." className="border-gold/20 h-8 text-xs" />
                           )}
                           <div className="flex gap-2">
-                            <Button size="sm" onClick={() => addPrayerTime(syn.id)} className="bg-gradient-teal text-primary-foreground font-body text-xs h-7 gap-1">
+                            <Button size="sm" onClick={() => addPrayerTime(syn.id)} disabled={savingPrayerId === syn.id} className="bg-gradient-teal text-primary-foreground font-body text-xs h-7 gap-1">
                               <Save className="w-3 h-3" /> שמור
                             </Button>
                             <Button size="sm" variant="ghost" onClick={() => setAddingPrayer(null)} className="font-body text-xs h-7">ביטול</Button>
@@ -226,7 +261,7 @@ const PrayerTimesTab = ({ orgId }: PrayerTimesTabProps) => {
                               <span className="text-muted-foreground">{pt.day_of_week}</span>
                               <span className="text-primary font-bold">{pt.time}</span>
                               {pt.notes && <span className="text-muted-foreground">({pt.notes})</span>}
-                              <button onClick={() => deletePrayerTime(pt.id)} className="opacity-0 group-hover:opacity-100 text-destructive hover:text-destructive ml-1 transition-opacity">
+                              <button onClick={() => deletePrayerTime(pt.id)} disabled={deletingPrayerId === pt.id} className="opacity-0 group-hover:opacity-100 text-destructive hover:text-destructive ml-1 transition-opacity disabled:opacity-50">
                                 <X className="w-3 h-3" />
                               </button>
                             </Badge>
