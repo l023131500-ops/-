@@ -12842,3 +12842,44 @@
     (שלד, לבדוק אם יש פעולות מוטציה), ואז 23-haorech-torani/25-mor1-main-site
     (ריפו ריק). נושאים #62/#94/#115/#164/#169/#254/#312 נשארים חסומים.
     via cloud server 167.99.131.167 [loop B]
+
+## 23/08/2026 — סבב 484 (loop B)
+
+484. **התיקון בסבב זה: `PortalMessagesTab.tsx`** (כפי שסומן בסבב 483) —
+    הקובץ האחרון בזוג שנמצא ב-`src/components/portal/`. שתי פונקציות
+    המוטציה (`cycleStatus`/`deleteMessage`) לא היה להן שום מצב "בתהליך"
+    ולכפתורים שלהן לא היה `disabled`, בניגוד ל-`PrayerTimesTab.tsx` הסמוך
+    שתוקן בסבב הקודם. לחיצה כפולה מהירה על כפתור שינוי הסטטוס יכולה לשלוח
+    שתי בקשות `update` חופפות (מירוץ תוצאות, ייתכן ותקוע במצב לא צפוי),
+    ולחיצה כפולה על מחיקה שולחת שתי בקשות `delete` חופפות.
+
+    הוספתי שני state נפרדים (`cyclingId`, `deletingId`) — כל אחד עם guard
+    מוקדם (`if (x) return`) ו-`try/finally`, ו-`disabled` תואם על שני
+    הכפתורים (כל אחד גם נחסם כשהפעולה השנייה על אותה הודעה פועלת, כדי
+    למנוע שינוי סטטוס תוך כדי מחיקה או להיפך). דפוס עקבי עם
+    `PrayerTimesTab.tsx`/`FullAccessRequestsTab.tsx`/`AdminDashboard.tsx`.
+
+    **בדיקות תקינות:** קריאת קוד בלבד (ללא dev-server, לפי הנחיות ההרצה) —
+    קראתי מחדש את כל הקובץ אחרי העריכות ווידאתי ש-state/guard/disabled
+    תואמים ושאין סוגריים לא מאוזנים.
+
+    לא נגעתי במערכות מוגנות 08/09/bkalut-app/bkalot-admin/zr_*/NEDARIM3873/
+    csj/csj_src/igud, ב-`main`, או במערכת מחוץ ל-scope (17-25/27/28 בלבד).
+
+    **הבא בתור:** שני קבצי ה-`PrayerTimesTab`/`PortalMessagesTab` ב-`portal/`
+    תוקנו במלואם. סרקתי את שאר 21-mthbram (`grep` על `.insert(/.update(/
+    .delete(/.upsert(` ב-`src/`) ומצאתי עוד כ-20 קבצים עם קריאות מוטציה
+    שטרם נבדקו לעומק: `ContactSection.tsx`, `FloatingChatBot.tsx`,
+    `BulkLessonForm/Table.tsx`, `ExcelImportExport.tsx` (bulk/synagogue/
+    studyday), `PortalSettingsTab.tsx`, `PublicContactForm.tsx`,
+    `SeekerForm.tsx`/`TeacherForm.tsx`, `StudyDayEventForm/Table.tsx`,
+    `SynagogueFullAccessRequest.tsx`, ודפי `BulkUpload/NedarimManagement/
+    OrgPortal/RabbiPortal/RequestLesson/StudyDayUpload/TeachersLanding/
+    UpdateLesson.tsx`. **מועמד הבא:** `PortalSettingsTab.tsx` — יש לו כבר
+    חלק מה-guards (`savingAbout/savingContact/savingSections/savingDonation`)
+    אבל `applyPreset`/`updateFontColor`/`deletePhoto` (שורות ~156/166/242)
+    נראים ללא guard/disabled — לאמת ולתקן. אחרי שכל 21-mthbram נקי, לעבור
+    ל-19-igud-shiurim-portal/20-igud-portal (שלד, לבדוק אם יש פעולות
+    מוטציה), ואז 23-haorech-torani/25-mor1-main-site (ריפו ריק). נושאים
+    #62/#94/#115/#164/#169/#254/#312 נשארים חסומים.
+    via cloud server 167.99.131.167 [loop B]

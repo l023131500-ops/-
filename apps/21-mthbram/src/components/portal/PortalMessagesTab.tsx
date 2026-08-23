@@ -22,6 +22,8 @@ const STATUS_CONFIG: Record<MsgStatus, { label: string; color: string; icon: Rea
 const PortalMessagesTab = ({ portalId, portalType }: PortalMessagesTabProps) => {
   const [messages, setMessages] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [cyclingId, setCyclingId] = useState<string | null>(null);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
 
   useEffect(() => {
     fetchMessages();
@@ -39,22 +41,34 @@ const PortalMessagesTab = ({ portalId, portalType }: PortalMessagesTabProps) => 
   };
 
   const cycleStatus = async (msg: any) => {
-    const order: MsgStatus[] = ["new", "handled", "not_handled"];
-    const currentIdx = order.indexOf(msg.status as MsgStatus);
-    const newStatus = order[(currentIdx + 1) % order.length];
-    const { error } = await supabase.from("portal_messages").update({ status: newStatus }).eq("id", msg.id);
-    if (!error) {
-      setMessages(prev => prev.map(m => m.id === msg.id ? { ...m, status: newStatus } : m));
+    if (cyclingId) return;
+    setCyclingId(msg.id);
+    try {
+      const order: MsgStatus[] = ["new", "handled", "not_handled"];
+      const currentIdx = order.indexOf(msg.status as MsgStatus);
+      const newStatus = order[(currentIdx + 1) % order.length];
+      const { error } = await supabase.from("portal_messages").update({ status: newStatus }).eq("id", msg.id);
+      if (!error) {
+        setMessages(prev => prev.map(m => m.id === msg.id ? { ...m, status: newStatus } : m));
+      } else toast.error("שגיאה בעדכון סטטוס");
+    } finally {
+      setCyclingId(null);
     }
   };
 
   const deleteMessage = async (id: string) => {
+    if (deletingId) return;
     if (!confirm("למחוק את הפניה?")) return;
-    const { error } = await supabase.from("portal_messages").delete().eq("id", id);
-    if (!error) {
-      setMessages(prev => prev.filter(m => m.id !== id));
-      toast.success("הפניה נמחקה");
-    } else toast.error("שגיאה במחיקה");
+    setDeletingId(id);
+    try {
+      const { error } = await supabase.from("portal_messages").delete().eq("id", id);
+      if (!error) {
+        setMessages(prev => prev.filter(m => m.id !== id));
+        toast.success("הפניה נמחקה");
+      } else toast.error("שגיאה במחיקה");
+    } finally {
+      setDeletingId(null);
+    }
   };
 
   const totalCount = messages.length;
@@ -137,6 +151,7 @@ const PortalMessagesTab = ({ portalId, portalType }: PortalMessagesTabProps) => 
                       variant="ghost"
                       size="icon"
                       onClick={() => cycleStatus(msg)}
+                      disabled={cyclingId === msg.id || deletingId === msg.id}
                       className={msg.status === "handled" ? "text-primary" : msg.status === "not_handled" ? "text-destructive" : "text-gold"}
                       title="שנה סטטוס"
                     >
@@ -146,6 +161,7 @@ const PortalMessagesTab = ({ portalId, portalType }: PortalMessagesTabProps) => 
                       variant="ghost"
                       size="icon"
                       onClick={() => deleteMessage(msg.id)}
+                      disabled={deletingId === msg.id || cyclingId === msg.id}
                       className="text-muted-foreground hover:text-destructive"
                       title="מחק פניה"
                     >
