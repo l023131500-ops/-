@@ -13,6 +13,7 @@ import { toast } from "sonner";
 export default function TenantDetail() {
   const { id } = useParams();
   const [features, setFeatures] = useState<any>(null);
+  const [savingFeatures, setSavingFeatures] = useState(false);
 
   const { data: tenant } = useQuery({
     queryKey: ["tenant-admin", id],
@@ -28,9 +29,16 @@ export default function TenantDetail() {
   }, [tenant]);
 
   const saveFeatures = async () => {
-    if (!features) return;
-    const { error } = await supabase.from("tenant_features").update(features).eq("tenant_id", id!);
-    if (error) toast.error(error.message); else toast.success("תכונות נשמרו");
+    if (!features || savingFeatures) return;
+    setSavingFeatures(true);
+    try {
+      const { error } = await supabase.from("tenant_features").update(features).eq("tenant_id", id!);
+      if (error) toast.error(error.message); else toast.success("תכונות נשמרו");
+    } catch (e: any) {
+      toast.error(e?.message || "שגיאה בשמירת התכונות");
+    } finally {
+      setSavingFeatures(false);
+    }
   };
 
   if (!tenant) return <div>טוען...</div>;
@@ -52,7 +60,7 @@ export default function TenantDetail() {
               <Switch checked={features[k]} onCheckedChange={(v) => setFeatures({ ...features, [k]: v })} />
             </div>
           ))}
-          <Button onClick={saveFeatures} className="mt-4">שמור</Button>
+          <Button onClick={saveFeatures} disabled={savingFeatures} className="mt-4">{savingFeatures ? "שומר..." : "שמור"}</Button>
         </CardContent>
       </Card>
     </div>
