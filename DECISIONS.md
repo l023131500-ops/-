@@ -12927,3 +12927,42 @@
     25-mor1-main-site (ריפו ריק). נושאים #62/#94/#115/#164/#169/#254/#312
     נשארים חסומים.
     via cloud server 167.99.131.167 [loop B]
+
+## 23/08/2026 — סבב 486 (loop B)
+
+486. **סרקתי את כל רשימת סבב 485** (`ContactSection.tsx`, `FloatingChatBot.tsx`,
+    `BulkLessonForm/Table.tsx`, שלושת גרסאות `ExcelImportExport.tsx`
+    (bulk/synagogue/studyday), `PublicContactForm.tsx`, `SeekerForm.tsx`/
+    `TeacherForm.tsx`, `StudyDayEventForm/Table.tsx`,
+    `SynagogueFullAccessRequest.tsx`, ודפי `BulkUpload/NedarimManagement/
+    OrgPortal/RabbiPortal/RequestLesson/StudyDayUpload/TeachersLanding/
+    UpdateLesson.tsx`) — כל הקבצים האלה כבר מוגנים כראוי (state "בתהליך"
+    + guard מוקדם + `disabled`), פרט לפער אחד אמיתי שמצאתי: **`uploadLogo`**
+    ב-`RabbiPortal.tsx` וב-`OrgPortal.tsx` (שני הקבצים זהים בדפוס) — לפונקציה
+    לא היה guard מוקדם (`if (uploadingLogo) return`), ואלמנטי ההפעלה שלה
+    (תמונת הלוגו הקטנה עם `role="button"`, וכפתור "העלאת לוגו" כשאין עדיין
+    לוגו) לא היו `disabled`/חסומים בזמן ש-`uploadingLogo` פעיל — בניגוד לכל
+    שאר הפעולות בסבב הזה. בחירת קובץ חדשה מהירה בזמן העלאה קיימת יכולה
+    לשלוח שתי בקשות `storage.upload` + `update` (על `rabbi_portals`/
+    `org_portals`) חופפות.
+
+    הוספתי guard מוקדם לשתי הפונקציות, וחסמתי את שני מצבי הלחיצה
+    (div עם `role="button"`/`tabIndex`/`onKeyDown` כשיש לוגו קיים, וה-`Button`
+    כשאין) עם `disabled`/`aria-disabled`/`pointer-events-none` ותווית "מעלה..."
+    בזמן ההעלאה — דפוס עקבי עם שאר התיקונים בסבב (guard + disabled).
+
+    **בדיקות תקינות:** קריאת קוד בלבד (ללא dev-server, לפי הנחיות ההרצה) —
+    קראתי מחדש את שני הקבצים אחרי העריכות, והרצתי בדיקת איזון סוגריים
+    (`{`/`}`) על שניהם ואומתה תקינות.
+
+    לא נגעתי במערכות מוגנות 08/09/bkalut-app/bkalot-admin/zr_*/NEDARIM3873/
+    csj/csj_src/igud, ב-`main`, או במערכת מחוץ ל-scope (17-25/27/28 בלבד).
+
+    **הבא בתור:** כל רשימת הקבצים שסומנה בסבב 484/485 נסרקה ונוקתה
+    (כולל הפער החדש שנמצא). **21-mthbram נחשב נקי** לפי הסריקה שבוצעה
+    (grep על `.insert(/.update(/.delete(/.upsert(` בכל `src/`). המועמד
+    הבא: לעבור ל-19-igud-shiurim-portal/20-igud-portal (שלד, לבדוק אם יש
+    פעולות מוטציה בכלל), ואז 23-haorech-torani/25-mor1-main-site (ריפו
+    ריק, לאמת שאין קוד). נושאים #62/#94/#115/#164/#169/#254/#312 נשארים
+    חסומים.
+    via cloud server 167.99.131.167 [loop B]
