@@ -28,6 +28,18 @@ function singleQueryParam(req: Request, key: string): string | undefined {
   return single ? String(single) : undefined;
 }
 
+// Same array pitfall as above, but for the numeric ?clientId= filter: a repeated
+// ?clientId= produces an array, and Number(array) on more than one element is NaN.
+// listCategories()/listOpportunities() then compare `c.clientId === NaN`, which is
+// always false, so the filter silently collapses to "no client match" instead of
+// throwing or falling back to "all clients" — categories/opportunities the caller
+// should see quietly disappear from the response.
+function clientIdQueryParam(req: Request): number | undefined {
+  const raw = req.query.clientId;
+  const single = Array.isArray(raw) ? raw[0] : raw;
+  return single ? Number(single) : undefined;
+}
+
 async function requireUser(req: UserRequest, res: Response, next: NextFunction) {
   const header = req.header("authorization");
   const token = header?.match(/^Bearer\s+(.+)$/i)?.[1];
@@ -189,7 +201,7 @@ export function registerFinancialRoutes(app: Express) {
 
   // ----- Categories -----
   app.get("/api/financial/categories", async (req, res) => {
-    const clientId = req.query.clientId ? Number(req.query.clientId) : undefined;
+    const clientId = clientIdQueryParam(req);
     res.json(finStorage.listCategories(clientId ?? null));
   });
   app.post("/api/financial/categories", requireAdmin, async (req, res) => {
@@ -260,7 +272,7 @@ export function registerFinancialRoutes(app: Express) {
 
   // ----- Opportunities -----
   app.get("/api/financial/opportunities", requireAdmin, async (req, res) => {
-    const clientId = req.query.clientId ? Number(req.query.clientId) : undefined;
+    const clientId = clientIdQueryParam(req);
     res.json(finStorage.listOpportunities(clientId));
   });
   app.post("/api/financial/opportunities", requireAdmin, async (req, res) => {
@@ -445,7 +457,7 @@ export function registerFinancialRoutes(app: Express) {
     res.json(finStorage.listTasks(Number(req.params.clientId)));
   });
   app.get("/api/financial/tasks", requireAdmin, async (req, res) => {
-    const clientId = req.query.clientId ? Number(req.query.clientId) : undefined;
+    const clientId = clientIdQueryParam(req);
     res.json(finStorage.listTasks(clientId));
   });
   app.post("/api/financial/tasks", requireAdmin, async (req: AuthedRequest, res) => {
