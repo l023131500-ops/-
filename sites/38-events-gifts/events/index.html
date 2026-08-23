@@ -101,6 +101,12 @@ td{padding:7px 8px;border-bottom:1px solid var(--line-2);vertical-align:middle}
 .theme-card.on{border-color:var(--gold);color:var(--gold-soft)}
 .theme-swatch{height:52px;border-radius:4px;margin-bottom:5px;border:1px solid var(--line-2)}
 .tblcard .bar i.over{background:linear-gradient(90deg,var(--rose),#F08A83)}
+.bar i.neg{background:linear-gradient(90deg,var(--rose),#F08A83)}
+.stat.neg{color:var(--rose)}
+.stat.pos{color:var(--emerald)}
+td.paidcell{white-space:nowrap}
+.duecell{white-space:nowrap}
+.due-late{color:var(--rose)}
 .gchip{cursor:pointer;background:var(--night-2);border:1px solid var(--line-2);border-radius:999px;
   padding:2px 12px;font-size:12px;color:var(--ink-2);font-family:inherit;transition:border-color .2s var(--ease)}
 .gchip:hover{border-color:var(--gold-soft)}
@@ -143,6 +149,7 @@ td .pickbox{width:auto;margin:0;accent-color:var(--gold)}
       <div class="card feature"><b>דפי אולמות + לידים</b><p>דף נחיתה מעוצב לכל אולם עם טופס פנייה — כל פנייה נכנסת ללוח הלידים של בעל האולם.</p></div>
       <div class="card feature"><b>צ'ק-אין בכניסה</b><p>סימון הגעה בפועל ביום האירוע — ספירה חיה של מי שכבר בפנים.</p></div>
       <div class="card feature"><b>סידורי הושבה</b><p>שולחנות, קיבולות והושבת מוזמנים — השולחן מופיע בכרטיס הכניסה, והשער מכריז עליו בסריקה.</p></div>
+      <div class="card feature"><b>תקציב אירוע</b><p>כל ההוצאות מול הכנסות המתנות בזמן אמת: משוער מול מחיר סגור, מה שולם, ומה המאזן — האם המתנות מכסות את האירוע.</p></div>
       <div class="card feature"><b>ארנקים ועמלות</b><p>כל מתנה מתפצלת אוטומטית: לבעל האירוע, לפלטפורמה, ולאולם אם רלוונטי. שקוף לחלוטין.</p></div>
       <div class="card feature"><b>בלי לגעת בכרטיס</b><p>הסליקה תמיד אצל ספק מוסמך (נדרים פלוס / PayMe). הפלטפורמה לא רואה מספרי כרטיס — לעולם.</p></div>
     </div>
@@ -360,6 +367,63 @@ td .pickbox{width:auto;margin:0;accent-color:var(--gold)}
       </table>
       </div>
       <p class="muted" id="mWallet"></p>
+
+      <h3 style="margin-top:22px">תקציב האירוע</h3>
+      <p class="muted">ההוצאות שלכם מול הכנסות המתנות (נטו, אחרי עמלות) — בזמן אמת.
+        לכל סעיף: <b>משוער</b> בזמן שמשווים מחירים, ו<b>מחיר סגור</b> ברגע שסוגרים עם ספק.
+        התקציב פרטי לבעלי האירוע בלבד — המוזמנים לא רואים אותו.</p>
+      <div class="grid c3" id="budgetStats" style="margin:8px 0 4px"></div>
+      <div id="budgetBalWrap" hidden style="margin-bottom:12px">
+        <div class="rowline"><span class="muted">כמה מההוצאות המתנות מכסות</span><span class="muted" id="budgetBalTxt"></span></div>
+        <div class="bar"><i id="budgetBalBar" style="width:0%"></i></div>
+      </div>
+      <div class="grid c3">
+        <div>
+          <label for="bgName">סעיף הוצאה *</label>
+          <input id="bgName" placeholder="אולם, קייטרינג, צלם…" maxlength="140" />
+        </div>
+        <div>
+          <label for="bgCat">קטגוריה</label>
+          <select id="bgCat">
+            <option value="venue">אולם ומקום</option>
+            <option value="catering">קייטרינג ואוכל</option>
+            <option value="music">מוזיקה ותזמורת</option>
+            <option value="photography">צילום</option>
+            <option value="clothing">לבוש</option>
+            <option value="design">עיצוב ופרחים</option>
+            <option value="transport">הסעות</option>
+            <option value="ceremony">טקס ורבנות</option>
+            <option value="other" selected>אחר</option>
+          </select>
+        </div>
+        <div>
+          <label for="bgPlanned">מחיר משוער (₪)</label>
+          <input id="bgPlanned" type="number" min="0" />
+        </div>
+        <div>
+          <label for="bgVendor">ספק (לא חובה)</label>
+          <input id="bgVendor" maxlength="140" />
+        </div>
+        <div>
+          <label for="bgVendorPhone">טלפון הספק</label>
+          <input id="bgVendorPhone" style="direction:ltr" maxlength="30" />
+        </div>
+        <div>
+          <label for="bgDue">תאריך יעד לתשלום</label>
+          <input id="bgDue" type="date" />
+        </div>
+      </div>
+      <div id="bgErr"></div>
+      <div class="rowline" style="justify-content:flex-start">
+        <button class="btn small" id="bgAdd">+ הוספת הוצאה</button>
+        <button class="btn ghost small" id="bgExport" hidden>⬇ ייצוא התקציב (CSV)</button>
+      </div>
+      <div style="overflow-x:auto;margin-top:10px">
+      <table id="bgTable">
+        <thead><tr><th>סעיף</th><th>קטגוריה</th><th>ספק</th><th>משוער</th><th>מחיר סגור</th><th>שולם</th><th>יעד תשלום</th><th></th></tr></thead>
+        <tbody></tbody>
+      </table>
+      </div>
     </div>
 
     <!-- my halls -->
@@ -461,6 +525,10 @@ const shekel = (agorot) => '₪' + (Math.round(agorot) / 100).toLocaleString('he
 const TYPE_LABEL = { wedding: 'חתונה', bar_mitzvah: 'בר מצווה', bat_mitzvah: 'בת מצווה', brit: 'ברית', engagement: 'אירוסין', other: 'אירוע' };
 const RSVP_LABEL = { yes: 'מגיעים', no: 'לא מגיעים', maybe: 'אולי', pending: 'טרם ענו' };
 const LEAD_LABEL = { new: 'חדש', contacted: 'נוצר קשר', closed: 'סגור' };
+// must match the DB check on events.expenses.category
+const CAT_LABEL = { venue: 'אולם ומקום', catering: 'קייטרינג ואוכל', music: 'מוזיקה ותזמורת',
+  photography: 'צילום', clothing: 'לבוש', design: 'עיצוב ופרחים', transport: 'הסעות',
+  ceremony: 'טקס ורבנות', other: 'אחר' };
 
 async function rpc(fn, args) {
   const { data, error } = await sb.rpc(fn, args || {});
@@ -717,6 +785,7 @@ async function openEvent(id, opts = {}) {
 
   renderMessages(d);
   renderSeating(d);
+  renderBudget(d);
 
   if (opts.scroll !== false)
     $('managePanel').scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -1152,6 +1221,157 @@ $('seatingExport').addEventListener('click', () => {
   const a = document.createElement('a');
   a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' }));
   a.download = 'seating-' + (CURRENT_EVENT.event.title || 'event').replace(/[\\/:*?"<>|]/g, '_') + '.csv';
+  a.click();
+  URL.revokeObjectURL(a.href);
+});
+
+// ---------- event budget (תקציב אירוע) ----------
+// effective cost: the closed price once there is one, the estimate until then
+const expCost = (x) => x.actual_agorot ?? x.planned_agorot;
+
+function renderBudget(d) {
+  const expenses = d.expenses || [];
+  const income = (d.wallet || {}).event_owner || 0;   // net after fees, test mode
+  const totalCost = expenses.reduce((s, x) => s + expCost(x), 0);
+  const totalPaid = expenses.filter(x => x.paid).reduce((s, x) => s + expCost(x), 0);
+  const balance = income - totalCost;
+
+  $('budgetStats').innerHTML = [
+    ['<div class="stat">' + shekel(totalCost) + '</div>', 'סה"כ עלות האירוע (' + expenses.length + ' סעיפים)'],
+    ['<div class="stat">' + shekel(totalPaid) + '</div>', 'שולם עד כה'],
+    ['<div class="stat">' + shekel(income) + '</div>',
+     'הכנסות ממתנות, נטו <span class="chip test" style="font-size:10px;padding:1px 8px">טסט</span>'],
+    ['<div class="stat ' + (balance >= 0 ? 'pos' : 'neg') + '">' +
+     (balance < 0 ? '−' : '+') + shekel(Math.abs(balance)) + '</div>',
+     'מאזן — מתנות מול הוצאות'],
+  ].map(([v, l]) => '<div>' + v + '<div class="statlbl">' + l + '</div></div>').join('');
+
+  if (totalCost > 0) {
+    $('budgetBalWrap').hidden = false;
+    const pct = Math.min(100, Math.round(income * 100 / totalCost));
+    $('budgetBalBar').style.width = pct + '%';
+    $('budgetBalTxt').textContent = 'המתנות מכסות ' + pct + '% מהעלות';
+  } else $('budgetBalWrap').hidden = true;
+
+  $('bgExport').hidden = expenses.length === 0;
+
+  const today = new Date(); today.setHours(0, 0, 0, 0);
+  $('bgTable').querySelector('tbody').innerHTML = expenses.map((x) => {
+    const late = x.due_date && !x.paid && new Date(x.due_date + 'T00:00') < today;
+    return `
+    <tr>
+      <td><b>${esc(x.name)}</b>${x.notes ? '<div class="muted">' + esc(x.notes) + '</div>' : ''}</td>
+      <td class="muted">${CAT_LABEL[x.category] || ''}</td>
+      <td class="muted">${esc(x.vendor_name || '')}${x.vendor_phone
+        ? '<div style="direction:ltr;text-align:right"><a href="tel:' + esc(x.vendor_phone) + '">' + esc(x.vendor_phone) + '</a></div>' : ''}</td>
+      <td>${shekel(x.planned_agorot)}</td>
+      <td><button class="btn ghost small" data-bg-actual="${x.id}" title="קביעת המחיר שנסגר עם הספק (ריק = חזרה למשוער)">
+        ${x.actual_agorot != null ? shekel(x.actual_agorot) : '—'} ✎</button></td>
+      <td class="paidcell"><label style="display:inline-flex;align-items:center;gap:6px;margin:0;font-size:13px;color:var(--ink-2)">
+        <input type="checkbox" class="pickbox" data-bg-paid="${x.id}"${x.paid ? ' checked' : ''} /> ${x.paid ? 'שולם' : 'טרם'}</label></td>
+      <td class="duecell ${late ? 'due-late' : 'muted'}">${x.due_date
+        ? new Date(x.due_date + 'T00:00').toLocaleDateString('he-IL') + (late ? ' ⚠' : '') : '—'}</td>
+      <td style="white-space:nowrap">
+        <button class="btn ghost small" data-bg-edit="${x.id}" title="עריכת שם ומחיר משוער">✎</button>
+        <button class="btn danger small" data-bg-del="${x.id}">✕</button>
+      </td>
+    </tr>`;
+  }).join('') || '<tr><td colspan="8" class="muted">עדיין אין הוצאות — מוסיפים למעלה את הסעיף הראשון (אולם, קייטרינג, צלם…).</td></tr>';
+
+  const tb = $('bgTable').querySelector('tbody');
+  const refresh = () => openEvent(CURRENT_EVENT.event.id, { scroll: false, refreshInvite: false });
+  for (const c of tb.querySelectorAll('[data-bg-paid]'))
+    c.addEventListener('change', () => guarded(c, 'bgpaid' + c.dataset.bgPaid, async () => {
+      try {
+        await rpc('evg_expense_update', { p_expense_id: c.dataset.bgPaid, p_patch: { paid: c.checked } });
+        await refresh();
+      } catch (e) { $('bgErr').innerHTML = '<div class="err">' + esc(e.message) + '</div>'; }
+    }));
+  for (const b of tb.querySelectorAll('[data-bg-actual]'))
+    b.addEventListener('click', () => guarded(b, 'bgact' + b.dataset.bgActual, async () => {
+      const x = (CURRENT_EVENT.expenses || []).find(e => e.id === b.dataset.bgActual);
+      if (!x) return;
+      const cur = x.actual_agorot != null ? Math.round(x.actual_agorot / 100) : '';
+      const v = prompt('המחיר שנסגר עם הספק ל"' + x.name + '" בש"ח (ריק = עדיין אין מחיר סגור):', cur);
+      if (v === null) return;
+      const agorot = v.trim() === '' ? null : Math.round(parseFloat(v.replace(',', '.')) * 100);
+      if (agorot !== null && (!Number.isFinite(agorot) || agorot < 0)) {
+        $('bgErr').innerHTML = '<div class="err">מחיר לא תקין.</div>'; return;
+      }
+      try {
+        await rpc('evg_expense_update', { p_expense_id: x.id, p_patch: { actual_agorot: agorot } });
+        await refresh();
+      } catch (e) { $('bgErr').innerHTML = '<div class="err">' + esc(e.message) + '</div>'; }
+    }));
+  for (const b of tb.querySelectorAll('[data-bg-edit]'))
+    b.addEventListener('click', () => guarded(b, 'bgedit' + b.dataset.bgEdit, async () => {
+      const x = (CURRENT_EVENT.expenses || []).find(e => e.id === b.dataset.bgEdit);
+      if (!x) return;
+      const name = prompt('שם הסעיף:', x.name);
+      if (name === null) return;
+      const planned = prompt('מחיר משוער בש"ח:', Math.round(x.planned_agorot / 100));
+      if (planned === null) return;
+      const agorot = Math.round(parseFloat(String(planned).replace(',', '.')) * 100);
+      try {
+        await rpc('evg_expense_update', { p_expense_id: x.id, p_patch: {
+          ...(name.trim() ? { name: name.trim() } : {}),
+          ...(Number.isFinite(agorot) && agorot >= 0 ? { planned_agorot: agorot } : {}),
+        } });
+        await refresh();
+      } catch (e) { $('bgErr').innerHTML = '<div class="err">' + esc(e.message) + '</div>'; }
+    }));
+  for (const b of tb.querySelectorAll('[data-bg-del]'))
+    b.addEventListener('click', () => guarded(b, 'bgdel' + b.dataset.bgDel, async () => {
+      if (!confirm('למחוק את סעיף ההוצאה?')) return;
+      try {
+        await rpc('evg_expense_delete', { p_expense_id: b.dataset.bgDel });
+        await refresh();
+      } catch (e) { $('bgErr').innerHTML = '<div class="err">' + esc(e.message) + '</div>'; }
+    }));
+}
+
+$('bgAdd').addEventListener('click', () => guarded($('bgAdd'), 'bgAdd', async () => {
+  $('bgErr').innerHTML = '';
+  if (!CURRENT_EVENT) return;
+  const name = $('bgName').value.trim();
+  if (!name) { $('bgErr').innerHTML = '<div class="err">שם סעיף ההוצאה חובה.</div>'; return; }
+  const planned = parseFloat($('bgPlanned').value.replace(',', '.'));
+  try {
+    await rpc('evg_expense_add', {
+      p_event_id: CURRENT_EVENT.event.id,
+      p_name: name,
+      p_category: $('bgCat').value,
+      p_planned_agorot: planned > 0 ? Math.round(planned * 100) : 0,
+      p_vendor_name: $('bgVendor').value.trim() || null,
+      p_vendor_phone: $('bgVendorPhone').value.trim() || null,
+      p_due_date: $('bgDue').value || null,
+    });
+    for (const id of ['bgName', 'bgPlanned', 'bgVendor', 'bgVendorPhone', 'bgDue']) $(id).value = '';
+    await openEvent(CURRENT_EVENT.event.id, { scroll: false, refreshInvite: false });
+  } catch (e) { $('bgErr').innerHTML = '<div class="err">' + esc(e.message) + '</div>'; }
+}));
+
+$('bgExport').addEventListener('click', () => {
+  if (!CURRENT_EVENT) return;
+  const expenses = CURRENT_EVENT.expenses || [];
+  const income = (CURRENT_EVENT.wallet || {}).event_owner || 0;
+  const sh = (agorot) => (Math.round(agorot) / 100).toString();
+  const rows = [['סעיף', 'קטגוריה', 'ספק', 'טלפון', 'משוער ₪', 'מחיר סגור ₪', 'שולם', 'יעד תשלום', 'הערות']];
+  for (const x of expenses)
+    rows.push([x.name, CAT_LABEL[x.category] || '', x.vendor_name || '', x.vendor_phone || '',
+      sh(x.planned_agorot), x.actual_agorot != null ? sh(x.actual_agorot) : '',
+      x.paid ? 'כן' : 'לא', x.due_date || '', x.notes || '']);
+  const totalCost = expenses.reduce((s, x) => s + expCost(x), 0);
+  rows.push([]);
+  rows.push(['סה"כ עלות', '', '', '', sh(totalCost), '', '', '', '']);
+  rows.push(['הכנסות ממתנות (נטו, טסט)', '', '', '', sh(income), '', '', '', '']);
+  rows.push(['מאזן', '', '', '', sh(income - totalCost), '', '', '', '']);
+  // BOM so Excel opens the Hebrew correctly
+  const csv = '\ufeff' + rows.map(r =>
+    r.map(c => '"' + String(c).replace(/"/g, '""') + '"').join(',')).join('\r\n');
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' }));
+  a.download = 'budget-' + (CURRENT_EVENT.event.title || 'event').replace(/[\\/:*?"<>|]/g, '_') + '.csv';
   a.click();
   URL.revokeObjectURL(a.href);
 });
