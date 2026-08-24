@@ -120,6 +120,16 @@ function singleQueryParam(v) {
   return Array.isArray(v) ? (v[0] ?? null) : v;
 }
 
+// parseInt(limit, 10) על קלט לא-מספרי (?limit=abc) מחזיר NaN, ש-JSON.stringify
+// הופך ל-null בגוף בקשת ה-RPC - אם ה-RPC עושה LIMIT p_limit ישירות, LIMIT NULL
+// ב-Postgres פירושו ללא הגבלה כלל (סריקה בלתי חסומה). אותו דפוס בדיוק כבר תוקן
+// ב-21-mthbram/supabase/functions/api/index.ts (clampInt, סבב 529).
+function clampInt(raw, fallback, min, max) {
+  const n = Number.parseInt(raw ?? '', 10);
+  if (!Number.isFinite(n)) return fallback;
+  return Math.min(Math.max(n, min), max);
+}
+
 function handleRpcResult(res, { data, error }, notFoundIfNull = true) {
   if (error) {
     console.error(error);
@@ -821,7 +831,7 @@ app.get('/api/admin/tenant/:adminToken/nedarim/donations', async (req, res) => {
     p_admin_token: req.params.adminToken,
     p_from: from || null,
     p_to: to || null,
-    p_limit: limit ? parseInt(limit, 10) : 200,
+    p_limit: clampInt(limit, 200, 1, 2000),
   });
   handleRpcResult(res, result, false);
 });
@@ -955,7 +965,7 @@ app.get('/api/admin/synagogue/:adminToken/nedarim/donations', async (req, res) =
     p_admin_token: req.params.adminToken,
     p_from: from || null,
     p_to: to || null,
-    p_limit: limit ? parseInt(limit, 10) : 200,
+    p_limit: clampInt(limit, 200, 1, 2000),
   });
   handleRpcResult(res, result, false);
 });
