@@ -19,7 +19,7 @@ const STEPS = [
 export default function Home() {
   const [, navigate] = useLocation();
   const { toast } = useToast();
-  const { data: books, isLoading } = useQuery<Book[]>({ queryKey: ["/api/books"] });
+  const { data: books, isLoading, isError } = useQuery<Book[]>({ queryKey: ["/api/books"] });
 
   const del = useMutation({
     mutationFn: async (id: number) => apiRequest("DELETE", `/api/books/${id}`),
@@ -103,6 +103,10 @@ export default function Home() {
             {[0, 1, 2].map((i) => (
               <Skeleton key={i} className="h-32 rounded-xl" />
             ))}
+          </div>
+        ) : isError ? (
+          <div className="rounded-xl border border-dashed border-destructive/40 bg-card/50 py-16 text-center">
+            <p className="text-muted-foreground">שגיאה בטעינת הספרים. נסה לרענן את הדף.</p>
           </div>
         ) : books && books.length > 0 ? (
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
