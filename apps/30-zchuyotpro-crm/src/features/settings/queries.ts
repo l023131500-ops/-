@@ -48,12 +48,20 @@ export type WhatsappSettings = {
   live_enabled?: boolean;
 };
 
+// Staff access control (flagship spec item 6) — enforced by RLS
+// (staff_sees_client). When restrict_to_assigned is on, agents/viewers see
+// only clients assigned to them (or unassigned); admin/manager see all.
+export type AccessSettings = {
+  restrict_to_assigned?: boolean;
+};
+
 export type TenantSettings = {
   integrations?: IntegrationSettings;
   notifications?: NotificationSettings;
   voice?: VoiceSettings;
   email?: EmailSettings;
   whatsapp?: WhatsappSettings;
+  access?: AccessSettings;
   // per-tenant module visibility (flagship spec item 2) — key: enabled.
   // Missing key means enabled; see features/customize/modules.ts
   modules?: Record<string, boolean>;
@@ -82,10 +90,28 @@ export const tenantProfilesQuery = () =>
     },
   });
 
+// Pending staff invitations — RLS returns rows to tenant admins only.
+// Errors degrade to [] so the team screen keeps working until the
+// staff-access-control migration has been applied on the project.
+export const staffInvitesQuery = () =>
+  queryOptions({
+    queryKey: ["staff-invites"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("staff_invites")
+        .select("id, email, role, created_at, expires_at, accepted_at")
+        .is("accepted_at", null)
+        .order("created_at", { ascending: false });
+      if (error) return [];
+      return data ?? [];
+    },
+  });
+
 export function useInvalidateSettings() {
   const qc = useQueryClient();
   return () => {
     qc.invalidateQueries({ queryKey: ["my-tenant"] });
     qc.invalidateQueries({ queryKey: ["tenant-profiles"] });
+    qc.invalidateQueries({ queryKey: ["staff-invites"] });
   };
 }

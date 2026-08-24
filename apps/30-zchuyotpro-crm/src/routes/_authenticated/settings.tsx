@@ -10,10 +10,11 @@ import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Loader2, Save, ExternalLink, Plug, CheckCircle2, XCircle, Phone, Copy, KeyRound, Mail, MessageCircle } from "lucide-react";
+import { Loader2, Save, ExternalLink, Plug, CheckCircle2, XCircle, Phone, Copy, KeyRound, Mail, MessageCircle, ShieldCheck, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
-import { myTenantQuery, tenantProfilesQuery, type TenantSettings, type IntegrationSettings, type NotificationSettings, type VoiceSettings, type EmailSettings, type WhatsappSettings } from "@/features/settings/queries";
+import { myTenantQuery, tenantProfilesQuery, staffInvitesQuery, type TenantSettings, type IntegrationSettings, type NotificationSettings, type VoiceSettings, type EmailSettings, type WhatsappSettings } from "@/features/settings/queries";
+import { meProfileQuery } from "@/features/clients/queries";
 import { CustomizeTab } from "@/features/customize/CustomizeTab";
 
 export const Route = createFileRoute("/_authenticated/settings")({
@@ -32,7 +33,7 @@ function SettingsPage() {
       </div>
       <Tabs defaultValue="users" className="w-full">
         <TabsList className="flex flex-wrap h-auto">
-          <TabsTrigger value="users">משתמשים</TabsTrigger>
+          <TabsTrigger value="users">צוות והרשאות</TabsTrigger>
           <TabsTrigger value="partners">שותפים</TabsTrigger>
           <TabsTrigger value="entitlements">זכאויות</TabsTrigger>
           <TabsTrigger value="integrations">אינטגרציות</TabsTrigger>
@@ -67,9 +68,27 @@ function SettingsPage() {
   );
 }
 
+// Staff roles (flagship spec item 6). The DB enforces every rule below via
+// RLS + the profiles privilege-guard trigger; this screen only mirrors it.
+const ROLE_LABELS: Record<string, string> = {
+  admin: "מנהל ראשי",
+  manager: "מנהל",
+  agent: "סוכן",
+  viewer: "צופה (קריאה בלבד)",
+};
+
+const ROLE_CAPABILITIES: { role: string; desc: string }[] = [
+  { role: "admin", desc: "שליטה מלאה: צוות ותפקידים, הגדרות והאינטגרציות, שותפים וקטלוגים, וכל נתוני הלקוחות" },
+  { role: "manager", desc: "כל נתוני הלקוחות + הגדרות המשרד, שותפים וקטלוגים. לא מנהל צוות ותפקידים" },
+  { role: "agent", desc: "עבודה שוטפת על תיקי לקוחות: פרטים, מסמכים, הודעות, משימות והפניות. ללא הגדרות" },
+  { role: "viewer", desc: "צפייה בלבד בכל המסכים — שום כתיבה, מחיקה או העלאת קבצים" },
+];
+
 function UsersTab() {
   const { data: profiles, isLoading } = useQuery(tenantProfilesQuery());
   const { data: tenant } = useQuery(myTenantQuery());
+  const { data: me } = useQuery(meProfileQuery());
+  const { data: invites } = useQuery(staffInvitesQuery());
   const qc = useQueryClient();
   const [open, setOpen] = useState(false);
   const [email, setEmail] = useState("");
@@ -77,103 +96,279 @@ function UsersTab() {
   const [role, setRole] = useState("agent");
   const [loading, setLoading] = useState(false);
 
+  const isAdmin = me?.role === "admin";
+  const canManage = me?.role === "admin" || me?.role === "manager";
+  const settings = (tenant?.settings ?? {}) as TenantSettings;
+
+  const invalidate = () => {
+    qc.invalidateQueries({ queryKey: ["tenant-profiles"] });
+    qc.invalidateQueries({ queryKey: ["staff-invites"] });
+  };
+
   const updateRole = useMutation({
     mutationFn: async ({ id, role }: { id: string; role: string }) => {
-      const { error } = await supabase.from("profiles").update({ role: role as "admin" | "agent" | "viewer" }).eq("id", id);
+      // .select() verifies rows were actually affected: before the
+      // staff-access-control migration this update silently hit 0 rows.
+      const { data, error } = await supabase
+        .from("profiles")
+        .update({ role: role as "admin" | "manager" | "agent" | "viewer" })
+        .eq("id", id)
+        .select("id");
       if (error) throw error;
+      if (!data || data.length === 0) throw new Error("לא עודכן — נדרשת הרשאת מנהל ראשי");
     },
     onSuccess: () => {
       toast.success("התפקיד עודכן");
-      qc.invalidateQueries({ queryKey: ["tenant-profiles"] });
+      invalidate();
     },
-    onError: (e: Error) => toast.error("עדכון נכשל", { description: e.message }),
+    onError: (e: Error) => toast.error("עדכון התפקיד נכשל", { description: e.message }),
+  });
+
+  const removeMember = useMutation({
+    mutationFn: async (id: string) => {
+      const { data, error } = await supabase.from("profiles").delete().eq("id", id).select("id");
+      if (error) throw error;
+      if (!data || data.length === 0) throw new Error("לא הוסר — נדרשת הרשאת מנהל ראשי");
+    },
+    onSuccess: () => {
+      toast.success("חבר הצוות הוסר", { description: "חשבון ההתחברות נשאר קיים אך אין לו עוד גישה למשרד" });
+      invalidate();
+    },
+    onError: (e: Error) => toast.error("הסרה נכשלה", { description: e.message }),
+  });
+
+  const removeInvite = useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase.from("staff_invites").delete().eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      toast.success("ההזמנה בוטלה");
+      invalidate();
+    },
+    onError: (e: Error) => toast.error("ביטול ההזמנה נכשל", { description: e.message }),
   });
 
   async function invite(e: React.FormEvent) {
     e.preventDefault();
     if (!tenant?.id) return;
     setLoading(true);
+
+    // Record an invitation first — signup claims it by email and receives the
+    // chosen role (the old flow always produced 'agent' regardless of the
+    // select). If the invites table is not there yet (migration pending on
+    // the project), fall back to the legacy metadata path so inviting keeps
+    // working; role will then be 'agent' until the migration is applied.
+    const { error: inviteErr } = await supabase.from("staff_invites").insert({
+      tenant_id: tenant.id,
+      email: email.trim().toLowerCase(),
+      role: role as "admin" | "manager" | "agent" | "viewer",
+      invited_by: me?.id ?? null,
+    });
+    if (inviteErr && !/does not exist|schema cache/i.test(inviteErr.message)) {
+      setLoading(false);
+      toast.error("יצירת ההזמנה נכשלה", { description: inviteErr.message });
+      return;
+    }
+
     const tempPassword = Math.random().toString(36).slice(2) + "Aa1!";
     const { error } = await supabase.auth.signUp({
       email,
       password: tempPassword,
       options: {
         emailRedirectTo: `${window.location.origin}/dashboard`,
-        data: { full_name: name, tenant_id: tenant.id },
+        data: inviteErr
+          ? { full_name: name, tenant_id: tenant.id }
+          : { full_name: name },
       },
     });
     setLoading(false);
     if (error) { toast.error("שגיאה ביצירת משתמש", { description: error.message }); return; }
     toast.success("המשתמש נוצר", { description: `סיסמה זמנית: ${tempPassword}` });
     setOpen(false); setEmail(""); setName("");
-    qc.invalidateQueries({ queryKey: ["tenant-profiles"] });
+    invalidate();
+  }
+
+  return (
+    <div className="space-y-4">
+      <Card>
+        <CardHeader className="flex flex-row items-center justify-between">
+          <CardTitle className="text-base">צוות המשרד</CardTitle>
+          {isAdmin && (
+            <Button size="sm" onClick={() => setOpen(!open)}>{open ? "ביטול" : "+ הזמן חבר צוות"}</Button>
+          )}
+        </CardHeader>
+        <CardContent className="space-y-4">
+          {open && isAdmin && (
+            <form onSubmit={invite} className="grid gap-3 sm:grid-cols-4 p-3 bg-muted/40 rounded">
+              <div><Label>שם מלא</Label><Input value={name} onChange={(e) => setName(e.target.value)} required /></div>
+              <div><Label>אימייל</Label><Input type="email" dir="ltr" value={email} onChange={(e) => setEmail(e.target.value)} required /></div>
+              <div>
+                <Label>תפקיד</Label>
+                <Select value={role} onValueChange={setRole}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    {Object.entries(ROLE_LABELS).map(([k, v]) => (
+                      <SelectItem key={k} value={k}>{v}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="flex items-end">
+                <Button type="submit" disabled={loading} className="w-full">
+                  {loading && <Loader2 className="h-4 w-4 animate-spin me-1" />} צור משתמש
+                </Button>
+              </div>
+            </form>
+          )}
+          {(invites ?? []).length > 0 && (
+            <div className="rounded border bg-muted/20 p-3 space-y-2">
+              <p className="text-xs font-medium text-muted-foreground">הזמנות ממתינות</p>
+              {(invites ?? []).map((inv) => (
+                <div key={inv.id} className="flex items-center justify-between text-sm">
+                  <span dir="ltr">{inv.email}</span>
+                  <span className="flex items-center gap-2">
+                    <Badge variant="secondary">{ROLE_LABELS[inv.role] ?? inv.role}</Badge>
+                    <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => removeInvite.mutate(inv.id)}>
+                      <Trash2 className="h-3.5 w-3.5" />
+                    </Button>
+                  </span>
+                </div>
+              ))}
+            </div>
+          )}
+          {isLoading ? (
+            <div className="flex justify-center py-6"><Loader2 className="h-5 w-5 animate-spin text-muted-foreground" /></div>
+          ) : (
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>שם</TableHead>
+                  <TableHead>תפקיד</TableHead>
+                  <TableHead>הצטרף</TableHead>
+                  {isAdmin && <TableHead className="w-10" />}
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {(profiles ?? []).map((p) => {
+                  const isSelf = p.auth_user_id === me?.auth_user_id;
+                  return (
+                    <TableRow key={p.id}>
+                      <TableCell className="font-medium">
+                        {p.full_name}
+                        {isSelf && <Badge variant="outline" className="ms-2 text-[10px]">אני</Badge>}
+                      </TableCell>
+                      <TableCell>
+                        {isAdmin && !isSelf ? (
+                          <Select value={p.role} onValueChange={(v) => updateRole.mutate({ id: p.id, role: v })}>
+                            <SelectTrigger className="w-40 h-8"><SelectValue /></SelectTrigger>
+                            <SelectContent>
+                              {Object.entries(ROLE_LABELS).map(([k, v]) => (
+                                <SelectItem key={k} value={k}>{v}</SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        ) : (
+                          <Badge variant="secondary">{ROLE_LABELS[p.role] ?? p.role}</Badge>
+                        )}
+                      </TableCell>
+                      <TableCell className="text-xs text-muted-foreground">
+                        {new Date(p.created_at).toLocaleDateString("he-IL")}
+                      </TableCell>
+                      {isAdmin && (
+                        <TableCell>
+                          {!isSelf && (
+                            <Button
+                              size="icon"
+                              variant="ghost"
+                              className="h-7 w-7 text-destructive"
+                              onClick={() => {
+                                if (window.confirm(`להסיר את ${p.full_name} מצוות המשרד?`)) removeMember.mutate(p.id);
+                              }}
+                            >
+                              <Trash2 className="h-3.5 w-3.5" />
+                            </Button>
+                          )}
+                        </TableCell>
+                      )}
+                    </TableRow>
+                  );
+                })}
+                {(profiles ?? []).length === 0 && (
+                  <TableRow><TableCell colSpan={isAdmin ? 4 : 3} className="text-center text-sm text-muted-foreground py-6">אין משתמשים</TableCell></TableRow>
+                )}
+              </TableBody>
+            </Table>
+          )}
+        </CardContent>
+      </Card>
+
+      {canManage && <AccessScopeCard tenantId={tenant?.id} settings={settings} />}
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-base flex items-center gap-2"><ShieldCheck className="h-4 w-4" /> מה כל תפקיד רואה ועושה</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-2">
+            {ROLE_CAPABILITIES.map((r) => (
+              <div key={r.role} className="flex gap-3 text-sm border-b pb-2 last:border-b-0">
+                <Badge variant="secondary" className="shrink-0 self-start">{ROLE_LABELS[r.role]}</Badge>
+                <span className="text-muted-foreground">{r.desc}</span>
+              </div>
+            ))}
+          </div>
+          <p className="text-xs text-muted-foreground mt-3">
+            הכללים נאכפים ברמת מסד הנתונים (RLS), לא רק במסכים — גם גישה ישירה ל-API כפופה להם.
+          </p>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+
+// Per-tenant client scoping (flagship spec item 6): when on, agents and
+// viewers see only clients assigned to them (or not yet assigned) — across
+// every screen, enforced by the staff_sees_client() RLS helper.
+function AccessScopeCard({ tenantId, settings }: { tenantId?: string; settings: TenantSettings }) {
+  const qc = useQueryClient();
+  const [restrict, setRestrict] = useState(!!settings.access?.restrict_to_assigned);
+  const [saving, setSaving] = useState(false);
+  useEffect(() => setRestrict(!!settings.access?.restrict_to_assigned), [settings.access?.restrict_to_assigned]);
+
+  async function save(value: boolean) {
+    if (!tenantId) return;
+    setRestrict(value);
+    setSaving(true);
+    const newSettings: TenantSettings = { ...settings, access: { ...settings.access, restrict_to_assigned: value } };
+    const { data, error } = await supabase.from("tenants").update({ settings: newSettings }).eq("id", tenantId).select("id");
+    setSaving(false);
+    if (error || !data || data.length === 0) {
+      setRestrict(!value);
+      toast.error("שמירה נכשלה", { description: error?.message ?? "נדרשת הרשאת מנהל" });
+      return;
+    }
+    toast.success(value ? "מעכשיו סוכנים וצופים רואים רק לקוחות שהוקצו להם" : "כל הצוות רואה את כל הלקוחות");
+    qc.invalidateQueries({ queryKey: ["my-tenant"] });
   }
 
   return (
     <Card>
-      <CardHeader className="flex flex-row items-center justify-between">
-        <CardTitle className="text-base">משתמשי הארגון</CardTitle>
-        <Button size="sm" onClick={() => setOpen(!open)}>{open ? "ביטול" : "+ הוסף משתמש"}</Button>
+      <CardHeader>
+        <CardTitle className="text-base">תחום ראייה של הצוות</CardTitle>
       </CardHeader>
-      <CardContent className="space-y-4">
-        {open && (
-          <form onSubmit={invite} className="grid gap-3 sm:grid-cols-4 p-3 bg-muted/40 rounded">
-            <div><Label>שם מלא</Label><Input value={name} onChange={(e) => setName(e.target.value)} required /></div>
-            <div><Label>אימייל</Label><Input type="email" dir="ltr" value={email} onChange={(e) => setEmail(e.target.value)} required /></div>
-            <div>
-              <Label>תפקיד</Label>
-              <Select value={role} onValueChange={setRole}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="admin">מנהל</SelectItem>
-                  <SelectItem value="agent">סוכן</SelectItem>
-                  <SelectItem value="viewer">צופה</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="flex items-end">
-              <Button type="submit" disabled={loading} className="w-full">
-                {loading && <Loader2 className="h-4 w-4 animate-spin me-1" />} צור משתמש
-              </Button>
-            </div>
-          </form>
-        )}
-        {isLoading ? (
-          <div className="flex justify-center py-6"><Loader2 className="h-5 w-5 animate-spin text-muted-foreground" /></div>
-        ) : (
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>שם</TableHead>
-                <TableHead>תפקיד</TableHead>
-                <TableHead>הצטרף</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {(profiles ?? []).map((p) => (
-                <TableRow key={p.id}>
-                  <TableCell className="font-medium">{p.full_name}</TableCell>
-                  <TableCell>
-                    <Select value={p.role} onValueChange={(v) => updateRole.mutate({ id: p.id, role: v })}>
-                      <SelectTrigger className="w-32 h-8"><SelectValue /></SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="admin">מנהל</SelectItem>
-                        <SelectItem value="agent">סוכן</SelectItem>
-                        <SelectItem value="viewer">צופה</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </TableCell>
-                  <TableCell className="text-xs text-muted-foreground">
-                    {new Date(p.created_at).toLocaleDateString("he-IL")}
-                  </TableCell>
-                </TableRow>
-              ))}
-              {(profiles ?? []).length === 0 && (
-                <TableRow><TableCell colSpan={3} className="text-center text-sm text-muted-foreground py-6">אין משתמשים</TableCell></TableRow>
-              )}
-            </TableBody>
-          </Table>
-        )}
+      <CardContent>
+        <div className="flex items-center justify-between gap-4">
+          <div>
+            <Label htmlFor="restrict-assigned">סוכנים וצופים רואים רק לקוחות שהוקצו להם</Label>
+            <p className="text-xs text-muted-foreground mt-1">
+              כבוי: כל הצוות רואה את כל לקוחות המשרד (ברירת המחדל). דלוק: סוכן רואה רק
+              תיקים שהוקצו לו — וגם תיקים שטרם הוקצו לאף אחד, כדי שפניות חדשות לא ייעלמו.
+              מנהלים רואים תמיד הכל. נאכף ברמת מסד הנתונים על כל המסכים, הדוחות והחיפוש.
+            </p>
+          </div>
+          <Switch id="restrict-assigned" checked={restrict} disabled={saving} onCheckedChange={save} />
+        </div>
       </CardContent>
     </Card>
   );
