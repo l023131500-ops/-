@@ -90,7 +90,9 @@ export function fitText(opts: {
   };
 }
 
-// מוודא שהפונטים נטענו לפני מדידה
+// מוודא שהפונטים נטענו לפני מדידה. 400+700 הם בדיוק שני המשקלים שהקנבס
+// מבקש בפועל (fontStr כאן וה-fontStyle bold/normal ב-CanvasStage), ולפונטים
+// הוואריאביליים של Google קובץ אחד מכסה את כל הטווח.
 export async function ensureFontsLoaded(families: string[]): Promise<void> {
   if (typeof document === "undefined" || !(document as any).fonts) return;
   const fonts = (document as any).fonts;
@@ -101,4 +103,17 @@ export async function ensureFontsLoaded(families: string[]): Promise<void> {
     ]),
   );
   await fonts.ready;
+}
+
+// המשפחות שמסמך באמת צריך על הקנבס: כל שכבות הטקסט, ותמיד Heebo — הפונט של
+// מצייני-מקום לתמונות (CanvasStage) ושל כתוביות הוידאו (videoExport). הקלט
+// מוקלד מינימלית בכוונה כדי שהמודול יישאר בלי תלות בסכמת השכבות.
+export function collectDocFontFamilies(
+  layers: Array<{ type?: string; fontFamily?: string }>,
+): string[] {
+  const set = new Set<string>(["Heebo"]);
+  for (const l of layers) {
+    if (l?.type === "text" && l.fontFamily) set.add(l.fontFamily);
+  }
+  return [...set].sort();
 }

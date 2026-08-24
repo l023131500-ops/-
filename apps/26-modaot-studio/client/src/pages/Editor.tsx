@@ -78,6 +78,7 @@ import { getCategory } from "@shared/knowledge";
 import { getStyle } from "@shared/styles";
 import { FORMATS, getFormat } from "@shared/formats";
 import { downloadPNG, downloadPDF, downloadSVG } from "@/lib/exporter";
+import { ensureFontsLoaded, collectDocFontFamilies } from "@/lib/autofit";
 import { exportPromoVideo, downloadBlob, videoFileExtension, PROMO_VIDEO_FORMATS, type PromoVideoFormat } from "@/lib/videoExport";
 import { downloadIDML } from "@/lib/idmlExporter";
 import { apiRequest, hasAuthSession } from "@/lib/queryClient";
@@ -752,13 +753,25 @@ export default function Editor() {
     }
   }
 
-  function handleDownloadPNG() {
+  // קנבס לא מתחיל טעינת @font-face בעצמו, אז ייצוא שנלחץ לפני שפונטי הבמה
+  // סיימו להיטען היה מצלם פונט חלופי — ושבירת-שורות שנמדדה איתו. מוודאים
+  // טעינה (CanvasStage מאזין לאותה הבטחה ומודד מחדש) ונותנים לריאקט שני
+  // פריימים להצייר לפני הצילום. בזרימה הרגילה הפונטים כבר טעונים וזה מיידי.
+  async function ensureStageFontsReady() {
+    if (!doc) return;
+    await ensureFontsLoaded(collectDocFontFamilies(doc.layers));
+    await new Promise<void>((r) => requestAnimationFrame(() => requestAnimationFrame(() => r())));
+  }
+
+  async function handleDownloadPNG() {
     if (!stageRef.current) return;
+    await ensureStageFontsReady();
     downloadPNG(stageRef.current, doc!.width, `${selected!.name}.png`);
   }
 
-  function handleDownloadPDF() {
+  async function handleDownloadPDF() {
     if (!stageRef.current) return;
+    await ensureStageFontsReady();
     downloadPDF(stageRef.current, doc!.width, doc!.height, `${selected!.name}.pdf`);
   }
 
@@ -838,6 +851,8 @@ export default function Editor() {
     setVideoExporting(true);
     setVideoProgress(0);
     try {
+      // גם כתוביות הוידאו מצוירות ב-Heebo על קנבס — כלול ב-collectDocFontFamilies.
+      await ensureStageFontsReady();
       const blob = await exportPromoVideo(stageRef.current, doc.width, doc.height, {
         narrationAudioUrl: narrationAudioUrl || undefined,
         narrationScript: narrationScript || undefined,

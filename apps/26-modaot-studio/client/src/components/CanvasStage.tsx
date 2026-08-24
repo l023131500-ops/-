@@ -10,7 +10,7 @@ import useImage from "use-image";
 import type Konva from "konva";
 import { Text as KonvaTextShape } from "konva/lib/shapes/Text";
 import type { TemplateDoc, AnyLayer, TextLayer, ImageLayer, ShapeLayer, DecorationLayer } from "@shared/layers";
-import { fitText, wrapText } from "@/lib/autofit";
+import { fitText, wrapText, ensureFontsLoaded, collectDocFontFamilies } from "@/lib/autofit";
 import { ORNAMENTS, CORNER_ORNAMENT_PATH } from "@/lib/ornaments";
 import { patternTile, hexToRgba } from "@/lib/backgroundLibrary";
 
@@ -93,9 +93,10 @@ function Background({ doc }: { doc: TemplateDoc }) {
   );
 }
 
-// שכבת טקסט עם autoFit
-function TextNode({ layer, onSelect, onChange, onEdit, selected, interactive }: {
-  layer: TextLayer; onSelect?: () => void; onChange?: (p: Partial<AnyLayer>) => void; onEdit?: () => void; selected: boolean; interactive: boolean;
+// שכבת טקסט עם autoFit. fontsTick עולה כשפונטי המסמך סיימו להיטען —
+// מדידה שרצה לפני כן מדדה פונט חלופי וחייבת לרוץ שוב.
+function TextNode({ layer, onSelect, onChange, onEdit, selected, interactive, fontsTick }: {
+  layer: TextLayer; onSelect?: () => void; onChange?: (p: Partial<AnyLayer>) => void; onEdit?: () => void; selected: boolean; interactive: boolean; fontsTick: number;
 }) {
   const bold = (layer.fontWeight ?? 400) >= 700;
   const fit = useMemo(() => {
@@ -114,7 +115,7 @@ function TextNode({ layer, onSelect, onChange, onEdit, selected, interactive }: 
       letterSpacing: layer.letterSpacing ?? 0,
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [layer.text, layer.fontFamily, layer.fontSize, layer.width, layer.height, layer.maxFontSize, layer.minFontSize, bold, layer.lineHeight, layer.letterSpacing]);
+  }, [layer.text, layer.fontFamily, layer.fontSize, layer.width, layer.height, layer.maxFontSize, layer.minFontSize, bold, layer.lineHeight, layer.letterSpacing, fontsTick]);
 
   const fontStyle = bold ? "bold" : "normal";
   return (
@@ -268,12 +269,28 @@ export default function CanvasStage({ doc, selectedId, onSelect, onChangeLayer, 
   const localRef = useRef<Konva.Stage | null>(null);
   const setRef = (n: Konva.Stage | null) => { localRef.current = n; if (stageRef) stageRef.current = n; };
   const scale = Math.min(1, maxDisplayWidth / doc.width);
-  const [, force] = useState(0);
+  const [fontsTick, setFontsTick] = useState(0);
 
-  // רה-רינדור לאחר טעינת פונטים
+  // ctx.font של קנבס לא מתחיל טעינת @font-face מעצמו — משפחה שמופיעה רק על
+  // הבמה (ולא בשום מקום ב-DOM) לא הייתה נטענת לעולם, והטקסט נשאר בפונט חלופי
+  // בעורך, בגלריות ובכל ייצוא. טוענים במפורש את המשפחות שהמסמך משתמש בהן
+  // (ההאזנה הישנה ל-fonts.ready לא עזרה כאן: טעינה שמעולם לא התחילה גם לא
+  // מסתיימת), ועם סיום הטעינה מודדים מחדש — fontsTick נמצא בתלויות המדידה
+  // של TextNode, כי שבירת-שורות שנמדדה עם הפונט החלופי היא חלק מהבאג.
+  const fontFamiliesKey = collectDocFontFamilies(doc.layers).join("|");
   useEffect(() => {
-    if ((document as any).fonts?.ready) (document as any).fonts.ready.then(() => force((n) => n + 1));
-  }, []);
+    let live = true;
+    ensureFontsLoaded(fontFamiliesKey.split("|")).then(() => {
+      if (live) setFontsTick((n) => n + 1);
+    });
+    return () => { live = false; };
+  }, [fontFamiliesKey]);
+
+  // גם כשהמדידה יצאה זהה, הגליפים שצוירו לפני הטעינה נשארים על הקנבס עד
+  // ציור-מחדש מפורש (props זהים = react-konva לא בהכרח מצייר).
+  useEffect(() => {
+    if (fontsTick > 0) localRef.current?.batchDraw();
+  }, [fontsTick]);
 
   const sorted = [...doc.layers].sort((a, b) => (a.z ?? 0) - (b.z ?? 0));
 
@@ -291,7 +308,7 @@ export default function CanvasStage({ doc, selectedId, onSelect, onChangeLayer, 
         <Background doc={doc} />
         {sorted.map((l) => {
           if (l.visible === false) return null;
-          if (l.type === "text") return <TextNode key={l.id} layer={l as TextLayer} selected={selectedId === l.id} interactive={interactive} onSelect={() => onSelect?.(l.id)} onChange={(p) => onChangeLayer?.(l.id, p)} onEdit={() => onEditText?.(l.id)} />;
+          if (l.type === "text") return <TextNode key={l.id} layer={l as TextLayer} selected={selectedId === l.id} interactive={interactive} fontsTick={fontsTick} onSelect={() => onSelect?.(l.id)} onChange={(p) => onChangeLayer?.(l.id, p)} onEdit={() => onEditText?.(l.id)} />;
           if (l.type === "image") return <ImageNode key={l.id} layer={l as ImageLayer} interactive={interactive} onSelect={() => onSelect?.(l.id)} onChange={(p) => onChangeLayer?.(l.id, p)} />;
           if (l.type === "shape") return <ShapeNode key={l.id} layer={l as ShapeLayer} />;
           if (l.type === "decoration") return <DecorationNode key={l.id} layer={l as DecorationLayer} />;
