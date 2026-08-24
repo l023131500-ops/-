@@ -630,6 +630,111 @@ export type Database = {
           },
         ]
       }
+      custom_field_definitions: {
+        Row: {
+          category: string
+          client_editable: boolean
+          created_at: string
+          field_key: string
+          field_type: string
+          id: string
+          label: string
+          options: Json
+          sort_order: number
+          tenant_id: string
+          updated_at: string
+          visible_to_client: boolean
+        }
+        Insert: {
+          category?: string
+          client_editable?: boolean
+          created_at?: string
+          field_key: string
+          field_type?: string
+          id?: string
+          label: string
+          options?: Json
+          sort_order?: number
+          tenant_id: string
+          updated_at?: string
+          visible_to_client?: boolean
+        }
+        Update: {
+          category?: string
+          client_editable?: boolean
+          created_at?: string
+          field_key?: string
+          field_type?: string
+          id?: string
+          label?: string
+          options?: Json
+          sort_order?: number
+          tenant_id?: string
+          updated_at?: string
+          visible_to_client?: boolean
+        }
+        Relationships: [
+          {
+            foreignKeyName: "custom_field_definitions_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      custom_field_values: {
+        Row: {
+          client_id: string
+          created_at: string
+          definition_id: string
+          id: string
+          tenant_id: string
+          updated_at: string
+          value: Json
+        }
+        Insert: {
+          client_id: string
+          created_at?: string
+          definition_id: string
+          id?: string
+          tenant_id: string
+          updated_at?: string
+          value?: Json
+        }
+        Update: {
+          client_id?: string
+          created_at?: string
+          definition_id?: string
+          id?: string
+          tenant_id?: string
+          updated_at?: string
+          value?: Json
+        }
+        Relationships: [
+          {
+            foreignKeyName: "custom_field_values_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "custom_field_values_definition_id_fkey"
+            columns: ["definition_id"]
+            isOneToOne: false
+            referencedRelation: "custom_field_definitions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "custom_field_values_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       documents: {
         Row: {
           analysis_result: Json | null
@@ -1255,6 +1360,7 @@ export type Database = {
       current_partner_id: { Args: never; Returns: string }
       get_my_role: { Args: never; Returns: string }
       get_my_tenant_id: { Args: never; Returns: string }
+      get_my_tenant_modules: { Args: never; Returns: Json }
       is_partner_for_client: { Args: { _client_id: string }; Returns: boolean }
       is_self_client: { Args: { _client_id: string }; Returns: boolean }
       is_tenant_member: { Args: { _tenant_id: string }; Returns: boolean }

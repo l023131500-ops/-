@@ -14,6 +14,7 @@ import { Loader2, Save, ExternalLink, Plug, CheckCircle2, XCircle, Phone, Copy, 
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { myTenantQuery, tenantProfilesQuery, type TenantSettings, type IntegrationSettings, type NotificationSettings, type VoiceSettings } from "@/features/settings/queries";
+import { CustomizeTab } from "@/features/customize/CustomizeTab";
 
 export const Route = createFileRoute("/_authenticated/settings")({
   head: () => ({ meta: [{ title: "הגדרות | זכויות פרו" }] }),
@@ -36,6 +37,7 @@ function SettingsPage() {
           <TabsTrigger value="entitlements">זכאויות</TabsTrigger>
           <TabsTrigger value="integrations">אינטגרציות</TabsTrigger>
           <TabsTrigger value="voice">מערכת קולית</TabsTrigger>
+          <TabsTrigger value="customize">התאמה אישית + AI</TabsTrigger>
           <TabsTrigger value="notifications">התראות</TabsTrigger>
         </TabsList>
 
@@ -54,6 +56,7 @@ function SettingsPage() {
         </TabsContent>
         <TabsContent value="integrations" className="mt-4"><IntegrationsTab /></TabsContent>
         <TabsContent value="voice" className="mt-4"><VoiceTab /></TabsContent>
+        <TabsContent value="customize" className="mt-4"><CustomizeTab /></TabsContent>
         <TabsContent value="notifications" className="mt-4"><NotificationsTab /></TabsContent>
       </Tabs>
     </div>

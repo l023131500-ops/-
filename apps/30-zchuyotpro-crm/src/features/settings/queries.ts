@@ -30,6 +30,9 @@ export type TenantSettings = {
   integrations?: IntegrationSettings;
   notifications?: NotificationSettings;
   voice?: VoiceSettings;
+  // per-tenant module visibility (flagship spec item 2) — key: enabled.
+  // Missing key means enabled; see features/customize/modules.ts
+  modules?: Record<string, boolean>;
 };
 
 export const myTenantQuery = () =>

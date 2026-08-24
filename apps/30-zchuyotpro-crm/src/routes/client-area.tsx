@@ -5,6 +5,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { ShieldCheck, LogOut, User, MessageSquare, FileText, ScrollText, Wallet } from "lucide-react";
 import { queryOptions } from "@tanstack/react-query";
+import { tenantModulesQuery } from "@/features/customize/queries";
+import { OPTIONAL_MODULES, isModuleEnabled } from "@/features/customize/modules";
 
 export const meClientQuery = () =>
   queryOptions({
@@ -42,6 +44,12 @@ const tabs = [
 
 function ClientAreaLayout() {
   const { data: client, isLoading } = useQuery(meClientQuery());
+  // spec item 2: modules the manager turned off are hidden from the client too
+  const { data: modules } = useQuery(tenantModulesQuery());
+  const visibleTabs = tabs.filter((t) => {
+    const gated = OPTIONAL_MODULES.find((m) => m.portalUrl === t.url);
+    return !gated || isModuleEnabled(modules, gated.key);
+  });
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const navigate = useNavigate();
   const qc = useQueryClient();
@@ -83,7 +91,7 @@ function ClientAreaLayout() {
       </header>
       <nav className="border-b bg-card/40 px-2 sm:px-4 overflow-x-auto">
         <div className="flex gap-1">
-          {tabs.map((t) => {
+          {visibleTabs.map((t) => {
             const active = t.exact ? pathname === t.url : pathname.startsWith(t.url);
             return (
               <Link

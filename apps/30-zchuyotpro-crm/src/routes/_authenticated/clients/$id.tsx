@@ -24,6 +24,9 @@ import { ClientReportButton } from "@/features/clients/components/ClientReportBu
 import { ShareLinkCard } from "@/features/clients/components/ShareLinkCard";
 import { meProfileQuery } from "@/features/clients/queries";
 import { useQuery } from "@tanstack/react-query";
+import { CustomFieldsSection } from "@/features/customize/CustomFieldsSection";
+import { tenantModulesQuery } from "@/features/customize/queries";
+import { OPTIONAL_MODULES, isModuleEnabled } from "@/features/customize/modules";
 
 export const Route = createFileRoute("/_authenticated/clients/$id")({
   head: () => ({ meta: [{ title: "תיק לקוח | זכויות פרו" }] }),
@@ -53,6 +56,11 @@ function ClientProfilePage() {
   const { id } = Route.useParams();
   const { data: client } = useSuspenseQuery(clientQuery(id));
   const { data: me } = useQuery(meProfileQuery());
+  // per-tenant module visibility (settings → התאמה אישית); an optional tab is
+  // shown unless the manager explicitly turned its module off
+  const { data: modules } = useQuery(tenantModulesQuery());
+  const optionalKeys = new Set(OPTIONAL_MODULES.map((m) => m.key));
+  const visibleTabs = TABS.filter((t) => !optionalKeys.has(t.v) || isModuleEnabled(modules, t.v));
 
   return (
     <div className="space-y-4">
@@ -84,19 +92,35 @@ function ClientProfilePage() {
 
       <Tabs defaultValue="personal" className="w-full">
         <TabsList className="flex flex-wrap h-auto justify-start gap-1 bg-card border p-1">
-          {TABS.map((t) => (
+          {visibleTabs.map((t) => (
             <TabsTrigger key={t.v} value={t.v} className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
               {t.l}
             </TabsTrigger>
           ))}
         </TabsList>
 
-        <TabsContent value="personal" className="mt-4"><PersonalTab clientId={id} /></TabsContent>
-        <TabsContent value="family" className="mt-4"><FamilyTab clientId={id} /></TabsContent>
-        <TabsContent value="financial" className="mt-4"><FinancialTab clientId={id} /></TabsContent>
+        <TabsContent value="personal" className="mt-4 space-y-4">
+          <PersonalTab clientId={id} />
+          <CustomFieldsSection clientId={id} category="personal" />
+          <CustomFieldsSection clientId={id} category="other" />
+        </TabsContent>
+        <TabsContent value="family" className="mt-4 space-y-4">
+          <FamilyTab clientId={id} />
+          <CustomFieldsSection clientId={id} category="family" />
+        </TabsContent>
+        <TabsContent value="financial" className="mt-4 space-y-4">
+          <FinancialTab clientId={id} />
+          <CustomFieldsSection clientId={id} category="financial" />
+        </TabsContent>
         <TabsContent value="cashflow" className="mt-4"><CashflowTab clientId={id} /></TabsContent>
-        <TabsContent value="housing" className="mt-4"><HousingTab clientId={id} /></TabsContent>
-        <TabsContent value="vehicles" className="mt-4"><VehiclesTab clientId={id} /></TabsContent>
+        <TabsContent value="housing" className="mt-4 space-y-4">
+          <HousingTab clientId={id} />
+          <CustomFieldsSection clientId={id} category="housing" />
+        </TabsContent>
+        <TabsContent value="vehicles" className="mt-4 space-y-4">
+          <VehiclesTab clientId={id} />
+          <CustomFieldsSection clientId={id} category="vehicles" />
+        </TabsContent>
         <TabsContent value="entitlements" className="mt-4"><EntitlementsTab clientId={id} /></TabsContent>
         <TabsContent value="tasks" className="mt-4"><TasksTab clientId={id} /></TabsContent>
         <TabsContent value="timeline" className="mt-4"><TimelineTab clientId={id} /></TabsContent>
