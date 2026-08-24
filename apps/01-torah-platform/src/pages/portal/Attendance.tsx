@@ -144,7 +144,10 @@ export default function Attendance() {
               <Card
                 key={l.id}
                 className={`cursor-pointer transition-colors ${selectedLesson === l.id ? "border-primary bg-primary/5" : "hover:border-primary/50"}`}
-                onClick={() => setSelectedLesson(l.id)}
+                onClick={() => {
+                  setSelectedLesson(l.id);
+                  setAttendance({});
+                }}
               >
                 <div className="p-3">
                   <div className="font-medium text-sm">{l.title}</div>
