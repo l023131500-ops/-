@@ -61,6 +61,7 @@ export default function DonationPage() {
   const finalAmount = customAmount ? parseFloat(customAmount) : amount;
 
   const handleDonate = async () => {
+    if (loading) return;
     if (!tenant || !finalAmount || finalAmount < 5) {
       toast.error("נא להזין סכום תקין");
       return;
