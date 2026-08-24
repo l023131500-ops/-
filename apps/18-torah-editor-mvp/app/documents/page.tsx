@@ -28,6 +28,19 @@ type Row = Pick<
   'id' | 'title' | 'status' | 'word_count' | 'updated_at' | 'source_name'
 >;
 
+// Without a timeout, a slow/dead /orech/api/extract call leaves the upload
+// spinner ("מעלים את X") stuck forever with no way out -- same class of bug
+// already fixed for other apps' long-running client fetches.
+async function fetchWithTimeout(url: string, init: RequestInit, timeoutMs = 60000) {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
+  try {
+    return await fetch(url, { ...init, signal: controller.signal });
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
 const FILTERS: { key: DocStatus | 'all'; label: string }[] = [
   { key: 'all', label: 'הכול' },
   { key: 'editing', label: 'בעריכה' },
@@ -112,7 +125,13 @@ export default function DocumentsPage() {
     } else {
       const fd = new FormData();
       fd.append('file', file);
-      const res = await fetch('/orech/api/extract', { method: 'POST', body: fd });
+      let res: Response;
+      try {
+        res = await fetchWithTimeout('/orech/api/extract', { method: 'POST', body: fd });
+      } catch (e: any) {
+        if (e?.name === 'AbortError') throw new Error('הזמן המוקצב לקריאת הקובץ עבר. נסה שוב.');
+        throw e;
+      }
       const data = await res.json();
       if (!res.ok) throw new Error(data?.error || 'לא הצלחנו לקרוא את הקובץ.');
       text = data.text;
