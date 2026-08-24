@@ -88,7 +88,7 @@ const resolveTeacherId = async (name: string | null | undefined): Promise<string
   if (insertError) throw new Error(insertError.message);
   const { data: row, error: selectError } = await supabase
     .from("teachers").select("id").eq("organization_id", orgId).eq("name", trimmed).single();
-  if (selectError) throw new Error(selectError.message);
+  if (selectError || !row) throw new Error(selectError?.message ?? `מורה "${trimmed}" לא נמצא לאחר היצירה`);
   return row.id as string;
 };
 
