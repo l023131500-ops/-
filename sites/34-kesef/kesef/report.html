@@ -54,6 +54,8 @@ a{color:inherit;text-decoration:none}
   padding-inline-end:calc(28px + var(--more30-auth-inset, 112px))}
 .wordmark{font-family:'Secular One',sans-serif;font-size:17px}
 .wordmark span{color:var(--gold)}
+.nav-links{display:flex;gap:20px;align-items:center;font-size:14px}
+.nav-links a:hover{color:var(--gold-soft)}
 
 .head{padding:44px 0 26px}
 .picker{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin:18px 0 0}
@@ -131,7 +133,10 @@ tr.total td{font-weight:500;color:var(--gold-soft);border-top:1px solid var(--li
 <nav class="nav" aria-label="ניווט ראשי">
   <div class="nav-in">
     <a class="wordmark" href="/kesef">כסף<span> · שקיפות תקציבית</span></a>
-    <a class="btn btn-quiet" style="padding:8px 18px;font-size:14px" href="/kesef">אודות המערכת</a>
+    <div class="nav-links">
+      <a href="/kesef/compare">השוואת רשויות</a>
+      <a class="btn btn-quiet" style="padding:8px 18px;font-size:14px" href="/kesef">אודות המערכת</a>
+    </div>
   </div>
 </nav>
 
@@ -146,6 +151,7 @@ tr.total td{font-weight:500;color:var(--gold-soft);border-top:1px solid var(--li
       <input id="authPick" list="authList" placeholder="הקלידו שם רשות…" autocomplete="off" />
       <datalist id="authList"></datalist>
       <button class="btn btn-quiet" id="printBtn" type="button">הדפסת תיק לפגישה</button>
+      <a class="btn btn-quiet" id="cmpLink" href="/kesef/compare">השוואה מול רשות אחרת</a>
     </div>
   </div>
 </header>
@@ -437,6 +443,7 @@ async function show(symbol) {
   const url = new URL(location.href);
   url.searchParams.set('symbol', String(symbol));
   history.replaceState(null, '', url);
+  $('cmpLink').href = '/kesef/compare?symbols=' + symbol;
 }
 
 (async function init() {
