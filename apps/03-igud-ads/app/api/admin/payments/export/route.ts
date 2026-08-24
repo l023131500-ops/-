@@ -6,7 +6,16 @@ export const dynamic = "force-dynamic";
 
 function csvEscape(v: unknown): string {
   if (v === null || v === undefined) return "";
-  const s = String(v).replace(/"/g, '""');
+  let s = String(v);
+  // payer_name/payer_phone/description come straight from the public payment
+  // form (app/api/payments/create/route.ts passes body.payer_name through
+  // untouched) -- a value starting with =/+/-/@ is parsed as a formula by
+  // Excel/Sheets the moment an admin opens this export, which is a classic
+  // CSV-injection vector (e.g. DDE execution or data exfiltration via
+  // =HYPERLINK). Prefixing with a tab neutralizes the formula parse without
+  // changing the visible cell value.
+  if (/^[=+\-@]/.test(s)) s = "\t" + s;
+  s = s.replace(/"/g, '""');
   return /[",\n]/.test(s) ? `"${s}"` : s;
 }
 
