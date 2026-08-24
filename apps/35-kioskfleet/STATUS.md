@@ -4479,3 +4479,85 @@ to that constraint: they import only dependency-free modules (`hosts.js`,
   the screen actually starts rotating through it and stops on the first
   touch — the same constraint every fix in this log without a real device
   has hit.
+
+- **[24/08/2026, Loop A] Client branding — splash screen, logo, colors per
+  client, KIOSK_BUILD.md §9 "מיתוג לקוח: מסך פתיחה, לוגו, צבעים לכל לקוח",
+  was entirely unbuilt, on `zol` not this tree** — the client-directory
+  model (§2★ד) and per-device approvals (§2★ה) built earlier gave every
+  registered customer a code, a name, and a URL, but nothing to distinguish
+  one customer's on-device experience from another's beyond which site
+  loads. A hall running three different clients' events back-to-back had no
+  way to make the switch itself look intentional to the person standing at
+  the kiosk.
+
+  **Server**: two new optional `clients` columns, `logo_url`/`brand_color`
+  — NULL on every existing client, the same "never configured" convention
+  `exit_code`/`schedule_*`/`signage_*` established. `normalizeBrandColor()`
+  (6-digit hex, leading `#` optional, case-insensitive) and
+  `normalizeLogoUrl()` (absolute http(s) only — the same bar signage.js's
+  playlist URLs hold) added to `clients.js`, next to `normalizeClientCode`.
+  Both fields are optional, so an empty value is not an error, but a
+  non-empty value that fails validation is rejected rather than silently
+  dropped — POST/PATCH `/clients` return 400 with a Hebrew error either way.
+  PATCH treats the field being **absent** as "leave as-is" and an explicit
+  `''` as "clear it", the same convention the rest of that route already
+  uses for `code`. `approvedClientsForDevice()` and `POST
+  /api/agent/identify` both now select `logo_url AS logoUrl, brand_color AS
+  brandColor` alongside `code`/`name`/`url`/`allowedHost` — branding has to
+  travel in the same offline-first payload as everything else in that
+  object, since §2★ה's own selection screen must work with no network.
+
+  **Console**: the client-create form gets a logo-URL field and a colour
+  picker (`type="color"`, plus an explicit "ללא צבע" button, since a colour
+  input always reports *some* value and there was otherwise no way to leave
+  the field unset). The client list shows a colour swatch (double dark+light
+  ring so an arbitrary fill stays visible on both light and dark cards —
+  `.brand-swatch` in `style.css`) and a 🖼️ marker when a logo is set. Added
+  `clientModal()` — a full edit dialog reusing the same fields as the create
+  form. This closes a gap that predates branding: `PATCH /clients/:id`
+  already accepted `code`/`name`/`url`/`allowedHost`, but nothing in the
+  console ever called it, so any mistake in a client's own URL could
+  previously only be fixed by deleting and re-registering — which would also
+  drop every device's §2★ה approval for that client, since approvals are
+  keyed by client id.
+
+  **Android** (`KioskActivity.kt`): `switchToClient()` now calls the new
+  `showClientBrandSplash()` instead of loading the client's URL directly. It
+  builds a small inline HTML page — background = the client's brand colour
+  (or a dark default), a centered `<img>` for the logo if set — and loads it
+  into the *same* WebView via `loadDataWithBaseURL()` for 1.4s
+  (`CLIENT_SPLASH_MS`) before the real site loads. Deliberately not a native
+  `ImageView`: the WebView already fetches and decodes remote images for
+  every client site, so this needed no image-loading library and no new
+  permission. A client with neither field set skips the splash entirely —
+  a colourless flash would be worse than none. **Two defensive details**:
+  `brand_color` is re-validated on-device against `BRAND_COLOR_RE` before use
+  (a cached `Prefs.APPROVED_CLIENTS` config can outlive the server-side
+  validation that produced it, the same reasoning signage's per-URL
+  `hostAllowed()` gate documents), and `logo_url`'s only interpretation is as
+  an `<img src>` attribute, HTML-attribute-escaped before being spliced into
+  the page. The delayed `loadUrl()` for the real site is guarded against a
+  second selection made mid-splash: it only fires if `activeClientCode` is
+  still what it was when the splash started, so tapping "עמוד הבית" or a
+  different client during the 1.4s window is not overridden by the first
+  tap's stale navigation landing late — the same "no stale navigation wins a
+  race" shape `onConfigUpdated()`/`returnToVenue()` already apply.
+
+  8 new unit tests in `clients.test.mjs` (brand-colour normalisation incl.
+  leading-`#`/case/whitespace and rejecting non-hex input; logo-URL scheme
+  validation incl. rejecting `javascript:`/`data:`/relative paths). `node
+  --check` clean on every touched JS file. Full suite: 62/64 — was 54/56
+  before this round's 8 new tests; the two failures are the same
+  pre-existing `express`/`node:sqlite`-not-installed gap every prior entry
+  in this log has hit. **Kotlin is not compiler-verified**: no gradle/kotlin
+  toolchain in this sandbox, the same constraint every Android-side entry in
+  this log has hit — reviewed by hand; brace counts (111/111) and paren
+  counts (392/392) balance across the whole file after the edit.
+
+  Pushed to `l023131500-ops/zol`#`claude/what-do-you-see-gxo5tc` (`36eb59e`).
+  `more30.com/kiosk/api/health` polled 3× after the push and read `200`
+  throughout. **Not verified beyond the push-landing signal, the unit tests,
+  and manual Kotlin review**: no real device exists in this sandbox to
+  register a client with a logo+colour, switch to it on-device, and confirm
+  the splash actually renders and hands off to the real site — the same
+  constraint every fix in this log without a real device has hit.
