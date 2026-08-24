@@ -4632,3 +4632,94 @@ to that constraint: they import only dependency-free modules (`hosts.js`,
   "תבניות" tab, create a template, and confirm applying it actually updates
   several real kiosks — the same constraint every fix in this log without a
   real device/browser has hit.
+
+- **[24/08/2026, Loop A] Alerts — device offline over a threshold, low
+  battery, exit-attempt from the kiosk, KIOSK_BUILD.md §9 "התראות: מכשיר
+  אופליין מעל X, סוללה נמוכה, ניסיון יציאה מהקיוסק", was entirely unbuilt, on
+  `zol` not this tree** — the offline sweep in `index.js` already flipped
+  `online` to 0 after a heartbeat lapse, `battery` was already reported on
+  every heartbeat/status frame, and `showAdminDialog()`'s maintenance-code
+  entry (`exitcode.js`) had been on-device-only since it was written — but
+  none of the three ever surfaced anywhere an owner could see them without
+  opening a specific device and reading its raw activity log. An owner with
+  ten kiosks in a hall had no way to notice one had been dark for an hour, was
+  about to die, or that someone at it had been guessing the maintenance code,
+  short of clicking through all ten.
+
+  **Server**: three new config thresholds
+  (`ALERT_OFFLINE_MINUTES`=15, `LOW_BATTERY_PERCENT`=15,
+  `EXIT_ATTEMPT_WINDOW_HOURS`=24), deliberately separate from
+  `OFFLINE_AFTER_MINUTES` (3) — that one marks a device offline the moment a
+  heartbeat lapses (a normal, frequent wifi blip at a venue); the alert
+  threshold is "offline long enough an owner should actually go check on
+  it". New `src/alerts.js` (dependency-free like
+  `hosts.js`/`schedule.js`/`signage.js`/`display.js`/`exitcode.js`/
+  `clients.js`/`templatepolicy.js`, so it unit-tests with no
+  `better-sqlite3` installed) holds `isSuspiciousExitAttempt()` (only
+  `wrong_code` counts — a pile of successful, authorized unlocks is not
+  itself a problem), `validateExitAttemptBody()` (rejects anything but a
+  literal boolean `ok`, so a malformed report can never silently flip
+  which case it logged), and `summarizeAlerts()` (the badge counts: offline
+  + low-battery + *suspicious* exit attempts only). `GET /api/alerts`
+  (`routes/alerts.js`, owner-scoped exactly like `GET /devices`, `?all=1`
+  for admins) runs the offline/battery queries as plain SQL mirroring
+  `index.js`'s own offline-sweep WHERE-clause shape — deliberately not
+  parsed from fetched rows in JS, since SQLite's `datetime('now')` strings
+  carry no timezone and a naive `new Date(...)` reparse would misjudge every
+  threshold by the server's own UTC offset.
+
+  A wrong (or correct) maintenance-code entry never reached the server
+  before this — `exitcode.js`'s own header comment already noted the
+  comparison is "entirely on-device". New device-facing `POST
+  /api/agent/exit-attempt` (`{ ok: boolean }`, device-token auth) logs it
+  as an `exit_attempt` event (`wrong_code`/`correct_code` detail, same
+  `events` table the per-device activity log already reads) — the server
+  never receives the code itself, only what the device's own comparison
+  decided.
+
+  **Console**: new "🔔 התראות" nav item with a live unread-style badge
+  (`refreshAlertsBadge()`, its own 60s timer independent of the
+  device-list socket/poll fallback — alerts have no realtime push of their
+  own, nothing calls `notifyConsolesOfDevice()` when an alert condition
+  starts or clears). The view itself (`viewAlerts()`) lists all three
+  conditions in one place: offline devices with last-seen time, low-battery
+  devices, and recent exit attempts (⚠️ wrong code / ✅ correct code) with
+  device name+serial+time — the same info that used to require opening each
+  device's own card and scrolling its 30-row activity log.
+
+  **Android** (`KioskActivity.kt`/`AgentClient.kt`): `showAdminDialog()`'s
+  positive-button handler now calls the new `AgentClient.reportExitAttempt(ok)`
+  — fire-and-forget over plain HTTP, same shape as `ack()`'s own HTTP
+  fallback path, so a report that fails to reach the server is a missed
+  alert, not something that blocks or retries into the corner-tap gesture a
+  customer is standing in front of. Reports both outcomes, not only wrong
+  ones: the device just states what its own local comparison decided;
+  `isSuspiciousExitAttempt()` server-side is the one place that decides
+  which reports are alert-worthy.
+
+  5 new unit tests in `alerts.test.mjs` (suspicious-vs-benign
+  classification; `validateExitAttemptBody` accepting only a literal
+  boolean across 8 rejected shapes; `summarizeAlerts` counting each list
+  plus the suspicious-only subset, and an all-zero empty case). `node
+  --check` clean on every touched/added JS file (`config.js`, `alerts.js`,
+  `routes/alerts.js`, `routes/agent.js`, `index.js`, `alerts.test.mjs`,
+  `public/js/app.js`). Full suite: 83/83 pure-logic tests unaffected, 81/83
+  overall (the 2 failures — `routing.test.mjs`/`seedadmin.test.mjs` — are
+  the same pre-existing `express`/`better-sqlite3`-not-installed gap every
+  prior entry in this log has hit, unrelated to this change). **Kotlin is
+  not compiler-verified**: no gradle/kotlin toolchain in this sandbox, the
+  same constraint every Android-side entry in this log has hit — reviewed
+  by hand; brace counts (`AgentClient.kt` 75/75, `KioskActivity.kt` 111/111)
+  and paren counts (`AgentClient.kt` 291/291, `KioskActivity.kt` 395/395)
+  balance across both touched files after the edit.
+
+  Pushed to `l023131500-ops/zol`#`claude/what-do-you-see-gxo5tc` (`709bc88`).
+  `more30.com/kiosk/api/health` polled 3× after the push and read `200`
+  throughout; `GET /kiosk/api/alerts` with no auth token answered `401`
+  (route exists, auth-gated) once the deploy landed, where it answered
+  `404` immediately after the push. **Not verified beyond that and the unit
+  tests**: no real device and no browser exist in this sandbox to click
+  through the new "התראות" tab, let a real device go offline/low-battery,
+  or type a wrong maintenance code on one and confirm it actually appears
+  in the list — the same constraint every fix in this log without a real
+  device/browser has hit.
