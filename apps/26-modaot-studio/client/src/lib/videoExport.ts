@@ -537,9 +537,13 @@ export async function exportPromoVideo(
   // נשמר מחוץ ל-try כדי שאפשר יהיה לתזמן עמעום-סיום אחרי שהניגון מתחיל בפועל.
   let musicGainNode: GainNode | null = null;
   let musicBaseGain = 0;
-  if (musicEl) {
-    // יש מוזיקה — יש לערבב אותה עם הקריינות (אם קיימת) לפס-קול אחד יחיד, כי
-    // MediaRecorder לא מקליט שני tracks אודיו מקבילים בצורה אמינה בכל דפדפן.
+  if (audioEl || musicEl) {
+    // פס הקול נבנה תמיד דרך WebAudio — גם לקריינות-בלבד, לא רק לערבוב עם
+    // מוזיקה. המסלול הישן לקריינות-בלבד הסתמך על HTMLMediaElement.captureStream,
+    // שספארי לא מממש בכלל ופיירפוקס חושף רק בקידומת (mozCaptureStream) — שם
+    // בדיקת ה-typeof פשוט דילגה על האודיו, ווידאו שהובטחה לו קריינות ירד אילם,
+    // בלי שום שגיאה. createMediaElementSource + MediaStreamDestination הוא בדיוק
+    // המסלול שכבר הוכח כאן לערבוב המוזיקה ועובד בכל שלושת הדפדפנים.
     try {
       const Ctx = window.AudioContext || (window as any).webkitAudioContext;
       audioCtx = new Ctx();
@@ -551,37 +555,34 @@ export async function exportPromoVideo(
         narrSrc.connect(narrGain).connect(dest);
         narrGain.connect(audioCtx.destination); // האזנה חיה בזמן הרכבה, כמו קודם
       }
-      const musicGain = audioCtx.createGain();
-      musicGain.gain.value = Math.max(0, Math.min(1, opts.musicVolume ?? 0.25));
-      const musicSrc = audioCtx.createMediaElementSource(musicEl);
-      musicSrc.connect(musicGain).connect(dest);
-      musicGain.connect(audioCtx.destination);
-      musicGainNode = musicGain;
-      musicBaseGain = musicGain.gain.value;
+      if (musicEl) {
+        const musicGain = audioCtx.createGain();
+        musicGain.gain.value = Math.max(0, Math.min(1, opts.musicVolume ?? 0.25));
+        const musicSrc = audioCtx.createMediaElementSource(musicEl);
+        musicSrc.connect(musicGain).connect(dest);
+        musicGain.connect(audioCtx.destination);
+        musicGainNode = musicGain;
+        musicBaseGain = musicGain.gain.value;
+      }
       // AudioContext שנוצר במצב suspended (מדיניות autoplay) מזרים שקט ל-dest —
       // וידאו שלם היה יוצא אילם. הייצוא מופעל מלחיצת כפתור, אז resume מותר.
       if (audioCtx.state === "suspended") audioCtx.resume().catch(() => {});
       tracks.push(...dest.stream.getAudioTracks());
     } catch {
-      // AudioContext/createMediaElementSource לא נתמכים — נופלים לפס הקריינות
-      // הישיר בלבד (בלי מוזיקה), אותה התנהגות כמו לפני התוספת.
+      // AudioContext/createMediaElementSource לא נתמכים — נופלים ל-captureStream
+      // של אלמנט הקריינות (כולל הקידומת של פיירפוקס), אותה רשת-ביטחון כמו קודם;
+      // מוזיקה בלי WebAudio נשארת בחוץ, כמו בהתנהגות הקודמת.
       if (audioCtx) audioCtx.close().catch(() => {});
       audioCtx = null;
       musicGainNode = null;
-      if (audioEl && typeof (audioEl as any).captureStream === "function") {
+      const capture = audioEl && ((audioEl as any).captureStream ?? (audioEl as any).mozCaptureStream);
+      if (typeof capture === "function") {
         try {
-          tracks.push(...((audioEl as any).captureStream() as MediaStream).getAudioTracks());
+          tracks.push(...(capture.call(audioEl) as MediaStream).getAudioTracks());
         } catch {
           // בלי פס קול בכלל — לא קריטי.
         }
       }
-    }
-  } else if (audioEl && typeof (audioEl as any).captureStream === "function") {
-    try {
-      const audioStream: MediaStream = (audioEl as any).captureStream();
-      tracks.push(...audioStream.getAudioTracks());
-    } catch {
-      // דפדפן ללא תמיכה ב-HTMLMediaElement.captureStream — הוידאו ייצא בלי פס קול, לא קריטי.
     }
   }
 
