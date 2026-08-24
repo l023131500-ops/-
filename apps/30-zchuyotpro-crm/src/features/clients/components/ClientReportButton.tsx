@@ -29,9 +29,15 @@ import {
 import { formatILS, formatDateHe } from "@/lib/format";
 import {
   CATEGORY_LABELS,
+  LOAN_TYPES,
+  PAYMENT_BURDEN_MAX,
+  PAYMENT_BURDEN_WARN,
   budgetLimitsQuery,
+  loansQuery,
   monthLabel,
   monthRange,
+  monthsToPayoff,
+  summarizeLoans,
   summarizeMonth,
 } from "@/features/clients/finance";
 import { Button } from "@/components/ui/button";
@@ -91,7 +97,7 @@ export function ClientReportButton({ clientId }: { clientId: string }) {
       const ledgerFrom = monthRange(months[0].year, months[0].month).from;
       const ledgerTo = monthRange(months[2].year, months[2].month).to;
 
-      const [client, family, financial, housing, vehicles, catalog, assigned, documents, media, referrals, limits] =
+      const [client, family, financial, housing, vehicles, catalog, assigned, documents, media, referrals, limits, loans] =
         await Promise.all([
           qc.fetchQuery(clientQuery(clientId)),
           qc.fetchQuery(familyQuery(clientId)),
@@ -104,6 +110,7 @@ export function ClientReportButton({ clientId }: { clientId: string }) {
           qc.fetchQuery(propertyMediaQuery(clientId)),
           qc.fetchQuery(referralsQuery(clientId)),
           qc.fetchQuery(budgetLimitsQuery(clientId)),
+          qc.fetchQuery(loansQuery(clientId)),
         ]);
 
       const [{ data: tenant }, { data: tasks }, { data: ledger }] = await Promise.all([
@@ -140,6 +147,29 @@ export function ClientReportButton({ clientId }: { clientId: string }) {
           .filter((c) => !limits.some((l) => l.category === c))
           .map((category) => ({ category, limit: null as number | null })),
       ].map((r) => ({ ...r, spent: currentMonth.summary.expenseByCategory[r.category] ?? 0 }));
+
+      // Loans: same math as the on-screen loans panel, so print always matches
+      // screen — burden is measured against the current month's actual income.
+      const loansSummary = summarizeLoans(loans);
+      const loanBurden =
+        currentMonth.summary.income > 0 ? loansSummary.totalMonthly / currentMonth.summary.income : null;
+      const loanRows = loans.map((l) => {
+        const principal = l.principal === null ? null : Number(l.principal);
+        const balance = Number(l.balance) || 0;
+        const paidPct =
+          principal && principal > 0
+            ? Math.max(0, Math.min(100, Math.round(((principal - balance) / principal) * 100)))
+            : null;
+        const payoff = monthsToPayoff(balance, Number(l.annual_rate_pct) || 0, Number(l.monthly_payment) || 0);
+        const horizon = l.end_date
+          ? `עד ${formatDateHe(l.end_date)}`
+          : payoff !== null && payoff > 0
+            ? `~${payoff} חודשים`
+            : payoff === null && balance > 0
+              ? "ההחזר אינו מכסה את הריבית"
+              : "—";
+        return { l, balance, paidPct, horizon };
+      });
 
       // Sign up to 8 property photos so the report shows the property itself.
       const photos = media.filter((m) => m.media_type === "photo").slice(0, 8);
@@ -326,6 +356,30 @@ export function ClientReportButton({ clientId }: { clientId: string }) {
     }).join("")}
   </table>` : ""}
   <div class="notes" style="margin-top:6px">התזרים כולל תנועות שנרשמו על ידי הצוות, הלקוח באזור האישי והקו הטלפוני.</div>` : ""}
+
+  ${loanRows.length ? `
+  <h2 class="section">הלוואות (${loanRows.length})</h2>
+  <div class="chips" style="margin:8px 0 10px">
+    <div class="chip"><div class="num">${esc(formatILS(loansSummary.totalBalance))}</div><div class="lbl">סה״כ יתרת חוב</div></div>
+    <div class="chip"><div class="num">${esc(formatILS(loansSummary.totalMonthly))}</div><div class="lbl">סה״כ החזר חודשי</div></div>
+    ${loanBurden !== null ? `<div class="chip"><div class="num" style="color:${loanBurden > PAYMENT_BURDEN_MAX ? "#b91c1c" : loanBurden > PAYMENT_BURDEN_WARN ? "#b45309" : "#047857"}">${Math.round(loanBurden * 100)}%</div><div class="lbl">נטל החזרים מהכנסות ${esc(monthLabel(currentMonth.year, currentMonth.month))}${loanBurden > PAYMENT_BURDEN_MAX ? " · מעל התקרה" : loanBurden > PAYMENT_BURDEN_WARN ? " · גבוה" : ""}</div></div>` : ""}
+  </div>
+  <table class="list">
+    <tr><th>גוף מלווה</th><th>סוג</th><th style="width:110px">יתרת חוב</th><th style="width:110px">החזר חודשי</th><th style="width:70px">ריבית</th><th style="width:150px">שולם</th><th>צפי סילוק</th></tr>
+    ${loanRows.map(({ l, balance, paidPct, horizon }) => `<tr>
+      <td>${esc(l.lender)}${l.notes ? `<div class="notes">${esc(l.notes)}</div>` : ""}</td>
+      <td>${esc(LOAN_TYPES[l.loan_type as keyof typeof LOAN_TYPES] ?? l.loan_type)}</td>
+      <td>${esc(formatILS(balance))}</td>
+      <td>${esc(formatILS(Number(l.monthly_payment)))}</td>
+      <td>${l.annual_rate_pct === null ? "—" : `${esc(Number(l.annual_rate_pct))}%`}</td>
+      <td>${paidPct === null ? "—" : `<div style="display:flex;align-items:center;gap:6px">
+        <div class="bar" style="flex:1;margin-top:0;min-width:50px"><div style="width:${paidPct}%"></div></div>
+        <span style="font-size:11px;color:#64748b;white-space:nowrap">${paidPct}%</span>
+      </div>`}</td>
+      <td>${esc(horizon)}</td>
+    </tr>`).join("")}
+  </table>
+  <div class="notes" style="margin-top:6px">צפי הסילוק מחושב לפי לוח שפיצר מהיתרה, ההחזר והריבית שנרשמו — הערכה בלבד, אינה ייעוץ פיננסי.</div>` : ""}
 
   ${housing ? `
   <h2 class="section">דיור ונכסים</h2>
