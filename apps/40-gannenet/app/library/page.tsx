@@ -1,7 +1,7 @@
 "use client";
 import { useMemo, useState } from "react";
 import Link from "next/link";
-import { mashlimaLessons, regularLessons } from "@/lib/content";
+import { mashlimaLessons, regularLessons, monthOf, isMonthLabel } from "@/lib/content";
 
 type Row = { id: string; title: string; audience: string; month: string; category: string; sub: string };
 
@@ -9,10 +9,12 @@ function buildRows(): Row[] {
   const rows: Row[] = [];
   mashlimaLessons.forEach((l) => {
     const cat = (/תחום:\s*([^|]+)/.exec(l.meta || "")?.[1] || "").trim();
-    rows.push({ id: l.id, title: l.title, audience: "גננת משלימה", month: l.month || "", category: cat, sub: (l.objectives?.[0] || "") });
+    const month = monthOf(l.month);
+    rows.push({ id: l.id, title: l.title, audience: "גננת משלימה", month: isMonthLabel(month) ? month : "", category: cat, sub: (l.objectives?.[0] || "") });
   });
   regularLessons.forEach((l) => {
-    rows.push({ id: l.id, title: l.title, audience: "גננת רגילה", month: (l.meta || "").split("·")[0].replace("חודש", "").trim(), category: l.topic, sub: (l.summary || "").slice(0, 90) });
+    const month = monthOf(l.meta);
+    rows.push({ id: l.id, title: l.title, audience: "גננת רגילה", month: isMonthLabel(month) ? month : "", category: l.topic, sub: (l.summary || "").slice(0, 90) });
   });
   return rows;
 }
