@@ -45,8 +45,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     if (!supabase) {
+      // A corrupted/foreign value under this key (manual edit, extension,
+      // leftover from an older build) must not crash the whole demo shell —
+      // treat it the same as "no saved user" instead of throwing in render.
       const saved = window.localStorage.getItem(DEMO_KEY);
-      setUser(saved ? JSON.parse(saved) : null);
+      let demoUser: AuthUser | null = null;
+      if (saved) {
+        try {
+          demoUser = JSON.parse(saved);
+        } catch {
+          window.localStorage.removeItem(DEMO_KEY);
+        }
+      }
+      setUser(demoUser);
       setLoading(false);
       return;
     }
