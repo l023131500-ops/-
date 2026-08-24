@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import { ClipboardCheck, Check, X, Send, AlertCircle } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
@@ -18,6 +18,7 @@ const Attendance = () => {
   const [selectedLesson, setSelectedLesson] = useState<string>("");
   const [date, setDate] = useState(new Date().toISOString().split("T")[0]);
   const [absentStreaks, setAbsentStreaks] = useState<Record<string, number>>({});
+  const loadSeq = useRef(0);
 
   useEffect(() => { if (user) loadInit(); }, [user]);
   useEffect(() => { if (selectedLesson) loadAttendance(); }, [selectedLesson, date]);
@@ -31,10 +32,9 @@ const Attendance = () => {
   };
 
   const loadAttendance = async () => {
+    const seq = ++loadSeq.current;
     const { data: parts } = await supabase.from("participants").select("*").eq("lesson_id", selectedLesson).order("full_name");
-    setParticipants(parts || []);
     const { data: att } = await supabase.from("attendance").select("*").eq("lesson_id", selectedLesson).eq("date", date);
-    setAttendance(att || []);
 
     // Calculate absent streaks (last 5 sessions)
     const { data: history } = await supabase.from("attendance").select("*").eq("lesson_id", selectedLesson)
@@ -50,6 +50,10 @@ const Attendance = () => {
       }
       streaks[p.id] = streak;
     });
+
+    if (seq !== loadSeq.current) return;
+    setParticipants(parts || []);
+    setAttendance(att || []);
     setAbsentStreaks(streaks);
   };
 
