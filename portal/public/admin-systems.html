@@ -361,7 +361,7 @@
           return `<article class="sys">
             <div class="row1">
               <span class="num">${esc(x.number ?? '—')}</span>
-              <h2>${x.live_url ? `<a href="${esc(x.live_url)}">${esc(x.name)}</a>` : esc(x.name)}</h2>
+              <h2>${x.live_url && x.live_url.startsWith('http') ? `<a href="${esc(x.live_url)}">${esc(x.name)}</a>` : esc(x.name)}</h2>
               <span class="tag ${x.live ? 'live':'off'}">${x.live ? 'חי':'לא חי'}</span>
               ${x.show_in_showcase ? '<span class="tag show">בתצוגה</span>' : ''}
             </div>

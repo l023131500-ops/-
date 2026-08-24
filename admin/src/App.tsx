@@ -219,7 +219,7 @@ function adminHref(r: Overview): string | null {
   if (!r.admin_url) return null;
   if (r.admin_url.startsWith("http")) return r.admin_url;
   if (!r.admin_url.startsWith("/")) return null; // תיאור, לא נתיב
-  return r.live_url ? r.live_url.replace(/\/$/, "") + r.admin_url : null;
+  return r.live_url && r.live_url.startsWith("http") ? r.live_url.replace(/\/$/, "") + r.admin_url : null;
 }
 
 export function App() {
@@ -745,7 +745,7 @@ export function App() {
                         </div>
                       </details>
                       <div style={{ display: "flex", gap: 6, marginTop: 8, flexWrap: "wrap" }}>
-                        {r.live_url && <a href={r.live_url} target="_blank" rel="noreferrer" style={linkBtn}>אתר חי ↗</a>}
+                        {r.live_url && r.live_url.startsWith("http") && <a href={r.live_url} target="_blank" rel="noreferrer" style={linkBtn}>אתר חי ↗</a>}
                         {(() => {
                           const kind = accessOf(r);
                           if (kind === "none") return null;

@@ -258,7 +258,7 @@
             .map(
               (r) => `<tr>
                 <td class="name">${
-                  r.live_url
+                  r.live_url && r.live_url.startsWith('http')
                     ? `<a href="${esc(r.live_url)}">${esc(r.name || r.app_key)}</a>`
                     : esc(r.name || r.app_key)
                 } <span class="tag ${r.live ? 'live' : 'off'}">${r.live ? 'חי' : 'לא חי'}</span></td>

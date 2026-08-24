@@ -331,7 +331,7 @@
               <div class="sys-head">
                 <span class="sys-num">${esc(sys.number)}</span>
                 <span class="sys-name">${
-                  sys.live_url
+                  sys.live_url && sys.live_url.startsWith('http')
                     ? `<a href="${esc(sys.live_url)}">${esc(sys.name)}</a>`
                     : esc(sys.name)
                 }</span>
