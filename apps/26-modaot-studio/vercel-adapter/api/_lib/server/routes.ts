@@ -75,6 +75,20 @@ async function enforceAiQuota(req: Request, res: Response): Promise<boolean> {
   return true;
 }
 
+/**
+ * בעלות על שורה שמורה (פרויקט/מותג). שורה אנונימית (user_id ריק) פתוחה
+ * לכולם — בדיוק העולם שלפני התיוג, אפס רגרסיה לזרימה האנונימית. שורה
+ * מתויגת שייכת אך ורק לבעל JWT תואם; לכל אחד אחר היא עונה 404 (ולא 403,
+ * כדי לא להדליף שהמזהה קיים). בלי הבדיקה הזו כל גולש יכול היה לקרוא,
+ * לדרוס או למחוק עבודה שמורה של משתמש מחובר פשוט ע"י מעבר על מזהים רצים
+ * — "ענן פרטי" שאינו פרטי אינו מוצר אמיתי.
+ */
+async function mayTouch(rowUserId: string | null | undefined, req: Request): Promise<boolean> {
+  if (!rowUserId) return true;
+  const callerId = await getUserIdFromToken(req.headers.authorization);
+  return callerId === rowUserId;
+}
+
 export async function registerRoutes(httpServer: Server, app: Express): Promise<Server> {
   app.use((req, res, next) => { if (req.path.startsWith("/api")) res.setHeader("Cache-Control", "no-store"); next(); });
 
@@ -227,15 +241,16 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
 
   // ---- פרויקטים ----
   // userId מגיע רק אם יש כותרת Authorization עם JWT תקף (auth-button.js
-  // שולח אותו מ-localStorage['more30-auth'] כשמשתמש מחובר). בלי זה — כל
-  // הרשימה, בדיוק כמו לפני התיוג. עם זה — רק העבודות של אותו משתמש.
+  // שולח אותו מ-localStorage['more30-auth'] כשמשתמש מחובר). בלי זה —
+  // המאגר האנונימי (שורות ללא תיוג), בדיוק העולם שלפני התיוג. עם זה —
+  // רק העבודות של אותו משתמש.
   app.get("/api/projects", async (req, res) => {
     const userId = await getUserIdFromToken(req.headers.authorization);
     res.json(await storage.listProjects(50, userId));
   });
   app.get("/api/projects/:id", async (req, res) => {
     const p = await storage.getProject(Number(req.params.id));
-    if (!p) return res.status(404).json({ error: "לא נמצא פרויקט" });
+    if (!p || !(await mayTouch(p.userId, req))) return res.status(404).json({ error: "לא נמצא פרויקט" });
     res.json(p);
   });
   app.post("/api/projects", async (req, res) => {
@@ -245,12 +260,16 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
     res.json(await storage.createProject(parsed.data, userId));
   });
   app.patch("/api/projects/:id", async (req, res) => {
+    const existing = await storage.getProject(Number(req.params.id));
+    if (!existing || !(await mayTouch(existing.userId, req))) return res.status(404).json({ error: "לא נמצא פרויקט" });
     const p = await storage.updateProject(Number(req.params.id), req.body);
     if (!p) return res.status(404).json({ error: "לא נמצא פרויקט" });
     res.json(p);
   });
   app.delete("/api/projects/:id", async (req, res) => {
-    await storage.deleteProject(Number(req.params.id));
+    const existing = await storage.getProject(Number(req.params.id));
+    if (existing && !(await mayTouch(existing.userId, req))) return res.status(404).json({ error: "לא נמצא פרויקט" });
+    if (existing) await storage.deleteProject(Number(req.params.id));
     res.json({ ok: true });
   });
 
@@ -317,7 +336,7 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
   // מותג יחיד
   app.get("/api/brands/:id", async (req, res) => {
     const b = await storage.getBrand(Number(req.params.id));
-    if (!b) return res.status(404).json({ error: "מותג לא נמצא" });
+    if (!b || !(await mayTouch(b.userId, req))) return res.status(404).json({ error: "מותג לא נמצא" });
     res.json(b);
   });
 
@@ -332,6 +351,8 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
 
   // עדכון מותג (בריף / kit / לוגו)
   app.patch("/api/brands/:id", async (req, res) => {
+    const existing = await storage.getBrand(Number(req.params.id));
+    if (!existing || !(await mayTouch(existing.userId, req))) return res.status(404).json({ error: "מותג לא נמצא" });
     const b = await storage.updateBrand(Number(req.params.id), req.body || {});
     if (!b) return res.status(404).json({ error: "מותג לא נמצא" });
     res.json(b);
@@ -339,7 +360,9 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
 
   // מחיקת מותג
   app.delete("/api/brands/:id", async (req, res) => {
-    await storage.deleteBrand(Number(req.params.id));
+    const existing = await storage.getBrand(Number(req.params.id));
+    if (existing && !(await mayTouch(existing.userId, req))) return res.status(404).json({ error: "מותג לא נמצא" });
+    if (existing) await storage.deleteBrand(Number(req.params.id));
     res.json({ ok: true });
   });
 

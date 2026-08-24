@@ -728,8 +728,18 @@ export default function Editor() {
       // עבודה שנפתחה מ-/projects נושאת מזהה, ולכן היא מתעדכנת במקום.
       // בלי זה כל לחיצה על "שמור" הייתה יוצרת עותק נוסף של אותה מודעה.
       if (selected!.projectId) {
-        await apiRequest("PATCH", `/api/projects/${selected!.projectId}`, payload);
-        toast({ title: "העבודה עודכנה" });
+        try {
+          await apiRequest("PATCH", `/api/projects/${selected!.projectId}`, payload);
+          toast({ title: "העבודה עודכנה" });
+        } catch (patchErr: any) {
+          // 404 = השורה נמחקה ממכשיר אחר, או שהיא שייכת למשתמש מחובר
+          // וה-session פג (השרת עונה "לא נמצא" על שורה שאינה שלך).
+          // העבודה שעל המסך לא הולכת לאיבוד — נשמרת כעותק חדש.
+          if (!/^404\b/.test(String(patchErr?.message ?? ""))) throw patchErr;
+          const saved = await apiRequest("POST", "/api/projects", payload).then((r) => r.json());
+          if (saved?.id) setSelected({ ...selected!, projectId: saved.id });
+          toast({ title: "העבודה נשמרה כעותק חדש", description: "העבודה המקורית לא נמצאה (נמחקה או שההתחברות פגה) — נוצר עותק חדש." });
+        }
       } else {
         const saved = await apiRequest("POST", "/api/projects", payload).then((r) => r.json());
         if (saved?.id) setSelected({ ...selected!, projectId: saved.id });

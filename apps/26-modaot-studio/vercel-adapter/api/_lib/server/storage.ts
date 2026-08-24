@@ -206,10 +206,12 @@ export class SupabaseStorage implements IStorage {
   }
 
   async listProjects(limit = 50, userId?: string) {
-    // בלי userId (לא מחובר / JWT לא תקף) → כל השורות, בדיוק כמו לפני התיוג —
-    // אין רגרסיה לזרימה האנונימית הקיימת. עם userId → רק העבודות של המשתמש.
+    // בלי userId (לא מחובר / JWT לא תקף) → רק השורות הלא-מתויגות (user_id
+    // NULL) — כל שורות עידן-טרום-התיוג הן בדיוק כאלה, כך שהזרימה האנונימית
+    // רואה את אותו עולם כמו תמיד, בעוד עבודות של משתמשים מחוברים מפסיקות
+    // להופיע ברשימה של כל גולש זר. עם userId → רק העבודות של המשתמש.
     let q = sb().from("studio_projects").select("*");
-    if (userId) q = q.eq("user_id", userId);
+    q = userId ? q.eq("user_id", userId) : q.is("user_id", null);
     const r = unwrap(await q.order("updated_at", { ascending: false }).limit(limit));
     return (r as any[]).map(toProject);
   }
@@ -237,8 +239,9 @@ export class SupabaseStorage implements IStorage {
   }
 
   async listBrands(limit = 50, userId?: string) {
+    // אותה פרטיות כמו listProjects: אנונימי רואה רק את המאגר הלא-מתויג.
     let q = sb().from("studio_brands").select("*");
-    if (userId) q = q.eq("user_id", userId);
+    q = userId ? q.eq("user_id", userId) : q.is("user_id", null);
     const r = unwrap(await q.order("updated_at", { ascending: false }).limit(limit));
     return (r as any[]).map(toBrand);
   }
