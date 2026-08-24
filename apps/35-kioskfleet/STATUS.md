@@ -3477,3 +3477,68 @@ to that constraint: they import only dependency-free modules (`hosts.js`,
   reports and nothing broader. The console's own socket dials exactly that
   host (`socketUrl()` in `app.js`), so the tightened policy still allows the
   one connection the product needs and nothing else.
+
+- **[24/08/2026, Loop A] The console socket was fanning out every device's
+  `device_token` — on `zol`, the first bug found by reading `hub.js` rather
+  than `app.js`/`index.js`.** `routes/devices.js`'s `publicDevice()` already
+  strips `device_token` — the agent's long-lived secret, sufficient alone at
+  `/ws/agent?token=…` and every `/api/agent/*` route — from REST responses.
+  `notifyConsolesOfDevice()` never went through it: it spread the raw
+  `SELECT * FROM devices` row straight into every `device_update` frame,
+  fanned out to the device's owner and to **every admin's** open console tab,
+  on every enroll / `PATCH` / heartbeat / agent-connect / agent-disconnect.
+  `public/js/app.js`'s `mapDevice()` never reads the field — confirmed by
+  grep, it appears nowhere in `app.js`/`console.html` — so it was pure
+  unused cargo: sitting in the raw WS frame, in any HAR/proxy log, and
+  reachable by an XSS given `script-src` already carries `'unsafe-inline'`
+  (the CSP entry two above this one). An attacker who got either is handed a
+  credential that can impersonate the device: heartbeat as it, receive and
+  ack its commands, and everything else `/api/agent/*` accepts on
+  `device_token` alone.
+
+  This is the same bug the unmerged monorepo tree (`apps/35-kioskfleet` here)
+  already found and fixed as `devicepayload.js`/`consoleDevice()` — see the
+  "the console socket stopped carrying the agent's secret" entry higher up
+  this log — but per `#215`, that tree's build never shipped to production;
+  this is the first time the fix has landed on the file that is actually
+  live. Added `kiosk/server/src/devicepayload.js` on `zol`, independently
+  sized to `zol`'s own (smaller) `devices` schema rather than copied: an
+  allow-list of 17 fields, applied **after** the merge with the live-status
+  payload passed as `notifyConsolesOfDevice()`'s second argument, so a future
+  payload key sharing a name with a stripped column can't reintroduce it.
+  Kept free of every other module's imports (`ws`, `better-sqlite3`,
+  `bcryptjs`, `jsonwebtoken` — none installed in this checkout) so it is the
+  one part of this fix actually exercised here, the same constraint every
+  other test in `zol`'s suite is already written to.
+
+  `node --check` clean on both files. New `test/devicepayload.test.mjs`:
+  6/6 — asserts `device_token` never survives the merge, that a payload
+  key named `device_token` can't sneak back in through the override, that
+  every allow-listed field the row carries still passes through unchanged,
+  that an absent field stays absent rather than becoming `undefined` (the
+  client applies updates as `{ ...DEVICES[i], ...mapped }`), and that the
+  exact dropped set is `['device_token']` and nothing more — against a real
+  `SELECT *`-shaped row, so a column added to the allow-list without being
+  added to the fixture would still be caught failing the "dropped set" test.
+  Full suite: 13/15, `hosts.test.mjs` 7/7 unchanged + the 6 new;
+  `routing.test.mjs`/`seedadmin.test.mjs` fail for the same pre-existing,
+  unrelated reasons every prior entry in this log has hit (no `express`, no
+  `node:sqlite` in this container's Node 20.20.2).
+
+  Pushed to `l023131500-ops/zol`#`claude/what-do-you-see-gxo5tc` (`d6a3038`).
+  **Deploy confirmed, the socket behaviour itself was not**: `more30.com/kiosk/api/config`
+  read `502` ~15s after the push and `200` on the next poll (Railway rebuild
+  in flight, then landed) — the same transition every prior push in this log
+  used as its live-deploy signal. What this session could **not** do is open
+  a real `wss://kiosk.more30.com/ws/console` connection and watch a live
+  `device_update` frame: `kiosk.more30.com` does not resolve from this
+  container (`NXDOMAIN` on every lookup attempted, `more30.com` itself
+  resolves fine), and the portal path (`more30.com/kiosk/ws/console`) is the
+  same rewrite this log has already measured answering a WS upgrade with 404
+  (see "Hosting" in the header of this file) — there is no path to the socket
+  from here at all, live or otherwise. So this entry's "confirmed live" is
+  the deploy landing, not the frame shrinking; the frame-shrinking claim
+  rests on the unit test against the real row shape, same as `hosts.js`'s
+  tests stand in for a browser everywhere else in this file DNS or a missing
+  dependency has blocked. No test device was enrolled and no real customer's
+  device was touched to attempt the check.
