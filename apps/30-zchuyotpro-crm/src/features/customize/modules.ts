@@ -19,6 +19,7 @@ export const OPTIONAL_MODULES: ModuleDef[] = [
   { key: "housing", label: "דיור וחשבונות", description: "פרטי דיור, משכנתא, ארנונה, חשמל ומים" },
   { key: "vehicles", label: "רכבים", description: "רכבי הלקוח ותו נכה" },
   { key: "property-media", label: "תמונות ווידאו", description: "גלריית מדיה של נכס הלקוח" },
+  { key: "personal-areas", label: "אזורים אישיים וסיסמאות", description: "רשימת האזורים האישיים של הלקוח לכל נושא עם פרטי הכניסה — בתיק ובאזור האישי, לעולם לא לשותפים", portalUrl: "/client-area/vault" },
   { key: "referrals", label: "הפניות לשת״פ", description: "העברת פרטי הלקוח ליועצים ושותפים, כולל אישורי הלקוח באזור האישי", portalUrl: "/client-area/consents" },
 ];
 

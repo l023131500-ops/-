@@ -13,7 +13,7 @@ const MODEL = "claude-opus-4-8";
 
 const CATEGORIES = ["personal", "family", "financial", "housing", "vehicles", "other"];
 const FIELD_TYPES = ["text", "number", "date", "boolean", "select", "multiselect"];
-const MODULE_KEYS = ["financial", "cashflow", "housing", "vehicles", "property-media", "referrals"];
+const MODULE_KEYS = ["financial", "cashflow", "housing", "vehicles", "property-media", "personal-areas", "referrals"];
 
 const PROPOSAL_SCHEMA = {
   type: "object",
