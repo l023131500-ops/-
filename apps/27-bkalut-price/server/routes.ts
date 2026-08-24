@@ -457,11 +457,11 @@ export async function registerRoutes(
     res.json(client);
   });
 
-  app.get("/api/service-submissions", async (_req, res) => {
+  app.get("/api/service-submissions", requireAdmin, async (_req, res) => {
     res.json(await storage.listServiceSubmissions());
   });
 
-  app.get("/api/crm/submissions", async (_req, res) => {
+  app.get("/api/crm/submissions", requireAdmin, async (_req, res) => {
     res.json(await storage.listServiceSubmissionRows());
   });
 
