@@ -533,6 +533,11 @@ export async function exportPromoVideo(
 
   const canvasStream = (recordCanvas as HTMLCanvasElement & { captureStream: (fps?: number) => MediaStream }).captureStream(FPS);
   const tracks: MediaStreamTrack[] = [...canvasStream.getVideoTracks()];
+  // כשהכרטיסייה מוסתרת הדפדפן מפסיק גם לצלם את הקנבס לסטרים, לא רק להריץ rAF —
+  // ציור מתוך טיימר-הגיבוי לבדו לא מספיק, צריך לבקש פריים במפורש. Chrome חושף
+  // requestFrame על ה-track (CanvasCaptureMediaStreamTrack), פיירפוקס היסטורית
+  // על הסטרים עצמו — שניהם נבדקים והקריאה עטופה, כי בספארי אין אף אחד מהם.
+  const captureVideoTrack = tracks[0] as (MediaStreamTrack & { requestFrame?: () => void }) | undefined;
   let audioCtx: AudioContext | null = null;
   // נשמר מחוץ ל-try כדי שאפשר יהיה לתזמן עמעום-סיום אחרי שהניגון מתחיל בפועל.
   let musicGainNode: GainNode | null = null;
@@ -628,13 +633,37 @@ export async function exportPromoVideo(
 
   const startTime = performance.now();
   await new Promise<void>((resolve) => {
-    function frame() {
+    // הלולאה מונעת מ-rAF לחלקוּת בחזית, אבל rAF מושהה לגמרי בכרטיסייה מוסתרת —
+    // ובייצוא של עד 90 שניות מעבר-כרטיסייה הוא תרחיש שגרתי, לא קצה: בלי גיבוי
+    // ה-Promise הזה לא נפתר עד שחוזרים לכרטיסייה, ה-MediaRecorder ממשיך להקליט
+    // פריים קפוא ושקט (הקריינות כבר הסתיימה), והקובץ שיורד מרופד בדקות של
+    // "אוויר מת". טיימר-גיבוי (setInterval, שבכרטיסייה מוסתרת עם אודיו מתנגן
+    // ממשיך לפעול בקצב ~1Hz) מצייר ומקדם את אותו step בדיוק — הרינדור
+    // דטרמיניסטי לפי elapsed, אז פריים מהטיימר זהה לפריים ש-rAF היה מצייר
+    // באותו רגע — וסוגר את ההקלטה בזמן גם כשהמסך לא נראה. בחזית הטיימר רק
+    // מוסיף ציור זהה-תוכן אחת לשנייה בין פריימי rAF; ההתנהגות הנראית זהה.
+    let done = false;
+    const step = () => {
+      if (done) return;
       const elapsed = (performance.now() - startTime) / 1000;
       const t = Math.min(1, elapsed / duration);
       renderFrame(elapsed, t);
+      if (document.hidden) {
+        captureVideoTrack?.requestFrame?.();
+        (canvasStream as MediaStream & { requestFrame?: () => void }).requestFrame?.();
+      }
       opts.onProgress?.(t);
-      if (t < 1) requestAnimationFrame(frame);
-      else resolve();
+      if (t >= 1) {
+        done = true;
+        clearInterval(watchdog);
+        resolve();
+      }
+    };
+    const watchdog = setInterval(step, 1000);
+    function frame() {
+      if (done) return;
+      step();
+      if (!done) requestAnimationFrame(frame);
     }
     requestAnimationFrame(frame);
   });
