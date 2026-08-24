@@ -261,7 +261,7 @@ function recommend(answers, master, maxHealth = 60) {
 
   const mainRecs = mainUids.filter(u => matchesEmployment(catalog[u], answers)).map(u => enrich(u, 'main'));
   const moreRecs = moreUids.filter(u => matchesEmployment(catalog[u], answers)).map(u => enrich(u, 'more'));
-  const healthRecs = healthUids.slice(0, maxHealth).map(u => enrich(u, 'health'));
+  const healthRecs = healthUids.filter(u => matchesEmployment(catalog[u], answers)).slice(0, maxHealth).map(u => enrich(u, 'health'));
 
   // Buckets by priority (main + more merged, but main-first via tier tie-break)
   const allPrimary = [...mainRecs, ...moreRecs];
