@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import { Plus, Search, Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { partnersListQuery, useInvalidatePartners } from "@/features/partners/queries";
+import { defaultFieldsForCategory } from "@/features/partners/domains";
 import { meProfileQuery } from "@/features/clients/queries";
 import { PARTNER_CATEGORY } from "@/features/clients/constants";
 import { Card, CardContent } from "@/components/ui/card";
@@ -42,7 +43,8 @@ function PartnersListPage() {
         email: draft.email.trim(),
         phone: draft.phone.trim() || null,
         category: draft.category,
-        allowed_client_fields: [],
+        // ברירת מחדל לפי מיפוי התחום: שדות החובה של תחומי הקטגוריה בלבד
+        allowed_client_fields: defaultFieldsForCategory(draft.category),
         is_active: true,
       }).select("id").single();
       if (error) throw error;

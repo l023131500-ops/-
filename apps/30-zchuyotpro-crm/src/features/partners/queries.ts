@@ -145,6 +145,52 @@ export const portalReferralQuery = (referralId: string) =>
     },
   });
 
+// כל הנתונים הדרושים לבדיקת מוכנות-תיק מול דרישות תחום שת"פ (domains.ts)
+export type ClientReadiness = {
+  client: {
+    first_name: string | null;
+    last_name: string | null;
+    id_number: string | null;
+    phone: string | null;
+    email: string | null;
+    birth_date: string | null;
+    marital_status: string | null;
+  } | null;
+  family: { id: string; relation: string }[];
+  hasFinancial: boolean;
+  hasHousing: boolean;
+  vehiclesCount: number;
+  entitlementsCount: number;
+  documents: { id: string; file_name: string }[];
+};
+
+export const clientReadinessQuery = (clientId: string) =>
+  queryOptions({
+    queryKey: ["client-readiness", clientId],
+    queryFn: async (): Promise<ClientReadiness> => {
+      const [client, family, financial, housing, vehicles, entitlements, documents] = await Promise.all([
+        supabase.from("clients").select("first_name, last_name, id_number, phone, email, birth_date, marital_status").eq("id", clientId).maybeSingle(),
+        supabase.from("client_family_members").select("id, relation").eq("client_id", clientId),
+        supabase.from("client_financial_profile").select("id").eq("client_id", clientId).maybeSingle(),
+        supabase.from("client_housing_profile").select("id").eq("client_id", clientId).limit(1).maybeSingle(),
+        supabase.from("client_vehicles").select("id").eq("client_id", clientId),
+        supabase.from("client_entitlements").select("id").eq("client_id", clientId),
+        supabase.from("documents").select("id, file_name").eq("client_id", clientId),
+      ]);
+      const firstError = [client, family, financial, housing, vehicles, entitlements, documents].find((r) => r.error)?.error;
+      if (firstError) throw firstError;
+      return {
+        client: client.data,
+        family: family.data ?? [],
+        hasFinancial: !!financial.data,
+        hasHousing: !!housing.data,
+        vehiclesCount: (vehicles.data ?? []).length,
+        entitlementsCount: (entitlements.data ?? []).length,
+        documents: documents.data ?? [],
+      };
+    },
+  });
+
 export function useInvalidatePartners() {
   const qc = useQueryClient();
   return () => {

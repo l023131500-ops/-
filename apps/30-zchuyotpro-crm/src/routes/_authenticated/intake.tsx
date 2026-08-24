@@ -8,6 +8,7 @@ import { meProfileQuery, partnersQuery } from "@/features/clients/queries";
 import { dispatchNotify } from "@/features/partners/queries";
 import { triggerN8nWebhook } from "@/lib/n8n";
 import { AllowedFieldsPreview } from "@/features/partners/components/AllowedFieldsChecklist";
+import { DomainRequirementsPanel } from "@/features/partners/components/DomainRequirementsPanel";
 import type { AllowedField } from "@/features/partners/constants";
 import { PARTNER_CATEGORY } from "@/features/clients/constants";
 import { INTAKE_CHANNEL, INTAKE_STATUS, INTAKE_STATUS_COLOR, INTAKE_CHANNEL_COLOR } from "@/features/intake/constants";
@@ -447,6 +448,13 @@ function IntakeDetailSheet({ row, meId, onClose, invalidate }: {
                   </SelectContent>
                 </Select>
                 {selPartner && <AllowedFieldsPreview value={((selPartner.allowed_client_fields as unknown as AllowedField[]) ?? [])} />}
+                {selPartner && (
+                  <DomainRequirementsPanel
+                    category={selPartner.category}
+                    allowedFields={((selPartner.allowed_client_fields as unknown as AllowedField[]) ?? [])}
+                    clientId={row.client_id}
+                  />
+                )}
                 <div className="space-y-1.5">
                   <Label className="text-xs">הערות לשותף</Label>
                   <Textarea rows={3} value={routeNotes} onChange={(e) => setRouteNotes(e.target.value)} />

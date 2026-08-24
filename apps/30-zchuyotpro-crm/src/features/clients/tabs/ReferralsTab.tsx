@@ -7,6 +7,7 @@ import { referralsQuery, partnersQuery, clientQuery, meProfileQuery, useInvalida
 import { dispatchNotify } from "@/features/partners/queries";
 import { triggerN8nWebhook } from "@/lib/n8n";
 import { AllowedFieldsPreview } from "@/features/partners/components/AllowedFieldsChecklist";
+import { DomainRequirementsPanel } from "@/features/partners/components/DomainRequirementsPanel";
 import type { AllowedField } from "@/features/partners/constants";
 import { PARTNER_CATEGORY, REFERRAL_STATUS } from "@/features/clients/constants";
 import { ReferralStatusBadge } from "@/features/clients/components/badges";
@@ -143,7 +144,12 @@ export function ReferralsTab({ clientId }: { clientId: string }) {
             {draft.partner_id && (() => {
               const sel = partners.find((p) => p.id === draft.partner_id);
               const fields = ((sel?.allowed_client_fields as unknown as AllowedField[]) ?? []);
-              return <AllowedFieldsPreview value={fields} />;
+              return (
+                <>
+                  <AllowedFieldsPreview value={fields} />
+                  {sel && <DomainRequirementsPanel category={sel.category} allowedFields={fields} clientId={clientId} />}
+                </>
+              );
             })()}
           </div>
           <SheetFooter className="px-4 mt-4">

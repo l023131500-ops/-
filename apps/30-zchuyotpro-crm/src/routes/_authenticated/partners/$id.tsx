@@ -6,6 +6,8 @@ import { ArrowRight, Save, Trash2, Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { partnerQuery, partnerReferralsQuery, useInvalidatePartners } from "@/features/partners/queries";
 import { AllowedFieldsChecklist } from "@/features/partners/components/AllowedFieldsChecklist";
+import { DomainRequirementsPanel } from "@/features/partners/components/DomainRequirementsPanel";
+import { domainsForCategory, presetFieldsForDomain } from "@/features/partners/domains";
 import type { AllowedField } from "@/features/partners/constants";
 import { PARTNER_CATEGORY, REFERRAL_STATUS } from "@/features/clients/constants";
 import { ReferralStatusBadge } from "@/features/clients/components/badges";
@@ -143,7 +145,33 @@ function PartnerEditPage() {
           <CardHeader><CardTitle>הרשאות גישה למידע</CardTitle></CardHeader>
           <CardContent className="space-y-3">
             <p className="text-sm text-muted-foreground">בחר אילו שדות מידע על הלקוח יוצגו לשותף כאשר תופנה אליו הפניה.</p>
+            {domainsForCategory(form.category).length > 0 && (
+              <div className="space-y-1.5">
+                <div className="text-xs font-medium text-muted-foreground">מיפוי מומלץ לפי תחום — לחיצה מוסיפה את שדות התחום לבחירה:</div>
+                <div className="flex gap-1.5 flex-wrap">
+                  {domainsForCategory(form.category).map((d) => (
+                    <Button
+                      key={d.key}
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      className="h-7 text-xs"
+                      onClick={() => {
+                        const preset = presetFieldsForDomain(d);
+                        const merged = Array.from(new Set([...form.allowed_client_fields, ...preset]));
+                        const added = merged.length - form.allowed_client_fields.length;
+                        setForm({ ...form, allowed_client_fields: merged });
+                        toast.success(`הוחל מיפוי "${d.label}"`, { description: added > 0 ? `נוספו ${added} שדות — יש ללחוץ שמור` : "כל שדות התחום כבר מסומנים" });
+                      }}
+                    >
+                      {d.label}
+                    </Button>
+                  ))}
+                </div>
+              </div>
+            )}
             <AllowedFieldsChecklist value={form.allowed_client_fields} onChange={(v) => setForm({ ...form, allowed_client_fields: v })} />
+            <DomainRequirementsPanel category={form.category} allowedFields={form.allowed_client_fields} />
           </CardContent>
         </Card>
       </div>
