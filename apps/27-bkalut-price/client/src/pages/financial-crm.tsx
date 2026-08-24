@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Skeleton } from "@/components/ui/skeleton";
 import { apiRequest, queryClient } from "@/lib/queryClient";
+import { safeUrl } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
 import {
   Briefcase, CheckSquare, Mail, FileText, Bell, BarChart3, Clock, Plus, Send, Trash2, Users, ChevronLeft,
@@ -438,7 +439,7 @@ export default function FinancialCrmPage() {
                       <div key={d.id} className="rounded-md border p-3 flex items-start gap-3" data-testid={`doc-row-${d.id}`}>
                         <div className="flex-1 min-w-0">
                           <p className="font-semibold text-sm">{d.title}</p>
-                          <p className="text-[11px] text-muted-foreground">{d.docType}{d.url ? ` · ` : ""}{d.url && <a href={d.url} target="_blank" rel="noreferrer" className="underline text-primary">קישור</a>}</p>
+                          <p className="text-[11px] text-muted-foreground">{d.docType}{d.url ? ` · ` : ""}{safeUrl(d.url) && <a href={safeUrl(d.url)} target="_blank" rel="noreferrer" className="underline text-primary">קישור</a>}</p>
                           {d.notes && <p className="text-xs text-muted-foreground mt-1">{d.notes}</p>}
                         </div>
                         <div className="flex flex-col gap-1">

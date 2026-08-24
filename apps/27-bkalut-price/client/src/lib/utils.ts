@@ -6,6 +6,13 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
+// Only allow http(s) URLs through to an href/src attribute. Blocks
+// javascript:/data:/vbscript: URIs that could be typed into an
+// admin-editable free-text URL field and rendered on a page.
+export function safeUrl(url: string | null | undefined): string | undefined {
+  return url && /^https?:\/\//i.test(url) ? url : undefined;
+}
+
 // Returns the origin of the public-facing site, including any path-mount
 // prefix (e.g. "/mechiron" when deployed at more30.com/mechiron). Plain
 // window.location.origin never carries that prefix, so links built from it
