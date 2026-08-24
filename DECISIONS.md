@@ -14173,3 +14173,66 @@
     בהיקף. נושאים #62/#88/#94/#115/#164/#169/#254/#312 נשארים חסומים על
     החלטת משתמש/גישת תשתית, ללא שינוי.
     via cloud server 167.99.131.167 [loop B]
+
+509. **המשך לפי הצעת סבב 508: הרצתי שתי עדשות חדשות על 9 המערכות בהיקף
+    (17/18/19/20/21/22/24/27/28).**
+
+    **עדשה 1 — `dangerouslySetInnerHTML`/`eval`/`new Function`:** נמצאו
+    מוקדים ב-17 (`recording-detail.tsx` דרך `renderEditedHtml()`), 18
+    (`layout.tsx` JSON-LD), 21/22/24/27/28 (`chart.tsx` של shadcn — סטנדרטי,
+    לא קלט משתמש), 22 (`RightBrandedCard.tsx`), 24 (`ChatBot.tsx`), ו-28
+    (`storage.ts` — `eval("require")` מתועד ומכוון למניעת bundling של מודול
+    native, אין קלט משתמש בכלל). נבדק כל מוקד בקריאת קוד: 17 עובר דרך
+    `escapeHtml()` תקין (`&`/`</>` בלבד, מספיק כי לא בתוך attribute), 18 הוא
+    JSON.stringify על אובייקט קבוע (לא קלט משתמש), 22 עובר דרך `escapeHtml()`
+    מלא (כולל מרכאות), 24 עובר דרך `escapeHtml()` מלא לפני הרכבת
+    bold/link מוגבל ל-http(s) בלבד. **התוצאה: כל 9 המערכות נקיות — אין
+    וקטור XSS פעיל דרך העדשה הזו.** לא נדרש תיקון.
+
+    **עדשה 2 — ולידציית קלט מספרי (amount/duration/quantity) בטפסי אדמין:**
+    נמצא פער אמיתי ב-`27-bkalut-price/server/fin-storage.ts` (מודול ה-CRM
+    הפיננסי הפנימי לצוות/יועצים, מאחורי `requireAdmin` בכל הראוטים
+    ב-`fin-routes.ts`): שדות `amount` (עסקאות+הוראות-קבע), `monthlyLimit`
+    (תקציבים), `familySize` ו-`monthlyIncome` (לקוחות) נשמרו כמות-שהם בלי
+    שום בדיקת גבול — `Math.round(Number(x) || 0)` רק מגן מפני `NaN`, לא
+    מפני ערך שלילי. זו לא רק בעיית "קלט מכוער": `monthlySummary()`
+    (שורה 853) מחשבת `income`/`expense` על ידי סכימת `amount` לפי `kind`
+    (השדה הזה, לא הסימן של `amount`, אמור לקבוע כיוון) — `amount` שלילי
+    ב-`kind:"expense"` **מקטין** את סך ההוצאות המוצג בדשבורד במקום להגדיל,
+    והשוואת `used > b.monthlyLimit` (שורה 539, מפעילה התראות חריגת-תקציב)
+    מול `monthlyLimit` שלילי/אפס יוצרת התראות-שווא קבועות. `familySize`/
+    `monthlyIncome` שליליים משתקים בשקט את מנוע הצעת-הזכויות
+    (`fin-routes.ts:298-299`, תנאי `>= 5`/`> 0 && < 9000`) בלי שגיאה נראית.
+    כל הראוטים הרלוונטיים מוגנים ב-`requireAdmin` (לא ציבורי), אבל הפגיעה
+    בשלמות הנתונים המוצגים לצוות/יועצים אמיתית ונרשמת בפועל ב-SQLite.
+
+    **התיקון:** הוספתי שני helpers פרטיים ב-`fin-storage.ts`:
+    `nonNegInt(v)` (מעגל ל-integer, שלילי/`NaN` → `0` — תואם את דפוס
+    ה-`Math.round(Number(x) || 0)` הקיים) ו-`nonNegIntOrNull(v)` (אותו דבר
+    אבל שומר `null` לשדות nullable כמו `familySize`/`monthlyIncome`/
+    `recurring.amount` במקום לאפס אותם). הוחלפו כל 8 מוקדי הכתיבה:
+    `createClient`/`updateClient` (familySize+monthlyIncome), `createTransaction`/
+    `updateTransaction` (amount), `createBudget`/`updateBudget` (monthlyLimit),
+    `createRecurring`/`updateRecurring` (amount). שינוי אדיטיבי בלבד — ערכים
+    תקינים (0 ומעלה) עוברים בדיוק כמו קודם, רק ערך שלילי/לא-מספרי מתקבע
+    ל-0/`null` במקום להישמר כמות-שהוא ולעוות את הדוחות.
+
+    **בדיקות תקינות:** קריאת קוד בלבד (אין `node_modules`/tsc באפליקציה,
+    כמו בכל סבב קודם). איזון סוגריים בפייתון על `fin-storage.ts`:
+    `()`894/894, `{}`233/233, `[]`84/84 — מאוזן במדויק. `git diff --stat`:
+    קובץ אחד, +26/-7.
+
+    לא נגעתי במערכות מוגנות 08/09/bkalut-app/bkalot-admin/zr_*/NEDARIM3873/
+    csj/csj_src/igud, ב-`main`, או במערכת מחוץ להיקף. ענף חדש
+    `fix/b-27-financial-crm-numeric-validation-round509-0824`, נדחף.
+
+    **הבא בתור:** עדשת ה-`dangerouslySetInnerHTML`/`eval`/`new Function`
+    ועדשת ולידציית-הקלט-המספרי (לפחות ב-27) כעת סגורות. שאר המערכות
+    בהיקף (17/18/19/20/21/22/24/28) לא נבדקו עדיין באותה עדשה מספרית
+    שנייה על טפסי אדמין משלהן (רק 27 נבדק בפועל בסבב הזה) — כדאי להמשיך
+    שם, או לפתוח עדשה חדשה (למשל: race conditions בעדכוני RPC מקבילים, או
+    בדיקת CORS/CSRF על ראוטי admin ב-9 המערכות). נושאים
+    #62/#88/#94/#115/#164/#169/#254/#312 נשארים חסומים על החלטת
+    משתמש/גישת תשתית, ללא שינוי.
+    via cloud server 167.99.131.167 [loop B]
+    via cloud server 167.99.131.167 [loop B]
