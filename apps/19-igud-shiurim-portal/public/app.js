@@ -125,6 +125,19 @@ document.addEventListener('click', (e) => {
   btn.innerHTML = reveal ? PW_EYE_OFF : PW_EYE;
 });
 
+// העלאת קובץ (לוגו/תמונת מודעה/מסמך שירות) בלי timeout הייתה תולה את
+// הדשבורד במצב "מעלה…" לצמיתות אם השרת/האחסון נתקעים - אין כאן שום
+// AbortController קיים, בניגוד לקריאות היוצאות בצד השרת (server.js).
+async function fetchWithTimeout(url, init, timeoutMs = 60000) {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
+  try {
+    return await fetch(url, { ...init, signal: controller.signal });
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
 async function api(path, options = {}) {
   const headers = Object.assign({ 'Content-Type': 'application/json' }, options.headers || {});
   if (options.auth && currentSession) {
@@ -293,7 +306,7 @@ function wireUploadField({ id, uploadUrl }) {
     try {
       const fd = new FormData();
       fd.append('file', file);
-      const res = await fetch(uploadUrl, { method: 'POST', body: fd });
+      const res = await fetchWithTimeout(uploadUrl, { method: 'POST', body: fd });
       let json = {};
       try { json = await res.json(); } catch (e) { /* no body */ }
       if (!res.ok) throw new Error(json.error || `העלאה נכשלה (${res.status})`);
@@ -304,7 +317,7 @@ function wireUploadField({ id, uploadUrl }) {
       setTimeout(() => dropzone.classList.remove('dropzone-success'), 1500);
     } catch (err) {
       preview.innerHTML = previousPreviewHtml;
-      status.textContent = err.message || 'העלאה נכשלה';
+      status.textContent = err.name === 'AbortError' ? 'העלאה נכשלה — הזמן המוקצב עבר' : (err.message || 'העלאה נכשלה');
       dropzone.classList.add('dropzone-error');
     } finally {
       dropzone.classList.remove('dropzone-loading');
