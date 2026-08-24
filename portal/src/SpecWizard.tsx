@@ -406,11 +406,19 @@ export function SpecWizard() {
 
       <div className="wiz-nav">
         {step > 0 ? (
-          <button className="btn btn-light" onClick={() => { setErr(""); setStep((x) => x - 1); }}>
+          <button
+            className="btn btn-light"
+            disabled={state === "sending"}
+            onClick={() => { setErr(""); setStep((x) => x - 1); }}
+          >
             → חזרה
           </button>
         ) : (
-          <button className="btn btn-light" onClick={() => { setTrack(""); setErr(""); }}>
+          <button
+            className="btn btn-light"
+            disabled={state === "sending"}
+            onClick={() => { setTrack(""); setErr(""); }}
+          >
             → מסלול אחר
           </button>
         )}
