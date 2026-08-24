@@ -31,14 +31,17 @@ function singleQueryParam(req: Request, key: string): string | undefined {
 
 // Same array pitfall as above, but for the numeric ?clientId= filter: a repeated
 // ?clientId= produces an array, and Number(array) on more than one element is NaN.
-// listCategories()/listOpportunities() then compare `c.clientId === NaN`, which is
-// always false, so the filter silently collapses to "no client match" instead of
-// throwing or falling back to "all clients" — categories/opportunities the caller
-// should see quietly disappear from the response.
+// listCategories()/listOpportunities() compare `c.clientId === clientId`, which is
+// always false for NaN, so an un-guarded NaN would silently collapse the filter to
+// "no client match" instead of falling back to "all clients" — guard against NaN
+// here so the caller falls back to the same undefined/all-clients behavior as when
+// no ?clientId= was sent at all.
 export function clientIdQueryParam(req: Request): number | undefined {
   const raw = req.query.clientId;
   const single = Array.isArray(raw) ? raw[0] : raw;
-  return single ? Number(single) : undefined;
+  if (!single) return undefined;
+  const num = Number(single);
+  return Number.isNaN(num) ? undefined : num;
 }
 
 async function requireUser(req: UserRequest, res: Response, next: NextFunction) {
