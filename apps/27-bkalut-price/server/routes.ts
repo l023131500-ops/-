@@ -3014,6 +3014,24 @@ export async function registerRoutes(
   //     public page. Stores upload their own CSV/XLSX/JSON without admin auth.
   // ============================================================================
 
+  // SSRF guard for (A) below: the admin-supplied `url` is fetched *by this
+  // server*, so an unvalidated value would let the request be pointed at the
+  // server's own internal network (localhost, cloud metadata IP, other
+  // internal services) instead of the intended public price-transparency
+  // feed. Hostname-literal blocklist only (no DNS pre-resolution available
+  // without a new npm dependency, matching the constraint already documented
+  // in round 18 — no node_modules installed locally to add one safely).
+  const isSafeRemoteUrl = (raw: string): boolean => {
+    let u: URL;
+    try { u = new URL(raw); } catch { return false; }
+    if (u.protocol !== "http:" && u.protocol !== "https:") return false;
+    const host = u.hostname.toLowerCase();
+    if (host === "localhost" || host === "0.0.0.0" || host === "::1" || host.endsWith(".local") || host.endsWith(".internal")) return false;
+    if (/^127\./.test(host) || /^10\./.test(host) || /^192\.168\./.test(host) || /^169\.254\./.test(host)) return false;
+    if (/^172\.(1[6-9]|2\d|3[01])\./.test(host)) return false;
+    return true;
+  };
+
   // In-memory multipart parser (we never persist raw files to disk).
   const ingestUpload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 60 * 1024 * 1024 } });
   const submitUpload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 8 * 1024 * 1024 } });
@@ -3041,6 +3059,10 @@ export async function registerRoutes(
     const job = priceComparison.createImportJob({ feedSourceId: null, trigger: "ingest", kind: sourceKind });
     const log: pcIngest.Logger = (level, msg) => priceComparison.logImport(job.id, level, msg);
     try {
+      if (!buffer && remoteUrl && !isSafeRemoteUrl(remoteUrl)) {
+        priceComparison.finishImportJob(job.id, { status: "error", errors: 1, message: "blocked url" });
+        return res.status(400).json({ ok: false, message: "כתובת URL לא נתמכת (רק http/https ציבוריים)" });
+      }
       if (!buffer && remoteUrl) {
         log("info", `Fetching remote file: ${remoteUrl}`);
         const controller = new AbortController();
