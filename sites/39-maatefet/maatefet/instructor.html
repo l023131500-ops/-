@@ -374,6 +374,28 @@ th{color:var(--muted);font-weight:400;font-size:12px;text-transform:uppercase;le
         <div id="contentTable"><div class="empty">טוען…</div></div>
       </div>
       <div class="card">
+        <h2>שיתוף שיעורים עם זוג</h2>
+        <p class="sub" style="margin-bottom:14px">פריט ששותף עם זוג מופיע באזור האישי שלו — לצפייה חוזרת בכל זמן, כולל קובץ/קישור מצורף. השיתוף אישי לזוג אחד וניתן לביטול בכל רגע.</p>
+        <div class="row">
+          <div>
+            <label for="caClient">זוג</label>
+            <select id="caClient"></select>
+          </div>
+          <div>
+            <label for="caItem">פריט תוכן</label>
+            <select id="caItem"></select>
+          </div>
+        </div>
+        <label for="caNote">הערה לזוג (אופציונלי)</label>
+        <input id="caNote" placeholder="למשל: לקרוא לפני המפגש הבא" />
+        <div id="caErr" role="alert" aria-live="polite"></div>
+        <button class="btn" id="caSubmit">שיתוף עם הזוג</button>
+      </div>
+      <div class="card">
+        <h2>שיעורים ששותפו עם זוגות</h2>
+        <div id="caTable"><div class="empty">טוען…</div></div>
+      </div>
+      <div class="card">
         <h2>תוכן משותף מהקהילה</h2>
         <p class="sub" style="margin-bottom:14px">פריטים ששיתפו/ו מדריכים/ות אחרים/ות באותו מגזר.</p>
         <div id="sharedContentTable"><div class="empty">טוען…</div></div>
@@ -1115,6 +1137,9 @@ async function renderReminders() {
 /* ── dashboard: content studio (module 2) ────────────────────────────────── */
 const CONTENT_TYPE_LABEL = { lesson: 'שיעור', article: 'מאמר', reminder_template: 'תבנית תזכורת', presentation: 'מצגת', exercise: 'תרגיל', note: 'הערה כללית' };
 const contentTypeLabel = (t) => CONTENT_TYPE_LABEL[t] || v(t);
+// peer-supplied URLs (community shared content, marketplace) render as hrefs
+// in this browser — only http(s) may pass; anything else renders as no link.
+const safeUrl = (u) => (/^https?:\/\//i.test(String(u || '')) ? String(u) : null);
 
 $('cSubmit').addEventListener('click', async () => {
   const title = $('cTitle').value.trim();
@@ -1131,6 +1156,7 @@ $('cSubmit').addEventListener('click', async () => {
     $('cTitle').value = ''; $('cBody').value = ''; $('cMedia').value = ''; $('cShared').checked = false; $('cType').value = 'note';
     $('cErr').innerHTML = '';
     renderContent();
+    renderAssignments();
   } catch (e) {
     $('cErr').innerHTML = '<div class="err">' + esc(e.message) + '</div>';
   } finally {
@@ -1170,7 +1196,7 @@ async function renderSharedContent() {
   if (!rows.length) { el.innerHTML = '<div class="empty">עדיין לא שותף תוכן על ידי קולגות במגזר שלכם.</div>'; return; }
   el.innerHTML = '<table><thead><tr><th>כותרת</th><th>סוג</th><th>מדריך/ה</th><th>מדיה</th><th>שותף</th></tr></thead><tbody>' +
     rows.map((r) => '<tr><td>' + v(r.title) + '</td><td>' + contentTypeLabel(r.content_type) + '</td><td>' + v(r.author_name) + '</td>' +
-      '<td>' + (r.media_url ? '<a href="' + esc(r.media_url) + '" target="_blank" rel="noopener">קישור</a>' : NA) + '</td>' +
+      '<td>' + (safeUrl(r.media_url) ? '<a href="' + esc(safeUrl(r.media_url)) + '" target="_blank" rel="noopener">קישור</a>' : NA) + '</td>' +
       '<td>' + dtm(r.created_at) + '</td></tr>').join('') +
     '</tbody></table>';
 }
@@ -1188,7 +1214,7 @@ async function renderMarketplace() {
   if (!rows.length) { el.innerHTML = '<div class="empty">עדיין אין תבניות-תזכורת משותפות במגזר שלכם.</div>'; return; }
   el.innerHTML = '<table><thead><tr><th>כותרת</th><th>מדריך/ה</th><th>מדיה</th><th>שותפה</th><th></th></tr></thead><tbody>' +
     rows.map((r) => '<tr><td>' + v(r.title) + '</td><td>' + v(r.author_name) + '</td>' +
-      '<td>' + (r.media_url ? '<a href="' + esc(r.media_url) + '" target="_blank" rel="noopener">קישור</a>' : NA) + '</td>' +
+      '<td>' + (safeUrl(r.media_url) ? '<a href="' + esc(safeUrl(r.media_url)) + '" target="_blank" rel="noopener">קישור</a>' : NA) + '</td>' +
       '<td>' + dtm(r.created_at) + '</td>' +
       '<td><button class="btn btn-sm" data-copy-template="' + esc(r.id) + '">השתמש בתבנית זו</button></td></tr>').join('') +
     '</tbody></table>';
@@ -1206,6 +1232,54 @@ async function renderMarketplace() {
       }
     });
 }
+
+/* ── content studio: sharing lessons with a couple (0143) ────────────────── */
+async function renderAssignments() {
+  const sel = $('caClient'), items = $('caItem'), el = $('caTable');
+  try {
+    const [clients, content, rows] = await Promise.all([
+      rpc('maatefet_clients_list'),
+      rpc('maatefet_content_list'),
+      rpc('maatefet_content_assignments_list'),
+    ]);
+    sel.innerHTML = clients.length
+      ? clients.map((c) => '<option value="' + c.id + '">' + esc(c.full_name) + (c.partner_name ? ' ו' + esc(c.partner_name) : '') + '</option>').join('')
+      : '<option value="">אין עדיין זוגות</option>';
+    items.innerHTML = content.length
+      ? content.map((r) => '<option value="' + r.id + '">' + contentTypeLabel(r.content_type) + ' — ' + esc(r.title) + '</option>').join('')
+      : '<option value="">אין עדיין פריטי תוכן</option>';
+    if (!rows.length) { el.innerHTML = '<div class="empty">עדיין לא שותף שיעור עם זוג.</div>'; return; }
+    el.innerHTML = '<table><thead><tr><th>זוג</th><th>פריט</th><th>הערה</th><th>שותף</th><th></th></tr></thead><tbody>' +
+      rows.map((r) => '<tr><td>' + v(r.client_name) + (r.partner_name ? ' ו' + esc(r.partner_name) : '') + '</td>' +
+        '<td>' + contentTypeLabel(r.content_type) + ' — ' + v(r.content_title) + '</td>' +
+        '<td>' + v(r.note) + '</td><td>' + dtm(r.created_at) + '</td>' +
+        '<td><button class="btn btn-sm" data-unassign="' + esc(r.id) + '" aria-label="ביטול שיתוף — ' + esc(r.content_title || '') + '">ביטול שיתוף</button></td></tr>').join('') +
+      '</tbody></table>';
+    for (const b of el.querySelectorAll('[data-unassign]'))
+      b.addEventListener('click', async () => {
+        b.disabled = true;
+        try { await rpc('maatefet_content_unassign', { p_id: b.dataset.unassign }); renderAssignments(); }
+        catch (e) { alert(e.message); b.disabled = false; }
+      });
+  } catch (e) {
+    el.innerHTML = '<div class="err">' + esc(e.message) + '</div>';
+  }
+}
+
+$('caSubmit').addEventListener('click', async () => {
+  const clientId = $('caClient').value, contentId = $('caItem').value;
+  if (!clientId || !contentId) { $('caErr').innerHTML = '<div class="err">נדרשים זוג ופריט תוכן — שניהם.</div>'; return; }
+  $('caSubmit').disabled = true;
+  try {
+    await rpc('maatefet_content_assign', { p_client_id: clientId, p_content_id: contentId, p_note: $('caNote').value.trim() || null });
+    $('caNote').value = ''; $('caErr').innerHTML = '';
+    renderAssignments();
+  } catch (e) {
+    $('caErr').innerHTML = '<div class="err">' + esc(e.message) + '</div>';
+  } finally {
+    $('caSubmit').disabled = false;
+  }
+});
 
 /* ── dashboard: personal branding (module 2) ─────────────────────────────── */
 function renderProfilePreview() {
@@ -1795,7 +1869,7 @@ for (const tab of document.querySelectorAll('.tab')) {
     if (tab.dataset.view === 'invites') renderInvites();
     if (tab.dataset.view === 'calendar') { renderAppointments(); renderIcsFeed(); }
     if (tab.dataset.view === 'reminders') renderReminders();
-    if (tab.dataset.view === 'content') { renderContent(); renderSharedContent(); renderMarketplace(); }
+    if (tab.dataset.view === 'content') { renderContent(); renderSharedContent(); renderMarketplace(); renderAssignments(); }
     if (tab.dataset.view === 'profile') renderProfileForm();
     if (tab.dataset.view === 'forum') renderForum();
     if (tab.dataset.view === 'followups') renderFollowups();

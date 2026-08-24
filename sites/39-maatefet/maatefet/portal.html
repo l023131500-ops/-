@@ -218,6 +218,12 @@ input:focus,select:focus{outline:2px solid var(--gold);outline-offset:1px;border
     </div>
 
     <div class="card">
+      <h2>שיעורים וחומרים מהמדריך/ה</h2>
+      <p class="sub">חומרי לימוד שהמדריך/ה שיתף/ה אתכם באופן אישי — זמינים כאן לצפייה חוזרת בכל זמן, כולל קבצים וקישורים מצורפים.</p>
+      <div id="lessonList"><div class="empty">טוען…</div></div>
+    </div>
+
+    <div class="card">
       <h2>דירקטוריז</h2>
       <p class="sub">פוסקים, מקוואות, מסדרי קידושין, בודקות טהרה ויועצים זוגיים — נבחרו ידנית ע"י צוות more30, מותאמים למגזר שלכם.</p>
       <label for="dirFilter">סינון לפי קטגוריה</label>
@@ -570,8 +576,8 @@ function siCard(s) {
     '<p class="meta"><span class="badge ' + badgeClass + '">' + (SI_STATUS_LABEL[s.status] || s.status) + '</span></p>' +
     (s.notes ? '<p class="meta">' + esc(s.notes) + '</p>' : '') +
     (s.content_title
-      ? '<p class="meta">חומר לימוד: ' + (s.content_media_url
-          ? '<a href="' + esc(s.content_media_url) + '" target="_blank" rel="noopener">' + esc(s.content_title) + '</a>'
+      ? '<p class="meta">חומר לימוד: ' + (safeUrl(s.content_media_url)
+          ? '<a href="' + esc(safeUrl(s.content_media_url)) + '" target="_blank" rel="noopener">' + esc(s.content_title) + '</a>'
           : esc(s.content_title)) + '</p>'
       : '') +
     '</div>';
@@ -600,6 +606,37 @@ async function renderStudyItems() {
     '<div style="background:var(--line);border-radius:6px;height:8px;overflow:hidden;margin:6px 0 14px">' +
     '<div style="background:var(--gold);height:100%;width:' + pct + '%"></div></div>';
   el.innerHTML = rows.map(siCard).join('');
+}
+
+/* ── shared lessons (couple-facing content, 0143) ────────────────────────── */
+const LESSON_TYPE_LABEL = { lesson: 'שיעור', article: 'מאמר', reminder_template: 'תבנית תזכורת', presentation: 'מצגת', exercise: 'תרגיל', note: 'הערה כללית' };
+// instructor-supplied URLs render as hrefs in the couple's browser — only
+// http(s) may pass, anything else (javascript:, data:, …) renders as no link.
+const safeUrl = (u) => (/^https?:\/\//i.test(String(u || '')) ? String(u) : null);
+
+function lessonCard(l) {
+  const media = safeUrl(l.media_url);
+  return '<div class="appt">' +
+    '<p class="when">' + esc(l.title) + '</p>' +
+    '<p class="meta"><span class="badge">' + (LESSON_TYPE_LABEL[l.content_type] || esc(l.content_type)) + '</span> · שותף אתכם ב-' + dtm(l.assigned_at) + '</p>' +
+    (l.note ? '<p class="meta">הערת המדריך/ה: ' + esc(l.note) + '</p>' : '') +
+    (l.body ? '<details style="margin-top:8px"><summary style="cursor:pointer;color:var(--gold-soft)">לצפייה בתוכן השיעור</summary><p class="meta" style="white-space:pre-wrap;margin-top:8px">' + esc(l.body) + '</p></details>' : '') +
+    (media ? '<p class="meta" style="margin-top:8px"><a href="' + esc(media) + '" target="_blank" rel="noopener">פתיחת קובץ / קישור מצורף</a></p>' : '') +
+    '</div>';
+}
+
+async function renderLessons() {
+  const el = $('lessonList');
+  el.innerHTML = '<div class="empty">טוען…</div>';
+  let rows;
+  try {
+    rows = await rpc('maatefet_content_couple_list');
+  } catch (e) {
+    el.innerHTML = '<div class="err">' + esc(e.message) + '</div>';
+    return;
+  }
+  if (!rows.length) { el.innerHTML = '<div class="empty">המדריך/ה שלכם עדיין לא שיתף/ה אתכם חומרי לימוד.</div>'; return; }
+  el.innerHTML = rows.map(lessonCard).join('');
 }
 
 /* ── directories (poskim / mikvaot / mesadrei kiddushin / bodkot tehara / yoatzim) ── */
@@ -757,6 +794,7 @@ async function boot() {
   renderFollowups();
   renderWeddingTasks();
   renderStudyItems();
+  renderLessons();
   renderDirectories();
 }
 
