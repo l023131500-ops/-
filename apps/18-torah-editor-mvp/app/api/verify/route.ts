@@ -80,8 +80,18 @@ export async function POST(req: NextRequest) {
       status = 'match';
       distance = 0;
     } else {
-      const window = sourceText.slice(0, Math.min(sourceText.length, quoteText.length + 30));
-      distance = levenshtein(quoteText, window);
+      // The quote can land anywhere in a multi-line ref (e.g. a full Talmud
+      // daf), not just at the start -- so slide the comparison window across
+      // the whole source and keep the closest match, instead of only ever
+      // comparing against the opening characters.
+      const windowSize = Math.min(sourceText.length, quoteText.length + 30);
+      let best = Infinity;
+      for (let i = 0; i <= sourceText.length - windowSize; i++) {
+        const d = levenshtein(quoteText, sourceText.slice(i, i + windowSize));
+        if (d < best) best = d;
+        if (best === 0) break;
+      }
+      distance = best === Infinity ? levenshtein(quoteText, sourceText) : best;
       status = distance / Math.max(quoteText.length, 1) < 0.15 ? 'match' : 'deviation';
     }
   }
