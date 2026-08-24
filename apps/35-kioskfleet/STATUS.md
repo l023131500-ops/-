@@ -4890,3 +4890,60 @@ to that constraint: they import only dependency-free modules (`hosts.js`,
   frozen main thread and confirm the relaunch/reboot and the new "🔁
   יציבות" card actually fire on real hardware — the same constraint every
   fix in this log without a real device/browser has hit.
+
+- **[24/08/2026, Loop A] Policy backup/restore — KIOSK_BUILD.md §9
+  "גיבוי/שחזור מדיניות", was entirely unbuilt, on `zol` not this tree** —
+  a device's allow-list/home-URL/schedule/signage/zoom/maintenance-code
+  settings could be edited or overwritten by a bulk template apply with no
+  way back except retyping them by hand; a bad template apply to a whole
+  fleet had no undo. `policy.js`'s `applyDevicePolicy` — the single write
+  path both `PATCH /devices/:id` and `POST /templates/:id/apply` already
+  share — now takes a `snapshotReason` and, right before it changes
+  anything (after every validation has passed, so a rejected request never
+  spends a slot), calls a new `saveSnapshot()` that captures the device's
+  *current* policy fields into a new `policy_snapshots` table, capped at 20
+  per device (oldest trimmed in the same call). New `src/snapshots.js`
+  (dependency-free, same convention as `hosts.js`/`schedule.js`/
+  `signage.js`/`templatepolicy.js`) holds the column list and a
+  `patchFromSnapshot()` that turns a saved row back into a restore patch —
+  deliberately *not* a reuse of `templatepolicy.js`'s
+  `policyPatchFromTemplate`, because that function treats a `NULL` column as
+  "not part of this template, leave the device alone", which is right for a
+  template but wrong for a snapshot: a device's maintenance/exit code with
+  no code set has `exit_code = NULL`, and skipping it on restore would leave
+  a code the device gained *after* the snapshot in place instead of clearing
+  it. `patchFromSnapshot` always restores `exit_code` explicitly (`''` =
+  clear, matching `exitcode.js`'s own contract). New
+  `routes/snapshots.js`: `GET /devices/:id/snapshots` (list, newest 20),
+  `POST /devices/:id/snapshots` (manual "שמור מצב נוכחי" bookmark, distinct
+  from the automatic pre-write backups but the same table/cap/restore path),
+  `POST /devices/:id/snapshots/:id/restore` (applies the saved patch through
+  the same `applyDevicePolicy` path a human edit uses — so a restore is
+  itself auto-backed-up and can be undone). Both existing call sites
+  (`routes/devices.js`'s PATCH, `routes/templates.js`'s bulk apply) now pass
+  a human-readable reason ("עריכה ידנית" / `החלת תבנית "X"`) so the snapshot
+  list reads like an audit trail, not just timestamps.
+
+  **Console**: the device edit modal gained a "גיבוי/שחזור מדיניות" section
+  — snapshot list with reason + time and a "שחזר" button per row (confirm
+  dialog, same shape `confirmCmd` already uses), plus a label input +
+  "שמור מצב נוכחי" button above it. `EVENT_LABELS` gained
+  `snapshot_saved`/`snapshot_restored` so the existing activity log
+  (§9 "יומן אירועים", already built) surfaces both.
+
+  13 new unit tests in `snapshots.test.mjs` (column shape excludes `name`;
+  the retention cap is a small positive number; `snapshotFieldsFromDevice`
+  extracts exactly the policy subset and nothing identity-bearing like
+  `device_token`; `policyFieldsPresent` gates a name-only/empty body out of
+  the snapshot budget; `patchFromSnapshot` round-trips the shared columns
+  the same as a template row; and the exit-code-clear regression case this
+  entry's own reasoning above depends on). `node --check` clean on every
+  touched/added file (`db.js`, `policy.js`, `snapshots.js`,
+  `routes/snapshots.js`, `routes/devices.js`, `routes/templates.js`,
+  `index.js`, `public/js/app.js`, the test file). Full suite: 109/111 (was
+  108/110 before this round's tests) — the 2 failures
+  (`routing.test.mjs`/`seedadmin.test.mjs`) are the same pre-existing
+  `express`/`better-sqlite3`-not-installed gap every prior entry in this log
+  has hit, unrelated to this change. **Not verified beyond that**: no real
+  browser/device in this sandbox to click through the new console section
+  end-to-end — same constraint every fix in this log without one has hit.
