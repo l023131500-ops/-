@@ -142,6 +142,7 @@ tr.total td{font-weight:500;color:var(--gold-soft);border-top:1px solid var(--li
     <a class="wordmark" href="/kesef">כסף<span> · שקיפות תקציבית</span></a>
     <div class="nav-links">
       <a href="/kesef/compare">השוואת רשויות</a>
+      <a href="/kesef/my">המעקב שלי</a>
       <a class="btn btn-quiet" style="padding:8px 18px;font-size:14px" href="/kesef">אודות המערכת</a>
     </div>
   </div>
@@ -159,6 +160,7 @@ tr.total td{font-weight:500;color:var(--gold-soft);border-top:1px solid var(--li
       <datalist id="authList"></datalist>
       <button class="btn btn-quiet" id="printBtn" type="button">הדפסת תיק לפגישה</button>
       <a class="btn btn-quiet" id="cmpLink" href="/kesef/compare">השוואה מול רשות אחרת</a>
+      <button class="btn btn-quiet" id="watchBtn" type="button" hidden></button>
     </div>
   </div>
 </header>
@@ -173,6 +175,20 @@ tr.total td{font-weight:500;color:var(--gold-soft);border-top:1px solid var(--li
     <h2 class="display sec-title" id="hMetrics">הרשות מול קבוצת השווים שלה</h2>
     <p class="sec-sub" id="peerDef"></p>
     <div class="cards" id="metricCards"></div>
+    <!-- ממצאים אוטומטיים: משפטים עובדתיים שנגזרים מהמדדים שלמעלה לפי כללים
+         מוצהרים (/kesef/my#rules). מוצג רק כשיש ממצאים — היעדר הפאנל אומר
+         שאף כלל לא נורה, לא שהבדיקה לא רצה. -->
+    <div id="alertsPanel" hidden style="margin-top:18px">
+      <div class="honesty" style="background:rgba(228,96,78,.06)">
+        <b>ממצאים אוטומטיים לפי כללים מוצהרים:</b>
+        <div id="alertsList" style="display:grid;gap:8px;margin-top:10px"></div>
+        <div style="margin-top:10px;font-size:13px;color:var(--muted)">
+          חושב אוטומטית מהמדדים שבדף לפי
+          <a href="/kesef/my#rules" style="text-decoration:underline">הכללים המוצהרים</a>.
+          ממצא ברמת חומרה גבוהה מתפרסם רק לאחר הליך יידוע הרשות — כלל שנאכף במסד הנתונים.
+        </div>
+      </div>
+    </div>
   </div>
 </section>
 
@@ -245,14 +261,26 @@ const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({'&':'&amp;','<':
 const nf = new Intl.NumberFormat('he-IL', { maximumFractionDigits: 0 });
 const nf1 = new Intl.NumberFormat('he-IL', { maximumFractionDigits: 1, minimumFractionDigits: 1 });
 
-async function rpc(fn, args) {
+async function rpc(fn, args, token) {
   const res = await fetch(SUPABASE_URL + '/rest/v1/rpc/' + fn, {
     method: 'POST',
-    headers: { apikey: SUPABASE_ANON, Authorization: 'Bearer ' + SUPABASE_ANON, 'Content-Type': 'application/json' },
+    headers: { apikey: SUPABASE_ANON, Authorization: 'Bearer ' + (token || SUPABASE_ANON), 'Content-Type': 'application/json' },
     body: JSON.stringify(args || {}),
   });
   if (!res.ok) throw new Error('שגיאת שרת (' + res.status + ')');
   return res.json();
+}
+
+// אותו מפתח סשן שכפתור הכניסה המשותף (auth-button.js) קורא — כל המערכות
+// חולקות origin אחד תחת more30.com, ולכן הסשן מ-/login נגיש כאן כמו שהוא.
+const SESSION_KEY = 'more30-auth';
+function readSessionToken() {
+  try {
+    const s = JSON.parse(localStorage.getItem(SESSION_KEY) || 'null');
+    if (!s || !s.user || !s.access_token) return null;
+    if (s.expires_at && s.expires_at * 1000 <= Date.now()) return null;
+    return s.access_token;
+  } catch (e) { return null; }
 }
 
 const STATUS_HE = { municipality: 'עירייה', local_council: 'מועצה מקומית', regional_council: 'מועצה אזורית' };
@@ -394,9 +422,51 @@ async function loadList() {
   return list;
 }
 
+/* מעקב: המצב נטען פעם אחת לכל המסך (סט הסמלים שבמעקב), והכפתור משקף את
+   הרשות המוצגת. בלי התחברות הכפתור מוביל ל-/login וחוזר לדוח הנוכחי. */
+const AUTH_TOKEN = readSessionToken();
+let WATCHED = null; // Set<number> כשמחוברים, null כשלא
+let SHOWN_SYMBOL = null;
+async function loadWatched() {
+  if (!AUTH_TOKEN) return;
+  try {
+    const d = await rpc('kesef_my_watchlist', {}, AUTH_TOKEN);
+    if (d && !d.error) WATCHED = new Set((d.watches || []).map((w) => w.symbol));
+  } catch (e) { /* הדוח ציבורי — כשל במעקב לא מפיל אותו */ }
+}
+function paintWatchBtn() {
+  const btn = $('watchBtn');
+  if (SHOWN_SYMBOL == null) { btn.hidden = true; return; }
+  btn.hidden = false;
+  if (!AUTH_TOKEN) { btn.textContent = '☆ מעקב (בכניסה עם חשבון more30)'; return; }
+  if (!WATCHED) { btn.hidden = true; return; }
+  btn.textContent = WATCHED.has(SHOWN_SYMBOL) ? '★ במעקב — להסרה' : '☆ הוספה למעקב';
+}
+async function renderAlerts(symbol) {
+  // פאנל הממצאים חי לצד הדוח ולא במקומו: כשל כאן לא נוגע בדוח עצמו.
+  $('alertsPanel').hidden = true;
+  try {
+    const d = await rpc('kesef_authority_alerts', { p_symbol: symbol });
+    if (symbol !== SHOWN_SYMBOL) return; // הוחלפה רשות בזמן הטעינה
+    const alerts = (d && d.alerts) || [];
+    if (!alerts.length) return;
+    const SEV_HE = { info: 'מידע', notice: 'לתשומת לב', high: 'חומרה גבוהה' };
+    $('alertsList').innerHTML = alerts.map((a) =>
+      '<div style="border:1px solid var(--line);border-radius:3px;padding:9px 13px;font-size:13.5px">' +
+      '<span style="display:inline-block;font-size:11px;font-weight:500;border-radius:2px;padding:1px 8px;' +
+      'margin-inline-end:8px;background:rgba(201,162,39,.18);color:var(--gold-soft)">' +
+      esc(SEV_HE[a.severity] || a.severity) + ' · ' + a.fiscal_year + '</span>' +
+      esc(a.statement_he) + '</div>').join('');
+    $('alertsPanel').hidden = false;
+  } catch (e) { /* מוסתר — היעדר הפאנל בכשל רשת עדיף מדוח שבור */ }
+}
+
 let AUTHORITIES = [];
 async function show(symbol) {
   $('loading').hidden = false; $('report').hidden = true; $('errBox').hidden = true;
+  SHOWN_SYMBOL = symbol;
+  paintWatchBtn();
+  renderAlerts(symbol);
   let d;
   try { d = await rpc('kesef_authority_report', { p_symbol: symbol }); }
   catch (e) { $('loading').hidden = true; $('errBox').hidden = false; $('errBox').textContent = e.message; return; }
@@ -482,6 +552,31 @@ async function show(symbol) {
 
 (async function init() {
   $('printBtn').addEventListener('click', () => window.print());
+  $('watchBtn').addEventListener('click', async () => {
+    if (SHOWN_SYMBOL == null) return;
+    if (!AUTH_TOKEN) {
+      location.href = 'https://more30.com/login?from=' +
+        encodeURIComponent('https://more30.com/kesef/report?symbol=' + SHOWN_SYMBOL);
+      return;
+    }
+    const btn = $('watchBtn');
+    btn.disabled = true;
+    try {
+      const r = await rpc('kesef_watch_toggle', { p_symbol: SHOWN_SYMBOL }, AUTH_TOKEN);
+      if (r && r.error === 'not_authenticated') {
+        location.href = 'https://more30.com/login?from=' +
+          encodeURIComponent('https://more30.com/kesef/report?symbol=' + SHOWN_SYMBOL);
+        return;
+      }
+      if (r && typeof r.watching === 'boolean') {
+        if (!WATCHED) WATCHED = new Set();
+        if (r.watching) WATCHED.add(r.symbol); else WATCHED.delete(r.symbol);
+      }
+      paintWatchBtn();
+    } catch (e) { alert('הפעולה נכשלה: ' + e.message); }
+    finally { btn.disabled = false; }
+  });
+  loadWatched().then(paintWatchBtn);
   try { AUTHORITIES = await loadList(); }
   catch (e) { $('loading').hidden = true; $('errBox').hidden = false; $('errBox').textContent = 'לא ניתן לטעון את רשימת הרשויות: ' + e.message; return; }
   $('authPick').addEventListener('change', () => {
