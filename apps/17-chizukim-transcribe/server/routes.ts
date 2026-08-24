@@ -105,6 +105,19 @@ function extFromName(name: string): string {
   return /^[a-z0-9]{1,5}$/.test(e) ? e : "mp3";
 }
 
+// Bare fetch() has no default timeout in Node — a stalled audio download would
+// otherwise hang the request until the serverless function's own hard timeout.
+const AUDIO_DOWNLOAD_TIMEOUT_MS = 120_000;
+async function fetchAudioWithTimeout(url: string): Promise<Response> {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), AUDIO_DOWNLOAD_TIMEOUT_MS);
+  try {
+    return await fetch(url, { signal: controller.signal });
+  } finally {
+    clearTimeout(timeout);
+  }
+}
+
 // ---- RunPod (ivrit.ai) transcription helpers ----
 const RUNPOD_MODEL = "ivrit-ai/whisper-large-v3-turbo-ct2";
 const RUNPOD_FALLBACK_BASE = "https://api.runpod.ai/v2/bpj1ej8c3mg2cc";
@@ -390,7 +403,13 @@ export async function registerRoutes(
       await patchRecording(id, { status: "transcribing" });
 
       // 2) download audio -> base64
-      const audioRes = await fetch(audioUrl);
+      let audioRes: Response;
+      try {
+        audioRes = await fetchAudioWithTimeout(audioUrl);
+      } catch (e: any) {
+        await patchRecording(id, { status: "error" });
+        return res.status(500).json({ error: "הורדת האודיו נתקעה או נכשלה (timeout)" });
+      }
       if (!audioRes.ok) {
         await patchRecording(id, { status: "error" });
         return res.status(500).json({ error: `הורדת האודיו נכשלה: ${audioRes.status}` });
@@ -546,7 +565,12 @@ export async function registerRoutes(
       const rec = await fetchRecordingRow(String(req.params.id));
       if (!rec?.audio_url) return res.status(404).json({ error: "ההקלטה או האודיו לא נמצאו" });
 
-      const audioRes = await fetch(rec.audio_url as string);
+      let audioRes: Response;
+      try {
+        audioRes = await fetchAudioWithTimeout(rec.audio_url as string);
+      } catch (e: any) {
+        return res.status(500).json({ error: "הורדת האודיו נתקעה או נכשלה (timeout)" });
+      }
       if (!audioRes.ok) return res.status(500).json({ error: `הורדת האודיו נכשלה: ${audioRes.status}` });
       const buf = Buffer.from(await audioRes.arrayBuffer());
       const name = (rec.original_name as string) || (rec.audio_path as string) || "audio.mp3";
