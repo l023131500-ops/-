@@ -65,10 +65,17 @@ Deno.serve(async (req) => {
       const { data: tenants } = await admin.from("tenants").select("id, name, slug");
       const tenantMap = Object.fromEntries((tenants || []).map((t: any) => [t.id, t]));
 
-      // Get emails from auth.users via admin API
-      const { data: authList } = await admin.auth.admin.listUsers({ perPage: 500 });
+      // Get emails from auth.users via admin API. listUsers() paginates (default
+      // 50/page), so page through until exhausted - otherwise users past page 1
+      // silently show a blank email/last-login in the admin list.
+      const authUsers: any[] = [];
+      for (let page = 1; ; page++) {
+        const { data: authList } = await admin.auth.admin.listUsers({ page, perPage: 1000 });
+        authUsers.push(...(authList?.users || []));
+        if (!authList?.users || authList.users.length < 1000) break;
+      }
       const emailMap = Object.fromEntries(
-        (authList.users || []).map((u: any) => [u.id, { email: u.email, last_sign_in_at: u.last_sign_in_at }]),
+        authUsers.map((u: any) => [u.id, { email: u.email, last_sign_in_at: u.last_sign_in_at }]),
       );
 
       const rolesByUser: Record<string, any[]> = {};
