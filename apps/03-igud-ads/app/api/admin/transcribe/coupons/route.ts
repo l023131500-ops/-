@@ -23,13 +23,16 @@ export async function POST(req: Request) {
 
   const body = await req.json();
   const { code, max_uploads, expires_at, is_active = true } = body || {};
-  if (!code || !max_uploads) return NextResponse.json({ error: "code+max_uploads נדרשים" }, { status: 400 });
+  const maxUploads = Number(max_uploads);
+  if (!code || !Number.isInteger(maxUploads) || maxUploads < 1) {
+    return NextResponse.json({ error: "code + max_uploads (מספר שלם חיובי) נדרשים" }, { status: 400 });
+  }
   const sb = createTranscribeService();
   const { data, error } = await sb
     .from("coupon_codes")
     .insert({
       code: String(code).trim(),
-      max_uploads: Number(max_uploads),
+      max_uploads: maxUploads,
       expires_at: expires_at || null,
       is_active: !!is_active,
     })
@@ -49,7 +52,16 @@ export async function PATCH(req: Request) {
   const sb = createTranscribeService();
   const allowed: any = {};
   for (const k of ["max_uploads", "expires_at", "is_active", "code"]) {
-    if (k in updates) allowed[k] = updates[k];
+    if (!(k in updates)) continue;
+    if (k === "max_uploads") {
+      const n = Number(updates.max_uploads);
+      if (!Number.isInteger(n) || n < 0) {
+        return NextResponse.json({ error: "max_uploads חייב להיות מספר שלם לא-שלילי" }, { status: 400 });
+      }
+      allowed.max_uploads = n;
+      continue;
+    }
+    allowed[k] = updates[k];
   }
   const { data, error } = await sb.from("coupon_codes").update(allowed).eq("id", id).select().single();
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
