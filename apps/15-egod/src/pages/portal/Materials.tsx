@@ -85,10 +85,11 @@ const Materials = () => {
     setUploading(true);
     setUploadProgress(0);
     try {
-      const ext = uploadForm.file.name.split(".").pop();
+      const dotIdx = uploadForm.file.name.lastIndexOf(".");
+      const ext = dotIdx > 0 ? uploadForm.file.name.slice(dotIdx + 1) : "";
       const isMedia = !!uploadForm.file.type && (uploadForm.file.type.startsWith("video/") || uploadForm.file.type.startsWith("audio/"));
       const bucket = isMedia || uploadForm.file.size > 5_000_000 ? "materials-media" : "portal-assets";
-      const path = `${profile.id}/${Date.now()}.${ext}`;
+      const path = `${profile.id}/${Date.now()}${ext ? "." + ext : ""}`;
       const { error: upErr } = await supabase.storage.from(bucket).upload(path, uploadForm.file, { upsert: false, contentType: uploadForm.file.type || undefined });
       if (upErr) throw upErr;
       const { data: pub } = supabase.storage.from(bucket).getPublicUrl(path);

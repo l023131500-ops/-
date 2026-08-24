@@ -56,8 +56,9 @@ const PortalSettings = () => {
 
   const uploadFile = async (file: File, prefix: string): Promise<string | null> => {
     if (!user) return null;
-    const ext = file.name.split(".").pop();
-    const path = `${user.id}/${prefix}-${Date.now()}.${ext}`;
+    const dotIdx = file.name.lastIndexOf(".");
+    const ext = dotIdx > 0 ? file.name.slice(dotIdx + 1) : "";
+    const path = `${user.id}/${prefix}-${Date.now()}${ext ? "." + ext : ""}`;
     const { error } = await supabase.storage.from("portal-assets").upload(path, file, { upsert: true });
     if (error) { toast.error("שגיאה בהעלאה: " + error.message); return null; }
     const { data } = supabase.storage.from("portal-assets").getPublicUrl(path);
