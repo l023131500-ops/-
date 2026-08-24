@@ -4268,3 +4268,48 @@ to that constraint: they import only dependency-free modules (`hosts.js`,
   two approved clients and confirm cookies/history/form data are actually
   gone from the WebView afterward — the same constraint every fix in this log
   without a real device has hit.
+
+- **[24/08/2026, Loop A] Block downloads/files and the WebView long-press menu
+  — KIOSK_BUILD.md §9 "חסימת הורדות/קבצים/הגדרות/סרגלים בדפדפן הנעול", on
+  `zol` not this tree** — checked all four nouns in that phrase against what
+  is actually built. "הגדרות" (settings) and "סרגלים" (toolbars) are already
+  closed structurally: `KioskPolicy.kt` already calls
+  `setKeyguardDisabled`/`setStatusBarDisabled` and `LockTaskActivity` already
+  pins the app via `startLockTask()`, so there is no way to reach Android
+  Settings or any system chrome, and this app has no browser UI at all — a
+  bare `WebView`, no address bar or tabs to hide. "הורדות/קבצים" (downloads/
+  files) was genuinely open: `WebView.settings` still had the platform
+  defaults for `allowFileAccess`/`allowContentAccess`, no `DownloadListener`
+  was ever registered, and the WebView's built-in long-press context menu
+  (Save image / Open in new tab / Copy link) was live — a **second**, native
+  escape hatch, independent of `shouldOverrideUrlLoading`, since WebView
+  never asks the `WebViewClient` before showing it. On a public kiosk any of
+  these lets a customer pull a file onto the device or hop to an
+  unsupervised tab.
+
+  Added to `setupWebView()`: `allowFileAccess = false` +
+  `allowContentAccess = false` (blocks `file://`/`content://` reachability
+  from any page or injected JS), an explicit `setDownloadListener` that
+  toasts "הורדות חסומות בקיוסק" instead of a download failing silently with
+  no listener at all, and `setOnLongClickListener { true }` +
+  `isHapticFeedbackEnabled = false` to suppress the native context menu —
+  WebView only falls back to it when the view's own long-click listener
+  leaves the event unconsumed, so consuming it here is the standard way to
+  turn it off.
+
+  No server-side change — this is `WebView` configuration only, so this
+  round touches only `KioskActivity.kt`. **Not compiler-verified**: no
+  gradle/kotlin toolchain in this sandbox, the same constraint every
+  Android-side entry in this log has hit — reviewed by hand; brace/paren
+  counts in the file balance before (91/91, 322/322) and after (93/93,
+  325/325) the edit. Full JS suite re-run for a regression check (this
+  change touches no JS): 32/34, unchanged — the two failures are the same
+  pre-existing `express`/`node:sqlite`-not-installed gap every prior entry in
+  this log has hit.
+
+  Pushed to `l023131500-ops/zol`#`claude/what-do-you-see-gxo5tc` (`3192c4f`).
+  `more30.com/kiosk/api/health` polled 3× after the push and read `200`
+  throughout. **Not verified beyond the push-landing signal and manual Kotlin
+  review**: no real device exists to long-press a link or attempt a download
+  on a live kiosk screen and confirm both are actually blocked — the same
+  constraint every fix in this log without a real device has hit.
