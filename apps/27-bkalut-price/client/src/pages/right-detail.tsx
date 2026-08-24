@@ -329,7 +329,10 @@ function normalizeQuestions(raw: string): ParsedQuestion[] {
         id: String(q.id ?? q.key ?? q.name ?? `q_${index + 1}`),
         text: String(q.question ?? q.label ?? q.text ?? q["שאלה"] ?? q.title ?? "").trim(),
         help: q.help ?? q.description ?? q["הסבר"],
-        weight: Number(q.weight ?? q.score ?? 1) || 1,
+        weight: (() => {
+          const n = Number(q.weight ?? q.score ?? 1);
+          return Number.isFinite(n) ? n : 1;
+        })(),
       }))
       .filter((q: ParsedQuestion) => q.text);
   } catch {
