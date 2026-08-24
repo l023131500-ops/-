@@ -131,6 +131,34 @@ function handleBooleanRpcResult(res, { data, error }, errorMessage = 'קישור
   return res.json(true);
 }
 
+function clientIpFor(req) {
+  const xff = req.headers['x-forwarded-for'];
+  if (typeof xff === 'string' && xff.length > 0) return xff.split(',')[0].trim();
+  return req.ip || (req.socket && req.socket.remoteAddress) || 'unknown';
+}
+
+// מגביל משותף לפי IP לנתיבי ציבור לא-מאומתים שכותבים ל-DB (הודעה/הצטרפות/שאל-
+// את-הרב/פנייה לשירות/בקשה ארצית/תשלום) - אין להם admin_token או JWT שיגביל
+// קצב, אז קורא ללא הגבלה יכול להציף גם את ה-DB וגם (בטופס תשלום) ליצור שורות
+// public_subscription_payments ללא סוף.
+const publicLeadHits = new Map();
+function publicLeadRateLimiter(routeKey, maxPerHour = 20) {
+  return (req, res, next) => {
+    const key = `${routeKey}:${clientIpFor(req)}`;
+    const now = Date.now();
+    const entry = publicLeadHits.get(key);
+    if (!entry || now > entry.resetAt) {
+      publicLeadHits.set(key, { count: 1, resetAt: now + 60 * 60 * 1000 });
+      return next();
+    }
+    entry.count += 1;
+    if (entry.count > maxPerHour) {
+      return res.status(429).json({ error: 'יותר מדי בקשות, נסו שוב מאוחר יותר' });
+    }
+    next();
+  };
+}
+
 // ----------------------------------------------------------------------------
 // ציבורי
 // ----------------------------------------------------------------------------
@@ -168,7 +196,7 @@ app.get('/api/public/teacher/:token', async (req, res) => {
   handleRpcResult(res, result);
 });
 
-app.post('/api/public/tenant/:token/message', async (req, res) => {
+app.post('/api/public/tenant/:token/message', publicLeadRateLimiter('tenant-message'), async (req, res) => {
   const { name, phone, email, subject, body } = req.body || {};
   if (!name || !body) return res.status(400).json({ error: 'שם והודעה הם שדות חובה' });
   const result = await supabaseAnon.rpc('submit_public_lead', {
@@ -182,7 +210,7 @@ app.post('/api/public/tenant/:token/message', async (req, res) => {
   handleBooleanRpcResult(res, result, 'הקישור אינו תקין, בדוק שהעתקת אותו במלואו');
 });
 
-app.post('/api/public/join', async (req, res) => {
+app.post('/api/public/join', publicLeadRateLimiter('public-join'), async (req, res) => {
   const { name, phone, email, city, org_name, body } = req.body || {};
   if (!name || !body) return res.status(400).json({ error: 'שם והודעה הם שדות חובה' });
   const result = await supabaseAnon.rpc('submit_join_request', {
@@ -233,7 +261,7 @@ app.get('/api/search/lessons', async (req, res) => {
 });
 
 // טופס "שאל את הרב" — פונה למורה/רב ספציפי לפי public_token שלו
-app.post('/api/public/teacher/:token/ask-rabbi', async (req, res) => {
+app.post('/api/public/teacher/:token/ask-rabbi', publicLeadRateLimiter('ask-rabbi'), async (req, res) => {
   const { name, phone, email, body } = req.body || {};
   if (!name || !body) return res.status(400).json({ error: 'שם ושאלה הם שדות חובה' });
   const result = await supabaseAnon.rpc('submit_ask_rabbi', {
@@ -247,7 +275,7 @@ app.post('/api/public/teacher/:token/ask-rabbi', async (req, res) => {
 });
 
 // טופס פנייה לשירות קהילה ספציפי (כשרות/מקוואות/אבלות/וכו') של ארגון
-app.post('/api/public/tenant/:token/service-request', async (req, res) => {
+app.post('/api/public/tenant/:token/service-request', publicLeadRateLimiter('tenant-service-request'), async (req, res) => {
   const { service_type, name, phone, email, body } = req.body || {};
   if (!service_type || !name || !body) {
     return res.status(400).json({ error: 'סוג שירות, שם והודעה הם שדות חובה' });
@@ -264,7 +292,7 @@ app.post('/api/public/tenant/:token/service-request', async (req, res) => {
 });
 
 // טופס ארצי: הקמת שיעור בהתאמה אישית / הצטרפות כרב מלמד / טופס הצטרפות משולב עם תפקיד
-app.post('/api/national/request', async (req, res) => {
+app.post('/api/national/request', publicLeadRateLimiter('national-request'), async (req, res) => {
   const {
     request_type, name, phone, email, city, topic, audience, preferred_time, notes,
     role, role_details, topics, wants_login,
@@ -1032,7 +1060,7 @@ app.get('/api/admin/tenant/:adminToken/subscription-payments/:paymentId/checkout
 // משתמשים בצמד id+correlation_token (32 hex אקראי, לא ניתן לניחוש).
 // ----------------------------------------------------------------------------
 
-app.post('/api/public/payments', async (req, res) => {
+app.post('/api/public/payments', publicLeadRateLimiter('public-payments'), async (req, res) => {
   const { payer_name, payer_phone, payer_email, payment_type, purpose, amount, currency } = req.body || {};
   const amountNum = Number(amount);
   if (!Number.isFinite(amountNum) || amountNum <= 0) return res.status(400).json({ error: 'סכום לא תקין' });
