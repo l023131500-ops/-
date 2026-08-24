@@ -89,10 +89,11 @@ const RightsCategories = () => {
     const phoneErr = getPhoneError(formData.phone);
     if (phoneErr) { toast({ title: "שגיאה בטלפון", description: phoneErr, variant: "destructive" }); return; }
     if (formData.id_number && !validateIdNumber(formData.id_number)) { toast({ title: "שגיאה בת.ז", description: "תעודת זהות חייבת להכיל 9 ספרות", variant: "destructive" }); return; }
+    const isMarried = formData.marital_status === "נשוי/אה";
+    if (isMarried && formData.spouse_id_number && !validateIdNumber(formData.spouse_id_number)) { toast({ title: "שגיאה בת.ז בן/בת הזוג", description: "תעודת זהות חייבת להכיל 9 ספרות", variant: "destructive" }); return; }
     setIsSubmitting(true);
     const answeredQuestions = selectedTopic?.questions.map((q, i) => `${q}: ${answers[`q${i}`] === true ? "כן" : answers[`q${i}`] === false ? "לא" : "לא ענה"}`).join("\n");
     const eligibility = calculateEligibility();
-    const isMarried = formData.marital_status === "נשוי/אה";
     const { error } = await supabase.from("leads").insert({
       source: "category", service_type: type, name: formData.name, phone: formData.phone,
       id_number: formData.id_number || null, date_of_birth: formData.date_of_birth || null,

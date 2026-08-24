@@ -380,13 +380,17 @@ const FloatingBot = () => {
       toast({ title: "שגיאה בת.ז", description: "תעודת זהות חייבת להכיל 9 ספרות", variant: "destructive" });
       return;
     }
+    const isMarried = compAnswers.marital === "נשוי/אה";
+    if (isMarried && compAnswers.spouse_id_number && !validateIdNumber(compAnswers.spouse_id_number)) {
+      toast({ title: "שגיאה בת.ז בן/בת הזוג", description: "תעודת זהות חייבת להכיל 9 ספרות", variant: "destructive" });
+      return;
+    }
     setIsSubmitting(true);
     const details = activeGroups.flatMap(g =>
       g.fields.map(f => `${f.label}: ${compAnswers[f.key] || "לא צוין"}`)
     ).join("\n");
 
     const eligibility = calculateEligibilityScore(compAnswers);
-    const isMarried = compAnswers.marital === "נשוי/אה";
 
     const ok = await saveLead({
       source: "bot-comprehensive",
