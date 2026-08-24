@@ -480,6 +480,7 @@ async function init() {
   if (!MASTER) {
     try {
       const res = await fetch('data.json');
+      if (!res.ok) throw new Error('data.json HTTP ' + res.status);
       MASTER = await res.json();
     } catch (e) {
       document.getElementById('catCount').textContent = 'שגיאה בטעינת הנתונים';
