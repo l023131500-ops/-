@@ -34,7 +34,10 @@ export default function Editor() {
   const id = Number(params?.id);
   const { toast } = useToast();
 
-  const { data: book, isLoading } = useQuery<Book>({ queryKey: ["/api/books", id] });
+  const { data: book, isLoading, isError } = useQuery<Book>({
+    queryKey: ["/api/books", id],
+    enabled: Number.isFinite(id),
+  });
 
   const [title, setTitle] = useState("");
   const [author, setAuthor] = useState("");
@@ -177,6 +180,17 @@ export default function Editor() {
       iframe.contentWindow?.print();
       setTimeout(() => document.body.removeChild(iframe), 1000);
     }, 500);
+  }
+
+  if (!Number.isFinite(id) || isError) {
+    return (
+      <div className="flex min-h-screen flex-col items-center justify-center gap-4 bg-background text-muted-foreground">
+        <p>הספר לא נמצא.</p>
+        <Link href="/" className="text-primary underline">
+          חזרה לרשימת הספרים
+        </Link>
+      </div>
+    );
   }
 
   if (isLoading || !book || !settings) {
