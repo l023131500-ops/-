@@ -158,6 +158,51 @@ export type Database = {
           },
         ]
       }
+      client_budget_limits: {
+        Row: {
+          category: string
+          client_id: string
+          created_at: string
+          id: string
+          monthly_limit: number
+          tenant_id: string
+          updated_at: string
+        }
+        Insert: {
+          category: string
+          client_id: string
+          created_at?: string
+          id?: string
+          monthly_limit: number
+          tenant_id: string
+          updated_at?: string
+        }
+        Update: {
+          category?: string
+          client_id?: string
+          created_at?: string
+          id?: string
+          monthly_limit?: number
+          tenant_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "client_budget_limits_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "client_budget_limits_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       client_family_members: {
         Row: {
           birth_date: string | null
@@ -352,6 +397,73 @@ export type Database = {
           },
           {
             foreignKeyName: "client_housing_profile_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      client_transactions: {
+        Row: {
+          amount: number
+          category: string
+          client_id: string
+          created_at: string
+          created_by: string | null
+          description: string | null
+          id: string
+          kind: string
+          occurred_on: string
+          source: string
+          tenant_id: string
+          updated_at: string
+        }
+        Insert: {
+          amount: number
+          category?: string
+          client_id: string
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          kind: string
+          occurred_on?: string
+          source?: string
+          tenant_id: string
+          updated_at?: string
+        }
+        Update: {
+          amount?: number
+          category?: string
+          client_id?: string
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          kind?: string
+          occurred_on?: string
+          source?: string
+          tenant_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "client_transactions_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "client_transactions_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "client_transactions_tenant_id_fkey"
             columns: ["tenant_id"]
             isOneToOne: false
             referencedRelation: "tenants"

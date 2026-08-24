@@ -9,6 +9,7 @@ import { StatusBadge } from "@/features/clients/components/badges";
 import { PersonalTab } from "@/features/clients/tabs/PersonalTab";
 import { FamilyTab } from "@/features/clients/tabs/FamilyTab";
 import { FinancialTab } from "@/features/clients/tabs/FinancialTab";
+import { CashflowTab } from "@/features/clients/tabs/CashflowTab";
 import { HousingTab } from "@/features/clients/tabs/HousingTab";
 import { VehiclesTab } from "@/features/clients/tabs/VehiclesTab";
 import { EntitlementsTab } from "@/features/clients/tabs/EntitlementsTab";
@@ -36,6 +37,7 @@ const TABS = [
   { v: "personal", l: "פרטים אישיים" },
   { v: "family", l: "משפחה" },
   { v: "financial", l: "פיננסי" },
+  { v: "cashflow", l: "תזרים חודשי" },
   { v: "housing", l: "דיור וחשבונות" },
   { v: "vehicles", l: "רכבים" },
   { v: "entitlements", l: "זכאויות" },
@@ -92,6 +94,7 @@ function ClientProfilePage() {
         <TabsContent value="personal" className="mt-4"><PersonalTab clientId={id} /></TabsContent>
         <TabsContent value="family" className="mt-4"><FamilyTab clientId={id} /></TabsContent>
         <TabsContent value="financial" className="mt-4"><FinancialTab clientId={id} /></TabsContent>
+        <TabsContent value="cashflow" className="mt-4"><CashflowTab clientId={id} /></TabsContent>
         <TabsContent value="housing" className="mt-4"><HousingTab clientId={id} /></TabsContent>
         <TabsContent value="vehicles" className="mt-4"><VehiclesTab clientId={id} /></TabsContent>
         <TabsContent value="entitlements" className="mt-4"><EntitlementsTab clientId={id} /></TabsContent>
