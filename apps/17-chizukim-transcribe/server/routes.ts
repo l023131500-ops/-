@@ -7,6 +7,7 @@ import { transcribe, type TranscribeResult } from "./transcribe";
 import { editTranscript } from "./edit";
 import { isAdminRequest, handleAdminLogin, handleAdminLogout } from "./auth";
 import { renderAdminPage } from "./admin-page";
+import { hitRateLimit, clientIp } from "./rate-limit";
 
 // המנוע שנבחר לתמלול. ברירת המחדל נקבעה במדידה על הקלטות אמיתיות מהארכיון
 // (ראה /api/lab/transcribe למטה), ולא לפי מוניטין. על 217.wav, אותו אודיו בדיוק:
@@ -19,6 +20,10 @@ import { renderAdminPage } from "./admin-page";
 // ולשם הספר — והוא גם המהיר מבין השלושה.
 // אפשר לעקוף בלי פריסה מחדש דרך משתנה סביבה.
 const TRANSCRIBE_MODEL = process.env.TRANSCRIBE_MODEL || "gpt-transcribe";
+
+// ראה server/rate-limit.ts: /api/transcribe/:id הוא ציבורי, בלי אימות, ומריץ
+// קריאת RunPod/OpenAI בתשלום אמיתי לכל בקשה שאינה אידמפוטנטית.
+const TRANSCRIBE_RATE_LIMIT_PER_HOUR = 20;
 
 const SUPABASE_URL = "https://csjekrvukbdznetsrodj.supabase.co";
 const SUPABASE_KEY = "sb_publishable_Bv6ysG9LfUZ2lUPgZVZO6g_l1wEZIlX";
@@ -363,6 +368,9 @@ export async function registerRoutes(
   // ---- On-demand transcription: RunPod (ivrit.ai) + status pipeline ----
   app.post("/api/transcribe/:id", async (req: Request, res: Response) => {
     const id = String(req.params.id);
+    if (hitRateLimit(`transcribe:${clientIp(req)}`, TRANSCRIBE_RATE_LIMIT_PER_HOUR)) {
+      return res.status(429).json({ error: "יותר מדי בקשות תמלול, נסו שוב מאוחר יותר" });
+    }
     try {
       const rec = await fetchRecordingRow(id);
       if (!rec) return res.status(404).json({ error: "ההקלטה לא נמצאה" });

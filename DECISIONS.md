@@ -14300,3 +14300,78 @@
     #62/#88/#94/#115/#164/#169/#254/#312 (ועכשיו גם ה-RLS הפתוח החדש ב-24)
     נשארים חסומים על החלטת משתמש/גישת תשתית.
     via cloud server 167.99.131.167 [loop B]
+
+## 24/08/2026 — סבבים 511–513 (loop B, תיעוד רטרואקטיבי) + סבב 514
+
+*(שלושת הסבבים הבאים בוצעו ונדחפו בפועל אך לא תועדו כאן בזמן אמת — משוחזר
+מ-`core.run_progress`/git log כדי לשמור על רצף התיעוד.)*
+
+511. **המשך לפי הצעת סבב 510: הגבלת קצב על שאר endpoints הציבוריים הלא-מוגנים
+    ב-27-bkalut-price.** `POST /api/hf/public/request`, `/api/hf/public/switch-lead`
+    ו-`/api/public/community/:slug/submit` — כולם כותבים ל-DB ומפעילים
+    webhook יוצא, בלי שום הגבלת קצב. נוסף `publicLeadRateLimiter()` (20/שעה/IP,
+    אותו דפוס כמו `submitLimiter`/`byPhoneRateLimited` הקיימים בקובץ) ונחווט
+    לשלושת הראוטים. קומיט `07c1b9a3`, ענף
+    `fix/b-27-public-lead-endpoints-rate-limit-round511-0824`.
+    via cloud server 167.99.131.167 [loop B]
+
+512. **המשך אותה עדשה על 19-igud-shiurim-portal** (מערכת שלא נבדקה בה כלל
+    עד כה). שישה ראוטים ציבוריים ללא אימות ולא מוגנים: `/api/public/tenant/:token/message`,
+    `/api/public/join`, `/api/public/teacher/:token/ask-rabbi`,
+    `/api/public/tenant/:token/service-request`, `/api/national/request`,
+    `/api/public/payments`. נוסף אותו מגביל 20/שעה/IP ונחווט לכל השישה.
+    קומיט `0186407a`, ענף `fix/b-19-igud-shiurim-portal-public-endpoints-rate-limit-round512-0824`.
+    via cloud server 167.99.131.167 [loop B]
+
+513. **סגירת הפער האחרון בקבוצה: 20-igud-portal.** `POST /api/public/tenant/:token/message`
+    היה ה-endpoint הציבורי היחיד בקבוצת 17–28 שנותר ללא הגבלת קצב אחרי
+    511/512. נוסף אותו דפוס מ-19-igud-shiurim-portal. גם נבדק מועמד IDOR
+    ב-18-torah-editor-mvp (`htr_jobs` approve/PATCH) — הקוד מתעד במפורש
+    שהיעדר בעלות-פר-משתמש הוא עיצוב מכוון (כלי-צוות-משותף), ותיקון אמיתי
+    ממילא דורש מיגרציה על פרויקט לא-נגיש (`bieebmnmkffwbqlsfozh`) — לא תוקן.
+    נסרק גם `dangerouslySetInnerHTML` מחדש על כל 9 המערכות — נקי. קומיט
+    `301d220d`, ענף `fix/b-20-igud-portal-public-message-rate-limit-round513-0824`.
+    via cloud server 167.99.131.167 [loop B]
+
+514. **המשך לפי הצעת סבב 510 (המועמד שנותר פתוח): הגבלת קצב על
+    `POST /api/transcribe/:id` ב-17-chizukim-transcribe — סיכון העלות
+    הגבוה ביותר בקבוצה.** הראוט הזה ציבורי לגמרי, בלי אימות, ומפעיל קריאה
+    אמיתית בתשלום ל-RunPod (ivrit.ai) או ל-OpenAI Whisper לכל בקשה שאינה
+    אידמפוטנטית (יש חסימת אידמפוטנטיות פר-הקלטה — `status` ב-`ready`/
+    `transcribing`/`editing`/`transcribed` נחסם — אבל `POST /api/upload/register`
+    הציבורי, שנשאר בכוונה ללא הגבלה כ"שירות תמלול חינמי" לפי סבב 510, מאפשר
+    ליצור הקלטות חדשות בלי הגבלה; סקריפט שרושם הקלטה חדשה ומתמלל אותה פעם
+    אחת עוקף את חסימת האידמפוטנטיות ומרוקן קרדיט RunPod/OpenAI ללא תקרה).
+
+    **התיקון:** נוצר `apps/17-chizukim-transcribe/server/rate-limit.ts`
+    (זהה במדויק ל-`28-kupot-health-funds/server/rate-limit.ts` — `hitRateLimit`/
+    `clientIp`, זיכרון-תהליך, חלון שעה) ונחווט בתחילת ה-handler של
+    `POST /api/transcribe/:id`, לפני כל קריאת DB/רשת — קבוע
+    `TRANSCRIBE_RATE_LIMIT_PER_HOUR = 20` (אותו מספר שנקבע בכל שאר המערכות
+    בקבוצה), מחזיר 429 בחריגה. `POST /api/upload/register` ו-`/api/upload`
+    לא נגעו — נשארים כפי שתועדו (שירות ציבורי מכוון).
+
+    **בדיקות תקינות:** קריאת קוד בלבד (אין `node_modules`/tsc באפליקציה).
+    השוואת איזון סוגריים בפייתון בין הגרסה החדשה לישנה של `routes.ts`:
+    חוסר-איזון זהה (8 `)` עודפות) קיים כבר לפני השינוי (מקורו בפסיקים
+    בתוך הערות בעברית) — השינוי עצמו הוסיף בדיוק 5 זוגות `()` ו-4 זוגות
+    `{}`, מאוזן. `git diff --stat`: 2 קבצים (`routes.ts` +8/-0,
+    `rate-limit.ts` חדש).
+
+    לא נגעתי במערכות מוגנות 08/09/bkalut-app/bkalot-admin/zr_*/NEDARIM3873/
+    csj/csj_src/igud, ב-`main`, או במערכת מחוץ להיקף. ענף חדש
+    `fix/b-17-chizukim-transcribe-rate-limit-round514-0824`, נדחף.
+
+    **הבא בתור:** עדשת חוסר-הגבלת-קצב על endpoints ציבוריים כעת סגורה
+    בכל 9 המערכות האמיתיות בהיקף (17/18/19/20/21/22/24/27/28) עבור כל
+    ה-endpoints שמכתיבים ל-DB/מפעילים עלות. נותרו שני מועמדים שתועדו
+    בסבב 510 ועדיין לא טופלו במכוון, כי הם חופפים לנושא חסום קיים ולא
+    ניתן לתקן בקוד בלבד: `19-igud-shiurim-portal` `/api/webhooks/nedarim`
+    ו-`21-mthbram` `nedarim-webhook` — שניהם בלי אימות חתימה/סוד-משותף,
+    חופפים ל-core.issues #164 (החלטת-משתמש על מנגנון החתימה). מומלץ בסבב
+    הבא לפתוח עדשה חדשה — למשל בדיקת timeout/עדיפות על קריאות רשת יוצאות
+    (fetch בלי AbortController) בטפסי הרשמה/webhook, או סריקת מירוצי-כתיבה
+    בעדכוני RPC/PATCH מקבילים על אותה שורה. נושאים
+    #62/#88/#94/#115/#164/#169/#254/#312 נשארים חסומים על החלטת
+    משתמש/גישת תשתית, ללא שינוי.
+    via cloud server 167.99.131.167 [loop B]
