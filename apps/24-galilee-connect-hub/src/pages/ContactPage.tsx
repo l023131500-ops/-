@@ -44,7 +44,7 @@ const ContactPage = () => {
         const info = data[0];
         try {
           const parsed = JSON.parse(info.content);
-          setContactInfo(parsed);
+          setContactInfo(current => ({ ...current, ...parsed }));
         } catch {}
       }
     };
