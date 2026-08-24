@@ -9,6 +9,10 @@ import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { BACKGROUND_PRESETS } from "@/types/portalDesign";
 
+function isSafeHttps(url: string | null | undefined): url is string {
+  return !!url && /^https:\/\//i.test(url);
+}
+
 const RabbiPublic = () => {
   const { id } = useParams<{ id: string }>();
   const [profile, setProfile] = useState<any>(null);
@@ -199,7 +203,7 @@ const RabbiPublic = () => {
         )}
 
         {/* Donation Link */}
-        {profile.donation_link && (
+        {isSafeHttps(profile.donation_link) && (
           <div className="text-center">
             <a href={profile.donation_link} target="_blank" rel="noopener noreferrer">
               <Button variant="outline" className="border-secondary text-secondary">🎁 תרומה</Button>
