@@ -115,7 +115,8 @@ export function App() {
       .then(({ data, error }) => {
         if (error || !data) { setLoad({ state: "failed" }); return; }
         setLoad({ state: "ready", rows: data as System[] });
-      });
+      })
+      .catch(() => { setLoad({ state: "failed" }); });
   }, []);
 
   useEffect(fetchSystems, [fetchSystems]);
