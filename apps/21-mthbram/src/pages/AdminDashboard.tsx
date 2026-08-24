@@ -149,20 +149,48 @@ const AdminDashboard = () => {
     }
   };
 
+  const approveStudyDay = async (id: string) => {
+    if (actionId) return;
+    setActionId(id);
+    try {
+      const { error } = await supabase.from("study_day_events").update({ is_approved: true, status: "approved" }).eq("id", id);
+      if (!error) { toast.success("אושר"); fetchAll(); }
+    } finally {
+      setActionId(null);
+    }
+  };
+
+  const rejectStudyDay = async (id: string) => {
+    if (actionId) return;
+    setActionId(id);
+    try {
+      const { error } = await supabase.from("study_day_events").update({ is_approved: false, status: "rejected" }).eq("id", id);
+      if (!error) { toast.info("בוטל"); fetchAll(); }
+    } finally {
+      setActionId(null);
+    }
+  };
+
   const deleteStudyDay = async (id: string) => {
     if (!confirm("למחוק יום עיון זה לצמיתות?")) return;
-    const { error } = await supabase.from("study_day_events").delete().eq("id", id);
-    if (!error) {
-      toast.success("יום העיון נמחק");
-      setStudyDayEvents(prev => prev.filter(e => e.id !== id));
-    } else {
-      const { error: softError } = await supabase.from("study_day_events").update({ status: "deleted", is_approved: false }).eq("id", id);
-      if (!softError) {
+    if (actionId) return;
+    setActionId(id);
+    try {
+      const { error } = await supabase.from("study_day_events").delete().eq("id", id);
+      if (!error) {
+        toast.success("יום העיון נמחק");
         setStudyDayEvents(prev => prev.filter(e => e.id !== id));
-        toast.success("יום העיון הוסר");
       } else {
-        toast.error("שגיאה בהסרה: " + softError.message);
+        const { error: softError } = await supabase.from("study_day_events").update({ status: "deleted", is_approved: false }).eq("id", id);
+        if (!softError) {
+          setStudyDayEvents(prev => prev.filter(e => e.id !== id));
+          toast.success("יום העיון הוסר");
+        } else {
+          toast.error("שגיאה בהסרה: " + softError.message);
+        }
       }
+    } finally {
+      setActionId(null);
     }
   };
 
@@ -1434,22 +1462,16 @@ const AdminDashboard = () => {
                               <Download className="w-3 h-3" />
                             </Button>
                             {!ev.is_approved && (
-                              <Button size="sm" onClick={async () => {
-                                const { error } = await supabase.from("study_day_events").update({ is_approved: true, status: "approved" }).eq("id", ev.id);
-                                if (!error) { toast.success("אושר"); fetchAll(); }
-                              }} className="bg-gradient-teal text-primary-foreground gap-1 font-body font-bold">
+                              <Button size="sm" onClick={() => approveStudyDay(ev.id)} disabled={actionId === ev.id} className="bg-gradient-teal text-primary-foreground gap-1 font-body font-bold">
                                 <Check className="w-3 h-3" /> אשר
                               </Button>
                             )}
                             {ev.is_approved && (
-                              <Button size="sm" variant="outline" onClick={async () => {
-                                const { error } = await supabase.from("study_day_events").update({ is_approved: false, status: "rejected" }).eq("id", ev.id);
-                                if (!error) { toast.info("בוטל"); fetchAll(); }
-                              }} className="text-destructive gap-1 font-body border-destructive/30">
+                              <Button size="sm" variant="outline" onClick={() => rejectStudyDay(ev.id)} disabled={actionId === ev.id} className="text-destructive gap-1 font-body border-destructive/30">
                                 <X className="w-3 h-3" /> בטל
                               </Button>
                             )}
-                            <Button size="sm" variant="outline" onClick={() => deleteStudyDay(ev.id)} className="gap-1 font-body border-destructive/30 text-destructive hover:bg-destructive/10" title="מחק לצמיתות">
+                            <Button size="sm" variant="outline" onClick={() => deleteStudyDay(ev.id)} disabled={actionId === ev.id} className="gap-1 font-body border-destructive/30 text-destructive hover:bg-destructive/10" title="מחק לצמיתות">
                               <Trash2 className="w-3 h-3" />
                             </Button>
                           </div>
