@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 export type IntegrationSettings = {
   n8n_base_url?: string;
   whatsapp_instance_id?: string;
+  whatsapp_api_token?: string;
   nedarim_token?: string;
   imot_token?: string;
   email_sender?: string;
@@ -37,11 +38,22 @@ export type EmailSettings = {
   reply_to?: string;
 };
 
+// Two-way WhatsApp sync (flagship spec item 9, sibling of EmailSettings) —
+// consumed by /api/whatsapp-send (outbound, live only when live_enabled AND
+// platform WHATSAPP_LIVE_MODE=live AND Green API creds in IntegrationSettings)
+// and /api/public/whatsapp-inbound (inbound_secret is the webhook's password).
+export type WhatsappSettings = {
+  enabled?: boolean;
+  inbound_secret?: string;
+  live_enabled?: boolean;
+};
+
 export type TenantSettings = {
   integrations?: IntegrationSettings;
   notifications?: NotificationSettings;
   voice?: VoiceSettings;
   email?: EmailSettings;
+  whatsapp?: WhatsappSettings;
   // per-tenant module visibility (flagship spec item 2) — key: enabled.
   // Missing key means enabled; see features/customize/modules.ts
   modules?: Record<string, boolean>;

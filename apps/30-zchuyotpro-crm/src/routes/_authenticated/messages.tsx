@@ -280,6 +280,32 @@ function ChatPane({ contact, messages, tenantId, senderId, onSent }: {
           body: JSON.stringify({ messageId: data.id }),
         }).catch(() => {});
       }
+      // WhatsApp to a client: real dispatch through the server (Green API,
+      // test-mode gated) — same flow as the client file's MessagesTab. The
+      // row above is already saved either way; this only performs delivery
+      // and updates the row's status.
+      if (channel === "whatsapp" && contact.kind === "client" && data?.id) {
+        try {
+          const { data: session } = await supabase.auth.getSession();
+          const token = session.session?.access_token;
+          if (!token) throw new Error("נדרשת התחברות מחדש");
+          const res = await fetch(`${import.meta.env.BASE_URL}api/whatsapp-send`, {
+            method: "POST",
+            headers: { "content-type": "application/json", authorization: `Bearer ${token}` },
+            body: JSON.stringify({ messageId: data.id }),
+          });
+          const out = await res.json().catch(() => null);
+          if (!res.ok) {
+            toast.error("שליחת הוואטסאפ נכשלה", { description: out?.error ?? `שגיאה ${res.status}` });
+          } else if (out?.mode === "test") {
+            toast.info("הוואטסאפ נרשם במצב טסט", { description: out?.detail });
+          } else {
+            toast.success("הוואטסאפ נשלח ללקוח");
+          }
+        } catch (e) {
+          toast.error("שליחת הוואטסאפ נכשלה", { description: e instanceof Error ? e.message : undefined });
+        }
+      }
     },
     onSuccess: () => { setContent(""); setAttachments([]); onSent(); },
     onError: (e: Error) => toast.error("שגיאה", { description: e.message }),
@@ -392,6 +418,7 @@ function Bubble({ m }: { m: MessageRow }) {
           </div>
         )}
         <div className={cn("flex items-center gap-1 text-[10px] mt-1 justify-end", outbound ? "opacity-70" : "text-muted-foreground")}>
+          {outbound && m.status === "test_mode" && <span>טסט — לא נשלח בפועל ·</span>}
           <span>{formatDateTimeHe(m.created_at)}</span>
           {outbound && <StatusIcon className="h-3 w-3" />}
         </div>

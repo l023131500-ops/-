@@ -10,10 +10,10 @@ import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Loader2, Save, ExternalLink, Plug, CheckCircle2, XCircle, Phone, Copy, KeyRound, Mail } from "lucide-react";
+import { Loader2, Save, ExternalLink, Plug, CheckCircle2, XCircle, Phone, Copy, KeyRound, Mail, MessageCircle } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
-import { myTenantQuery, tenantProfilesQuery, type TenantSettings, type IntegrationSettings, type NotificationSettings, type VoiceSettings, type EmailSettings } from "@/features/settings/queries";
+import { myTenantQuery, tenantProfilesQuery, type TenantSettings, type IntegrationSettings, type NotificationSettings, type VoiceSettings, type EmailSettings, type WhatsappSettings } from "@/features/settings/queries";
 import { CustomizeTab } from "@/features/customize/CustomizeTab";
 
 export const Route = createFileRoute("/_authenticated/settings")({
@@ -38,6 +38,7 @@ function SettingsPage() {
           <TabsTrigger value="integrations">אינטגרציות</TabsTrigger>
           <TabsTrigger value="voice">מערכת קולית</TabsTrigger>
           <TabsTrigger value="email">סנכרון מייל</TabsTrigger>
+          <TabsTrigger value="whatsapp">וואטסאפ</TabsTrigger>
           <TabsTrigger value="customize">התאמה אישית + AI</TabsTrigger>
           <TabsTrigger value="notifications">התראות</TabsTrigger>
         </TabsList>
@@ -58,6 +59,7 @@ function SettingsPage() {
         <TabsContent value="integrations" className="mt-4"><IntegrationsTab /></TabsContent>
         <TabsContent value="voice" className="mt-4"><VoiceTab /></TabsContent>
         <TabsContent value="email" className="mt-4"><EmailTab /></TabsContent>
+        <TabsContent value="whatsapp" className="mt-4"><WhatsappTab /></TabsContent>
         <TabsContent value="customize" className="mt-4"><CustomizeTab /></TabsContent>
         <TabsContent value="notifications" className="mt-4"><NotificationsTab /></TabsContent>
       </Tabs>
@@ -201,6 +203,7 @@ function IntegrationsTab() {
   const services = [
     { key: "n8n_base_url" as const, label: "n8n Webhook Base URL", placeholder: "https://n8n.example.com" },
     { key: "whatsapp_instance_id" as const, label: "WhatsApp Instance ID (Green API)", placeholder: "instance-xxxx" },
+    { key: "whatsapp_api_token" as const, label: "WhatsApp API Token (Green API)", placeholder: "••••" },
     { key: "nedarim_token" as const, label: "Nedarim Plus API Token", placeholder: "••••" },
     { key: "imot_token" as const, label: "Imot HaMashiach connection", placeholder: "••••" },
     { key: "email_sender" as const, label: "Email sender address", placeholder: "no-reply@example.com" },
@@ -484,6 +487,125 @@ function EmailTab() {
             <p className="text-xs text-muted-foreground mt-2">
               הדביקו את הכתובת אצל ספק המייל הנכנס (Resend Inbound / n8n / CloudMailin) כיעד
               ה-Webhook. המערכת מזהה אוטומטית גם מבנה Resend וגם JSON שטוח (from / subject / text).
+            </p>
+          </div>
+        )}
+
+        <Button onClick={save} disabled={saving}>
+          {saving && <Loader2 className="h-4 w-4 animate-spin me-1" />}
+          <Save className="h-4 w-4 me-1" /> שמור הגדרות
+        </Button>
+      </CardContent>
+    </Card>
+  );
+}
+
+function WhatsappTab() {
+  const { data: tenant, isLoading } = useQuery(myTenantQuery());
+  const qc = useQueryClient();
+  const settings = (tenant?.settings ?? {}) as TenantSettings;
+  const [form, setForm] = useState<WhatsappSettings>(settings.whatsapp ?? {});
+  const [saving, setSaving] = useState(false);
+  // window is unavailable during SSR — resolve the public origin on the client
+  const [origin, setOrigin] = useState("");
+  useEffect(() => setOrigin(window.location.origin), []);
+
+  async function save() {
+    if (!tenant?.id) return;
+    if (form.enabled && !form.inbound_secret) {
+      toast.error("להפעלת הסנכרון יש ליצור מפתח סודי לקליטת הודעות");
+      return;
+    }
+    setSaving(true);
+    const newSettings: TenantSettings = { ...settings, whatsapp: form };
+    const { error } = await supabase.from("tenants").update({ settings: newSettings }).eq("id", tenant.id);
+    setSaving(false);
+    if (error) { toast.error("שמירה נכשלה", { description: error.message }); return; }
+    toast.success("הגדרות הוואטסאפ נשמרו");
+    qc.invalidateQueries({ queryKey: ["my-tenant"] });
+  }
+
+  if (isLoading) return <div className="flex justify-center py-6"><Loader2 className="h-5 w-5 animate-spin" /></div>;
+
+  const inboundUrl = tenant && form.inbound_secret && origin
+    ? `${origin}${import.meta.env.BASE_URL}api/public/whatsapp-inbound?tenant=${tenant.id}&key=${form.inbound_secret}`
+    : null;
+  const credsConfigured =
+    !!settings.integrations?.whatsapp_instance_id?.trim() && !!settings.integrations?.whatsapp_api_token?.trim();
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="text-base flex items-center gap-2"><MessageCircle className="h-4 w-4" /> וואטסאפ דו־כיווני (Green API)</CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-5">
+        <p className="text-sm text-muted-foreground">
+          יוצא: הודעת וואטסאפ שנשלחת מציר התקשורת של הלקוח נשלחת אליו בפועל דרך מכשיר
+          הוואטסאפ של המשרד (Green API). נכנס: כל הודעה שמגיעה למספר המשרד נקלטת
+          אוטומטית — שולח מזוהה לפי טלפון נרשם בציר ההודעות של הלקוח, שולח לא מוכר
+          נפתח כפנייה בלוח הפניות. שום הודעה לא הולכת לאיבוד.
+        </p>
+
+        <div className="flex items-center justify-between border-b pb-3">
+          <Label htmlFor="wa-enabled">הפעלת קליטת הודעות נכנסות</Label>
+          <Switch
+            id="wa-enabled"
+            checked={!!form.enabled}
+            onCheckedChange={(v) => setForm({ ...form, enabled: v })}
+          />
+        </div>
+
+        <div className="flex items-center justify-between border-b pb-3">
+          <div>
+            <Label htmlFor="wa-live">שליחה חיה (מחוץ למצב טסט)</Label>
+            <p className="text-xs text-muted-foreground mt-1">
+              כבוי = מצב טסט: הודעות יוצאות נרשמות בציר עם סימון &quot;טסט&quot; ולא נשלחות בפועל.
+              שליחה חיה דורשת גם הפעלה כאן וגם WHATSAPP_LIVE_MODE=live בהגדרות הסביבה של הפלטפורמה.
+            </p>
+          </div>
+          <Switch
+            id="wa-live"
+            checked={!!form.live_enabled}
+            onCheckedChange={(v) => setForm({ ...form, live_enabled: v })}
+          />
+        </div>
+
+        <p className="text-xs text-muted-foreground">
+          פרטי החיבור ל-Green API (Instance ID + API Token) מוגדרים בלשונית
+          &quot;אינטגרציות&quot;{credsConfigured ? "" : " — טרם הוגדרו שם"}.
+        </p>
+
+        <div>
+          <Label className="flex items-center gap-2"><KeyRound className="h-3.5 w-3.5" /> מפתח סודי לקליטת הודעות</Label>
+          <div className="flex gap-2">
+            <Input dir="ltr" readOnly value={form.inbound_secret ?? ""} placeholder="טרם נוצר מפתח" />
+            <Button type="button" variant="outline" onClick={() => {
+              const secret = crypto.randomUUID().replace(/-/g, "");
+              setForm({ ...form, inbound_secret: secret });
+              toast.info("נוצר מפתח חדש — יש לשמור ולעדכן את כתובת ה-Webhook בהגדרות המופע ב-Green API");
+            }}>
+              {form.inbound_secret ? "החלף מפתח" : "צור מפתח"}
+            </Button>
+          </div>
+          <p className="text-xs text-muted-foreground mt-1">
+            המפתח משובץ בכתובת ה-Webhook ומשמש כסיסמת הגישה שלה. החלפתו מנתקת קישור ישן.
+          </p>
+        </div>
+
+        {inboundUrl && (
+          <div>
+            <Label>כתובת Webhook לקליטת הודעות נכנסות</Label>
+            <div className="flex gap-2">
+              <Input dir="ltr" readOnly className="text-xs" value={inboundUrl} />
+              <Button type="button" variant="outline" size="icon" onClick={() => {
+                void navigator.clipboard.writeText(inboundUrl);
+                toast.success("הכתובת הועתקה");
+              }}><Copy className="h-4 w-4" /></Button>
+            </div>
+            <p className="text-xs text-muted-foreground mt-2">
+              הדביקו את הכתובת בהגדרות המופע ב-Green API (שדה Webhook URL) והפעילו שם
+              קבלת הודעות נכנסות (incomingWebhook). המערכת מזהה אוטומטית גם את מבנה
+              Green API וגם JSON שטוח (from / text / id).
             </p>
           </div>
         )}

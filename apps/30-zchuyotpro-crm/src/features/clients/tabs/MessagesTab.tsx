@@ -21,6 +21,16 @@ const EMAIL_STATUS: Record<string, string> = {
   failed: "שליחה נכשלה",
 };
 
+// Delivery states written by /api/whatsapp-send onto outbound whatsapp rows.
+const WHATSAPP_STATUS: Record<string, string> = {
+  test_mode: "טסט — לא נשלח בפועל",
+  delivered: "נשלח בוואטסאפ",
+  failed: "שליחה נכשלה",
+};
+
+const deliveryLabel = (channel: string, status: string): string | undefined =>
+  channel === "email" ? EMAIL_STATUS[status] : channel === "whatsapp" ? WHATSAPP_STATUS[status] : undefined;
+
 const channelIcon: Record<string, React.ComponentType<{ className?: string }>> = {
   whatsapp: MessageCircle,
   email: Mail,
@@ -81,29 +91,34 @@ export function MessagesTab({ clientId }: { clientId: string }) {
           tenantId: client.tenant_id,
         });
       }
-      // Email channel: real dispatch through the server (Resend, test-mode
-      // gated). The timeline row above is already saved either way — this
-      // only performs delivery and updates the row's status.
-      if (channel === "email" && inserted?.id) {
+      // Email / WhatsApp channels: real dispatch through the server (Resend /
+      // Green API, both test-mode gated). The timeline row above is already
+      // saved either way — this only performs delivery and updates the row's
+      // status.
+      if ((channel === "email" || channel === "whatsapp") && inserted?.id) {
+        const name = channel === "email" ? "המייל" : "הוואטסאפ";
         try {
           const { data: session } = await supabase.auth.getSession();
           const token = session.session?.access_token;
           if (!token) throw new Error("נדרשת התחברות מחדש");
-          const res = await fetch(`${import.meta.env.BASE_URL}api/email-send`, {
+          const res = await fetch(`${import.meta.env.BASE_URL}api/${channel === "email" ? "email-send" : "whatsapp-send"}`, {
             method: "POST",
             headers: { "content-type": "application/json", authorization: `Bearer ${token}` },
-            body: JSON.stringify({ messageId: inserted.id, subject: emailSubject.trim() || undefined }),
+            body: JSON.stringify({
+              messageId: inserted.id,
+              ...(channel === "email" ? { subject: emailSubject.trim() || undefined } : {}),
+            }),
           });
           const out = await res.json().catch(() => null);
           if (!res.ok) {
-            toast.error("שליחת המייל נכשלה", { description: out?.error ?? `שגיאה ${res.status}` });
+            toast.error(`שליחת ${name} נכשלה`, { description: out?.error ?? `שגיאה ${res.status}` });
           } else if (out?.mode === "test") {
-            toast.info("המייל נרשם במצב טסט", { description: out?.detail });
+            toast.info(`${name} נרשם במצב טסט`, { description: out?.detail });
           } else {
-            toast.success("המייל נשלח ללקוח");
+            toast.success(`${name} נשלח ללקוח`);
           }
         } catch (e) {
-          toast.error("שליחת המייל נכשלה", { description: e instanceof Error ? e.message : undefined });
+          toast.error(`שליחת ${name} נכשלה`, { description: e instanceof Error ? e.message : undefined });
         }
       }
     },
@@ -128,10 +143,10 @@ export function MessagesTab({ clientId }: { clientId: string }) {
                     <span>{(CHANNEL as Record<string, string>)[m.channel] ?? m.channel}</span>
                     <span>·</span>
                     <span>{formatDateTimeHe(m.created_at)}</span>
-                    {m.channel === "email" && outbound && EMAIL_STATUS[m.status] && (
+                    {outbound && deliveryLabel(m.channel, m.status) && (
                       <>
                         <span>·</span>
-                        <span className={m.status === "failed" ? "text-red-300 font-medium" : ""}>{EMAIL_STATUS[m.status]}</span>
+                        <span className={m.status === "failed" ? "text-red-300 font-medium" : ""}>{deliveryLabel(m.channel, m.status)}</span>
                       </>
                     )}
                   </div>
