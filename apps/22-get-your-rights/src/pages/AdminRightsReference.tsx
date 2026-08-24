@@ -205,6 +205,7 @@ const AdminRightsReference = () => {
   const { toast } = useToast();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const mediaInputRef = useRef<HTMLInputElement>(null);
+  const removingMediaRef = useRef<Set<string>>(new Set());
   const [authChecked, setAuthChecked] = useState(false);
   const [rights, setRights] = useState<RightsRef[]>([]);
   const [loading, setLoading] = useState(true);
@@ -336,13 +337,19 @@ const AdminRightsReference = () => {
   };
 
   const handleRemoveMedia = async (rightId: string) => {
-    const { error } = await supabase.from("rights_reference").update({ media_url: null, media_type: null } as any).eq("id", rightId);
-    if (error) {
-      toast({ title: "שגיאה", description: "הסרת המדיה נכשלה", variant: "destructive" });
-      return;
+    if (removingMediaRef.current.has(rightId)) return;
+    removingMediaRef.current.add(rightId);
+    try {
+      const { error } = await supabase.from("rights_reference").update({ media_url: null, media_type: null } as any).eq("id", rightId);
+      if (error) {
+        toast({ title: "שגיאה", description: "הסרת המדיה נכשלה", variant: "destructive" });
+        return;
+      }
+      toast({ title: "הוסר", description: "המדיה הוסרה" });
+      loadRights();
+    } finally {
+      removingMediaRef.current.delete(rightId);
     }
-    toast({ title: "הוסר", description: "המדיה הוסרה" });
-    loadRights();
   };
 
   // ── Add single topic ──
