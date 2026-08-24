@@ -42,48 +42,69 @@ export async function POST(req: Request) {
       return NextResponse.json({ ok: false, error: "הקופון מוצה" }, { status: 403 });
     }
 
+    // תפיסת מכסה אטומית (compare-and-swap): מונעת מרוץ שבו שתי בקשות
+    // מקבילות קוראות אותו used_uploads לפני שאף אחת מהן מספיקה לעדכן,
+    // ושתיהן עוברות את הבדיקה למרות שנשאר רק מקום אחד. אם ה-CAS נכשל
+    // (0 שורות עודכנו), בקשה אחרת כבר תפסה את המקום האחרון בינתיים.
+    const { data: claimed, error: claimErr } = await sb
+      .from("coupon_codes")
+      .update({ used_uploads: coupon.used_uploads + 1 })
+      .eq("id", coupon.id)
+      .eq("used_uploads", coupon.used_uploads)
+      .select("id")
+      .maybeSingle();
+    if (claimErr) throw claimErr;
+    if (!claimed) {
+      return NextResponse.json({ ok: false, error: "הקופון מוצה" }, { status: 403 });
+    }
+
     // העלאה ל-Storage (bucket: audio)
     const ext = file.name.split(".").pop()?.toLowerCase() || "mp3";
     const id = randomUUID();
     const path = `${id}.${ext}`;
     const raw = createSupabaseServiceRaw();
     const buffer = Buffer.from(await file.arrayBuffer());
-    const { error: upErr } = await raw.storage.from("audio").upload(path, buffer, {
-      contentType: file.type || "audio/mpeg",
-      upsert: false
-    });
-    if (upErr) throw upErr;
+    try {
+      const { error: upErr } = await raw.storage.from("audio").upload(path, buffer, {
+        contentType: file.type || "audio/mpeg",
+        upsert: false
+      });
+      if (upErr) throw upErr;
 
-    // יצירת רשומת uploads + job
-    const { data: uploadRow, error: insErr } = await sb
-      .from("uploads")
-      .insert({
-        id,
-        coupon_id: coupon.id,
-        uploader_email,
-        style,
-        status: "uploaded",
-        storage_path: path,
-        size_bytes: file.size,
-        original_filename: file.name
-      })
-      .select()
-      .single();
-    if (insErr) throw insErr;
+      // יצירת רשומת uploads + job
+      const { data: uploadRow, error: insErr } = await sb
+        .from("uploads")
+        .insert({
+          id,
+          coupon_id: coupon.id,
+          uploader_email,
+          style,
+          status: "uploaded",
+          storage_path: path,
+          size_bytes: file.size,
+          original_filename: file.name
+        })
+        .select()
+        .single();
+      if (insErr) throw insErr;
 
-    const { error: jobErr } = await sb.from("jobs").insert({
-      upload_id: uploadRow.id,
-      type: "transcribe",
-      status: "pending"
-    });
-    if (jobErr) throw jobErr;
+      const { error: jobErr } = await sb.from("jobs").insert({
+        upload_id: uploadRow.id,
+        type: "transcribe",
+        status: "pending"
+      });
+      if (jobErr) throw jobErr;
 
-    // עדכון מונה שימוש בקופון
-    await sb.from("coupon_codes")
-      .update({ used_uploads: coupon.used_uploads + 1 })
-      .eq("id", coupon.id);
-
-    return NextResponse.json({ ok: true, upload_id: uploadRow.id });
+      return NextResponse.json({ ok: true, upload_id: uploadRow.id });
+    } catch (e) {
+      // ההעלאה נכשלה אחרי שהמכסה כבר נתפסה — משחררים את המקום שנתפס
+      // כדי שכישלון לא יצרוב לצמיתות משבצת מהקופון של המשתמש.
+      await sb.from("coupon_codes")
+        .update({ used_uploads: coupon.used_uploads })
+        .eq("id", coupon.id)
+        .eq("used_uploads", coupon.used_uploads + 1);
+      throw e;
+    }
   } catch (e: any) {
     console.error("[uploads]", e);
     return NextResponse.json({ ok: false, error: e?.message || "שגיאה כללית" }, { status: 500 });
