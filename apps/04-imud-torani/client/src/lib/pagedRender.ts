@@ -288,7 +288,11 @@ function headingInlineStyle(b: ContentBlock): string {
   if (b.meta?.headingSize) st.push(`font-size:${b.meta.headingSize}em`);
   if (b.meta?.headingBold === false) st.push("font-weight:400");
   if (b.meta?.headingAlign) st.push(`text-align:${b.meta.headingAlign}`);
-  return st.length ? ` style="${st.join(";")}"` : "";
+  // meta values come from unvalidated JSON (server only checks `content` is a
+  // string, see routes.ts) and land straight inside a double-quoted style="..."
+  // attribute below — a `"` in headingFont/headingAlign would break out of the
+  // attribute and inject arbitrary HTML/attributes, not just CSS.
+  return st.length ? ` style="${st.join(";").replace(/"/g, "&quot;")}"` : "";
 }
 
 /** בונה את גוף ה-HTML לפי התבנית. */
