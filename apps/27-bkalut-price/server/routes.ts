@@ -372,6 +372,28 @@ function byPhoneRateLimited(req: Request) {
   return entry.count > BY_PHONE_MAX_PER_WINDOW;
 }
 
+// Shared per-IP limiter for public, unauthenticated lead/submission endpoints
+// (hf/public/request, hf/public/switch-lead, community questionnaire submit).
+// These create DB rows and fire an outbound webhook with no auth gate, so an
+// unthrottled caller could spam both the DB and the webhook target.
+const publicLeadHits = new Map<string, { count: number; resetAt: number }>();
+function publicLeadRateLimiter(routeKey: string, maxPerHour = 20) {
+  return (req: Request, res: import("express").Response, next: () => void) => {
+    const key = `${routeKey}:${clientIpFor(req)}`;
+    const now = Date.now();
+    const entry = publicLeadHits.get(key);
+    if (!entry || now > entry.resetAt) {
+      publicLeadHits.set(key, { count: 1, resetAt: now + 60 * 60 * 1000 });
+      return next();
+    }
+    entry.count += 1;
+    if (entry.count > maxPerHour) {
+      return res.status(429).json({ message: "יותר מדי בקשות, נסו שוב מאוחר יותר" });
+    }
+    next();
+  };
+}
+
 function potentialLevel(percent: number) {
   if (percent >= 75) return "פוטנציאל גבוה";
   if (percent >= 45) return "פוטנציאל בינוני";
@@ -3214,7 +3236,7 @@ export async function registerRoutes(
   // dispatches it through the unified webhook bus to NEDARIM3873 — the n8n
   // automation then routes the full info to the client by email per the
   // automation_configs settings, exactly like the rights service form.
-  app.post("/api/hf/public/request", async (req, res) => {
+  app.post("/api/hf/public/request", publicLeadRateLimiter("hf-request"), async (req, res) => {
     const body = req.body ?? {};
     const topicId = Number(body.topicId);
     const topicRow = healthFunds.getTopic(topicId, true);
@@ -3320,7 +3342,7 @@ export async function registerRoutes(
   // through the SAME unified webhook bus (NEDARIM3873). Only name + phone are
   // required; everything else is optional. Does NOT touch the existing
   // /api/hf/public/request lead flow.
-  app.post("/api/hf/public/switch-lead", async (req, res) => {
+  app.post("/api/hf/public/switch-lead", publicLeadRateLimiter("hf-switch-lead"), async (req, res) => {
     const body = req.body ?? {};
     const fullName = String(body.fullName ?? body.name ?? "").trim();
     if (!fullName) return res.status(400).json({ message: "full name is required" });
@@ -3584,7 +3606,7 @@ export async function registerRoutes(
     });
   });
 
-  app.post("/api/public/community/:slug/submit", async (req, res) => {
+  app.post("/api/public/community/:slug/submit", publicLeadRateLimiter("community-submit"), async (req, res) => {
     const settings = await getCommunitySettings();
     if (!settings.publicEnabled) return res.status(404).json({ message: "link not found" });
     const link = community.getLinkBySlug(String(req.params.slug || "").trim());
