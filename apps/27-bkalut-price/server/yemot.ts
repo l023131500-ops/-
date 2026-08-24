@@ -7,6 +7,18 @@ const ELEVENLABS_BASE = "https://api.elevenlabs.io/v1";
 const ELEVENLABS_VOICE_ID = "9mC4rMlfrKiadcMhOgey";
 const AUDIO_BUCKET = "yemot-audio";
 
+// כל הקריאות היוצאות ל-Yemot/ElevenLabs כאן היו בלי AbortController — ספק תקוע
+// היה תולה את שליחת ההודעה הקולית עד שהפלטפורמה עצמה קוטעת את הבקשה.
+async function fetchWithTimeout(url: string, init: RequestInit, timeoutMs = 30000): Promise<Response> {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
+  try {
+    return await fetch(url, { ...init, signal: controller.signal });
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
 export interface YemotResult {
   ok: boolean;
   whitelist: string;
@@ -66,7 +78,7 @@ async function generateElevenLabsAudio(elevenLabsKey: string, text: string): Pro
   const cached = await getCachedAudio(text);
   if (cached) return cached;
 
-  const res = await fetch(
+  const res = await fetchWithTimeout(
     `${ELEVENLABS_BASE}/text-to-speech/${ELEVENLABS_VOICE_ID}?output_format=mp3_44100_128`,
     {
       method: "POST",
@@ -104,7 +116,7 @@ async function generateElevenLabsAudio(elevenLabsKey: string, text: string): Pro
 async function updateWhitelist(apiKey: string, phone: string): Promise<void> {
   const getForm = new FormData();
   getForm.append("path", "/333/WhiteList.ini");
-  const getRes = await fetch(`${YEMOT_BASE}/GetTextFile`, {
+  const getRes = await fetchWithTimeout(`${YEMOT_BASE}/GetTextFile`, {
     method: "POST",
     headers: { Authorization: `Basic ${apiKey}` },
     body: getForm,
@@ -121,7 +133,7 @@ async function updateWhitelist(apiKey: string, phone: string): Promise<void> {
   const updateForm = new FormData();
   updateForm.append("path", "/333/WhiteList.ini");
   updateForm.append("contents", newContents);
-  await fetch(`${YEMOT_BASE}/UploadTextFile`, {
+  await fetchWithTimeout(`${YEMOT_BASE}/UploadTextFile`, {
     method: "POST",
     headers: { Authorization: `Basic ${apiKey}` },
     body: updateForm,
@@ -140,7 +152,7 @@ async function uploadToExtension3(apiKey: string, phone: string, audio: Buffer):
   formData.append("path", path);
   formData.append("convertAudio", "1");
 
-  const res = await fetch(`${YEMOT_BASE}/UploadFile`, {
+  const res = await fetchWithTimeout(`${YEMOT_BASE}/UploadFile`, {
     method: "POST",
     headers: { Authorization: `Basic ${apiKey}` },
     body: formData,
@@ -166,7 +178,7 @@ async function sendTTS(apiKey: string, phone: string, message: string): Promise<
     `[yemot] SendTTS request: ${url} to=${maskPhone(phone)} chars=${message.length} keyLen=${apiKey.length}`,
   );
 
-  const res = await fetch(url, {
+  const res = await fetchWithTimeout(url, {
     method: "POST",
     headers: { Authorization: `Basic ${apiKey}` },
     body: formData,

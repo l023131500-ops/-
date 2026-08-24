@@ -23,6 +23,17 @@ import { toTtsSafeHebrew } from "@shared/tts-hebrew";
 import type { HfTopic } from "./health-funds";
 
 const ELEVENLABS_BASE = "https://api.elevenlabs.io/v1";
+// אותה בעיה כמו ב-server/yemot.ts (סבב B קודם): הקריאה ל-ElevenLabs הייתה בלי
+// AbortController — ספק תקוע היה תולה את יצירת הפודקאסט בלי גבול.
+async function fetchWithTimeout(url: string, init: RequestInit, timeoutMs = 30000): Promise<Response> {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
+  try {
+    return await fetch(url, { ...init, signal: controller.signal });
+  } finally {
+    clearTimeout(timer);
+  }
+}
 // Authoritative, engaging male Hebrew narrator. Overridable per-deployment.
 const HF_PODCAST_VOICE_ID = process.env.HF_PODCAST_VOICE_ID || "9mC4rMlfrKiadcMhOgey";
 // Public bucket so the generated podcast files can be downloaded / sent to the
@@ -123,7 +134,7 @@ function audioKey(catalogNo: number, text: string): string {
 // ─── ElevenLabs synthesis ────────────────────────────────────────────────────
 
 async function synthElevenLabs(apiKey: string, text: string): Promise<Buffer> {
-  const res = await fetch(
+  const res = await fetchWithTimeout(
     `${ELEVENLABS_BASE}/text-to-speech/${HF_PODCAST_VOICE_ID}?output_format=mp3_44100_128`,
     {
       method: "POST",
