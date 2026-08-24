@@ -4215,3 +4215,56 @@ to that constraint: they import only dependency-free modules (`hosts.js`,
   has hit. The on-device Android UI half of §2★ (typed-code identify, and the
   exact wording/UX of the selection dialog) can still be refined once a real
   device is available to test against.
+
+- **[24/08/2026, Loop A] Session cleanup between kiosk users — KIOSK_BUILD.md
+  §9, flagged critical for a public kiosk ("ניקוי סשן: מחיקת היסטוריה/עוגיות
+  בין משתמשים... קריטי לקיוסק ציבורי"), was entirely unbuilt, on `zol` not
+  this tree** — read `KioskActivity.kt` end to end while reviewing the
+  customer-switch dialog added last round and found the WebView never had its
+  cookies, form data, or navigation history cleared anywhere. The only
+  existing cleanup, `onClearCache()`, only fires on an explicit remote
+  `clear_cache` command and only clears the HTTP cache + DOM storage
+  (`WebStorage`) — it never calls `CookieManager` at all. Every customer-
+  facing navigation — `returnToVenue()` (fires on every idle timeout, i.e.
+  the exact moment one customer has walked away), and `switchToHome()`/
+  `switchToClient()` (the corner-tap picker from last round) — was a bare
+  `webView.loadUrl()`. In practice: a customer's login session, cart, or
+  autofilled form data on one client's branded site could still be live in
+  the WebView when the next customer picked a different client, or when the
+  device idled back to the venue's own home.
+
+  Added `clearBrowsingSession()`: `CookieManager.removeAllCookies()` +
+  `flush()`, `webView.clearFormData()`, `WebStorage.deleteAllData()`,
+  `webView.clearCache(true)`. Wired into all three actual "a different person
+  is now at the device" boundaries — `returnToVenue()`, `switchToHome()`,
+  `switchToClient()` — each followed by `webView.clearHistory()` right after
+  the `loadUrl()` call, the standard Android idiom for dropping the
+  back/forward list around a fresh navigation.
+
+  **Deliberately not called from `onCreate()`'s boot path.** That path
+  restores `LAST_URL` on purpose — an intentional "resume where the device
+  left off" behaviour across a crash, an OTA update, or a `reboot` command,
+  none of which is necessarily a new customer arriving. Wiping cookies there
+  would fight that existing, already-shipped restore feature rather than
+  serve §9's "between users" goal, and §9's own wording is about the boundary
+  between people at the device, not about the process lifecycle.
+
+  No server-side change was needed — every piece of state being cleared is
+  device-local WebView state, so this round touches only `KioskActivity.kt`.
+  **Not compiler-verified**: no gradle/kotlin toolchain in this sandbox, the
+  same constraint every Android-side entry in this log has hit — reviewed by
+  hand; brace/paren counts in the file balance before and after the edit, and
+  the three call sites follow the exact `clearBrowsingSession(); loadUrl();
+  clearHistory()` shape at each of `returnToVenue()`/`switchToHome()`/
+  `switchToClient()`. Full JS suite re-run for a regression check (this
+  change touches no JS): 32/34, unchanged — the two failures are the same
+  pre-existing `express`/`node:sqlite`-not-installed gap every prior entry in
+  this log has hit.
+
+  Pushed to `l023131500-ops/zol`#`claude/what-do-you-see-gxo5tc` (`0fff949`).
+  `more30.com/kiosk/api/health` polled 3× after the push and read `200`
+  throughout. **Not verified beyond the push-landing signal and manual Kotlin
+  review**: no test customer account or real device exists to switch between
+  two approved clients and confirm cookies/history/form data are actually
+  gone from the WebView afterward — the same constraint every fix in this log
+  without a real device has hit.
