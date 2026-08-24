@@ -10,6 +10,7 @@ import {
   houseNumberOfLabel,
   type GeocodeResult,
 } from './geocode';
+import { registryAddressPoint, interpolatedHousePoint } from './addresspoints';
 import {
   geocodeGoogle,
   googleConfigured,
@@ -1032,6 +1033,78 @@ export async function buildReport(
       }
     } catch {
       /* המסלול הראשי כבר נתן נקודה או שכבר נרשמה אזהרה */
+    }
+  }
+
+  // --- תיקון אחרון לרמת הבניין — חינמי לכל הרמות ---
+  //
+  // רץ רק כשכל שירותי האיתור (GovMap / Google / Nominatim) השאירו את מספר
+  // הבית לא-מאומת, או שלא נתנו נקודה בכלל. שני שלבים, מהוודאי אל המקורב:
+  //   (א) מרשם נקודות-הכתובת ב-data.gov.il — פילטר מדויק לפי קוד יישוב +
+  //       קוד רחוב רשמי + מספר בית. פגיעה = הבניין הרשום עצמו, ולכן רק כאן
+  //       geoHouseVerified הופך true והאזהרות הקודמות מוסרות.
+  //   (ב) אינטרפולציה בין שכנים מאומתים (lib/addresspoints.ts) — משפרת את
+  //       הנקודה אבל אינה בניין רשום: geoHouseVerified נשאר false ביושר,
+  //       והאזהרה מוחלפת בניסוח שאומר בדיוק על מה הנקודה נשענת.
+  if (
+    parsed.kind === 'address' &&
+    parsed.houseNum != null &&
+    (geoHouseVerified === false || lat == null)
+  ) {
+    if (streetResolved && streetResolved.kind === 'street') {
+      const exact = await registryAddressPoint(
+        streetResolved.cityCode,
+        streetResolved.code,
+        parsed.houseNum,
+      );
+      if (exact) {
+        lat = exact.lat;
+        lng = exact.lng;
+        itmX = exact.itmX;
+        itmY = exact.itmY;
+        matchedLabel = `${streetResolved.official} ${parsed.houseNum}, ${streetResolved.cityName}`;
+        geoCityVerified = true;
+        geoHouseVerified = true;
+        // הנקודה עכשיו מהמרשם עצמו — אזהרות הזיהוי/מספר-הבית/אי-הזמינות
+        // שנרשמו קודם כבר אינן נכונות.
+        for (const prefix of ['לא הצלחנו לאמת', 'שירות האיתור', 'שירות איתור הכתובות']) {
+          const i = warnings.findIndex((w) => w.startsWith(prefix));
+          if (i >= 0) warnings.splice(i, 1);
+        }
+      }
+    }
+
+    if (geoHouseVerified === false && parsed.street && parsed.city) {
+      const estimate = await interpolatedHousePoint({
+        street: parsed.street,
+        officialStreet: streetResolved?.official,
+        city: parsed.city,
+        houseNum: parsed.houseNum,
+        knownStreetNames: [
+          parsed.street,
+          streetResolved?.official,
+          streetResolved?.matchedAs,
+          ...(streetResolved?.aliases ?? []),
+          ...(streetResolved?.registryNames ?? []),
+        ],
+      });
+      if (estimate) {
+        lat = estimate.lat;
+        lng = estimate.lng;
+        itmX = estimate.itmX;
+        itmY = estimate.itmY;
+        // הנקודה מייצגת עכשיו את הכתובת שבוקשה (כקירוב) — תווית שמציגה את
+        // הבניין השגוי שהוחזר קודם לצד הנקודה המתוקנת הייתה סותרת את עצמה.
+        matchedLabel = `${streetResolved?.official ?? parsed.street} ${parsed.houseNum}, ${parsed.city}`;
+        const message =
+          estimate.kind === 'interpolated'
+            ? `מספר בית ${parsed.houseNum} אינו רשום בשירותי האיתור. הנקודה שהוצגה חושבה בין שני בניינים מאומתים ברחוב (${estimate.anchors.map((a) => a.houseNum).join(' ו-')}) — קירוב צמוד, לא נקודה רשומה.`
+            : `מספר בית ${parsed.houseNum} אינו רשום בשירותי האיתור. הנקודה שהוצגה היא הבניין המאומת הסמוך ביותר (${estimate.anchors[0].label}).`;
+        // מחליף את אזהרת מספר-הבית הקודמת — הניסוח החדש מדויק יותר.
+        const i = warnings.findIndex((w) => w.startsWith('שירות האיתור'));
+        if (i >= 0) warnings[i] = message;
+        else warnings.push(message);
+      }
     }
   }
 
