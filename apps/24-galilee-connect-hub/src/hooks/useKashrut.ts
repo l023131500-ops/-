@@ -7,7 +7,7 @@ export interface KashrutEstablishment {
   category: string;
   address: string;
   phone?: string;
-  kashrut_level: 'mehadrin' | 'regular';
+  kashrut_level: 'mehadrin' | 'regular' | 'none';
   certifying_body?: string;
   mashgiach_name?: string;
   mashgiach_phone?: string;
@@ -31,7 +31,7 @@ export function useKashrut() {
       setEstablishments(data.map(d => ({
         ...d,
         phone: d.phone || undefined,
-        kashrut_level: d.kashrut_level as 'mehadrin' | 'regular',
+        kashrut_level: d.kashrut_level as 'mehadrin' | 'regular' | 'none',
         certifying_body: d.certifying_body || undefined,
         mashgiach_name: d.mashgiach_name || undefined,
         mashgiach_phone: d.mashgiach_phone || undefined,

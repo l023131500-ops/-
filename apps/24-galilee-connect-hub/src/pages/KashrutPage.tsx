@@ -9,7 +9,7 @@ import Footer from '@/components/Footer';
 const KashrutPage = () => {
   const { establishments, loading } = useKashrut();
   const [search, setSearch] = useState('');
-  const [levelFilter, setLevelFilter] = useState<'all' | 'mehadrin' | 'regular'>('all');
+  const [levelFilter, setLevelFilter] = useState<'all' | 'mehadrin' | 'regular' | 'none'>('all');
 
   const filtered = establishments.filter(e => {
     const matchSearch = e.name.includes(search) || e.category.includes(search) || e.address.includes(search);
@@ -48,7 +48,7 @@ const KashrutPage = () => {
             />
           </div>
           <div className="flex gap-2">
-            {(['all', 'mehadrin', 'regular'] as const).map(level => (
+            {(['all', 'mehadrin', 'regular', 'none'] as const).map(level => (
               <button
                 key={level}
                 onClick={() => setLevelFilter(level)}
@@ -59,7 +59,7 @@ const KashrutPage = () => {
                     : 'bg-muted text-muted-foreground hover:bg-muted/80'
                 }`}
               >
-                {level === 'all' ? 'הכל' : level === 'mehadrin' ? '🏅 מהדרין' : 'רגיל'}
+                {level === 'all' ? 'הכל' : level === 'mehadrin' ? '🏅 מהדרין' : level === 'regular' ? 'רגיל' : '❌ לא ידוע'}
               </button>
             ))}
           </div>
@@ -94,9 +94,11 @@ const KashrutPage = () => {
                   <span className={`px-3 py-1 rounded-full text-xs font-black ${
                     est.kashrut_level === 'mehadrin'
                       ? 'bg-primary/10 text-primary border border-primary/20'
-                      : 'bg-muted text-muted-foreground'
+                      : est.kashrut_level === 'none'
+                        ? 'bg-muted-foreground/10 text-muted-foreground border border-muted-foreground/20'
+                        : 'bg-muted text-muted-foreground'
                   }`}>
-                    {est.kashrut_level === 'mehadrin' ? '🏅 מהדרין' : 'רגיל'}
+                    {est.kashrut_level === 'mehadrin' ? '🏅 מהדרין' : est.kashrut_level === 'none' ? '❌ לא ידוע' : 'רגיל'}
                   </span>
                 </div>
 
