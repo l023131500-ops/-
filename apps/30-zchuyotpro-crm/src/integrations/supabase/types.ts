@@ -404,6 +404,57 @@ export type Database = {
           },
         ]
       }
+      client_consents: {
+        Row: {
+          category: string
+          client_id: string
+          created_at: string
+          decided_at: string
+          decided_via: string
+          id: string
+          is_granted: boolean
+          tenant_id: string
+          updated_at: string
+        }
+        Insert: {
+          category: string
+          client_id: string
+          created_at?: string
+          decided_at?: string
+          decided_via?: string
+          id?: string
+          is_granted?: boolean
+          tenant_id: string
+          updated_at?: string
+        }
+        Update: {
+          category?: string
+          client_id?: string
+          created_at?: string
+          decided_at?: string
+          decided_via?: string
+          id?: string
+          is_granted?: boolean
+          tenant_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "client_consents_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "client_consents_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       client_transactions: {
         Row: {
           amount: number
@@ -1089,6 +1140,7 @@ export type Database = {
         Row: {
           client_id: string
           completed_at: string | null
+          consent_status: string
           id: string
           notes: string | null
           partner_id: string
@@ -1103,6 +1155,7 @@ export type Database = {
         Insert: {
           client_id: string
           completed_at?: string | null
+          consent_status?: string
           id?: string
           notes?: string | null
           partner_id: string
@@ -1117,6 +1170,7 @@ export type Database = {
         Update: {
           client_id?: string
           completed_at?: string | null
+          consent_status?: string
           id?: string
           notes?: string | null
           partner_id?: string
@@ -1358,12 +1412,43 @@ export type Database = {
     Functions: {
       current_client_id: { Args: never; Returns: string }
       current_partner_id: { Args: never; Returns: string }
+      get_my_consent_state: {
+        Args: never
+        Returns: {
+          category: string
+          partner_count: number
+          fields: Json
+          is_granted: boolean | null
+          decided_at: string | null
+        }[]
+      }
+      get_my_referral_requests: {
+        Args: never
+        Returns: {
+          id: string
+          status: string
+          consent_status: string
+          notes: string | null
+          sent_at: string
+          partner_name: string
+          partner_category: string
+          allowed_fields: Json
+        }[]
+      }
       get_my_role: { Args: never; Returns: string }
       get_my_tenant_id: { Args: never; Returns: string }
       get_my_tenant_modules: { Args: never; Returns: Json }
       is_partner_for_client: { Args: { _client_id: string }; Returns: boolean }
       is_self_client: { Args: { _client_id: string }; Returns: boolean }
       is_tenant_member: { Args: { _tenant_id: string }; Returns: boolean }
+      respond_referral_consent: {
+        Args: { _referral_id: string; _approve: boolean }
+        Returns: Json
+      }
+      set_my_consent: {
+        Args: { _category: string; _grant: boolean }
+        Returns: Json
+      }
     }
     Enums: {
       app_role: "admin" | "manager" | "agent" | "viewer"

@@ -4,6 +4,7 @@ import { toast } from "sonner";
 import { Plus, Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { referralsQuery, partnersQuery, clientQuery, meProfileQuery, useInvalidateClient } from "@/features/clients/queries";
+import { clientConsentsQuery, hasStandingConsent, CONSENT_STATUS_LABELS } from "@/features/clients/consents";
 import { dispatchNotify } from "@/features/partners/queries";
 import { triggerN8nWebhook } from "@/lib/n8n";
 import { AllowedFieldsPreview } from "@/features/partners/components/AllowedFieldsChecklist";
@@ -22,6 +23,22 @@ import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
 
 const STATUS_ORDER = ["sent", "pending", "in_progress", "completed"] as const;
+
+export function ConsentBadge({ status }: { status: string }) {
+  const label = (CONSENT_STATUS_LABELS as Record<string, string>)[status] ?? status;
+  return (
+    <span
+      className={cn(
+        "inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium",
+        status === "awaiting_client" && "bg-amber-100 text-amber-800",
+        status === "approved" && "bg-emerald-100 text-emerald-800",
+        status === "declined" && "bg-red-100 text-red-800",
+      )}
+    >
+      {label}
+    </span>
+  );
+}
 
 function StatusFlow({ status }: { status: string }) {
   if (status === "rejected") return <span className="text-xs text-destructive font-medium">נדחה</span>;
@@ -43,6 +60,7 @@ export function ReferralsTab({ clientId }: { clientId: string }) {
   const { data: me } = useSuspenseQuery(meProfileQuery());
   const { data: referrals } = useSuspenseQuery(referralsQuery(clientId));
   const { data: partners } = useSuspenseQuery(partnersQuery());
+  const { data: consents } = useSuspenseQuery(clientConsentsQuery(clientId));
   const invalidate = useInvalidateClient();
   const [open, setOpen] = useState(false);
   const [draft, setDraft] = useState<{ partner_id: string; notes: string }>({ partner_id: "", notes: "" });
@@ -50,24 +68,48 @@ export function ReferralsTab({ clientId }: { clientId: string }) {
   const create = useMutation({
     mutationFn: async () => {
       if (!draft.partner_id) throw new Error("בחר שותף");
+      const sel = partners.find((p) => p.id === draft.partner_id);
+      // spec item 4: without a standing consent for the topic, the referral
+      // waits for the client's approval in the portal — the partner gains no
+      // access (RLS-gated) until the client approves.
+      const granted = hasStandingConsent(consents, sel?.category);
       const { data: ref, error } = await supabase.from("partner_referrals").insert({
         tenant_id: client.tenant_id,
         client_id: clientId,
         partner_id: draft.partner_id,
-        status: "sent",
+        status: granted ? "sent" : "pending",
+        consent_status: granted ? "approved" : "awaiting_client",
         notes: draft.notes || null,
         referred_by: me?.id ?? null,
       }).select("id").single();
       if (error) throw error;
-      void dispatchNotify("notify-partner", { referralId: ref.id });
-      void triggerN8nWebhook("partner-referral", {
-        referralId: ref.id,
-        partnerId: draft.partner_id,
-        clientId,
-        tenantId: client.tenant_id,
-      });
+      if (granted) {
+        void dispatchNotify("notify-partner", { referralId: ref.id });
+        void triggerN8nWebhook("partner-referral", {
+          referralId: ref.id,
+          partnerId: draft.partner_id,
+          clientId,
+          tenantId: client.tenant_id,
+        });
+      } else {
+        // let the client know a request is waiting in the personal portal
+        // (supabase builders are lazy — must be awaited to actually run)
+        await supabase.from("messages").insert({
+          tenant_id: client.tenant_id,
+          client_id: clientId,
+          channel: "internal",
+          direction: "outbound",
+          content: `בקשת אישור: העברת פרטים אל ${sel?.company_name ?? "שותף"} ממתינה לאישורך בלשונית "שיתופי פעולה" באזור האישי`,
+          status: "sent",
+          sent_by: me?.id ?? null,
+        });
+      }
+      return { granted };
     },
-    onSuccess: () => { toast.success("הפניה נשלחה"); invalidate(clientId); setOpen(false); setDraft({ partner_id: "", notes: "" }); },
+    onSuccess: ({ granted }) => {
+      toast.success(granted ? "הפניה נשלחה" : "ההפניה ממתינה לאישור הלקוח באזור האישי");
+      invalidate(clientId); setOpen(false); setDraft({ partner_id: "", notes: "" });
+    },
     onError: (e: Error) => toast.error("שגיאה", { description: e.message }),
   });
 
@@ -95,18 +137,20 @@ export function ReferralsTab({ clientId }: { clientId: string }) {
               <TableHead>שותף</TableHead>
               <TableHead>קטגוריה</TableHead>
               <TableHead>תאריך שליחה</TableHead>
+              <TableHead>אישור לקוח</TableHead>
               <TableHead>סטטוס</TableHead>
               <TableHead>זרימה</TableHead>
               <TableHead>פעולות</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {referrals.length === 0 && <TableRow><TableCell colSpan={6} className="text-center text-muted-foreground py-6">אין הפניות</TableCell></TableRow>}
+            {referrals.length === 0 && <TableRow><TableCell colSpan={7} className="text-center text-muted-foreground py-6">אין הפניות</TableCell></TableRow>}
             {referrals.map((r) => (
               <TableRow key={r.id}>
                 <TableCell className="font-medium">{r.partner?.company_name ?? "—"}</TableCell>
                 <TableCell>{r.partner ? (PARTNER_CATEGORY as Record<string, string>)[r.partner.category] ?? r.partner.category : "—"}</TableCell>
                 <TableCell>{formatDateHe(r.sent_at)}</TableCell>
+                <TableCell><ConsentBadge status={r.consent_status} /></TableCell>
                 <TableCell><ReferralStatusBadge status={r.status} /></TableCell>
                 <TableCell><StatusFlow status={r.status} /></TableCell>
                 <TableCell>
@@ -144,8 +188,19 @@ export function ReferralsTab({ clientId }: { clientId: string }) {
             {draft.partner_id && (() => {
               const sel = partners.find((p) => p.id === draft.partner_id);
               const fields = ((sel?.allowed_client_fields as unknown as AllowedField[]) ?? []);
+              const granted = hasStandingConsent(consents, sel?.category);
               return (
                 <>
+                  <div
+                    className={cn(
+                      "rounded-md border p-2.5 text-xs font-medium",
+                      granted ? "border-emerald-200 bg-emerald-50 text-emerald-800" : "border-amber-200 bg-amber-50 text-amber-800",
+                    )}
+                  >
+                    {granted
+                      ? "ללקוח יש הסכמה תקפה לתחום זה — ההפניה תישלח מיד לשותף"
+                      : "אין הסכמה תקפה לתחום — ההפניה תמתין לאישור הלקוח באזור האישי, והשותף לא ייחשף לנתונים עד לאישור"}
+                  </div>
                   <AllowedFieldsPreview value={fields} />
                   {sel && <DomainRequirementsPanel category={sel.category} allowedFields={fields} clientId={clientId} />}
                 </>

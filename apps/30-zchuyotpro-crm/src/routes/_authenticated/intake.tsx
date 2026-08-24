@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import { Plus, Search, Loader2, LinkIcon, UserPlus, Send, Inbox } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { meProfileQuery, partnersQuery } from "@/features/clients/queries";
+import { clientConsentsQuery, hasStandingConsent } from "@/features/clients/consents";
 import { dispatchNotify } from "@/features/partners/queries";
 import { triggerN8nWebhook } from "@/lib/n8n";
 import { AllowedFieldsPreview } from "@/features/partners/components/AllowedFieldsChecklist";
@@ -263,6 +264,10 @@ function IntakeDetailSheet({ row, meId, onClose, invalidate }: {
     enabled: !row.client_id,
   });
   const [partnerId, setPartnerId] = useState("");
+  const { data: clientConsents } = useQuery({
+    ...clientConsentsQuery(row.client_id ?? ""),
+    enabled: !!row.client_id,
+  });
   const [routeNotes, setRouteNotes] = useState(
     `פנייה נכנסת (${(INTAKE_CHANNEL as Record<string, string>)[row.channel] ?? row.channel})${row.subject ? `: ${row.subject}` : ""}${row.body ? `\n${row.body}` : ""}`,
   );
@@ -324,11 +329,16 @@ function IntakeDetailSheet({ row, meId, onClose, invalidate }: {
     mutationFn: async () => {
       if (!row.client_id) throw new Error("קשרו לקוח לפני ניתוב לשותף");
       if (!partnerId) throw new Error("בחרו שותף");
+      const sel = partners.find((p) => p.id === partnerId);
+      // spec item 4: no standing topic consent → the referral waits for the
+      // client's approval in the portal; the partner sees nothing until then.
+      const granted = hasStandingConsent(clientConsents, sel?.category);
       const { data: ref, error } = await supabase.from("partner_referrals").insert({
         tenant_id: row.tenant_id,
         client_id: row.client_id,
         partner_id: partnerId,
-        status: "sent",
+        status: granted ? "sent" : "pending",
+        consent_status: granted ? "approved" : "awaiting_client",
         notes: routeNotes || null,
         referred_by: meId,
       }).select("id").single();
@@ -337,15 +347,32 @@ function IntakeDetailSheet({ row, meId, onClose, invalidate }: {
         .update({ status: "routed", referral_id: ref.id, handled_by: meId, handled_at: new Date().toISOString() })
         .eq("id", row.id);
       if (updErr) throw updErr;
-      void dispatchNotify("notify-partner", { referralId: ref.id });
-      void triggerN8nWebhook("partner-referral", {
-        referralId: ref.id,
-        partnerId,
-        clientId: row.client_id,
-        tenantId: row.tenant_id,
-      });
+      if (granted) {
+        void dispatchNotify("notify-partner", { referralId: ref.id });
+        void triggerN8nWebhook("partner-referral", {
+          referralId: ref.id,
+          partnerId,
+          clientId: row.client_id,
+          tenantId: row.tenant_id,
+        });
+      } else {
+        // supabase builders are lazy — must be awaited to actually run
+        await supabase.from("messages").insert({
+          tenant_id: row.tenant_id,
+          client_id: row.client_id,
+          channel: "internal",
+          direction: "outbound",
+          content: `בקשת אישור: העברת פרטים אל ${sel?.company_name ?? "שותף"} ממתינה לאישורך בלשונית "שיתופי פעולה" באזור האישי`,
+          status: "sent",
+          sent_by: meId,
+        });
+      }
+      return { granted };
     },
-    onSuccess: () => { toast.success("הפנייה נותבה לשותף"); invalidate(); },
+    onSuccess: ({ granted }) => {
+      toast.success(granted ? "הפנייה נותבה לשותף" : "הניתוב ממתין לאישור הלקוח באזור האישי");
+      invalidate();
+    },
     onError: (e: Error) => toast.error("שגיאה", { description: e.message }),
   });
 
@@ -447,6 +474,20 @@ function IntakeDetailSheet({ row, meId, onClose, invalidate }: {
                     ))}
                   </SelectContent>
                 </Select>
+                {selPartner && row.client_id && (
+                  <div
+                    className={cn(
+                      "rounded-md border p-2.5 text-xs font-medium",
+                      hasStandingConsent(clientConsents, selPartner.category)
+                        ? "border-emerald-200 bg-emerald-50 text-emerald-800"
+                        : "border-amber-200 bg-amber-50 text-amber-800",
+                    )}
+                  >
+                    {hasStandingConsent(clientConsents, selPartner.category)
+                      ? "ללקוח יש הסכמה תקפה לתחום זה — הניתוב יישלח מיד לשותף"
+                      : "אין הסכמה תקפה לתחום — הניתוב ימתין לאישור הלקוח באזור האישי"}
+                  </div>
+                )}
                 {selPartner && <AllowedFieldsPreview value={((selPartner.allowed_client_fields as unknown as AllowedField[]) ?? [])} />}
                 {selPartner && (
                   <DomainRequirementsPanel

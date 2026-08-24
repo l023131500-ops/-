@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { ShieldCheck, LogOut, User, MessageSquare, FileText, ScrollText, Wallet } from "lucide-react";
+import { ShieldCheck, LogOut, User, MessageSquare, FileText, ScrollText, Wallet, Handshake } from "lucide-react";
 import { queryOptions } from "@tanstack/react-query";
 import { tenantModulesQuery } from "@/features/customize/queries";
 import { OPTIONAL_MODULES, isModuleEnabled } from "@/features/customize/modules";
@@ -40,6 +40,7 @@ const tabs = [
   { url: "/client-area/documents", label: "מסמכים", icon: FileText, exact: false },
   { url: "/client-area/entitlements", label: "זכאויות", icon: ScrollText, exact: false },
   { url: "/client-area/finance", label: "כספים", icon: Wallet, exact: false },
+  { url: "/client-area/consents", label: "שיתופי פעולה", icon: Handshake, exact: false },
 ] as const;
 
 function ClientAreaLayout() {

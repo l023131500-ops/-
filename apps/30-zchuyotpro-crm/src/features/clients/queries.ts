@@ -284,6 +284,7 @@ export function useInvalidateClient() {
     qc.invalidateQueries({ queryKey: ["documents", clientId] });
     qc.invalidateQueries({ queryKey: ["property-media", clientId] });
     qc.invalidateQueries({ queryKey: ["referrals", clientId] });
+    qc.invalidateQueries({ queryKey: ["client-consents", clientId] });
     qc.invalidateQueries({ queryKey: ["clients"] });
     qc.invalidateQueries({ queryKey: ["client-stats"] });
   };

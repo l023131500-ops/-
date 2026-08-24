@@ -19,7 +19,7 @@ export const OPTIONAL_MODULES: ModuleDef[] = [
   { key: "housing", label: "דיור וחשבונות", description: "פרטי דיור, משכנתא, ארנונה, חשמל ומים" },
   { key: "vehicles", label: "רכבים", description: "רכבי הלקוח ותו נכה" },
   { key: "property-media", label: "תמונות ווידאו", description: "גלריית מדיה של נכס הלקוח" },
-  { key: "referrals", label: "הפניות לשת״פ", description: "העברת פרטי הלקוח ליועצים ושותפים" },
+  { key: "referrals", label: "הפניות לשת״פ", description: "העברת פרטי הלקוח ליועצים ושותפים, כולל אישורי הלקוח באזור האישי", portalUrl: "/client-area/consents" },
 ];
 
 export type ModulesMap = Record<string, boolean>;
