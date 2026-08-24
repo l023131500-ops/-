@@ -80,6 +80,7 @@ export default function UploadPage() {
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
+    if (busy) return;
     setMsg(null);
     if (!file) return setMsg({ type: "err", text: "יש לבחור קובץ." });
     if (!title.trim()) return setMsg({ type: "err", text: "יש להזין כותרת." });
