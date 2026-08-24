@@ -3542,3 +3542,73 @@ to that constraint: they import only dependency-free modules (`hosts.js`,
   tests stand in for a browser everywhere else in this file DNS or a missing
   dependency has blocked. No test device was enrolled and no real customer's
   device was touched to attempt the check.
+
+- **the local maintenance code was dead — no way out of an offline kiosk, on
+  `zol` not this tree** — `Prefs.ADMIN_CODE` in the Kotlin agent has exactly
+  two references in the whole tree: declared in `Prefs.kt`, read in
+  `KioskActivity.showAdminDialog()` (the five-corner-tap admin entry). Nothing
+  wrote it — not `EnrollActivity`, not `AgentClient`'s config handling, and
+  `zol`'s `devices` table had no column for it. So the dialog answers "קוד
+  תחזוקה לא הוגדר" on every device that exists, and the one remaining way out
+  of a locked kiosk is the remote `unlock` command — which needs the network.
+  A tablet in a hall with no internet, the exact case the corner-tap dialog
+  exists for, had **no** way out at all. This is the same gap this tree's own
+  (never-deployed) `server/src/exitcode.js` was built to close, ported here
+  sized to `zol`'s schema:
+  - `devices.exit_code` (`ensureColumn`, `NULL` on every existing row — the
+    honest value, since no code was ever set).
+  - `server/src/exitcode.js` — a plain validator, not a hash: the comparison
+    happens entirely on-device with no rate limit at all, so "obviously weak"
+    has to be refused by shape at the one place a value is chosen. Minimum 4
+    characters, rejects a single repeated character and a strictly
+    ascending/descending run (`1234`, `4321`, `abcd`) — the two things a
+    person picks first when asked for "any 4 characters" — by computing the
+    shape, not by a deny-list. Ends are trimmed, the middle is not, the same
+    rule this file's other credentials already use. An empty (post-trim)
+    value is a valid answer distinct from a rejected one: it means "clear
+    the code," which has to stay reachable.
+  - pushed as `adminCode` in all three places the agent learns config —
+    enroll response, heartbeat config, and the `update_config` command
+    payload — mirroring exactly how `home_url`/`allowed_host` already
+    propagate on all three paths. `AgentClient.kt`'s heartbeat handler reads
+    it **outside** the `if (home.isNotEmpty())` gate that guards the other
+    fields: a heartbeat carrying no new home link still has to deliver a code
+    set after enrollment, or the value never reaches a device whose home
+    link never changes again.
+  - added to `zol`'s own `CONSOLE_DEVICE_FIELDS` allow-list (in
+    `devicepayload.js`) rather than left off it: this is the owner's own
+    code on the owner's own screen, and the scenario it exists for is an
+    offline tablet where reading it off the console and walking over is the
+    only remaining way in. Unlike `device_token`, holding it lets a person
+    **out** of the kiosk, not impersonate the device.
+  - the console's edit-device dialog (`public/js/app.js`) gained the one
+    field this fix needed to be reachable at all: a plain text input,
+    pre-filled with the current code, sent on every save the same way
+    `name`/`homeUrl` already are (so leaving it untouched re-validates and
+    re-saves the same value, and blanking it clears via the same
+    `COALESCE(?, exit_code)` pattern the other fields use — `''` is a real,
+    non-`NULL` bound parameter in `better-sqlite3`, so it is *not* the
+    two-step-`UPDATE` trick this tree's own `displayurl.js` needed elsewhere).
+
+  New `server/test/exitcode.test.mjs` — 7 cases, dependency-free
+  (`validateExitCode` imports nothing): empty/whitespace clears, ends trimmed
+  and middle preserved, too-short rejected, every-length repeated-character
+  string rejected, ascending/descending runs in both directions rejected
+  (digits and letters), a run that is ascending except for one break
+  accepted (guards against a shape check that is really just "starts low,
+  ends high"), and a handful of plausible codes accepted unchanged.
+  `node --check` clean on every changed `.js` file. Full suite: 20/22 —
+  `hosts.test.mjs` and the (now 7-field) `devicepayload.test.mjs` unchanged,
+  plus the 7 new; `routing.test.mjs`/`seedadmin.test.mjs` fail for the same
+  pre-existing, unrelated reasons every prior entry in this log has hit (no
+  `express`, no `node:sqlite` in this container's Node 20.20.2).
+
+  Pushed to `l023131500-ops/zol`#`claude/what-do-you-see-gxo5tc` (`5a0465e`).
+  `more30.com/kiosk/api/health` answered `200` after the push (Railway
+  rebuild landed) — the same deploy-landing signal every prior entry in this
+  log has used. **Not verified beyond that**: there is no Android toolchain
+  in this container (`kotlinc`/`gradle`/`adb` all absent, the same constraint
+  every Kotlin change in this log has hit), so the agent-side half of this
+  fix is a careful read against `AgentClient`'s existing
+  `update_config`/heartbeat handling, not a device-verified change, and no
+  real kiosk's corner-tap dialog was exercised to confirm a code now works.
