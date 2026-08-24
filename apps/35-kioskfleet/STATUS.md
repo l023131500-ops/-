@@ -4313,3 +4313,81 @@ to that constraint: they import only dependency-free modules (`hosts.js`,
   review**: no real device exists to long-press a link or attempt a download
   on a live kiosk screen and confirm both are actually blocked — the same
   constraint every fix in this log without a real device has hit.
+
+- **[24/08/2026, Loop A] Business-hours screen scheduling — KIOSK_BUILD.md §9
+  "תזמון: נעילה/פתיחה/כיבוי לפי שעות (שעות פעילות אולם/חנות)", was entirely
+  unbuilt, on `zol` not this tree** — every `screen_on`/`screen_off` in the
+  fleet was a manual console click; nothing ran on its own schedule. A shop or
+  hall kiosk that should go dark after closing (a public-facing screen left
+  lit and interactive overnight is both a battery/burn-in cost and an
+  unsupervised entry point) had no way to configure that without someone
+  clicking the console at the right moment every single day.
+
+  Added a pure, DB-free `schedule.js` — `parseTimeToMinutes`/
+  `validateScheduleWindow`/`isWithinOpenWindow`/`desiredScreenState`/
+  `minutesSinceMidnight` — the same shape `display.js`/`exitcode.js`/
+  `hosts.js` already use for validated-input modules that need to be
+  exercised without `better-sqlite3`, which this checkout does not have
+  installed. `isWithinOpenWindow` supports an overnight window (close < open,
+  e.g. `22:00`–`06:00` for a night venue) the same way a same-day window
+  (`09:00`–`21:00` for a shop) is supported — only the two clock times are
+  configured, not which side of midnight they fall on; boundary is
+  open-inclusive/close-exclusive on both shapes.
+
+  Four new columns on `devices`: `schedule_enabled`, `schedule_open_time`,
+  `schedule_close_time`, `schedule_last_state`. `PATCH /devices/:id` validates
+  the window only when the caller actually touches one of the three fields —
+  editing just the device name must not suddenly require open/close times on
+  a device that never had a schedule — and re-validates against whichever
+  open/close ends up in effect (new value if sent, else the device's existing
+  one) so `scheduleEnabled: true` sent alone, reusing hours saved earlier,
+  still gets checked. `schedule_last_state` resets to `NULL` on any schedule
+  write, so a changed window is re-evaluated fresh on the next tick instead of
+  trusting bookkeeping from before the edit.
+
+  A new `setInterval` in `index.js`, next to the existing offline-marking one
+  it is modeled on: every 60s, queries `schedule_enabled` devices, computes
+  `desiredScreenState()` against the server's own local clock (the same clock
+  the HH:MM fields are entered against), and issues `screen_on`/`screen_off`
+  only on a state transition — `schedule_last_state` dedupes so a device
+  already in the right state is not re-sent the same command every tick,
+  since `issueCommand()` has no idempotency of its own and a live agent socket
+  would otherwise be spammed.
+
+  **Console**: a checkbox + two `<input type=time>` fields in the device-edit
+  modal (visibility toggled live by the checkbox, no page reload), and the
+  fleet grid card now shows `⏰ שעות פעילות: HH:MM–HH:MM` when a schedule is
+  configured — the same "surface it on the card, not only inside the modal"
+  precedent the zoom-percent badge already set.
+
+  `schedule_last_state` is deliberately kept off `CONSOLE_DEVICE_FIELDS`
+  (`devicepayload.js`) — enforcement bookkeeping only, not something an owner
+  needs to see, the same reasoning already applied there to `device_token`/
+  `last_screenshot`.
+
+  13 new unit tests in `schedule.test.mjs` (time parsing incl. rejecting
+  `24:00`/`12:60`/unpadded hours, window validation incl. rejecting an equal
+  open/close pair, same-day boundary inclusivity, overnight-wrap boundary
+  inclusivity, `minutesSinceMidnight` at and around midnight), plus 2 new
+  `devicepayload.test.mjs` cases confirming `schedule_last_state` never
+  survives the console-socket allow-list and the "exact dropped set" test
+  stays exhaustive. `node --check` clean on every touched file. Full suite:
+  47/49 — was 32/34 before this round's 15 new tests; the two failures are
+  the same pre-existing `express`/`node:sqlite`-not-installed gap every prior
+  entry in this log has hit.
+
+  `QA/kiosk/schedule-0824/coverage-check.mjs` — real-browser QA still cannot
+  run in this sandbox (missing Chromium system libs, no sudo, the same gap
+  `device-log-0824`'s writeup hit), so this is the same DOM-free static
+  fallback: parses the real source to confirm the DB migration, the route's
+  validation + storage, the enforcement loop's command choice and dedupe, and
+  the console UI's wiring all actually agree with each other rather than one
+  of them silently drifting. All 25 checks pass.
+
+  Pushed to `l023131500-ops/zol`#`claude/what-do-you-see-gxo5tc` (`f3ca982`).
+  `more30.com/kiosk/api/health` polled 3× after the push and read `200`
+  throughout. **Not verified beyond the push-landing signal, the unit tests,
+  and the static coverage check**: no real device or a full day's clock cycle
+  exists in this sandbox to confirm a kiosk's screen actually turns off at
+  its configured close time and back on at open, the same constraint every
+  fix in this log without a real device has hit.
