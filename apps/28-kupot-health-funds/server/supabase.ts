@@ -63,9 +63,26 @@ const readHeaders = {
   "Accept-Profile": SCHEMA,
 };
 
+// עוטף fetch עם timeout (AbortController) כדי שקריאה תקועה ל-Supabase לא
+// תשאיר בקשה של שרת ה-Express תלויה לנצח -- אותו דפוס בדיוק כמו ביתר
+// המערכות בהיקף (למשל 27-bkalut-price/server/yemot.ts).
+async function fetchWithTimeout(
+  url: string,
+  init: RequestInit,
+  timeoutMs = 10000
+): Promise<Response> {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
+  try {
+    return await fetch(url, { ...init, signal: controller.signal });
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
 export async function fetchTopicsFromSupabase(): Promise<HfTopic[]> {
   const url = `${SUPABASE_URL}/rest/v1/hf_topics?select=*&order=catalog_no.asc&limit=2000`;
-  const resp = await fetch(url, { headers: readHeaders });
+  const resp = await fetchWithTimeout(url, { headers: readHeaders });
   if (!resp.ok) throw new Error(`supabase topics ${resp.status}`);
   const rows = (await resp.json()) as any[];
   return rows.map(mapTopicRow);
@@ -75,7 +92,7 @@ export async function fetchTopicFromSupabase(
   id: number
 ): Promise<HfTopic | undefined> {
   const url = `${SUPABASE_URL}/rest/v1/hf_topics?select=*&id=eq.${id}&limit=1`;
-  const resp = await fetch(url, { headers: readHeaders });
+  const resp = await fetchWithTimeout(url, { headers: readHeaders });
   if (!resp.ok) throw new Error(`supabase topic ${resp.status}`);
   const rows = (await resp.json()) as any[];
   return rows.length ? mapTopicRow(rows[0]) : undefined;
@@ -91,7 +108,7 @@ export async function fetchSwitchLeadsFromSupabase(): Promise<any[]> {
     throw new Error("SUPABASE_SERVICE_ROLE_KEY not configured");
   }
   const url = `${SUPABASE_URL}/rest/v1/hf_switch_leads?select=*&order=created_at.desc`;
-  const resp = await fetch(url, {
+  const resp = await fetchWithTimeout(url, {
     headers: {
       apikey: SUPABASE_SERVICE_ROLE_KEY,
       Authorization: `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`,
@@ -123,7 +140,7 @@ export async function insertLeadToSupabase(
       note: lead.note ?? "",
       status: "new",
     };
-    const resp = await fetch(`${SUPABASE_URL}/rest/v1/hf_switch_leads`, {
+    const resp = await fetchWithTimeout(`${SUPABASE_URL}/rest/v1/hf_switch_leads`, {
       method: "POST",
       headers: {
         apikey: SUPABASE_ANON_KEY,
