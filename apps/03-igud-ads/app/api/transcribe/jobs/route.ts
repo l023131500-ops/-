@@ -27,15 +27,27 @@ export async function POST(req: Request) {
 
 async function processNext() {
   const sb = createTranscribeService();
-  const { data: job } = await sb
+  const { data: pending } = await sb
     .from("jobs")
-    .select("*")
+    .select("id")
     .eq("status", "pending")
     .order("created_at", { ascending: true })
     .limit(1)
     .maybeSingle();
-  if (!job) return { ok: true, processed: 0, message: "אין משימות בתור" };
-  await sb.from("jobs").update({ status: "running", started_at: new Date().toISOString() }).eq("id", job.id);
+  if (!pending) return { ok: true, processed: 0, message: "אין משימות בתור" };
+  // Claim atomically: this route carries no auth and is polled by cron, so two
+  // overlapping calls can both select the same pending job. Conditioning the
+  // update on .eq("status", "pending") makes only the first caller win the
+  // claim; the second gets back no row and skips (avoids double transcription
+  // + double OpenAI billing + duplicate transcript rows for one upload).
+  const { data: job } = await sb
+    .from("jobs")
+    .update({ status: "running", started_at: new Date().toISOString() })
+    .eq("id", pending.id)
+    .eq("status", "pending")
+    .select("*")
+    .maybeSingle();
+  if (!job) return { ok: true, processed: 0, message: "job נתפס כבר" };
   try {
     const result = await processUpload(job.upload_id);
     if (result.ok) {
