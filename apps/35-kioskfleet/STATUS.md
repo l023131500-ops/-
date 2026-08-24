@@ -3718,3 +3718,56 @@ to that constraint: they import only dependency-free modules (`hosts.js`,
   upgrade with 404, so there is no route to open a real `wss://…/ws/agent`
   connection from here, live or otherwise, and no real device or command
   was touched to probe it.
+
+- **[24/08/2026, Loop A] The kiosk's own idle-return and cold-start reload
+  never checked the allow-list, on `zol` not this tree** — found reading
+  `KioskActivity.kt` end to end after the device-edit allow-list-mismatch fix
+  above (same file, same session). That fix closed the gap for the moment a
+  *new* config arrives (`onConfigUpdated` gates the pushed `homeUrl` through
+  `hostAllowed()`, matching `onSetUrl`'s existing gate) — but it left two
+  older navigations in the same file ungated:
+  - `returnToVenue()`, which fires on **every idle timeout**, read
+    `Prefs.HOME_URL` straight off disk and called `webView.loadUrl(venue)`
+    with no check at all.
+  - `onCreate()`'s initial load, which fires on **every process restart**
+    (crash, OTA, `reboot` command), read `LAST_URL`/`HOME_URL` the same
+    unguarded way.
+
+  Both matter for the same reason: the server-side invariant (a stored
+  `home_url`'s host is always inside its own `allowed_host`) is only as old
+  as the fix above. A device that already picked up a stale, mismatched pair
+  under the *previous* behaviour keeps that pair on disk until its next
+  config push — and in the meantime, every idle timeout on that device would
+  have reloaded the mismatched `home_url` anyway, the exact hole the fix
+  above was meant to close, just reached through a different call site.
+  Independently of any stale data: narrowing a device's allow-list (moving it
+  off an old venue) does not rewrite `LAST_URL`, so a restart between the
+  edit and the next navigation could re-open the page the edit had just
+  revoked — a live re-opening of a revoked host, not only a leftover from
+  before the earlier fix.
+
+  Added `safeStoredUrl()` — the same shape as `onSetUrl`'s existing gate,
+  `hostAllowed(Uri.parse(candidate).host)` — and routed both navigations
+  through it. `returnToVenue()` simply does not navigate when the stored
+  venue fails the check (matching `onSetUrl`'s "refuse and stay" behaviour
+  rather than showing a blocked page nobody is there to dismiss);
+  `onCreate()` falls back from `LAST_URL` to `HOME_URL` to `about:blank`, the
+  same fallback chain it already had, with each step now gated rather than
+  only the final `ifEmpty`.
+
+  **Not compiled and not run on a device** — no Android toolchain in this
+  container (`kotlinc`/`gradle`/`adb` all absent, the same constraint every
+  prior Kotlin change in this log has hit), so this is a careful read against
+  the file's own already-shipped `onSetUrl`/`onConfigUpdated` pattern, not a
+  device-verified change. `server/test` suite re-run for a regression check
+  (this change touches no JS): 21/23, unchanged — `routing.test.mjs`/
+  `seedadmin.test.mjs` fail for the same pre-existing, unrelated reasons
+  every prior entry in this log has hit (no `express`, no `node:sqlite` in
+  this container's Node 20.20.2).
+
+  Pushed to `l023131500-ops/zol`#`claude/what-do-you-see-gxo5tc` (`482dcfc`).
+  **Not deployed in the sense that matters for this file**: Railway only
+  rebuilds the Node server from this repo, not the Android APK, so there is
+  no "confirmed live" signal to poll for a Kotlin-only change — reaching a
+  real device needs a new APK built and installed, which is outside what
+  this container can do.
