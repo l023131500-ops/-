@@ -3612,3 +3612,51 @@ to that constraint: they import only dependency-free modules (`hosts.js`,
   fix is a careful read against `AgentClient`'s existing
   `update_config`/heartbeat handling, not a device-verified change, and no
   real kiosk's corner-tap dialog was exercised to confirm a code now works.
+
+- **a device-edit save could put the home URL outside its own allow-list, on
+  `zol` not this tree** — `PATCH /devices/:id` derived `allowedHost` from the
+  new `homeUrl` only when the caller left `allowedHost` out entirely
+  (`else if (homeUrl && !allowedHost)`). The console's own device-edit dialog
+  never does that: `viewEditDevice()` in `public/js/app.js` always sends both
+  fields together, and its host-list editor is seeded from the **old**
+  `homeUrl`'s host (`homeHost` computed from `d.homeUrl` before the edit).
+  Retarget a device to a new venue — an ordinary edit, not an adversarial one
+  — without also hand-adding the new domain to the list, and the server
+  stored the mismatched pair as-is and pushed it to the device over
+  `update_config`. Nothing on the way in checked the new home host against
+  the new list, unlike `POST /devices/:id/command` for `set_url`, which
+  already calls `hostAllowed()` before accepting one. And on the device,
+  `KioskActivity.onConfigUpdated` loaded that `homeUrl` **unconditionally** —
+  again unlike `onSetUrl`, which gates the same kind of navigation through
+  `hostAllowed()`. So the WebView's very first document load after the edit
+  could land outside the allow-list that same update had just installed, on
+  a device whose whole job is staying locked to it — worst on an offline
+  device, since there is no second round-trip to catch the mismatch after
+  the push lands. Fixed both ends:
+  - `routes/devices.js` — the branch is now `else if (homeUrl)` unconditionally,
+    and always runs `hostsForUrl(homeUrl, allowedHost || device.allowed_host)`.
+    `hostsForUrl` already guarantees "the new home host is in the result" (see
+    `hosts.test.mjs`'s existing "always part of its own allow-list" case) —
+    the bug was that this call was skipped exactly when the caller (i.e. the
+    console) supplied its own `allowedHost`, which is the console's normal
+    save shape, not the edge case.
+  - `KioskActivity.onConfigUpdated` — gated the pushed `homeUrl` through the
+    same `hostAllowed()` check `onSetUrl` already uses, so a mismatched pair
+    already on disk, or one replayed by a heartbeat before the server-side
+    fix reaches every device, still can't open the WebView outside the lock.
+  - new case in `hosts.test.mjs` pins the exact adversarial shape: a home host
+    on one domain merged against an `allowedHost` pointing at a totally
+    unrelated one, asserting the home host survives the merge and
+    `hostAllowed()` accepts it afterward.
+
+  Full suite 21/23 (`routing.test.mjs` needs `express`, `seedadmin.test.mjs`
+  needs `node:sqlite` — the same two pre-existing, unrelated failures every
+  prior entry in this log has hit; the one new test is the +1 over the prior
+  20/22 baseline). `node --check` clean on `routes/devices.js`.
+
+  Pushed to `l023131500-ops/zol`#`claude/what-do-you-see-gxo5tc` (`03fb91e`).
+  `more30.com/kiosk/api/health` answered `200` after the push. **Not verified
+  beyond that** on the Kotlin side, same constraint as every prior entry: no
+  Android toolchain in this container, so `onConfigUpdated`'s fix is a
+  careful read against `onSetUrl`'s existing, already-shipped pattern in the
+  same file, not a device-verified change.
