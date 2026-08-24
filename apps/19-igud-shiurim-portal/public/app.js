@@ -46,6 +46,22 @@ function esc(v) {
     .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
 }
 
+// esc() blocks breaking out of an attribute (quotes/angle brackets) but does
+// nothing about the URL *scheme* — an admin-supplied link_url/website_url of
+// `javascript:...` passes esc() unchanged and still executes when a public
+// visitor clicks the rendered <a href>. Every ad/tenant/synagogue/teacher
+// link below is admin-supplied free text (no server-side URL validation in
+// server.js), so this is the one guard standing between an admin token and
+// stored XSS against public directory visitors. Only http(s) survives;
+// everything else (including relative/scheme-less strings, which browsers
+// resolve against the page origin and are not a risk here) is dropped so the
+// link section simply doesn't render, matching the existing `? ... : ''`
+// pattern used at each call site.
+function safeUrl(v) {
+  const s = (v ?? '').toString().trim();
+  return /^https?:\/\//i.test(s) ? s : '';
+}
+
 // BreadcrumbList JSON-LD for the entity-detail pages (/t/, /s/, /te/) — the only
 // routes with a real 2-level hierarchy (home directory -> entity). Built from
 // location.href (not location.origin) so it stays correct under any deploy mount.
@@ -430,7 +446,7 @@ async function renderDirectory() {
     wrap.innerHTML = `
       <div class="ads-strip">
         ${ads.map(a => `
-          <a class="ad-card" href="${a.link_url ? esc(a.link_url) : (a.tenant_token ? '#/t/' + esc(a.tenant_token) : '#')}" ${a.link_url ? 'target="_blank" rel="noopener"' : ''}>
+          <a class="ad-card" href="${safeUrl(a.link_url) ? esc(safeUrl(a.link_url)) : (a.tenant_token ? '#/t/' + esc(a.tenant_token) : '#')}" ${safeUrl(a.link_url) ? 'target="_blank" rel="noopener"' : ''}>
             ${a.image_url ? `<img src="${esc(a.image_url)}" alt="${esc(a.title)}" />` : ''}
             <div class="ad-card-body">
               <strong>${esc(a.title)}</strong>
@@ -490,7 +506,7 @@ async function renderDirectory() {
           </div>
           <div style="display:flex;gap:8px;">
             ${g.venue_token ? `<a class="btn btn-outline btn-sm" href="#/${g.venue_type === 'synagogue' ? 's' : 't'}/${esc(g.venue_token)}">לוח מלא</a>` : ''}
-            ${g.website_url ? `<a class="btn btn-quiet" href="${esc(g.website_url)}" target="_blank" rel="noopener">אתר מלא ↗</a>` : ''}
+            ${safeUrl(g.website_url) ? `<a class="btn btn-quiet" href="${esc(safeUrl(g.website_url))}" target="_blank" rel="noopener">אתר מלא ↗</a>` : ''}
           </div>
         </div>
         <div style="margin-top:8px;">${g.items.map(lessonLine).join('')}</div>
@@ -940,7 +956,7 @@ function adsBlock(ads) {
           <div class="card">
             <h3>${esc(a.title)}</h3>
             <p class="muted">${esc(a.body || '')}</p>
-            ${a.link_url ? `<a class="btn btn-outline btn-sm" href="${esc(a.link_url)}" target="_blank" rel="noopener">לפרטים נוספים</a>` : ''}
+            ${safeUrl(a.link_url) ? `<a class="btn btn-outline btn-sm" href="${esc(safeUrl(a.link_url))}" target="_blank" rel="noopener">לפרטים נוספים</a>` : ''}
           </div>`).join('')}
       </div>
     </div>`;
@@ -1004,7 +1020,7 @@ async function renderTenantPublic(token) {
             <div class="muted">📍 ${esc(t.city)}</div>
           </div>
         </div>
-        ${t.website_url ? `<a class="btn btn-outline btn-sm" href="${esc(t.website_url)}" target="_blank" rel="noopener">אתר מלא ↗</a>` : ''}
+        ${safeUrl(t.website_url) ? `<a class="btn btn-outline btn-sm" href="${esc(safeUrl(t.website_url))}" target="_blank" rel="noopener">אתר מלא ↗</a>` : ''}
       </div>
 
       ${zmanimStrip(zmanim)}
@@ -1028,7 +1044,7 @@ async function renderTenantPublic(token) {
                       ${s.nusach ? `<div class="nusach-tag">${esc(s.nusach)}</div>` : ''}
                     </div>
                   </div>
-                  ${s.website_url ? `<a class="btn btn-quiet" href="${esc(s.website_url)}" target="_blank" rel="noopener">אתר מלא ↗</a>` : ''}
+                  ${safeUrl(s.website_url) ? `<a class="btn btn-quiet" href="${esc(safeUrl(s.website_url))}" target="_blank" rel="noopener">אתר מלא ↗</a>` : ''}
                 </div>
                 <div class="city">📍 ${esc(s.neighborhood || s.address || '')}</div>
                 ${prayerMiniTable(s.prayer_times, 'weekday')}
@@ -1073,7 +1089,7 @@ async function renderSynagoguePublic(token) {
           <div class="muted">📍 ${esc(s.address || '')} ${s.neighborhood ? '· ' + esc(s.neighborhood) : ''}, ${esc(s.city)}</div>
           ${s.gabbai_name ? `<p class="muted">גבאי: ${esc(s.gabbai_name)} ${s.gabbai_phone ? '· ☎ ' + esc(s.gabbai_phone) : ''}</p>` : ''}
         </div>
-        ${s.website_url ? `<a class="btn btn-outline btn-sm" href="${esc(s.website_url)}" target="_blank" rel="noopener">אתר מלא ↗</a>` : ''}
+        ${safeUrl(s.website_url) ? `<a class="btn btn-outline btn-sm" href="${esc(safeUrl(s.website_url))}" target="_blank" rel="noopener">אתר מלא ↗</a>` : ''}
       </div>
 
       <div class="section">
@@ -1121,7 +1137,7 @@ async function renderTeacherPublic(token) {
               ${a.image_url ? `<img src="${esc(a.image_url)}" alt="" style="width:100%;border-radius:10px;margin-bottom:10px;max-height:180px;object-fit:cover;" />` : ''}
               <h3>${esc(a.title)}</h3>
               ${a.body ? `<p class="muted">${esc(a.body)}</p>` : ''}
-              ${a.link_url ? `<a class="btn btn-outline btn-sm" href="${esc(a.link_url)}" target="_blank" rel="noopener">לפרטים ↗</a>` : ''}
+              ${safeUrl(a.link_url) ? `<a class="btn btn-outline btn-sm" href="${esc(safeUrl(a.link_url))}" target="_blank" rel="noopener">לפרטים ↗</a>` : ''}
             </div>`).join('')}
         </div>
       </div>` : ''}

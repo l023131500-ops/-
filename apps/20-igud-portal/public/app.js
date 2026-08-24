@@ -18,6 +18,14 @@ const el = (tag, attrs = {}, ...children) => {
 
 const escapeHtml = (s) => (s || "").toString().replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 
+// el({href: v}) goes straight to node.setAttribute("href", v) — no HTML
+// escaping needed there (it's a DOM API, not string concatenation), but
+// nothing stops v from being a `javascript:` URI. a.link_url is admin free
+// text (no server-side URL validation), so an admin token holder could set
+// an ad's link to `javascript:...` and any public visitor clicking "פרטים
+// נוספים" would run it. Only allow it through as an href when it's http(s).
+const safeUrl = (v) => (/^https?:\/\//i.test((v || "").toString().trim()) ? v : null);
+
 const TYPE_LABEL = {
   organization: "ארגון",
   synagogue: "בית כנסת",
@@ -176,7 +184,7 @@ function renderTenant(data, token) {
         el("div", { class: "body" },
           el("strong", {}, a.title || ""),
           el("p", {}, a.body || ""),
-          a.link_url ? el("a", { href: a.link_url, class: "btn small", target: "_blank", rel: "noopener noreferrer" }, a.cta_label || "פרטים נוספים") : null,
+          safeUrl(a.link_url) ? el("a", { href: safeUrl(a.link_url), class: "btn small", target: "_blank", rel: "noopener noreferrer" }, a.cta_label || "פרטים נוספים") : null,
         ),
       ));
     }
