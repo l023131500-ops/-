@@ -146,6 +146,7 @@ td .pickbox{width:auto;margin:0;accent-color:var(--gold)}
       <div class="card feature"><b>הזמנה דיגיטלית מעוצבת</b><p>בוחרים עיצוב מתוך תבניות יפות, כותבים מי מזמינים ומילים אישיות — והקישור האישי הופך להזמנה מעוצבת עם RSVP מובנה.</p></div>
       <div class="card feature"><b>מתנות באשראי</b><p>המוזמן נותן מתנה מהקישור שלו. מד "נאספו X ₪" בזמן אמת, פירוט מלא ומעקב תודות.</p></div>
       <div class="card feature"><b>הזמנות ותזכורות בוואטסאפ</b><p>הודעה אישית מוכנה לכל מוזמן עם הקישור שלו — והמערכת זוכרת מי קיבל מה ומי טרם ענה. כולל תודות לנותני מתנה.</p></div>
+      <div class="card feature"><b>עוזר AI לאירוע</b><p>מנסח עבורכם הזמנות, תזכורות ותודות בטון שתבחרו — ומסכם את אישורי ההגעה האמיתיים: איפה זה עומד, מה כדאי לעשות עכשיו, ומי בדיוק טרם ענה.</p></div>
       <div class="card feature"><b>דפי אולמות + לידים</b><p>דף נחיתה מעוצב לכל אולם עם טופס פנייה — כל פנייה נכנסת ללוח הלידים של בעל האולם.</p></div>
       <div class="card feature"><b>צ'ק-אין בכניסה</b><p>סימון הגעה בפועל ביום האירוע — ספירה חיה של מי שכבר בפנים.</p></div>
       <div class="card feature"><b>סידורי הושבה</b><p>שולחנות, קיבולות והושבת מוזמנים — השולחן מופיע בכרטיס הכניסה, והשער מכריז עליו בסריקה.</p></div>
@@ -343,6 +344,39 @@ td .pickbox{width:auto;margin:0;accent-color:var(--gold)}
         <thead><tr><th>מוזמן</th><th>סטטוס</th><th>נשלח עד כה</th><th></th></tr></thead>
         <tbody></tbody>
       </table>
+      </div>
+
+      <h3 style="margin-top:22px">🪄 עוזר ה-AI של האירוע</h3>
+      <p class="muted">העוזר מכיר את פרטי האירוע ואת מצב אישורי ההגעה האמיתי: הוא מנסח לכם הזמנה, תזכורת
+        או תודה — עם סימוני-המקום של מרכז ההודעות כבר בפנים — או מסכם איפה הדברים עומדים ומי טרם ענה.
+        כל תוצר הוא טיוטה לעריכה שלכם. <span id="aiQuota"></span></p>
+      <div class="rowline" style="justify-content:flex-start;flex-wrap:wrap;gap:6px">
+        <select id="aiAction" style="width:auto;margin:0">
+          <option value="invite">✍️ ניסוח הזמנה</option>
+          <option value="reminder">⏰ ניסוח תזכורת</option>
+          <option value="thanks">💛 ניסוח תודה לנותני מתנה</option>
+          <option value="rsvp_summary">📊 סיכום אישורי הגעה + מי טרם ענה</option>
+        </select>
+        <select id="aiTone" style="width:auto;margin:0" title="הטון של ההודעה">
+          <option value="warm">חם ומשפחתי</option>
+          <option value="festive">חגיגי</option>
+          <option value="formal">מכובד ורשמי</option>
+          <option value="light">קליל ושמח</option>
+        </select>
+        <input id="aiNote" maxlength="300" style="flex:1;min-width:220px;margin:0"
+          placeholder="בקשה חופשית (לא חובה): קצר יותר, בלי אימוג'ים, להזכיר שיש הסעות…" />
+        <button class="btn small" id="aiGo">✨ הכנת טיוטה</button>
+      </div>
+      <div id="aiErr"></div>
+      <div class="card" id="aiOutCard" hidden style="margin-top:10px">
+        <div class="rowline">
+          <h3 style="margin:0">הטיוטה</h3>
+          <div class="rowline" style="gap:6px">
+            <button class="btn ghost small" id="aiCopy">העתקה</button>
+            <button class="btn small" id="aiUse" hidden>שימוש כנוסח בהודעות</button>
+          </div>
+        </div>
+        <pre id="aiOut" style="white-space:pre-wrap;font-family:inherit;margin:8px 0 0"></pre>
       </div>
 
       <h3 style="margin-top:22px">סידורי הושבה</h3>
@@ -818,6 +852,8 @@ async function openEvent(id, opts = {}) {
     gateShut();
     // selection/filter/edit state belongs to the event we're leaving
     guestPick.clear(); guestEditId = null; guestGroupFilter = null; guestDupesOnly = false;
+    // an AI draft belongs to the event it was written for
+    $('aiOutCard').hidden = true; $('aiNote').value = ''; lastAiAction = null;
   }
   const d = await rpc('evg_event_dashboard', { p_event_id: id });
   if (!d?.event) return;
@@ -864,6 +900,7 @@ async function openEvent(id, opts = {}) {
     $('tplInvite').placeholder = TPL_DEFAULTS.invite;
     $('tplReminder').placeholder = TPL_DEFAULTS.reminder;
     $('tplThanks').placeholder = TPL_DEFAULTS.thanks;
+    renderAiQuota(); // fire-and-forget — display only, enforcement is in the DB
   }
   $('invPreview').href = 'https://more30.com/events/g?s=' + ev.share_token;
 
@@ -1253,6 +1290,81 @@ $('tplSave').addEventListener('click', () => guarded($('tplSave'), 'tplSave', as
     await openEvent(CURRENT_EVENT.event.id, { scroll: false });
   } catch (e) { $('tplErr').innerHTML = '<div class="err">' + esc(e.message) + '</div>'; }
 }));
+
+// ---------- AI assistant (עוזר ה-AI של האירוע) ----------
+// הקריאה עוברת דרך Edge Function ולא ישירות ל-API של Anthropic: המפתח לעולם
+// לא מגיע לדפדפן, והפונקציה אוכפת בעלות על האירוע + מכסה יומית ב-DB (0141).
+const AI_URL = SUPABASE_URL + '/functions/v1/events-ai';
+// which template textarea a draft lands in when "שימוש כנוסח" is clicked
+const AI_TPL_TARGET = { invite: 'tplInvite', reminder: 'tplReminder', thanks: 'tplThanks' };
+let lastAiAction = null;
+
+async function renderAiQuota() {
+  try {
+    const q = await rpc('evg_ai_my_usage');
+    $('aiQuota').textContent = 'נוצלו ' + q.used + ' מתוך ' + q.cap + ' הכנות היום.';
+  } catch { /* המכסה היא תצוגה בלבד — האכיפה בשרת */ }
+}
+
+$('aiAction').addEventListener('change', () => {
+  // a status summary has no "tone"; hiding beats disabling for a small row
+  $('aiTone').hidden = $('aiAction').value === 'rsvp_summary';
+  $('aiErr').innerHTML = '';
+});
+
+$('aiGo').addEventListener('click', () => guarded($('aiGo'), 'aiGo', async () => {
+  if (!CURRENT_EVENT) return;
+  $('aiErr').innerHTML = '';
+  $('aiGo').textContent = 'מכינים… (עד חצי דקה)';
+  try {
+    const { data: sess } = await sb.auth.getSession();
+    const token = sess?.session?.access_token;
+    if (!token) throw new Error('פג תוקף החיבור — יש לרענן את הדף ולהתחבר שוב.');
+    const res = await fetch(AI_URL, {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        apikey: SUPABASE_ANON,
+        Authorization: 'Bearer ' + token,
+      },
+      body: JSON.stringify({
+        event_id: CURRENT_EVENT.event.id,
+        action: $('aiAction').value,
+        tone: $('aiTone').value,
+        note: $('aiNote').value.trim(),
+      }),
+    });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error(data.error || 'שגיאה בשירות ה-AI (' + res.status + ').');
+    lastAiAction = $('aiAction').value;
+    $('aiOut').textContent = data.text;
+    $('aiUse').hidden = !AI_TPL_TARGET[lastAiAction];
+    $('aiOutCard').hidden = false;
+    if (typeof data.used === 'number')
+      $('aiQuota').textContent = 'נוצלו ' + data.used + ' מתוך ' + data.cap + ' הכנות היום.';
+    $('aiOutCard').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  } catch (e) {
+    $('aiErr').innerHTML = '<div class="err">' + esc(e.message) + '</div>';
+  } finally {
+    $('aiGo').textContent = '✨ הכנת טיוטה';
+  }
+}));
+
+$('aiCopy').addEventListener('click', async () => {
+  try {
+    await navigator.clipboard.writeText($('aiOut').textContent);
+    $('aiCopy').textContent = 'הועתק ✓';
+    setTimeout(() => { $('aiCopy').textContent = 'העתקה'; }, 1500);
+  } catch { /* clipboard blocked — the text is selectable on screen */ }
+});
+
+$('aiUse').addEventListener('click', () => {
+  const target = AI_TPL_TARGET[lastAiAction];
+  if (!target) return;
+  $(target).value = $('aiOut').textContent;
+  $('tplErr').innerHTML = '<div class="ok-note">הטיוטה הוזנה לנוסח — לחצו "שמירת נוסחים" כדי שההודעות ישתמשו בה.</div>';
+  $(target).scrollIntoView({ behavior: 'smooth', block: 'center' });
+});
 
 // ---------- seating (סידורי הושבה) ----------
 // souls at the table: a confirmed party counts its RSVP size, a pending/maybe
