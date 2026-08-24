@@ -161,6 +161,19 @@ export default function Editor() {
   const [critiqueResult, setCritiqueResult] = useState<Critique | null>(null);
   // תיקונים שהוחלו בפועל בסבב הביקורת הנוכחי — מתאפס בכל ביקורת AI חדשה
   const [appliedCritiqueFixes, setAppliedCritiqueFixes] = useState<Set<number>>(new Set());
+  // הלולאה האוטומטית המלאה (הליבה שנותרה בצ'קליסט #13): ביקורת → החלת כל
+  // התיקונים הניתנים-לפתרון → ביקורת חוזרת, בלי אדם בין האיטרציות — עד
+  // AUTO_POLISH_MAX_ROUNDS סבבים, עצירה מוקדמת כשאין תיקונים חד-משמעיים או
+  // כשהציון כבר גבוה, והחזרה-לאחור של סבב שהוריד את הציון (מבקר ה-QA שומר
+  // שהלולאה רק משפרת). כל fix עובר בדיוק את אותו resolveCritiqueFix (שכבה
+  // קיימת, שדה מרשימת-ההרשאה הסגורה, clamp טווח) כמו החלה ידנית — הלולאה לא
+  // מקבלת שום הרשאה שהכפתורים הידניים לא קיבלו.
+  const [autoPolishing, setAutoPolishing] = useState(false);
+  const [autoPolishRound, setAutoPolishRound] = useState(0);
+  type AutoPolishStep = { score: number; applied: number; reverted?: boolean };
+  // מסלול הציונים של הריצה האחרונה (64 ← 71 ← ...) — מוצג בדיאלוג הביקורת;
+  // מתאפס כשמריצים ביקורת ידנית רגילה כדי שלא יוצג מסלול שלא שייך לה.
+  const [autoPolishTrail, setAutoPolishTrail] = useState<AutoPolishStep[]>([]);
 
   // הערות לקוח (צ'קליסט #14, שלב השמירה) — נשמר לצד הטיוטה בתוך layersJson;
   // ליישום התיקון האוטומטי לפי ההערות בסבב הבא, זהו רק שלב שמירת ההערה עצמה.
@@ -853,28 +866,40 @@ export default function Editor() {
     return { ...base, kind: (l as any).kind, fill: (l as any).fill };
   }
 
+  // קריאת הביקורת עצמה, על מסמך שמועבר כפרמטר (לא על doc מה-state) — כדי
+  // שהלולאה האוטומטית תוכל לבקר את הגרסה שהרגע תוקנה בלי לחכות לעדכון React.
+  // מחזירה {critique:null, error} בכשל-צורה כדי שהקוראים ישמרו על הודעת השגיאה.
+  async function requestCritique(d: TemplateDoc): Promise<{ critique: Critique | null; error?: string }> {
+    const res = await apiRequest("POST", "/api/ai/critique", {
+      category: selected?.category,
+      style: selected?.style,
+      width: d.width,
+      height: d.height,
+      background: d.background,
+      layers: d.layers.map(summarizeLayerForCritique),
+      clientNotes: clientNotes.trim() || undefined,
+    });
+    const data = await res.json();
+    if (!data || typeof data.score !== "number") {
+      return { critique: null, error: data?.error };
+    }
+    return { critique: data as Critique };
+  }
+
   // ביקורת AI — שולח תקציר של הטיוטה הנוכחית (בלי לגעת בשכבות/רינדור/ייצוא
   // הקיימים) ומציג משוב מובנה לקריאה; הלקוח/המעצב מחליטים אם ליישם.
   async function handleAiCritique() {
     if (!doc) return;
     setCritiquing(true);
     try {
-      const res = await apiRequest("POST", "/api/ai/critique", {
-        category: selected?.category,
-        style: selected?.style,
-        width: doc.width,
-        height: doc.height,
-        background: doc.background,
-        layers: doc.layers.map(summarizeLayerForCritique),
-        clientNotes: clientNotes.trim() || undefined,
-      });
-      const data = await res.json();
-      if (!data || typeof data.score !== "number") {
-        toast({ title: "ביקורת AI נכשלה", description: data?.error, variant: "destructive" });
+      const { critique, error } = await requestCritique(doc);
+      if (!critique) {
+        toast({ title: "ביקורת AI נכשלה", description: error, variant: "destructive" });
         return;
       }
-      setCritiqueResult(data);
+      setCritiqueResult(critique);
       setAppliedCritiqueFixes(new Set());
+      setAutoPolishTrail([]);
       setCritiqueDialogOpen(true);
     } catch (err: any) {
       toast({
@@ -899,14 +924,16 @@ export default function Editor() {
   };
   const CRITIQUE_FIX_COLOR_FIELDS = new Set(["fill", "stroke"]);
 
-  function resolveCritiqueFix(fix: CritiqueFix | undefined): CritiqueFix | null {
-    if (!fix || !doc) return null;
-    const layer = doc.layers.find((l) => l.id === fix.layerId);
+  // הגרסה הטהורה — פועלת על מסמך שמועבר כפרמטר, כדי שהלולאה האוטומטית תאמת
+  // כל fix מול המסמך העדכני שבידיה (לא מול doc מה-state, שעלול לפגר אחריה).
+  function resolveCritiqueFixFor(d: TemplateDoc, fix: CritiqueFix | undefined): CritiqueFix | null {
+    if (!fix) return null;
+    const layer = d.layers.find((l) => l.id === fix.layerId);
     if (!layer) return null;
     if (fix.field === "x" || fix.field === "y") {
       const raw = Number(fix.value);
       if (!Number.isFinite(raw)) return null;
-      const max = fix.field === "x" ? doc.width : doc.height;
+      const max = fix.field === "x" ? d.width : d.height;
       return { layerId: fix.layerId, field: fix.field, value: Math.max(0, Math.min(max, raw)) };
     }
     if (fix.field in CRITIQUE_FIX_RANGES) {
@@ -921,6 +948,10 @@ export default function Editor() {
       return { layerId: fix.layerId, field: fix.field, value: raw };
     }
     return null;
+  }
+
+  function resolveCritiqueFix(fix: CritiqueFix | undefined): CritiqueFix | null {
+    return doc ? resolveCritiqueFixFor(doc, fix) : null;
   }
 
   function handleApplyCritiqueFix(index: number, fix: CritiqueFix | undefined) {
@@ -951,6 +982,94 @@ export default function Editor() {
       return next;
     });
     toast({ title: "כל התיקונים הוחלו", description: `${pending.length} שכבות עודכנו` });
+  }
+
+  // החלת רשימת תיקונים (שכבר עברו resolveCritiqueFixFor) על מסמך — טהור, בלי
+  // state: הלולאה האוטומטית עובדת על עותק מקומי ומעדכנת את העורך רק בסופה,
+  // כדי שביקורת-החוזרת תמיד תבקר בדיוק את מה שהוחל (לא מצב React שמפגר).
+  function applyCritiqueFixesToDoc(d: TemplateDoc, fixes: CritiqueFix[]): TemplateDoc {
+    return {
+      ...d,
+      layers: d.layers.map((l) => {
+        const patches = fixes.filter((f) => f.layerId === l.id);
+        if (!patches.length) return l;
+        const patch: Record<string, unknown> = {};
+        for (const f of patches) patch[f.field] = f.value;
+        return { ...l, ...patch } as AnyLayer;
+      }),
+    };
+  }
+
+  // הלולאה האוטומטית המלאה של צ'קליסט #13 — מעצב → מבקר QA → ליטוש, בלי אדם
+  // בין האיטרציות: ביקורת, החלת כל התיקונים החד-משמעיים (אותה רשימת-הרשאה
+  // ואותו clamp כמו הכפתורים הידניים), ביקורת חוזרת — עד AUTO_POLISH_MAX_ROUNDS
+  // סבבי-תיקון. עצירה מוקדמת: אין תיקונים ניתנים-לפתרון, הציון כבר ≥
+  // AUTO_POLISH_TARGET_SCORE, או שסבב הוריד את הציון (ואז הגרסה הטובה מוחזרת —
+  // הלולאה לעולם לא מסיימת עם טיוטה גרועה מזו שקיבלה). בסיום: המסמך המלוטש
+  // נכנס לעורך דרך updateDoc הרגיל (עדיין לא נשמר לשרת — "שמור פרויקט" נשאר
+  // החלטת אדם), ודיאלוג הביקורת נפתח עם הביקורת האחרונה + מסלול הציונים.
+  const AUTO_POLISH_MAX_ROUNDS = 3;
+  const AUTO_POLISH_TARGET_SCORE = 90;
+  async function handleAutoPolish() {
+    if (!doc || autoPolishing || critiquing) return;
+    setAutoPolishing(true);
+    setAutoPolishRound(1);
+    setAutoPolishTrail([]);
+    try {
+      let workingDoc = doc;
+      const first = await requestCritique(workingDoc);
+      if (!first.critique) {
+        toast({ title: "ליטוש אוטומטי נכשל", description: first.error, variant: "destructive" });
+        return;
+      }
+      let current = first.critique;
+      const trail: AutoPolishStep[] = [{ score: current.score, applied: 0 }];
+      setAutoPolishTrail([...trail]);
+      for (let round = 0; round < AUTO_POLISH_MAX_ROUNDS; round++) {
+        if (current.score >= AUTO_POLISH_TARGET_SCORE) break;
+        const fixes = current.issues
+          .map((issue) => resolveCritiqueFixFor(workingDoc, issue.fix))
+          .filter((f): f is CritiqueFix => !!f);
+        if (!fixes.length) break; // אין תיקונים חד-משמעיים — הלולאה מיצתה את עצמה
+        const prevDoc = workingDoc;
+        const prevCritique = current;
+        workingDoc = applyCritiqueFixesToDoc(workingDoc, fixes);
+        setAutoPolishRound(round + 2);
+        let next: { critique: Critique | null; error?: string };
+        try {
+          next = await requestCritique(workingDoc);
+        } catch {
+          next = { critique: null };
+        }
+        // כשל רשת/צורה באמצע הלולאה — נשארים עם התיקונים שהוחלו והביקורת
+        // האחרונה שנקראה בהצלחה (החלה חוזרת של אותם fixes היא אידמפוטנטית).
+        if (!next.critique) break;
+        if (next.critique.score < prevCritique.score) {
+          // מבקר ה-QA מצא שהסבב הזיק — מחזירים את הגרסה הטובה ועוצרים.
+          workingDoc = prevDoc;
+          current = prevCritique;
+          trail.push({ score: next.critique.score, applied: fixes.length, reverted: true });
+          break;
+        }
+        current = next.critique;
+        trail.push({ score: current.score, applied: fixes.length });
+        setAutoPolishTrail([...trail]);
+      }
+      if (workingDoc !== doc) updateDoc(workingDoc);
+      setCritiqueResult(current);
+      setAppliedCritiqueFixes(new Set());
+      setAutoPolishTrail(trail);
+      setCritiqueDialogOpen(true);
+    } catch (err: any) {
+      toast({
+        title: "ליטוש אוטומטי נכשל",
+        description: String(err?.message ?? err).slice(0, 150),
+        variant: "destructive",
+      });
+    } finally {
+      setAutoPolishing(false);
+      setAutoPolishRound(0);
+    }
   }
 
   return (
@@ -1002,10 +1121,22 @@ export default function Editor() {
             size="sm"
             className="gap-1.5 border-[#C9A227]/40 text-[#C9A227]"
             onClick={handleAiCritique}
-            disabled={critiquing}
+            disabled={critiquing || autoPolishing}
             data-testid="button-ai-critique"
           >
             <ClipboardCheck className="h-4 w-4" /> {critiquing ? "בודק..." : "ביקורת AI"}
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            className="gap-1.5 border-[#C9A227]/40 text-[#C9A227]"
+            onClick={handleAutoPolish}
+            disabled={autoPolishing || critiquing}
+            title="לולאת סוכנים: ביקורת AI → החלת התיקונים → ביקורת חוזרת, עד 3 סבבים"
+            data-testid="button-auto-polish"
+          >
+            <Wand2 className={"h-4 w-4" + (autoPolishing ? " animate-pulse" : "")} />
+            {autoPolishing ? `מלטש… סבב ${autoPolishRound}` : "ליטוש אוטומטי"}
           </Button>
           <Button
             variant="outline"
@@ -1755,12 +1886,28 @@ export default function Editor() {
               ביקורת AI — ציון {critiqueResult?.score ?? "—"}/100
             </DialogTitle>
             <DialogDescription>
-              משוב מבקר QA על הטיוטה הנוכחית — לקריאה בלבד, שום שכבה לא משתנה אוטומטית.
+              משוב מבקר QA על הטיוטה הנוכחית.
               {clientNotes.trim() && " הביקורת הביאה בחשבון את הערת הלקוח השמורה."}
               {" "}הערה עם כפתור "החל תיקון" משנה, בלחיצה מפורשת בלבד, רק את השכבה שצוינה בה.
-              {" "}"החל את כל התיקונים" מריץ את אותה פעולה על כל ההערות הממתינות בבת אחת — עדיין לחיצה יזומה אחת, לא לולאה אוטומטית.
+              {" "}"החל את כל התיקונים" מריץ את אותה פעולה על כל ההערות הממתינות בבת אחת.
+              {" "}"ליטוש אוטומטי" (בסרגל העליון) מריץ ביקורת ← תיקונים ← ביקורת חוזרת עד 3 סבבים, ומבטל סבב שהוריד את הציון; גם אחריו דבר לא נשמר לשרת בלי "שמור פרויקט".
             </DialogDescription>
           </DialogHeader>
+          {autoPolishTrail.length > 0 && (
+            <div
+              className="rounded-md border border-[#C9A227]/20 bg-[#101B32] p-2 text-xs text-[#F5EEDD]/90"
+              data-testid="text-auto-polish-trail"
+            >
+              <span className="font-semibold text-[#C9A227]">מסלול הליטוש האוטומטי: </span>
+              {autoPolishTrail.map((s, i) => (
+                <span key={i}>
+                  {i > 0 && " ← "}
+                  {s.score}
+                  {i > 0 && (s.reverted ? ` (${s.applied} תיקונים — בוטלו, הציון ירד)` : ` (אחרי ${s.applied} תיקונים)`)}
+                </span>
+              ))}
+            </div>
+          )}
           {critiqueResult && (
             <div className="max-h-[60vh] space-y-4 overflow-y-auto">
               {critiqueResult.strengths.length > 0 && (
