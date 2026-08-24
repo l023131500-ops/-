@@ -129,21 +129,32 @@ ${orgsJson}
       })),
     ];
 
-    const response = await fetch(
-      "https://ai.gateway.lovable.dev/v1/chat/completions",
-      {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${LOVABLE_API_KEY}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          model: "google/gemini-2.5-flash",
-          messages: aiMessages,
-          stream: true,
-        }),
-      }
-    );
+    // Timeout only guards the connect/headers phase (cleared right after fetch
+    // resolves) so a hung upstream can't leave the invocation running forever,
+    // without cutting off a legitimately long streamed response body.
+    const connectController = new AbortController();
+    const connectTimeout = setTimeout(() => connectController.abort(), 15000);
+    let response: Response;
+    try {
+      response = await fetch(
+        "https://ai.gateway.lovable.dev/v1/chat/completions",
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${LOVABLE_API_KEY}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            model: "google/gemini-2.5-flash",
+            messages: aiMessages,
+            stream: true,
+          }),
+          signal: connectController.signal,
+        }
+      );
+    } finally {
+      clearTimeout(connectTimeout);
+    }
 
     if (!response.ok) {
       if (response.status === 429) {
