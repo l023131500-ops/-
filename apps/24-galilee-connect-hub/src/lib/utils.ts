@@ -15,3 +15,12 @@ export function getPublicOrigin(): string {
     : `${import.meta.env.BASE_URL}/`;
   return `${window.location.origin}${base}`.replace(/\/$/, "");
 }
+
+// donation_link is admin-editable free text with no server-side scheme
+// validation, rendered directly as a public href -- a compromised admin
+// session could set it to `javascript:...` and any visitor clicking it
+// would execute it. Same fix pattern as 19-igud-shiurim-portal/20-igud-portal
+// (round 506) / 21-mthbram (round 507): allow only http(s).
+export function safeUrl(url: string | null | undefined): string | undefined {
+  return url && /^https?:\/\//i.test(url) ? url : undefined;
+}

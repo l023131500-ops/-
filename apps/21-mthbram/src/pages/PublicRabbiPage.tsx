@@ -8,6 +8,7 @@ import { toast } from "sonner";
 import { BACKGROUND_PRESETS } from "@/components/portal/PortalSettingsTab";
 import LessonDetailModal from "@/components/LessonDetailModal";
 import PublicContactForm from "@/components/portal/PublicContactForm";
+import { safeUrl } from "@/lib/utils";
 
 const PublicRabbiPage = () => {
   const { publicToken } = useParams<{ publicToken: string }>();
@@ -106,17 +107,17 @@ const PublicRabbiPage = () => {
             )}
 
             {/* Donation & Download buttons */}
-            {(portal?.donation_link || portal?.lesson_download_url) && (
+            {(safeUrl(portal?.donation_link) || safeUrl(portal?.lesson_download_url)) && (
               <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }}
                 className="flex gap-3 mt-6">
-                {portal?.donation_link && (
-                  <a href={portal.donation_link} target="_blank" rel="noopener noreferrer"
+                {safeUrl(portal?.donation_link) && (
+                  <a href={safeUrl(portal?.donation_link)} target="_blank" rel="noopener noreferrer"
                     className="px-6 py-3 rounded-2xl bg-gradient-gold text-navy font-body font-bold flex items-center gap-2 shadow-lg hover:shadow-xl transition-shadow">
                     <Heart className="w-5 h-5" /> תרומה
                   </a>
                 )}
-                {portal?.lesson_download_url && (
-                  <a href={portal.lesson_download_url} target="_blank" rel="noopener noreferrer"
+                {safeUrl(portal?.lesson_download_url) && (
+                  <a href={safeUrl(portal?.lesson_download_url)} target="_blank" rel="noopener noreferrer"
                     className="px-6 py-3 rounded-2xl bg-white/15 backdrop-blur-sm border border-white/20 font-body font-bold flex items-center gap-2 hover:bg-white/25 transition-colors text-white">
                     <Download className="w-5 h-5" /> הורדת שיעור
                   </a>

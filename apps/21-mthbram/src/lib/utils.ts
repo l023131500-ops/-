@@ -21,6 +21,16 @@ const HEBREW_MONTHS = [
   "ביולי", "באוגוסט", "בספטמבר", "באוקטובר", "בנובמבר", "בדצמבר",
 ];
 
+// Admin-editable link fields (donation_link, lesson_download_url) are stored
+// as free text with no server-side scheme validation, then rendered directly
+// as a public href -- a compromised admin session could set one to
+// `javascript:...` and any visitor clicking it would execute it. Same fix
+// pattern as 19-igud-shiurim-portal/20-igud-portal (round 506): allow only
+// http(s), render nothing for anything else.
+export function safeUrl(url: string | null | undefined): string | undefined {
+  return url && /^https?:\/\//i.test(url) ? url : undefined;
+}
+
 export function formatHebrewDate(dateStr: string, includeTime = false): string {
   const d = new Date(dateStr);
   if (isNaN(d.getTime())) return dateStr;

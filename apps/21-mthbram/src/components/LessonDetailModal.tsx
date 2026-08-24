@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { downloadLessonAsImage, type LessonImageOptions } from "@/lib/lessonImageExport";
+import { safeUrl } from "@/lib/utils";
 
 interface LessonDetailModalProps {
   lesson: any;
@@ -349,8 +350,8 @@ const LessonDetailModal = ({ lesson, onClose, imageOptions }: LessonDetailModalP
             </AnimatePresence>
 
             <div className="flex gap-2">
-              {lesson.donation_link && (
-                <a href={lesson.donation_link} target="_blank" rel="noopener noreferrer" className="flex-1">
+              {safeUrl(lesson.donation_link) && (
+                <a href={safeUrl(lesson.donation_link)} target="_blank" rel="noopener noreferrer" className="flex-1">
                   <Button variant="outline" className="w-full font-body border-gold/30 text-gold hover:bg-gold/10">
                     <ExternalLink className="w-4 h-4 ml-2" />
                     קישור לתרומה

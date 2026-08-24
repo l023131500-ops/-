@@ -5,6 +5,7 @@ import { useRef } from "react";
 import { toast } from "sonner";
 
 import type { ScheduleBlock } from "@/lib/studyDayLessons";
+import { safeUrl } from "@/lib/utils";
 
 export interface SynagogueCardData {
   id: string;
@@ -228,9 +229,9 @@ export default function SynagogueDetailModal({ open, onClose, data }: Props) {
             </button>
           </div>
 
-          {data.donation_link && (
+          {safeUrl(data.donation_link) && (
             <a
-              href={data.donation_link}
+              href={safeUrl(data.donation_link)}
               target="_blank"
               rel="noopener noreferrer"
               className="block text-center bg-gradient-to-l from-gold to-gold-light text-navy font-bold py-3 rounded-xl hover:opacity-90 transition-opacity"

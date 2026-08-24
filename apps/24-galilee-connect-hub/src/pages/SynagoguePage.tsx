@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { useSynagogue } from '@/hooks/useSynagogues';
 import { supabase } from '@/integrations/supabase/client';
 import { getDailyZmanim, BACKGROUND_PRESETS } from '@/data/synagogues';
+import { safeUrl } from '@/lib/utils';
 import Footer from '@/components/Footer';
 
 const SynagoguePage = () => {
@@ -257,8 +258,8 @@ const SynagoguePage = () => {
         </div>
 
         {/* Donation */}
-        {synagogue.donation_link && (
-          <motion.a href={synagogue.donation_link} target="_blank" rel="noreferrer"
+        {safeUrl(synagogue.donation_link) && (
+          <motion.a href={safeUrl(synagogue.donation_link)} target="_blank" rel="noreferrer"
             initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}
             className="flex items-center justify-center gap-2.5 bg-gradient-gold text-primary-foreground font-black py-4 rounded-2xl mt-8 hover:brightness-110 transition-all text-base">
             <Heart className="w-5 h-5" /> תרומה דיגיטלית מאובטחת

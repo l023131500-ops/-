@@ -8,6 +8,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { BACKGROUND_PRESETS } from "@/components/portal/PortalSettingsTab";
 import PublicContactForm from "@/components/portal/PublicContactForm";
 import { normalizeToBlocks, blockLabel, type ScheduleBlock } from "@/lib/studyDayLessons";
+import { safeUrl } from "@/lib/utils";
 
 export default function PublicSynagoguePage() {
   const { publicToken } = useParams<{ publicToken: string }>();
@@ -160,9 +161,9 @@ export default function PublicSynagoguePage() {
         </div>
 
         {/* Donation */}
-        {portal.donation_link && (
+        {safeUrl(portal.donation_link) && (
           <div className="bg-background/90 backdrop-blur-sm pb-8 px-6 text-center">
-            <a href={portal.donation_link} target="_blank" rel="noopener noreferrer">
+            <a href={safeUrl(portal.donation_link)} target="_blank" rel="noopener noreferrer">
               <Button size="lg" className="bg-gradient-gold text-navy font-bold gap-2 shadow-lg">
                 <Heart className="w-4 h-4" /> תרומה לבית הכנסת
               </Button>

@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { Clock, Sparkles, BookOpen, Phone, ChevronLeft, ChevronRight, Heart, Megaphone, MapPin, Copy, Check, Send, ExternalLink, List, User } from 'lucide-react';
 import type { SynagogueDB } from '@/hooks/useSynagogues';
-import { getPublicOrigin } from '@/lib/utils';
+import { getPublicOrigin, safeUrl } from '@/lib/utils';
 import LessonsTicker from './LessonsTicker';
 
 const VISIBLE_COUNT = 3;
@@ -208,8 +208,8 @@ const SynagogueCard = ({
 
                 {/* Actions */}
                 <div className="flex gap-2 pt-1">
-                  {synagogue.donation_link && (
-                    <a href={synagogue.donation_link} target="_blank" rel="noreferrer" onClick={e => e.stopPropagation()}
+                  {safeUrl(synagogue.donation_link) && (
+                    <a href={safeUrl(synagogue.donation_link)} target="_blank" rel="noreferrer" onClick={e => e.stopPropagation()}
                       className="flex-1 flex items-center justify-center gap-1.5 bg-gradient-gold text-primary-foreground font-bold py-2.5 rounded-xl hover:brightness-110 transition-all text-[11px]">
                       <Heart className="w-3.5 h-3.5" /> תרומה
                     </a>

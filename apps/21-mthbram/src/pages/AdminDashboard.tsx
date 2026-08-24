@@ -21,7 +21,7 @@ import LessonDetailModal from "@/components/LessonDetailModal";
 import FullAccessRequestsTab from "@/components/admin/FullAccessRequestsTab";
 import MatchingTab from "@/components/admin/MatchingTab";
 import { exportLessonsToExcel, validateLessonForExport } from "@/lib/lessonExcelExport";
-import { getPublicOrigin } from "@/lib/utils";
+import { getPublicOrigin, safeUrl } from "@/lib/utils";
 import { toast } from "sonner";
 
 const AdminDashboard = () => {
@@ -1473,7 +1473,7 @@ const AdminDashboard = () => {
                           <div className="mt-3 flex flex-wrap gap-3 text-xs text-muted-foreground">
                             {ev.contact_name && <span>👤 {ev.contact_name}</span>}
                             {ev.contact_phone && <span dir="ltr">📞 {ev.contact_phone}</span>}
-                            {ev.donation_link && <a href={ev.donation_link} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">💝 קישור לתרומה</a>}
+                            {safeUrl(ev.donation_link) && <a href={safeUrl(ev.donation_link)} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">💝 קישור לתרומה</a>}
                           </div>
                         )}
                       </div>
