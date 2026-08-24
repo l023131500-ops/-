@@ -111,6 +111,7 @@ const AdminLeads = () => {
   const [editingLead, setEditingLead] = useState<Lead | null>(null);
   const [savingEdit, setSavingEdit] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const [changingStatus, setChangingStatus] = useState(false);
   const [sendingToN8n, setSendingToN8n] = useState(false);
   const [sendChannels, setSendChannels] = useState<string[]>(["whatsapp"]);
 
@@ -156,13 +157,16 @@ const AdminLeads = () => {
   };
 
   const handleStatusChange = async (leadId: string, newStatus: string) => {
+    if (changingStatus) return;
     if (newStatus === "handled" && !handledDesc.trim()) {
       toast({ title: "שגיאה", description: "יש לתאר איך הליד טופל", variant: "destructive" }); return;
     }
+    setChangingStatus(true);
     const updates: any = { status: newStatus };
     if (newStatus === "handled") updates.handled_description = handledDesc;
     if (newStatus === "closed") updates.closed_at = new Date().toISOString();
     const { error } = await supabase.from("leads").update(updates).eq("id", leadId);
+    setChangingStatus(false);
     if (error) {
       toast({ title: "שגיאה", description: "עדכון הסטטוס נכשל", variant: "destructive" });
       return;
@@ -467,7 +471,7 @@ const AdminLeads = () => {
                   <div className="flex gap-2 flex-wrap mb-3">
                     {Object.entries(statusConfig).map(([key, cfg]) => (
                       <Button key={key} size="sm" variant={selectedLead.status === key ? "default" : "outline"}
-                        disabled={selectedLead.status === key || (key === "handled" && !handledDesc.trim())}
+                        disabled={changingStatus || selectedLead.status === key || (key === "handled" && !handledDesc.trim())}
                         onClick={() => handleStatusChange(selectedLead.id, key)} className="gap-1 text-xs">
                         {cfg.icon} {cfg.label}
                       </Button>
