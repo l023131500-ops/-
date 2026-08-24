@@ -51,6 +51,26 @@ if (Test-Path $cloneFaviconSrc) {
   Copy-Item $cloneFaviconSrc (Join-Path $cloneDst 'favicon.svg') -Force
 }
 
+# 38 events-gifts + 39 maatefet — אותו דפוס בדיוק כמו 37: עמודים סטטיים בלי
+# build ובלי נכסים יחסיים חיצוניים (ה-API שלהם הוא public.evg_*/maatefet_* על
+# Supabase), ולכן מוגשים מתוך הפורטל עצמו במקום להמתין לפרויקט Vercel נפרד —
+# הפריט שחסם את שניהם ב-NEEDS_USER. המקור נשאר sites/<n>/ ומועתק בכל staging
+# כדי שלא יהיה עותק שני בריפו. throw ולא warning: ה-rewrites כבר מוכרזים
+# ב-vercel.dist.json, ופריסה בלי הקבצים מגישה 404 בנתיב שהוכרז.
+$staticSites = @(
+  @{ src = 'sites\38-events-gifts\events'; dst = 'events' },
+  @{ src = 'sites\39-maatefet\maatefet';   dst = 'maatefet' }
+)
+foreach ($s in $staticSites) {
+  $srcDir = Join-Path $root $s.src
+  if (-not (Test-Path (Join-Path $srcDir 'index.html'))) {
+    throw "$($s.src)\index.html חסר — /$($s.dst) ייפרס כ-404"
+  }
+  $dstDir = Join-Path $dist $s.dst
+  New-Item -ItemType Directory -Force -Path $dstDir | Out-Null
+  Copy-Item (Join-Path $srcDir '*') $dstDir -Recurse -Force
+}
+
 $apiSrc = Join-Path $portal 'api'
 if (Test-Path $apiSrc) {
   $apiDst = Join-Path $dist 'api'

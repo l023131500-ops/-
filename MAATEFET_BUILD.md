@@ -537,6 +537,15 @@
 > שלושה hrefs קיימים). נותר בשלב 4 (כולו חסום-חיצונית): סליקה בפועל
 > (live=true), וואטסאפ דו-כיווני (ספק), Google Calendar (OAuth).
 
+> **24/08/2026 (Loop C, Fable · סבב 2):** חסם הפריסה הוסר — `/maatefet` חובר
+> לפורטל בדפוס #37 bkalot-clone (שכבר חי כך): `scripts/stage-portal.ps1` מעתיק
+> את `sites/39-maatefet/maatefet/` אל `portal/dist/maatefet/`, ו-
+> `portal/vercel.dist.json` קיבל rewrites מקומיים לכל חמשת העמודים + כותרות
+> אבטחה + `no-cache` ל-`sw.js` (כמו `sites/39-maatefet/vercel.json` שנועד
+> לפרויקט הנפרד שכבר לא נחוץ). אין יותר צורך בפרויקט Vercel חדש — נשארה רק
+> הפריסה הרגילה של הפורטל (build → stage → deploy), ואז `live=true` ב-
+> `core.projects`. ראה NEEDS_USER.md, עדכון 24/08.
+
 ## החלטות יסוד מחייבות (מהאפיון)
 - **ליבה אחת, שני פנים**: מערכת אחת עם שדה `segment` (חתנים/כלות) דרך כל השכבות. RLS מלא. לא שתי מערכות.
 - **תשלום מהמדריכים בלבד** (מנוי SaaS). חתנים/כלות לא משלמים.

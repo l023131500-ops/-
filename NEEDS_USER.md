@@ -22,6 +22,19 @@ Management API, אבל תיכנס לתוקף רק ברסטארט טבעי של �
 
 פרטים מלאים: `SYSTEMS_STATUS.md` סעיף 20/08 (Loop C, סבב 4), `MAATEFET_BUILD.md`.
 
+**עדכון 24/08/2026 (Loop C · Fable) — הדרישה הצטמצמה: אין צורך בפרויקט Vercel
+חדש.** מעטפת (וגם `/events` של #38) חוברו לפורטל **באותו דפוס בדיוק כמו #37
+bkalot-clone**, שכבר חי כך בפרודקשן: `scripts/stage-portal.ps1` מעתיק עכשיו את
+`sites/39-maatefet/maatefet/` אל `portal/dist/maatefet/` (ואת
+`sites/38-events-gifts/events/` אל `portal/dist/events/`), ו-`portal/vercel.dist.json`
+קיבל rewrites מקומיים לכל העמודים (`/maatefet`, `/maatefet/instructor|portal|join|admin`,
+`/events`, `/events/g`, `/events/hall`) + כותרות אבטחה ו-`no-cache` ל-`sw.js`.
+**מה שנשאר ממך הוא רק הפריסה הרגילה של הפורטל** (אותן שתי פקודות שכבר מריצים
+בכל עדכון פורטל): `npx pnpm --filter @more30/portal build` ← `pwsh scripts/stage-portal.ps1`
+← `cd portal/dist; vercel deploy --prod --yes --scope l023131500-ops-projects`.
+אחרי הפריסה: לעדכן `core.projects` → `live=true`/`is_deployed=true` ל-39 (ול-38,
+שהסליקה בו ממילא נעולה-בטריגר למצב טסט) כדי שכרטיסי דף-הבית יפתחו כניסה אמיתית.
+
 ---
 
 ## 🟡 19/08/2026 — 32 נדל"ן: בדיקת פיקסלים של Street View חסומה מקומית (NetFree) — לא דורש אותך בדחיפות, רק אם רוצה לראות בעין
@@ -122,6 +135,12 @@ live **חסום בטריגר DB** עד אישור ה-split (פריט 3 למעל�
 ו-UI ראשון ב-`sites/38-events-gifts/events` (מוצר+דשבורד / קישור אישי
 RSVP+מתנה-בטסט / דף אולם+ליד). הפריטים 1–4 למעלה עדיין פתוחים ודורשים אותך —
 הם חוסמים את דיוק-ההעתקה, הסליקה האמיתית והחשבוניות, לא את השלד.
+
+**עדכון 24/08/2026 (Loop C · Fable):** `/events` חובר לפורטל בדפוס #37 (ראה
+העדכון בסעיף 39-מעטפת למעלה) — `stage-portal.ps1` + rewrites מקומיים. הפריסה
+הרגילה הבאה של הפורטל תעלה את המוצר (דשבורד/קישור-אישי/דף-אולם) לאוויר תחת
+`more30.com/events`, במצב טסט מלא (חיוב live חסום בטריגר DB). פריטי הלכידה
+1–4 למעלה עדיין פתוחים — הם משפרים דיוק-העתקה וסליקה אמיתית, לא חוסמים את המוצר.
 
 ---
 

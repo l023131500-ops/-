@@ -7,6 +7,30 @@
     { "source": "/nihul/:path*", "destination": "/admin/:path*", "permanent": false },
     { "source": "/kiosk", "destination": "/kiosk/", "permanent": false }
   ],
+  "headers": [
+    {
+      "source": "/events(.*)",
+      "headers": [
+        { "key": "X-Content-Type-Options", "value": "nosniff" },
+        { "key": "Referrer-Policy", "value": "strict-origin-when-cross-origin" },
+        { "key": "X-Frame-Options", "value": "SAMEORIGIN" }
+      ]
+    },
+    {
+      "source": "/maatefet(.*)",
+      "headers": [
+        { "key": "X-Content-Type-Options", "value": "nosniff" },
+        { "key": "Referrer-Policy", "value": "strict-origin-when-cross-origin" },
+        { "key": "X-Frame-Options", "value": "SAMEORIGIN" }
+      ]
+    },
+    {
+      "source": "/maatefet/sw.js",
+      "headers": [
+        { "key": "Cache-Control", "value": "no-cache" }
+      ]
+    }
+  ],
   "rewrites": [
     { "source": "/login", "destination": "/login.html" },
     { "source": "/auth/callback", "destination": "/auth/callback.html" },
@@ -32,6 +56,22 @@
     { "source": "/bkalot-studio/admin/", "destination": "/bkalot-studio/admin.html" },
     { "source": "/bkalot-studio", "destination": "/bkalot-studio/index.html" },
     { "source": "/bkalot-studio/", "destination": "/bkalot-studio/index.html" },
+    { "source": "/events", "destination": "/events/index.html" },
+    { "source": "/events/", "destination": "/events/index.html" },
+    { "source": "/events/g", "destination": "/events/g.html" },
+    { "source": "/events/g/", "destination": "/events/g.html" },
+    { "source": "/events/hall", "destination": "/events/hall.html" },
+    { "source": "/events/hall/", "destination": "/events/hall.html" },
+    { "source": "/maatefet", "destination": "/maatefet/index.html" },
+    { "source": "/maatefet/", "destination": "/maatefet/index.html" },
+    { "source": "/maatefet/instructor", "destination": "/maatefet/instructor.html" },
+    { "source": "/maatefet/instructor/", "destination": "/maatefet/instructor.html" },
+    { "source": "/maatefet/portal", "destination": "/maatefet/portal.html" },
+    { "source": "/maatefet/portal/", "destination": "/maatefet/portal.html" },
+    { "source": "/maatefet/join", "destination": "/maatefet/join.html" },
+    { "source": "/maatefet/join/", "destination": "/maatefet/join.html" },
+    { "source": "/maatefet/admin", "destination": "/maatefet/admin.html" },
+    { "source": "/maatefet/admin/", "destination": "/maatefet/admin.html" },
     { "source": "/admin", "destination": "https://nihul-more30.vercel.app/admin" },
     { "source": "/admin/", "destination": "https://nihul-more30.vercel.app/admin/" },
     { "source": "/admin/:path*", "destination": "https://nihul-more30.vercel.app/admin/:path*" },
