@@ -4,6 +4,19 @@ import { NextRequest, NextResponse } from 'next/server';
 // compares it against the quote the user cited. The model is never
 // trusted to recall a source from memory -- only text retrieved here,
 // at request time, counts as ground truth.
+
+// Without a timeout a slow/dead Sefaria endpoint hangs this request until the
+// platform kills it, instead of failing fast like a normal upstream error.
+async function fetchWithTimeout(url: string, timeoutMs = 15000) {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
+  try {
+    return await fetch(url, { signal: controller.signal });
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
 export async function POST(req: NextRequest) {
   const body = await req.json().catch(() => null);
   const ref: string | undefined = body?.ref;
@@ -14,7 +27,18 @@ export async function POST(req: NextRequest) {
   }
 
   const url = 'https://www.sefaria.org/api/v3/texts/' + encodeURIComponent(ref);
-  const upstream = await fetch(url);
+  let upstream: Response;
+  try {
+    upstream = await fetchWithTimeout(url);
+  } catch {
+    return NextResponse.json({
+      ref,
+      status: 'missing',
+      distance: null,
+      sourceText: '',
+      sourceUrl: 'https://www.sefaria.org/' + encodeURIComponent(ref).replace(/%20/g, '_')
+    });
+  }
 
   if (!upstream.ok) {
     return NextResponse.json({

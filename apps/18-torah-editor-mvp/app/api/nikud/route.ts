@@ -14,6 +14,18 @@ import { NextRequest, NextResponse } from 'next/server';
 const NAKDAN_KEYED_URL = 'https://nakdan-5-3.loadbalancer.dicta.org.il/addnikud';
 const NAKDAN_OPEN_URL = 'https://nakdan-2-0.loadbalancer.dicta.org.il/api';
 
+// Without a timeout a slow/dead DICTA endpoint hangs this request until the
+// platform kills it, instead of failing fast like a normal upstream error.
+async function fetchWithTimeout(url: string, init: RequestInit, timeoutMs = 15000) {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
+  try {
+    return await fetch(url, { ...init, signal: controller.signal });
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
 /** nakdan-5-3: [{ word, options: [{ nikud }] }] */
 function joinKeyed(data: any): string | null {
   if (!Array.isArray(data)) return null;
@@ -59,11 +71,20 @@ export async function POST(req: NextRequest) {
     payload.keepqq = false;
   }
 
-  const upstream = await fetch(url, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(payload)
-  });
+  let upstream: Response;
+  try {
+    upstream = await fetchWithTimeout(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+  } catch (e: any) {
+    const timedOut = e?.name === 'AbortError';
+    return NextResponse.json(
+      { error: timedOut ? 'DICTA Nakdan request timed out' : 'DICTA Nakdan request failed', detail: String(e?.message || e) },
+      { status: 504 }
+    );
+  }
 
   if (!upstream.ok) {
     const errText = await upstream.text().catch(() => '');
