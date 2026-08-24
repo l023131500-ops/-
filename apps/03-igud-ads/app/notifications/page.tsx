@@ -26,6 +26,7 @@ export default function MyNotificationsPage() {
   const [notifs, setNotifs] = useState<Notification[]>([]);
   const [loading, setLoading] = useState(true);
   const [busyId, setBusyId] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   const load = async () => {
     const r = await fetch("/modaot/api/notifications");
@@ -39,11 +40,13 @@ export default function MyNotificationsPage() {
   const markRead = async (id: string) => {
     if (busyId) return;
     setBusyId(id);
+    setError(null);
     try {
-      await fetch("/modaot/api/notifications", { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id }) });
+      const res = await fetch("/modaot/api/notifications", { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id }) });
+      if (!res.ok) throw new Error();
       await load();
     } catch {
-      // ignore network error; button re-enables so the user can retry
+      setError("שגיאה בסימון ההודעה כנקראה. נסה שוב.");
     } finally {
       setBusyId(null);
     }
@@ -51,11 +54,13 @@ export default function MyNotificationsPage() {
   const markAll = async () => {
     if (busyId) return;
     setBusyId("all");
+    setError(null);
     try {
-      await fetch("/modaot/api/notifications", { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ mark_all: true }) });
+      const res = await fetch("/modaot/api/notifications", { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ mark_all: true }) });
+      if (!res.ok) throw new Error();
       await load();
     } catch {
-      // ignore network error; button re-enables so the user can retry
+      setError("שגיאה בסימון ההודעות כנקראו. נסה שוב.");
     } finally {
       setBusyId(null);
     }
@@ -73,6 +78,10 @@ export default function MyNotificationsPage() {
           </button>
         )}
       </div>
+
+      {error && (
+        <div className="mb-4 text-sm text-red-600 bg-red-50 border border-red-200 rounded px-3 py-2">{error}</div>
+      )}
 
       {loading ? (
         <div className="text-gray-500">טוען...</div>
