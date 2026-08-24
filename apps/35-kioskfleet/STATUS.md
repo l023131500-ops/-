@@ -4391,3 +4391,91 @@ to that constraint: they import only dependency-free modules (`hosts.js`,
   exists in this sandbox to confirm a kiosk's screen actually turns off at
   its configured close time and back on at open, the same constraint every
   fix in this log without a real device has hit.
+
+- **[24/08/2026, Loop A] Digital signage — idle content rotation, KIOSK_BUILD.md
+  §9 "מצב תצוגה (Digital Signage): רוטציית תוכן/מדיה כשאין אינטראקציה", was
+  entirely unbuilt, on `zol` not this tree** — every device's only idle
+  behaviour was the existing single, one-time `returnToVenue()`: after the
+  configured idle-return timeout it navigated back to the device's home link
+  once and then sat there indefinitely. There was no way for an owner to have
+  the screen rotate through a set of promotional/media pages while nobody is
+  interacting — the exact "digital signage" mode a retail/hall kiosk needs
+  between customers.
+
+  **Server**: new `signage.js` (same DB-free, pure-function shape as
+  `schedule.js`/`display.js`/`hosts.js`/`exitcode.js`, exercisable without
+  `better-sqlite3`) — `parseSignagePlaylist()` splits the console's
+  newline-separated textarea into trimmed, de-duplicated, ordered URLs;
+  `validateSignagePlaylist()` requires at least one line and rejects anything
+  that isn't an absolute `http`/`https` URL (a `javascript:` line, for
+  instance, is refused, not silently dropped); `validateSignageInterval()`
+  clamps the rotation interval to 3–3600 seconds. Three new `devices`
+  columns: `signage_enabled`, `signage_urls` (newline-separated — not CSV,
+  since URLs can legitimately contain commas in their own query strings),
+  `signage_interval_seconds` (default 15). `PATCH /devices/:id` validates
+  only when the caller actually touches one of the three fields, the same
+  conditional shape `scheduleValues` already established, and `signageValues`
+  flows into the same `UPDATE devices` statement, `publicDevice()`, and
+  `CONSOLE_DEVICE_FIELDS`. `pushConfigUpdate()` (the WS `update_config`
+  payload) and both fallback paths in `routes/agent.js` — the heartbeat
+  response's `config` object and the enrollment response's `device` object —
+  now all carry `signageEnabled`/`signageUrls`/`signageIntervalSeconds`
+  alongside the existing `adminCode`/`displayZoomPercent`/`approvedClients`,
+  so a signage config reaches a device whether it is live on the WS or
+  falling back to polling.
+
+  **Console**: a checkbox + playlist textarea + interval-seconds input in the
+  device-edit modal (visibility toggled live, same pattern the schedule
+  fields already set), and the fleet grid card now shows `📺 תצוגה: N
+  קישורים / Nש׳` when configured — the same "surface it on the card" precedent
+  the zoom badge and schedule badge already established.
+
+  **Android** (`KioskActivity.kt`): `startSignageIfEnabled()` is called only
+  from the tail of `returnToVenue()` — i.e. only on genuine idle timeout,
+  never from `switchToHome()` (an operator's own tap) or `onConfigUpdated()`
+  (a server-pushed management action, which now calls the new `stopSignage()`
+  first to avoid racing the next scheduled rotation against an intentional
+  navigation). `advanceSignage()` self-schedules via the existing
+  `mainHandler`/`Runnable` idiom every previous idle/relock feature in this
+  file already uses. **Security-relevant design choice**: each playlist URL
+  is gated through `hostAllowed(host, deviceAllowedHosts)` — the exact same
+  scope `returnToVenue()`'s own `HOME_URL` is checked against — deliberately
+  not a wider scope. Signage was kept inside the device's already-approved
+  domains rather than opening a second, unvetted way off the allow-list; a
+  URL outside that scope is skipped (not treated as a reason to stop
+  rotating, so one bad line doesn't blank the whole playlist). The touch
+  interceptor now branches: a touch while `isSignageActive` stops the
+  rotation and calls `switchToHome()` (exit to the interactive kiosk) instead
+  of counting toward the 5-corner-tap admin gesture — the same "first touch
+  only ever grants what was already approved" default §2★ה's own selection
+  dialog already documents. `onPageFinished()` no longer records a signage
+  slide into `Prefs.LAST_URL`, so a crash/OTA/reboot resumes on the device's
+  real last page, not mid-rotation on a promotional slide. New Prefs keys
+  (`SIGNAGE_ENABLED`/`SIGNAGE_URLS`/`SIGNAGE_INTERVAL`) are written silently
+  from `AgentClient`'s `update_config` handler and heartbeat parser — the
+  same "no new `CommandHandler` parameter" shape `adminCode`/
+  `approvedClients`/zoom already use — so `KioskActivity` reads them straight
+  from `Prefs` when the idle timer fires.
+
+  12 new unit tests in `signage.test.mjs` (playlist parsing incl.
+  de-duplication and non-string input, playlist validation incl. rejecting
+  empty input, non-URL lines, and non-http(s) schemes like `javascript:`,
+  interval validation incl. the exact 3/3600 boundary and non-integer
+  input), plus 2 new `devicepayload.test.mjs` fixture fields confirming the
+  three new console-facing fields pass through the allow-list unchanged.
+  `node --check` clean on every touched JS file. Full suite: 54/56 — was
+  47/49 before this round's 12 new tests; the two failures are the same
+  pre-existing `express`/`node:sqlite`-not-installed gap every prior entry in
+  this log has hit. **Kotlin is not compiler-verified**: no gradle/kotlin
+  toolchain in this sandbox, the same constraint every Android-side entry in
+  this log has hit — reviewed by hand; brace counts (104/104) and paren
+  counts (365/365) balance across the whole file after the edit.
+
+  Pushed to `l023131500-ops/zol`#`claude/what-do-you-see-gxo5tc` (`1227a99`).
+  `more30.com/kiosk/api/health` polled 3× after the push and read `200`
+  throughout. **Not verified beyond the push-landing signal, the unit tests,
+  and manual Kotlin review**: no real device exists in this sandbox to
+  configure a playlist, let a device sit idle past its timeout, and confirm
+  the screen actually starts rotating through it and stops on the first
+  touch — the same constraint every fix in this log without a real device
+  has hit.
