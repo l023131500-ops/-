@@ -3771,3 +3771,45 @@ to that constraint: they import only dependency-free modules (`hosts.js`,
   no "confirmed live" signal to poll for a Kotlin-only change — reaching a
   real device needs a new APK built and installed, which is outside what
   this container can do.
+
+- **[24/08/2026, Loop A] Any signed-in customer could enumerate device ids
+  across the whole fleet, on `zol` not this tree** — found by comparing
+  `routes/devices.js`'s own two ownership-check patterns side by side.
+  `links.js`/`enrollments.js`'s checks in the very same directory already
+  collapse "not yours" and "does not exist" into the same `404`
+  (`if (!link || link.owner_id !== req.user.id) return res.sendStatus(404)`);
+  `devices.js`'s `getOwnedDevice()` — the gate in front of `GET`/`PATCH`/
+  `DELETE /devices/:id` and `POST /devices/:id/command` — instead answered
+  `404` for a nonexistent id and `403` for one that exists but belongs to a
+  different customer. Two distinguishable status codes on an authenticated,
+  otherwise-unremarkable endpoint is exactly enough to script: walk `id=1..N`
+  and sort every response into "mine" (200), "someone else's" (403), or
+  "unused" (404) — recovering the fleet's total device count and which ids
+  are live, none of which any customer has a reason to see about anyone but
+  themselves. The client never reads the distinction — `api()` in
+  `public/js/app.js` throws the same generic message on any `!res.ok` — so
+  the two codes existed purely for whoever queried the API directly, the same
+  shape as this log's other direct-API-only findings.
+
+  Fixed by folding the ownership check into the existence check, matching the
+  pattern already used two files over in the same router:
+  ```
+  if (!device || (req.user.role !== 'admin' && device.owner_id !== req.user.id)) return { error: 404 };
+  ```
+  Admins are unaffected (the `role !== 'admin'` short-circuit already let them
+  through before this change). `node --check` clean. Full suite: 21/23 —
+  unchanged from the prior baseline; `routing.test.mjs`/`seedadmin.test.mjs`
+  fail for the same pre-existing, unrelated reasons every prior entry in this
+  log has hit (no `express`, no `node:sqlite` in this container's Node
+  20.20.2). No new test: the route depends on `db.js` → `better-sqlite3`,
+  which is not installed in this checkout, the same constraint every other
+  `routes/devices.js` change in this log has hit.
+
+  Pushed to `l023131500-ops/zol`#`claude/what-do-you-see-gxo5tc` (`c1e974d`).
+  `more30.com/kiosk/api/health` polled every ~20s for 2 minutes after the push
+  and read `200` throughout — no build-in-flight blip observed this time, the
+  same "fast/zero-downtime rebuild" case a couple of entries above this one
+  hit. **Not verified beyond the deploy-landing signal**: no test customer
+  accounts or real devices exist to script the enumeration against and
+  confirm the status codes actually collapsed in production, the same
+  constraint every REST-only fix in this log has hit.
