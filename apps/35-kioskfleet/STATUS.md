@@ -4723,3 +4723,68 @@ to that constraint: they import only dependency-free modules (`hosts.js`,
   or type a wrong maintenance code on one and confirm it actually appears
   in the list — the same constraint every fix in this log without a real
   device/browser has hit.
+
+- **[24/08/2026, Loop A] Analytics — usage counts, average on-screen time,
+  popular links, KIOSK_BUILD.md §9 "אנליטיקה: כמה שימושים, זמן ממוצע,
+  קישורים פופולריים", was entirely unbuilt, on `zol` not this tree** — the
+  only on-device navigation this system logs at all is a client switch
+  (`client_identified`, §2★ז's `IdentifyDevice`, already built in an earlier
+  entry); the initial `home_url` load at boot/enrollment has no event of its
+  own. So this scopes "usage" honestly to what is actually tracked — how
+  often a kiosk switched to a registered client's site, not total
+  screen-on time — rather than guessing at a number the system has no data
+  source for.
+
+  New dependency-free `server/src/analytics.js` (unit-tests with no
+  `better-sqlite3` installed, same convention as `alerts.js`/`hosts.js`/
+  `schedule.js`/etc): `buildSessions()` pairs each device's chronological
+  `client_identified` events into sessions with a duration to the *next*
+  event on that same device, leaving only the true last event per device
+  `durationMs: null` (ongoing/unknown) rather than guessed at — the same
+  never-guess convention `exit_code`/`schedule_*` established. Devices are
+  paired independently of each other (a session on device 1 is never
+  measured against an event on device 2). `summarizeAnalytics()` aggregates
+  into total switches, a per-client popularity ranking (count, descending),
+  and an average dwell time in seconds computed only from *completed*
+  sessions — an ongoing session must not silently count as zero and drag
+  the average down.
+
+  New `GET /api/analytics` (`routes/analytics.js`, owner-scoped exactly like
+  `GET /alerts`, `?all=1` for admins) joins `events`→`devices`→`clients` (by
+  `code` + the device's own `owner_id`, so a code collision across two
+  owners' own numbering can't cross-contaminate), and converts SQLite's
+  timezone-less `datetime('now')` strings the same way `formatAlertTime()`
+  already does client-side, since each client's last-used timestamp is
+  reported as an honest absolute time (duration math alone would not have
+  needed this — the missing offset cancels out when two such strings are
+  subtracted — but the timestamp is also surfaced directly).
+
+  **Console**: new "📊 אנליטיקה" nav item and `viewAnalytics()` — three
+  headline stats (total switches, overall average dwell time, active-client
+  count) plus a table ranking clients by usage with their average time and
+  last-used timestamp. Reuses the same `.stat-row`/`.card`/`<table>` styling
+  `viewAdmin()`/`viewAlerts()` already established, so it matches the rest
+  of the console with no new CSS.
+
+  8 new unit tests in `analytics.test.mjs` (empty input; a single ongoing
+  session; multi-event same-device pairing; two devices interleaved in time
+  paired independently; empty-summary zero/null shape; popularity ranking +
+  completed-only averaging across a mixed ongoing/completed set; a renamed
+  client reporting under its latest name). `node --check` clean on every
+  touched/added JS file (`analytics.js`, `routes/analytics.js`, `index.js`,
+  `analytics.test.mjs`, `public/js/app.js`). Full suite: 89/91 (the 2
+  failures — `routing.test.mjs`/`seedadmin.test.mjs` — are the same
+  pre-existing `express`/`better-sqlite3`-not-installed gap every prior
+  entry in this log has hit, unrelated to this change). No Android/Kotlin
+  touched by this entry.
+
+  Pushed to `l023131500-ops/zol`#`claude/what-do-you-see-gxo5tc` (`a03c099`).
+  `more30.com/kiosk/api/health` polled repeatedly through the post-push
+  redeploy (one `502` mid-rollout, then `200` and stable); `GET
+  /kiosk/api/analytics` with no auth token answered `401` (route exists,
+  auth-gated) once the deploy landed, matching `GET /kiosk/api/alerts`'s own
+  shape. **Not verified beyond that and the unit tests**: no real device and
+  no browser exist in this sandbox to click through the new "אנליטיקה" tab
+  or drive a real client-switch sequence on a device and confirm the numbers
+  it shows — the same constraint every fix in this log without a real
+  device/browser has hit.
