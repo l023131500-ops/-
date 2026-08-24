@@ -3280,3 +3280,37 @@ to that constraint: they import only dependency-free modules (`hosts.js`,
   this log has noted, unrelated to this change. **Not deployed** — same as
   every other change in this log. This closes the double-submit sweep across
   all three create-forms in this file (`#e-create`, `#c-create`, `#l-create`).
+
+- **[24/08/2026, Loop A] `userModal()`'s "לקוח חדש" (admin → new account)
+  guarded against double-submit too** — the sweep above covered the three
+  screens an owner uses; ניהול-על has a fourth create-form the same gap
+  applies to and no earlier pass had reached it, because `viewAdmin()`
+  redirects anyone but an admin away before this modal is ever opened.
+  `userModal(u)` is shared between "לקוח חדש" (`POST /admin/users`) and
+  "עריכת לקוח" (`PATCH /admin/users/:id`); the create branch has the exact
+  shape `createEnrollment()`/`#c-create`/`#l-create` already closed —
+  `#u-user`/`#u-pass`/`#u-name` stay filled until the request resolves, so a
+  second click while the first `POST` is in flight reads the same form and
+  creates a second account. It is the **worst-consequence** case of the four:
+  unlike a minted client code or an unconstrained link, a duplicate account
+  here is a duplicate *login*, and which of the two an admin then edits,
+  resets the password on, or deletes is ambiguous from the list alone. The
+  edit branch (`PATCH`) does not have this gap — it targets `u.id`, so a
+  repeated click is a harmless repeat of the same update — but the button is
+  shared, so it is guarded on both paths for one consistent control rather
+  than a conditional guard that only applies half the time. `#u-save` is now
+  disabled before the request and re-enabled in a `finally` on both the
+  success and error paths, matching `#c-create`'s shape (the modal only
+  closes on success; the `finally` covers the error path where it stays
+  open).
+
+  `node --check` on `app.js` is clean. `node --test` here still only runs
+  `seedadmin.test.mjs`, same pre-existing `node:sqlite` failure every entry in
+  this log has noted, unrelated to this change. **Not deployed** — same as
+  every other change in this log. What is left of this class after it: two
+  more admin-modal saves have no natural key of their own —
+  `resetPw()`'s `#ok` (`POST /admin/users/:id/reset-password`) and
+  `clientModal()`'s `#k-save` — but both are idempotent updates keyed by an
+  existing id (repeating either just re-applies the same value), unlike the
+  four creates above, so neither carries the duplicate-row risk this heading
+  is about.

@@ -1419,6 +1419,14 @@ function userModal(u) {
     <div class="row"><button class="btn btn-primary" id="u-save">שמירה</button><button class="btn btn-light" id="u-cancel">ביטול</button></div>`);
   $('#u-cancel', m).onclick = () => m.remove();
   $('#u-save', m).onclick = async () => {
+    // Same gap the three create-forms above had: the fields stay filled until
+    // the request resolves, so a second click while `POST /admin/users` is
+    // still in flight reads the same still-filled form and creates a second
+    // account. Unlike a client's מזהה, `username` has no server-minted
+    // fallback here — a duplicate click means a duplicate login the admin has
+    // to notice and clean up by hand.
+    const btn = $('#u-save', m);
+    btn.disabled = true;
     try {
       if (isEdit) {
         await api('/admin/users/' + u.id, { method: 'PATCH', body: JSON.stringify({ fullName: $('#u-name', m).value, deviceLimit: Number($('#u-limit', m).value), active: Number($('#u-active', m).value) }) });
@@ -1427,6 +1435,7 @@ function userModal(u) {
       }
       toast('נשמר'); m.remove(); loadUsers();
     } catch (e) { toast(e.message, false); }
+    finally { btn.disabled = false; }
   };
 }
 function resetPw(id) {
