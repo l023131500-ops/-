@@ -34,7 +34,10 @@ const AdminForums = () => {
 
   const createCategory = async () => {
     if (!form.name) return toast.error("שם פורום חובה");
+    if (busyId) return;
+    setBusyId("new-category");
     const { error } = await supabase.from("forum_categories").insert(form);
+    setBusyId(null);
     if (error) return toast.error(error.message);
     toast.success("הפורום נוצר");
     setShowNew(false);
@@ -82,13 +85,16 @@ const AdminForums = () => {
 
   const sendOfficial = async () => {
     if (!composeFor || !composeText.trim()) return;
+    if (busyId) return;
+    setBusyId("compose");
     // Need an author profile id – use any admin profile (current user's profile)
     const { data: u } = await supabase.auth.getUser();
     const { data: prof } = await supabase.from("profiles").select("id").eq("user_id", u.user!.id).maybeSingle();
-    if (!prof) return toast.error("נדרש פרופיל אדמין");
+    if (!prof) { setBusyId(null); return toast.error("נדרש פרופיל אדמין"); }
     const { error } = await supabase.from("forum_posts").insert({
       category_id: composeFor.id, author_id: prof.id, content: composeText.trim(), is_pinned: true,
     });
+    setBusyId(null);
     if (error) return toast.error(error.message);
     toast.success("פורסם בפורום");
     setComposeText(""); setComposeFor(null); load();
@@ -200,7 +206,7 @@ const AdminForums = () => {
             </div>
             <DialogFooter>
               <Button variant="outline" onClick={() => setShowNew(false)}>ביטול</Button>
-              <Button onClick={createCategory} className="bg-gradient-to-l from-secondary to-gold-dark text-secondary-foreground">צור פורום</Button>
+              <Button onClick={createCategory} disabled={busyId === "new-category"} className="bg-gradient-to-l from-secondary to-gold-dark text-secondary-foreground">{busyId === "new-category" ? "יוצר…" : "צור פורום"}</Button>
             </DialogFooter>
           </DialogContent>
         </Dialog>
@@ -211,7 +217,7 @@ const AdminForums = () => {
             <Textarea rows={6} placeholder="כתוב הודעה רשמית מטעם הניהול..." value={composeText} onChange={e => setComposeText(e.target.value)} />
             <DialogFooter>
               <Button variant="outline" onClick={() => setComposeFor(null)}>ביטול</Button>
-              <Button onClick={sendOfficial} className="bg-gradient-to-l from-secondary to-gold-dark text-secondary-foreground">פרסם ונעץ</Button>
+              <Button onClick={sendOfficial} disabled={busyId === "compose"} className="bg-gradient-to-l from-secondary to-gold-dark text-secondary-foreground">{busyId === "compose" ? "מפרסם…" : "פרסם ונעץ"}</Button>
             </DialogFooter>
           </DialogContent>
         </Dialog>
