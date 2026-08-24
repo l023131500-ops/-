@@ -358,6 +358,7 @@ export async function createAnnouncement(input: AnnouncementInput): Promise<void
     return;
   }
   const { error } = await supabase.from("announcements").insert({
+    organization_id: await getOrgId(),
     synagogue_id: input.synagogueId, title: input.title, body: input.body || null,
   });
   if (error) throw new Error(error.message);
