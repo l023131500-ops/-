@@ -111,13 +111,14 @@ app.get("/api/admin/tenant/:adminToken", async (req, res) => {
 
 app.post("/api/public/tenant/:token/message", publicLeadRateLimiter("tenant-message"), async (req, res) => {
   const { name, phone, email, subject, body } = req.body || {};
+  if (!name || !body) return res.status(400).json({ error: "שם והודעה הם שדות חובה" });
   const r = await callRpc("submit_public_lead", {
     p_token: req.params.token,
-    p_name: name || null,
+    p_name: name,
     p_phone: phone || null,
     p_email: email || null,
     p_subject: subject || null,
-    p_body: body || null,
+    p_body: body,
   });
   if (!r.ok) return res.status(500).json({ error: r.data });
   res.json({ success: r.data === true, error: r.data === true ? null : "not_found" });
