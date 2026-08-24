@@ -27,6 +27,13 @@ import {
   REFERRAL_STATUS,
 } from "@/features/clients/constants";
 import { formatILS, formatDateHe } from "@/lib/format";
+import {
+  CATEGORY_LABELS,
+  budgetLimitsQuery,
+  monthLabel,
+  monthRange,
+  summarizeMonth,
+} from "@/features/clients/finance";
 import { Button } from "@/components/ui/button";
 
 // The report is written into a window we open synchronously (popup-blocker
@@ -74,7 +81,17 @@ export function ClientReportButton({ clientId }: { clientId: string }) {
     );
     setBuilding(true);
     try {
-      const [client, family, financial, housing, vehicles, catalog, assigned, documents, media, referrals] =
+      // Cashflow window: the current month plus the two before it, so the
+      // report shows a short trend and not just a single-month snapshot.
+      const now = new Date();
+      const months = [2, 1, 0].map((back) => {
+        const d = new Date(now.getFullYear(), now.getMonth() - back, 1);
+        return { year: d.getFullYear(), month: d.getMonth() + 1 };
+      });
+      const ledgerFrom = monthRange(months[0].year, months[0].month).from;
+      const ledgerTo = monthRange(months[2].year, months[2].month).to;
+
+      const [client, family, financial, housing, vehicles, catalog, assigned, documents, media, referrals, limits] =
         await Promise.all([
           qc.fetchQuery(clientQuery(clientId)),
           qc.fetchQuery(familyQuery(clientId)),
@@ -86,9 +103,10 @@ export function ClientReportButton({ clientId }: { clientId: string }) {
           qc.fetchQuery(documentsQuery(clientId)),
           qc.fetchQuery(propertyMediaQuery(clientId)),
           qc.fetchQuery(referralsQuery(clientId)),
+          qc.fetchQuery(budgetLimitsQuery(clientId)),
         ]);
 
-      const [{ data: tenant }, { data: tasks }] = await Promise.all([
+      const [{ data: tenant }, { data: tasks }, { data: ledger }] = await Promise.all([
         supabase.from("tenants").select("name").eq("id", client.tenant_id).maybeSingle(),
         supabase
           .from("tasks")
@@ -97,7 +115,31 @@ export function ClientReportButton({ clientId }: { clientId: string }) {
           .eq("status", "open")
           .order("due_date", { ascending: true, nullsFirst: false })
           .limit(20),
+        supabase
+          .from("client_transactions")
+          .select("*")
+          .eq("client_id", clientId)
+          .gte("occurred_on", ledgerFrom)
+          .lt("occurred_on", ledgerTo)
+          .order("occurred_on"),
       ]);
+
+      // Bucket the ledger rows per month; occurred_on is YYYY-MM-DD so plain
+      // string comparison against the month bounds is exact.
+      const cashflowMonths = months.map((m) => {
+        const { from, to } = monthRange(m.year, m.month);
+        const rows = (ledger ?? []).filter((t) => t.occurred_on >= from && t.occurred_on < to);
+        return { ...m, rows, summary: summarizeMonth(rows) };
+      });
+      const currentMonth = cashflowMonths[cashflowMonths.length - 1];
+      const hasCashflow = (ledger ?? []).length > 0 || limits.length > 0;
+      // Budget meters: every category that has a ceiling or actual spending this month.
+      const budgetRows = [
+        ...limits.map((l) => ({ category: l.category, limit: Number(l.monthly_limit) })),
+        ...Object.keys(currentMonth.summary.expenseByCategory)
+          .filter((c) => !limits.some((l) => l.category === c))
+          .map((category) => ({ category, limit: null as number | null })),
+      ].map((r) => ({ ...r, spent: currentMonth.summary.expenseByCategory[r.category] ?? 0 }));
 
       // Sign up to 8 property photos so the report shows the property itself.
       const photos = media.filter((m) => m.media_type === "photo").slice(0, 8);
@@ -215,6 +257,7 @@ export function ClientReportButton({ clientId }: { clientId: string }) {
     <div class="chip"><div class="num">${counts.to_check}</div><div class="lbl">ממתינות לבדיקה</div></div>
     <div class="chip"><div class="num">${documents.length}</div><div class="lbl">מסמכים בתיק</div></div>
     ${(tasks ?? []).length ? `<div class="chip"><div class="num">${(tasks ?? []).length}</div><div class="lbl">משימות פתוחות</div></div>` : ""}
+    ${hasCashflow ? `<div class="chip"><div class="num" style="color:${currentMonth.summary.net >= 0 ? "#047857" : "#b91c1c"}">${esc(formatILS(currentMonth.summary.net))}</div><div class="lbl">יתרה — ${esc(monthLabel(currentMonth.year, currentMonth.month))}</div></div>` : ""}
   </div>
   <div class="bar"><div style="width:${checkedPct}%"></div></div>
 
@@ -251,6 +294,38 @@ export function ClientReportButton({ clientId }: { clientId: string }) {
     ${row("פנסיה", financial.has_pension ? `יש${financial.pension_details ? ` — ${esc(financial.pension_details)}` : ""}` : "אין")}
     ${row("ביטוח חיים", financial.has_life_insurance ? `יש${financial.insurance_details ? ` — ${esc(financial.insurance_details)}` : ""}` : "אין")}
   </table>` : ""}
+
+  ${hasCashflow ? `
+  <h2 class="section">תזרים חודשי</h2>
+  <table class="list">
+    <tr><th>חודש</th><th>הכנסות</th><th>הוצאות</th><th>יתרה</th><th>תנועות</th></tr>
+    ${cashflowMonths.map((m) => `<tr>
+      <td>${esc(monthLabel(m.year, m.month))}</td>
+      <td style="color:#047857">${esc(formatILS(m.summary.income))}</td>
+      <td style="color:#b91c1c">${esc(formatILS(m.summary.expense))}</td>
+      <td style="color:${m.summary.net >= 0 ? "#047857" : "#b91c1c"};font-weight:600">${esc(formatILS(m.summary.net))}</td>
+      <td>${m.rows.length}</td>
+    </tr>`).join("")}
+  </table>
+  ${budgetRows.length ? `
+  <div class="notes" style="margin:10px 0 4px;font-weight:600;color:#334155">הוצאות ${esc(monthLabel(currentMonth.year, currentMonth.month))} לפי קטגוריה${limits.length ? " — מול תקרות התקציב" : ""}</div>
+  <table class="list">
+    <tr><th>קטגוריה</th><th style="width:130px">הוצאה בפועל</th><th style="width:130px">תקרה חודשית</th><th style="width:170px">ניצול</th></tr>
+    ${budgetRows.map((b) => {
+      const pct = b.limit && b.limit > 0 ? Math.round((b.spent / b.limit) * 100) : null;
+      const over = b.limit !== null && b.spent > b.limit;
+      return `<tr>
+      <td>${esc(CATEGORY_LABELS[b.category] ?? b.category)}</td>
+      <td>${esc(formatILS(b.spent))}</td>
+      <td>${b.limit === null ? "—" : esc(formatILS(b.limit))}</td>
+      <td>${pct === null ? "—" : `<div style="display:flex;align-items:center;gap:6px">
+        <div class="bar" style="flex:1;margin-top:0"><div style="width:${Math.min(100, pct)}%;background:${over ? "#dc2626" : "#1d4ed8"}"></div></div>
+        <span style="font-size:11px;color:${over ? "#b91c1c" : "#64748b"};white-space:nowrap">${pct}%${over ? " · חריגה" : ""}</span>
+      </div>`}</td>
+    </tr>`;
+    }).join("")}
+  </table>` : ""}
+  <div class="notes" style="margin-top:6px">התזרים כולל תנועות שנרשמו על ידי הצוות, הלקוח באזור האישי והקו הטלפוני.</div>` : ""}
 
   ${housing ? `
   <h2 class="section">דיור ונכסים</h2>
