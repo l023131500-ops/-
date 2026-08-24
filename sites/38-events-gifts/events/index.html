@@ -150,6 +150,7 @@ td .pickbox{width:auto;margin:0;accent-color:var(--gold)}
       <div class="card feature"><b>צ'ק-אין בכניסה</b><p>סימון הגעה בפועל ביום האירוע — ספירה חיה של מי שכבר בפנים.</p></div>
       <div class="card feature"><b>סידורי הושבה</b><p>שולחנות, קיבולות והושבת מוזמנים — השולחן מופיע בכרטיס הכניסה, והשער מכריז עליו בסריקה.</p></div>
       <div class="card feature"><b>תקציב אירוע</b><p>כל ההוצאות מול הכנסות המתנות בזמן אמת: משוער מול מחיר סגור, מה שולם, ומה המאזן — האם המתנות מכסות את האירוע.</p></div>
+      <div class="card feature"><b>מדריך ספקים</b><p>צלם, תזמורת, קייטרינג — ספקים מומלצים לפי קטגוריה, ישר מתוך התקציב: הוספה כסעיף בלחיצה או פנייה דרך הפלטפורמה.</p></div>
       <div class="card feature"><b>ארנקים ועמלות</b><p>כל מתנה מתפצלת אוטומטית: לבעל האירוע, לפלטפורמה, ולאולם אם רלוונטי. שקוף לחלוטין.</p></div>
       <div class="card feature"><b>בלי לגעת בכרטיס</b><p>הסליקה תמיד אצל ספק מוסמך (נדרים פלוס / PayMe). הפלטפורמה לא רואה מספרי כרטיס — לעולם.</p></div>
     </div>
@@ -424,6 +425,26 @@ td .pickbox{width:auto;margin:0;accent-color:var(--gold)}
         <tbody></tbody>
       </table>
       </div>
+
+      <h3 style="margin-top:22px">📒 מדריך הספקים <span class="muted">— ספקים מהפלטפורמה, ישר לתקציב</span></h3>
+      <p class="muted">בוחרים קטגוריה, מוסיפים ספק כסעיף בתקציב בלחיצה אחת — או משאירים פנייה דרך הפלטפורמה והספק חוזר אליכם.</p>
+      <div class="rowline" style="justify-content:flex-start">
+        <select id="vdCat" style="width:auto;margin:0">
+          <option value="">כל הקטגוריות</option>
+          <option value="venue">אולם ומקום</option>
+          <option value="catering">קייטרינג ואוכל</option>
+          <option value="music">מוזיקה ותזמורת</option>
+          <option value="photography">צילום</option>
+          <option value="clothing">לבוש</option>
+          <option value="design">עיצוב ופרחים</option>
+          <option value="transport">הסעות</option>
+          <option value="ceremony">טקס ורבנות</option>
+          <option value="other">אחר</option>
+        </select>
+        <button class="btn small" id="vdLoad">הצגת ספקים</button>
+      </div>
+      <div id="vdErr"></div>
+      <div class="grid c3" id="vdList" style="margin-top:10px"></div>
     </div>
 
     <!-- my halls -->
@@ -497,6 +518,67 @@ td .pickbox{width:auto;margin:0;accent-color:var(--gold)}
       <div style="overflow-x:auto">
       <table id="admRevTable">
         <thead><tr><th>חודש</th><th>מתנות</th><th>סה"כ נאסף</th><th>לבעלי האירועים</th><th>עמלת פלטפורמה</th><th>לאולמות</th></tr></thead>
+        <tbody></tbody>
+      </table>
+      </div>
+
+      <h3 style="margin-top:22px">מדריך הספקים <span class="muted" id="admVendorCount"></span></h3>
+      <p class="muted">הדירקטורי שבעלי האירועים רואים בתקציב שלהם — כאן מוסיפים, עורכים ומסתירים ספקים.
+        פנייה דרך הפלטפורמה נרשמת כליד לספק — זה ערוץ ההכנסה של הדירקטורי.</p>
+      <div class="grid c3">
+        <div>
+          <label for="avName">שם הספק *</label>
+          <input id="avName" maxlength="140" />
+        </div>
+        <div>
+          <label for="avCat">קטגוריה</label>
+          <select id="avCat">
+            <option value="venue">אולם ומקום</option>
+            <option value="catering">קייטרינג ואוכל</option>
+            <option value="music">מוזיקה ותזמורת</option>
+            <option value="photography" selected>צילום</option>
+            <option value="clothing">לבוש</option>
+            <option value="design">עיצוב ופרחים</option>
+            <option value="transport">הסעות</option>
+            <option value="ceremony">טקס ורבנות</option>
+            <option value="other">אחר</option>
+          </select>
+        </div>
+        <div>
+          <label for="avCity">עיר</label>
+          <input id="avCity" maxlength="80" />
+        </div>
+        <div>
+          <label for="avPhone">טלפון</label>
+          <input id="avPhone" style="direction:ltr" maxlength="30" />
+        </div>
+        <div>
+          <label for="avPrice">מחיר החל מ- (₪)</label>
+          <input id="avPrice" type="number" min="0" />
+        </div>
+        <div>
+          <label for="avSite">אתר (לא חובה)</label>
+          <input id="avSite" style="direction:ltr" maxlength="300" />
+        </div>
+      </div>
+      <label for="avDesc">תיאור קצר לבעלי האירועים</label>
+      <textarea id="avDesc" maxlength="1000"></textarea>
+      <div id="avErr"></div>
+      <div class="rowline" style="justify-content:flex-start">
+        <button class="btn small" id="avSave">+ הוספת ספק</button>
+        <button class="btn ghost small" id="avCancel" hidden>ביטול עריכה</button>
+      </div>
+      <div style="overflow-x:auto;margin-top:10px">
+      <table id="admVendorsTable">
+        <thead><tr><th>ספק</th><th>קטגוריה</th><th>עיר</th><th>טלפון</th><th>החל מ-</th><th>לידים</th><th>סטטוס</th><th></th></tr></thead>
+        <tbody></tbody>
+      </table>
+      </div>
+
+      <h3 style="margin-top:22px">פניות לספקים <span class="muted" id="admVLeadCount"></span></h3>
+      <div style="overflow-x:auto">
+      <table id="admVLeadsTable">
+        <thead><tr><th>תאריך</th><th>ספק</th><th>פונה</th><th>טלפון</th><th>אירוע</th><th>הערה</th><th>סטטוס</th></tr></thead>
         <tbody></tbody>
       </table>
       </div>
@@ -611,22 +693,6 @@ function renderThemePick() {
     </button>`).join('');
   for (const b of $('themePick').querySelectorAll('[data-theme]'))
     b.addEventListener('click', () => { inviteTheme = b.dataset.theme; renderThemePick(); });
-}
-
-// ---------- boot ----------
-const { data: sess } = await sb.auth.getSession();
-$('loginBtn').href = 'https://more30.com/login?from=' + encodeURIComponent('https://more30.com/events');
-$('loading').hidden = true;
-if (!sess?.session) {
-  $('landing').hidden = false;
-} else {
-  const email = sess.session.user.email || '';
-  $('userChip').textContent = email;
-  $('userChip').hidden = false;
-  $('logoutBtn').hidden = false;
-  $('app').hidden = false;
-  $('helloName').textContent = (sess.session.user.user_metadata?.full_name || email.split('@')[0]);
-  await refreshMe();
 }
 
 $('logoutBtn').addEventListener('click', () => guarded($('logoutBtn'), 'logout', async () => {
@@ -1376,6 +1442,75 @@ $('bgExport').addEventListener('click', () => {
   URL.revokeObjectURL(a.href);
 });
 
+// ---------- vendor directory (owner side) ----------
+let VENDORS = [];
+async function loadVendors() {
+  $('vdErr').innerHTML = '';
+  try {
+    VENDORS = await rpc('evg_vendors_list', { p_category: $('vdCat').value || null }) || [];
+  } catch (e) { $('vdErr').innerHTML = '<div class="err">' + esc(e.message) + '</div>'; return; }
+  $('vdList').innerHTML = VENDORS.length === 0
+    ? '<p class="muted">אין עדיין ספקים בקטגוריה הזו — המדריך מתמלא בהדרגה על ידי הפלטפורמה.</p>'
+    : VENDORS.map((v) => {
+      const wa = waPhone(v.phone);
+      return `
+      <div class="card">
+        <b>${esc(v.name)}</b>
+        <div class="muted">${CAT_LABEL[v.category] || ''}${v.city ? ' · ' + esc(v.city) : ''}${v.price_from_agorot != null ? ' · החל מ-' + shekel(v.price_from_agorot) : ''}</div>
+        ${v.description ? '<div class="muted" style="margin-top:4px">' + esc(v.description) + '</div>' : ''}
+        ${v.website ? '<div style="margin-top:4px;direction:ltr;text-align:right"><a class="muted" href="' + esc(v.website) + '" target="_blank" rel="noopener">🌐 לאתר</a></div>' : ''}
+        <div class="rowline" style="justify-content:flex-start;margin-top:8px;flex-wrap:wrap">
+          <button class="btn small" data-vd-add="${v.id}" title="נפתח כסעיף הוצאה בתקציב, עם פרטי הספק">➕ לתקציב</button>
+          <button class="btn ghost small" data-vd-lead="${v.id}">✉ השארת פנייה</button>
+          ${wa ? '<a class="btn ghost small" target="_blank" rel="noopener" href="https://wa.me/' + wa + '">💬 וואטסאפ</a>' : ''}
+        </div>
+      </div>`;
+    }).join('');
+
+  for (const b of $('vdList').querySelectorAll('[data-vd-add]'))
+    b.addEventListener('click', () => guarded(b, 'vdadd' + b.dataset.vdAdd, async () => {
+      const v = VENDORS.find((x) => x.id === b.dataset.vdAdd);
+      if (!v || !CURRENT_EVENT) return;
+      try {
+        await rpc('evg_expense_add', {
+          p_event_id: CURRENT_EVENT.event.id,
+          p_name: v.name,
+          p_category: v.category,
+          p_planned_agorot: v.price_from_agorot || 0,
+          p_vendor_name: v.name,
+          p_vendor_phone: v.phone || null,
+        });
+        $('vdErr').innerHTML = '<div class="ok-note">"' + esc(v.name) + '" נוסף לתקציב — המחיר המשוער הוא מחיר ה"החל מ-" של הספק, אפשר לעדכן בטבלה.</div>';
+        await openEvent(CURRENT_EVENT.event.id, { scroll: false, refreshInvite: false });
+      } catch (e) { $('vdErr').innerHTML = '<div class="err">' + esc(e.message) + '</div>'; }
+    }));
+  for (const b of $('vdList').querySelectorAll('[data-vd-lead]'))
+    b.addEventListener('click', () => guarded(b, 'vdlead' + b.dataset.vdLead, async () => {
+      const v = VENDORS.find((x) => x.id === b.dataset.vdLead);
+      if (!v) return;
+      const name = prompt('שם לפנייה אל "' + v.name + '":', $('helloName').textContent || '');
+      if (name === null || !name.trim()) return;
+      const phone = prompt('טלפון לחזרה:');
+      if (phone === null || phone.trim().length < 3) return;
+      const note = prompt('כמה מילים על מה שאתם מחפשים (לא חובה):') || '';
+      try {
+        await rpc('evg_vendor_lead_create', {
+          p_vendor_id: v.id,
+          p_full_name: name.trim(),
+          p_phone: phone.trim(),
+          p_note: note.trim() || null,
+          p_event_id: CURRENT_EVENT ? CURRENT_EVENT.event.id : null,
+        });
+        $('vdErr').innerHTML = '<div class="ok-note">הפנייה נשלחה דרך הפלטפורמה — הספק יחזור אליכם.</div>';
+      } catch (e) { $('vdErr').innerHTML = '<div class="err">' + esc(e.message) + '</div>'; }
+    }));
+}
+$('vdLoad').addEventListener('click', () => guarded($('vdLoad'), 'vdLoad', loadVendors));
+$('vdCat').addEventListener('change', () => {
+  // auto-refresh only once the list is already open
+  if ($('vdList').innerHTML) guarded($('vdLoad'), 'vdLoad', loadVendors);
+});
+
 $('invSave').addEventListener('click', () => guarded($('invSave'), 'invSave', async () => {
   $('invErr').innerHTML = '';
   if (!CURRENT_EVENT) return;
@@ -1572,13 +1707,15 @@ async function renderAdmin() {
   if (!ME?.is_super_admin) { $('adminPanel').hidden = true; return; }
   $('adminPanel').hidden = false;
   $('admErr').innerHTML = '';
-  let ov, halls, evs, rev;
+  let ov, halls, evs, rev, vend, vleads;
   try {
-    [ov, halls, evs, rev] = await Promise.all([
+    [ov, halls, evs, rev, vend, vleads] = await Promise.all([
       rpc('evg_admin_overview'),
       rpc('evg_admin_halls_list'),
       rpc('evg_admin_events_list', { p_limit: 100, p_offset: 0 }),
       rpc('evg_admin_revenue_report', { p_months: 12 }),
+      rpc('evg_admin_vendors_list'),
+      rpc('evg_admin_vendor_leads_list'),
     ]);
   } catch (e) {
     $('admErr').innerHTML = '<div class="err">' + esc(e.message) + '</div>';
@@ -1651,9 +1788,125 @@ async function renderAdmin() {
       <td><b>${shekel(r.platform_agorot)}</b></td>
       <td>${shekel(r.hall_agorot)}</td>
     </tr>`).join('') || '<tr><td colspan="6" class="muted">עדיין לא נרשמו מתנות — הדוח יתמלא מהמתנה הראשונה.</td></tr>';
+
+  // --- vendor directory curation ---
+  ADM_VENDORS = vend || [];
+  $('admVendorCount').textContent = '(' + ADM_VENDORS.length + ')';
+  $('admVendorsTable').querySelector('tbody').innerHTML = ADM_VENDORS.map((v) => `
+    <tr>
+      <td><b>${esc(v.name)}</b>${v.description ? '<div class="muted">' + esc(v.description) + '</div>' : ''}</td>
+      <td class="muted">${CAT_LABEL[v.category] || ''}</td>
+      <td class="muted">${esc(v.city || '')}</td>
+      <td class="muted" style="direction:ltr;text-align:right">${esc(v.phone || '')}</td>
+      <td>${v.price_from_agorot != null ? shekel(v.price_from_agorot) : '—'}</td>
+      <td>${v.leads_new ? '<span class="pill new">' + v.leads_new + ' חדשים</span> ' : ''}<span class="muted">${v.leads_total} סה"כ</span></td>
+      <td>${v.published ? '<span class="pill yes">מוצג</span>' : '<span class="pill pending">מוסתר</span>'}</td>
+      <td style="white-space:nowrap">
+        <button class="btn ghost small" data-av-edit="${v.id}" title="עריכה בטופס למעלה">✎</button>
+        <button class="btn ghost small" data-av-pub="${v.id}">${v.published ? 'הסתרה' : 'הצגה'}</button>
+        <button class="btn danger small" data-av-del="${v.id}">✕</button>
+      </td>
+    </tr>`).join('') || '<tr><td colspan="8" class="muted">אין ספקים במדריך עדיין — מוסיפים למעלה את הראשון.</td></tr>';
+
+  const avtb = $('admVendorsTable').querySelector('tbody');
+  for (const b of avtb.querySelectorAll('[data-av-edit]'))
+    b.addEventListener('click', () => {
+      const v = ADM_VENDORS.find((x) => x.id === b.dataset.avEdit);
+      if (!v) return;
+      admVendorEdit = v.id;
+      $('avName').value = v.name;
+      $('avCat').value = v.category;
+      $('avCity').value = v.city || '';
+      $('avPhone').value = v.phone || '';
+      $('avPrice').value = v.price_from_agorot != null ? Math.round(v.price_from_agorot / 100) : '';
+      $('avSite').value = v.website || '';
+      $('avDesc').value = v.description || '';
+      $('avSave').textContent = '✓ עדכון "' + v.name + '"';
+      $('avCancel').hidden = false;
+      $('avName').focus();
+    });
+  for (const b of avtb.querySelectorAll('[data-av-pub]'))
+    b.addEventListener('click', () => guarded(b, 'avpub' + b.dataset.avPub, async () => {
+      const v = ADM_VENDORS.find((x) => x.id === b.dataset.avPub);
+      if (!v) return;
+      try {
+        await rpc('evg_admin_vendor_upsert', {
+          p_id: v.id, p_name: v.name, p_category: v.category,
+          p_city: v.city, p_phone: v.phone, p_description: v.description,
+          p_price_from_agorot: v.price_from_agorot, p_website: v.website,
+          p_published: !v.published,
+        });
+        await renderAdmin();
+      } catch (e) { $('avErr').innerHTML = '<div class="err">' + esc(e.message) + '</div>'; }
+    }));
+  for (const b of avtb.querySelectorAll('[data-av-del]'))
+    b.addEventListener('click', () => guarded(b, 'avdel' + b.dataset.avDel, async () => {
+      if (!confirm('למחוק את הספק מהמדריך? גם הפניות אליו יימחקו.')) return;
+      try {
+        await rpc('evg_admin_vendor_delete', { p_vendor_id: b.dataset.avDel });
+        if (admVendorEdit === b.dataset.avDel) avFormReset();
+        await renderAdmin();
+      } catch (e) { $('avErr').innerHTML = '<div class="err">' + esc(e.message) + '</div>'; }
+    }));
+
+  const newLeads = (vleads || []).filter((l) => l.status === 'new').length;
+  $('admVLeadCount').textContent = '(' + (vleads || []).length + (newLeads ? ' · ' + newLeads + ' חדשים' : '') + ')';
+  $('admVLeadsTable').querySelector('tbody').innerHTML = (vleads || []).map((l) => `
+    <tr>
+      <td class="muted">${new Date(l.created_at).toLocaleDateString('he-IL')}</td>
+      <td><b>${esc(l.vendor_name)}</b><div class="muted">${CAT_LABEL[l.vendor_category] || ''}</div></td>
+      <td>${esc(l.full_name)}${l.requester_email ? '<div class="muted" style="direction:ltr;text-align:right">' + esc(l.requester_email) + '</div>' : ''}</td>
+      <td style="direction:ltr;text-align:right">${esc(l.phone)}</td>
+      <td class="muted">${esc(l.event_title || '')}</td>
+      <td class="muted">${esc(l.note || '')}</td>
+      <td>
+        <select data-vlead="${l.id}" style="margin:0;width:auto">
+          ${['new','contacted','closed'].map((s) => '<option value="' + s + '"' + (l.status === s ? ' selected' : '') + '>' + LEAD_LABEL[s] + '</option>').join('')}
+        </select>
+      </td>
+    </tr>`).join('') || '<tr><td colspan="7" class="muted">אין פניות לספקים עדיין.</td></tr>';
+  for (const sel of $('admVLeadsTable').querySelectorAll('[data-vlead]'))
+    sel.addEventListener('change', () => guarded(sel, 'vlead' + sel.dataset.vlead, async () => {
+      try {
+        await rpc('evg_admin_vendor_lead_status', { p_lead_id: sel.dataset.vlead, p_status: sel.value });
+        await renderAdmin();
+      } catch (e) { $('admErr').innerHTML = '<div class="err">' + esc(e.message) + '</div>'; }
+    }));
 }
 
 $('admRefresh').addEventListener('click', () => guarded($('admRefresh'), 'admRefresh', renderAdmin));
+
+// vendor add/edit form (super-admin)
+let admVendorEdit = null;
+let ADM_VENDORS = [];
+function avFormReset() {
+  admVendorEdit = null;
+  for (const id of ['avName', 'avCity', 'avPhone', 'avPrice', 'avSite', 'avDesc']) $(id).value = '';
+  $('avSave').textContent = '+ הוספת ספק';
+  $('avCancel').hidden = true;
+}
+$('avCancel').addEventListener('click', avFormReset);
+$('avSave').addEventListener('click', () => guarded($('avSave'), 'avSave', async () => {
+  $('avErr').innerHTML = '';
+  const name = $('avName').value.trim();
+  if (!name) { $('avErr').innerHTML = '<div class="err">שם הספק חובה.</div>'; return; }
+  const price = parseFloat($('avPrice').value.replace(',', '.'));
+  try {
+    await rpc('evg_admin_vendor_upsert', {
+      p_id: admVendorEdit,
+      p_name: name,
+      p_category: $('avCat').value,
+      p_city: $('avCity').value.trim() || null,
+      p_phone: $('avPhone').value.trim() || null,
+      p_description: $('avDesc').value.trim() || null,
+      p_price_from_agorot: price > 0 ? Math.round(price * 100) : null,
+      p_website: $('avSite').value.trim() || null,
+      p_published: true,
+    });
+    avFormReset();
+    await renderAdmin();
+  } catch (e) { $('avErr').innerHTML = '<div class="err">' + esc(e.message) + '</div>'; }
+}));
 
 // ---------- halls ----------
 function renderHalls() {
@@ -1729,6 +1982,26 @@ async function openLeads(hallId, name) {
       await rpc('evg_hall_lead_status', { p_lead_id: sel.dataset.lead, p_status: sel.value });
       await refreshMe();
     }));
+}
+
+// ---------- boot ----------
+// Runs last on purpose: refreshMe() → renderAdmin() reads consts/lets declared
+// throughout the module, and a top-level await earlier in the file would hit
+// them while still in the temporal dead zone (a super-admin login crashed on
+// first render when this block sat above the admin-console declarations).
+const { data: sess } = await sb.auth.getSession();
+$('loginBtn').href = 'https://more30.com/login?from=' + encodeURIComponent('https://more30.com/events');
+$('loading').hidden = true;
+if (!sess?.session) {
+  $('landing').hidden = false;
+} else {
+  const email = sess.session.user.email || '';
+  $('userChip').textContent = email;
+  $('userChip').hidden = false;
+  $('logoutBtn').hidden = false;
+  $('app').hidden = false;
+  $('helloName').textContent = (sess.session.user.user_metadata?.full_name || email.split('@')[0]);
+  await refreshMe();
 }
 </script>
 </body>
