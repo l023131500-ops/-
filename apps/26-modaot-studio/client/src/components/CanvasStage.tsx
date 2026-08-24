@@ -12,6 +12,7 @@ import { Text as KonvaTextShape } from "konva/lib/shapes/Text";
 import type { TemplateDoc, AnyLayer, TextLayer, ImageLayer, ShapeLayer, DecorationLayer } from "@shared/layers";
 import { fitText, wrapText } from "@/lib/autofit";
 import { ORNAMENTS, CORNER_ORNAMENT_PATH } from "@/lib/ornaments";
+import { patternTile, hexToRgba } from "@/lib/backgroundLibrary";
 
 interface Props {
   doc: TemplateDoc;
@@ -25,6 +26,41 @@ interface Props {
 }
 
 // רקע: solid / gradient / pattern / image
+// שכבת-מרקם מעל צבע/גרדיאנט — כל ארבעת ערכי ה-pattern שהסכמה מכריזה מרונדרים
+// בפועל (עד עכשיו רק vignette צויר, והשלושה האחרים נבלעו בשקט). הווינייטה
+// נשארה בדיוק באותם פרמטרים; glow הוא היפוכה (מרכז מואר בצבע patternColor);
+// linen/subtle_damask מרוצפים מאריח פרוצדורלי משותף (lib/backgroundLibrary.ts).
+function PatternOverlay({ doc }: { doc: TemplateDoc }) {
+  const bg = doc.background;
+  const p = bg.pattern;
+  if (!p || p === "none") return null;
+  const cx = doc.width / 2, cy = doc.height / 2;
+  const len = Math.max(doc.width, doc.height);
+  if (p === "vignette") {
+    return (
+      <Rect x={0} y={0} width={doc.width} height={doc.height} listening={false}
+        fillRadialGradientStartPoint={{ x: cx, y: cy }} fillRadialGradientEndPoint={{ x: cx, y: cy }}
+        fillRadialGradientStartRadius={len * 0.2} fillRadialGradientEndRadius={len * 0.62}
+        fillRadialGradientColorStops={[0, "rgba(0,0,0,0)", 1, "rgba(0,0,0,0.35)"]} />
+    );
+  }
+  if (p === "radial_glow") {
+    const glow = bg.patternColor ?? "#C9A227";
+    return (
+      <Rect x={0} y={0} width={doc.width} height={doc.height} listening={false}
+        fillRadialGradientStartPoint={{ x: cx, y: cy * 0.85 }} fillRadialGradientEndPoint={{ x: cx, y: cy * 0.85 }}
+        fillRadialGradientStartRadius={0} fillRadialGradientEndRadius={len * 0.75}
+        fillRadialGradientColorStops={[0, hexToRgba(glow, 0.3), 1, hexToRgba(glow, 0)]} />
+    );
+  }
+  // linen / subtle_damask — צבע ברירת המחדל תלוי-בהירות כבר אפוי באלפא של האריח
+  const tile = patternTile(p, bg.patternColor ?? "#C9A227");
+  return (
+    <Rect x={0} y={0} width={doc.width} height={doc.height} listening={false}
+      fillPatternImage={tile as unknown as HTMLImageElement} fillPatternRepeat="repeat" />
+  );
+}
+
 function Background({ doc }: { doc: TemplateDoc }) {
   const bg = doc.background;
   const [img] = useImage(bg.type === "image" && bg.src ? bg.src : "", "anonymous");
@@ -45,16 +81,16 @@ function Background({ doc }: { doc: TemplateDoc }) {
           fillLinearGradientColorStops={[0, bg.gradient.from, 1, bg.gradient.to]}
           listening={false}
         />
-        {bg.pattern === "vignette" && (
-          <Rect x={0} y={0} width={doc.width} height={doc.height} listening={false}
-            fillRadialGradientStartPoint={{ x: cx, y: cy }} fillRadialGradientEndPoint={{ x: cx, y: cy }}
-            fillRadialGradientStartRadius={len * 0.2} fillRadialGradientEndRadius={len * 0.62}
-            fillRadialGradientColorStops={[0, "rgba(0,0,0,0)", 1, "rgba(0,0,0,0.35)"]} />
-        )}
+        <PatternOverlay doc={doc} />
       </>
     );
   }
-  return <Rect x={0} y={0} width={doc.width} height={doc.height} fill={bg.color ?? "#ffffff"} listening={false} />;
+  return (
+    <>
+      <Rect x={0} y={0} width={doc.width} height={doc.height} fill={bg.color ?? "#ffffff"} listening={false} />
+      <PatternOverlay doc={doc} />
+    </>
+  );
 }
 
 // שכבת טקסט עם autoFit

@@ -6,6 +6,7 @@
 import { jsPDF } from "jspdf";
 import type Konva from "konva";
 import type { TemplateDoc, AnyLayer, TextLayer, ImageLayer, ShapeLayer, DecorationLayer } from "@shared/layers";
+import { LINEN_TILE, DAMASK_TILE } from "@/lib/backgroundLibrary";
 
 // מייצא את ה-Stage ל-dataURL ברזולוציה מלאה (מפצה על ה-scale של התצוגה)
 export function stageToDataURL(stage: Konva.Stage, fullWidth: number): string {
@@ -138,20 +139,73 @@ function decorationNodeToSVG(l: DecorationLayer): string {
   return `<g ${commonAttrs(l)} data-layer-id="${esc(l.id)}" data-decoration-kind="${esc(l.kind)}"><rect x="${l.x}" y="${l.y}" width="${l.width}" height="${l.height ?? l.width}" fill="none" stroke="${esc(l.fill)}" stroke-width="1" stroke-dasharray="4,3"/><text x="${l.x + 4}" y="${l.y + 12}" font-size="10" fill="${esc(l.fill)}">${esc(l.kind)}</text></g>`;
 }
 
+// שכבת-המרקם של הרקע בגרסת SVG — אותם ארבעה דפוסים שה-CanvasStage מצייר
+// (וינייטה/זוהר כרדיאל, פשתן/דמשק כ-<pattern> באותם ממדי אריח ואותן שקיפויות),
+// כדי שייצוא הפיגמה ייראה כמו הבמה ולא יאבד את המרקם בשקט.
+function backgroundPatternSVG(doc: TemplateDoc): { defs: string; body: string } {
+  const bg = doc.background;
+  const p = bg.pattern;
+  if (!p || p === "none") return { defs: "", body: "" };
+  const w = doc.width, h = doc.height;
+  const len = Math.max(w, h);
+  const cover = (fill: string) => `<rect x="0" y="0" width="${w}" height="${h}" fill="${fill}"/>`;
+  if (p === "vignette") {
+    // רדיוס-פנים len*0.2 מתוך רדיוס-חוץ len*0.62 — כמו ב-Konva. שקיפויות דרך
+    // stop-opacity/stroke-opacity (לא rgba בתוך המאפיין) — SVG 1.1 נקי לפיגמה.
+    const inner = ((0.2 / 0.62) * 100).toFixed(1);
+    return {
+      defs: `<radialGradient id="bg_vig" gradientUnits="userSpaceOnUse" cx="${w / 2}" cy="${h / 2}" r="${len * 0.62}">` +
+        `<stop offset="0%" stop-color="#000000" stop-opacity="0"/><stop offset="${inner}%" stop-color="#000000" stop-opacity="0"/><stop offset="100%" stop-color="#000000" stop-opacity="0.35"/></radialGradient>`,
+      body: cover("url(#bg_vig)"),
+    };
+  }
+  if (p === "radial_glow") {
+    const glow = esc(bg.patternColor ?? "#C9A227");
+    return {
+      defs: `<radialGradient id="bg_glow" gradientUnits="userSpaceOnUse" cx="${w / 2}" cy="${(h / 2) * 0.85}" r="${len * 0.75}">` +
+        `<stop offset="0%" stop-color="${glow}" stop-opacity="0.3"/><stop offset="100%" stop-color="${glow}" stop-opacity="0"/></radialGradient>`,
+      body: cover("url(#bg_glow)"),
+    };
+  }
+  const color = esc(bg.patternColor ?? "#C9A227");
+  if (p === "linen") {
+    const s = LINEN_TILE;
+    return {
+      defs: `<pattern id="bg_linen" patternUnits="userSpaceOnUse" width="${s}" height="${s}">` +
+        `<path d="M0 0.5H${s}M0.5 0V${s}" stroke="${color}" stroke-opacity="0.1" stroke-width="1"/>` +
+        `<path d="M0 ${s / 2 + 0.5}H${s}M${s / 2 + 0.5} 0V${s}" stroke="${color}" stroke-opacity="0.05" stroke-width="1"/></pattern>`,
+      body: cover("url(#bg_linen)"),
+    };
+  }
+  // subtle_damask
+  const s = DAMASK_TILE, c = s / 2;
+  const corners = [[0, 0], [s, 0], [0, s], [s, s]]
+    .map(([cx, cy]) => `<circle cx="${cx}" cy="${cy}" r="${s / 4}" fill="none" stroke="${color}" stroke-opacity="0.06" stroke-width="1"/>`)
+    .join("");
+  return {
+    defs: `<pattern id="bg_damask" patternUnits="userSpaceOnUse" width="${s}" height="${s}">` +
+      `<path d="M${c} 1L${s - 1} ${c}L${c} ${s - 1}L1 ${c}Z" fill="none" stroke="${color}" stroke-opacity="0.09" stroke-width="1"/>` +
+      `<circle cx="${c}" cy="${c}" r="${s / 9}" fill="none" stroke="${color}" stroke-opacity="0.09" stroke-width="1"/>${corners}</pattern>`,
+    body: cover("url(#bg_damask)"),
+  };
+}
+
 function backgroundToSVG(doc: TemplateDoc): string {
   const bg = doc.background;
   if (bg.type === "image" && bg.src) {
     return `<image href="${esc(bg.src)}" x="0" y="0" width="${doc.width}" height="${doc.height}" preserveAspectRatio="xMidYMid slice"/>`;
   }
+  const overlay = backgroundPatternSVG(doc);
+  const defs = overlay.defs ? `<defs>${overlay.defs}</defs>` : "";
   if (bg.type === "gradient" && bg.gradient) {
     const angle = ((bg.gradient.angle ?? 135) * Math.PI) / 180;
     const x1 = 50 - Math.cos(angle) * 50, y1 = 50 - Math.sin(angle) * 50;
     const x2 = 50 + Math.cos(angle) * 50, y2 = 50 + Math.sin(angle) * 50;
     return `<defs><linearGradient id="bg_grad" x1="${x1}%" y1="${y1}%" x2="${x2}%" y2="${y2}%">` +
       `<stop offset="0%" stop-color="${esc(bg.gradient.from)}"/><stop offset="100%" stop-color="${esc(bg.gradient.to)}"/>` +
-      `</linearGradient></defs><rect x="0" y="0" width="${doc.width}" height="${doc.height}" fill="url(#bg_grad)"/>`;
+      `</linearGradient></defs><rect x="0" y="0" width="${doc.width}" height="${doc.height}" fill="url(#bg_grad)"/>${defs}${overlay.body}`;
   }
-  return `<rect x="0" y="0" width="${doc.width}" height="${doc.height}" fill="${esc(bg.color ?? "#ffffff")}"/>`;
+  return `<rect x="0" y="0" width="${doc.width}" height="${doc.height}" fill="${esc(bg.color ?? "#ffffff")}"/>${defs}${overlay.body}`;
 }
 
 /** ממיר TemplateDoc ל-SVG פרוגרמטי אמיתי (שכבות וקטוריות נפרדות, לא ריצוף

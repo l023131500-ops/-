@@ -84,6 +84,14 @@ import { apiRequest, hasAuthSession } from "@/lib/queryClient";
 import { nextId } from "@shared/layers";
 import type { TemplateDoc, TextLayer, ImageLayer, ShapeLayer, AnyLayer, TemplateBackground } from "@shared/layers";
 import type { NarrationAlignment } from "@shared/tts-hebrew";
+import {
+  CURATED_BACKGROUNDS,
+  cloneBackground,
+  listSavedBackgrounds,
+  saveGeneratedBackground,
+  removeSavedBackground,
+  type SavedBackground,
+} from "@/lib/backgroundLibrary";
 
 // שורת מותג כפי שהשרת מחזיר מ-/api/brands (ר' shared/schema.ts) — קריאה בלבד כאן
 interface BrandRow {
@@ -130,6 +138,11 @@ export default function Editor() {
   // כשלא ברור איזה סגנון מתאים — 2 אפשרויות (Gemini + Recraft במקביל) לבחירה, במקום שהמערכת תחליט לבד (פריט 15)
   const [aiVariants, setAiVariants] = useState<{ engine: "gemini" | "recraft"; label: string; dataUrl: string }[]>([]);
   const [aiVariantsLoading, setAiVariantsLoading] = useState(false);
+  // רקעי AI שכבר נוצרו (נשמרים במכשיר, lib/backgroundLibrary.ts) — שימוש חוזר בלי לשרוף מכסה
+  const [savedBgs, setSavedBgs] = useState<SavedBackground[]>([]);
+  useEffect(() => {
+    if (aiDialogOpen) setSavedBgs(listSavedBackgrounds());
+  }, [aiDialogOpen]);
   const [saving, setSaving] = useState(false);
 
   // קופי חכם (Claude)
@@ -622,6 +635,8 @@ export default function Editor() {
         });
       } else if (data.dataUrl) {
         updateDoc({ ...doc!, background: { type: "image", src: data.dataUrl } });
+        // נשמר לספרייה המקומית — שימוש חוזר בפרויקט אחר לא יעלה מכסת AI נוספת
+        setSavedBgs(saveGeneratedBackground({ dataUrl: data.dataUrl, prompt: aiPrompt, engine: aiEngine }));
         toast({ title: "רקע AI הוחל בהצלחה" });
         setAiDialogOpen(false);
       }
@@ -660,6 +675,8 @@ export default function Editor() {
       results.forEach((res, i) => {
         if (res.status === "fulfilled" && res.value?.dataUrl && !res.value?.fallback) {
           variants.push({ engine: engines[i].engine, label: engines[i].label, dataUrl: res.value.dataUrl });
+          // גם האפשרות שלא תיבחר נשמרת — היא כבר שולמה מהמכסה, שתישאר זמינה
+          setSavedBgs(saveGeneratedBackground({ dataUrl: res.value.dataUrl, prompt: aiPrompt, engine: engines[i].engine }));
         }
       });
       if (!variants.length) {
@@ -1753,6 +1770,40 @@ export default function Editor() {
               ))}
             </div>
           )}
+          {/* רקעים שכבר נוצרו — נשמרים במכשיר (localStorage), החלה חוזרת בלי מכסת AI */}
+          {savedBgs.length > 0 && (
+            <div className="space-y-1.5">
+              <p className="text-xs text-[#F5EEDD]/60">רקעים שנוצרו בעבר (שמורים במכשיר זה):</p>
+              <div className="grid max-h-[30vh] grid-cols-3 gap-2 overflow-y-auto" data-testid="grid-saved-backgrounds">
+                {savedBgs.map((b) => (
+                  <div key={b.id} className="group relative overflow-hidden rounded-md border border-[#C9A227]/30 hover:border-[#C9A227]">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        updateDoc({ ...doc!, background: { type: "image", src: b.dataUrl } });
+                        toast({ title: "הרקע השמור הוחל" });
+                        setAiDialogOpen(false);
+                      }}
+                      className="block w-full"
+                      title={b.prompt}
+                      data-testid={`button-saved-bg-${b.id}`}
+                    >
+                      <img src={b.dataUrl} alt={b.prompt || "רקע שמור"} className="h-16 w-full object-cover" />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setSavedBgs(removeSavedBackground(b.id))}
+                      className="absolute left-1 top-1 hidden rounded bg-black/60 p-0.5 text-[#F5EEDD]/90 hover:text-red-300 group-hover:block"
+                      aria-label="מחיקת רקע שמור"
+                      data-testid={`button-saved-bg-delete-${b.id}`}
+                    >
+                      <Trash2 className="h-3.5 w-3.5" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </DialogContent>
       </Dialog>
 
@@ -2430,7 +2481,7 @@ function BackgroundControls({
           size="sm"
           variant={type === "solid" ? "default" : "outline"}
           className={type === "solid" ? "flex-1 bg-[#C9A227] text-[#0B1220]" : "flex-1 border-[#C9A227]/30 text-[#F5EEDD]/70"}
-          onClick={() => onChange({ type: "solid", color: background.color ?? "#0B1220" })}
+          onClick={() => onChange({ ...background, type: "solid", color: background.color ?? "#0B1220", src: null })}
           data-testid="button-bg-solid"
         >
           צבע מלא
@@ -2439,7 +2490,7 @@ function BackgroundControls({
           size="sm"
           variant={type === "gradient" ? "default" : "outline"}
           className={type === "gradient" ? "flex-1 bg-[#C9A227] text-[#0B1220]" : "flex-1 border-[#C9A227]/30 text-[#F5EEDD]/70"}
-          onClick={() => onChange({ type: "gradient", gradient: grad })}
+          onClick={() => onChange({ ...background, type: "gradient", gradient: grad, src: null })}
           data-testid="button-bg-gradient"
         >
           גרדיאנט
@@ -2454,7 +2505,7 @@ function BackgroundControls({
           </Label>
           <ColorPicker
             value={background.color ?? "#0B1220"}
-            onChange={(c) => onChange({ type: "solid", color: c })}
+            onChange={(c) => onChange({ ...background, type: "solid", color: c })}
             presets={bgPresets}
             label="צבע הרקע"
           />
@@ -2469,7 +2520,7 @@ function BackgroundControls({
               <Label className="mb-1 block text-xs text-[#F5EEDD]/70">צבע עליון</Label>
               <ColorPicker
                 value={grad.from}
-                onChange={(c) => onChange({ type: "gradient", gradient: { ...grad, from: c } })}
+                onChange={(c) => onChange({ ...background, type: "gradient", gradient: { ...grad, from: c } })}
                 presets={bgPresets}
                 compact
                 label="צבע עליון"
@@ -2479,7 +2530,7 @@ function BackgroundControls({
               <Label className="mb-1 block text-xs text-[#F5EEDD]/70">צבע תחתון</Label>
               <ColorPicker
                 value={grad.to}
-                onChange={(c) => onChange({ type: "gradient", gradient: { ...grad, to: c } })}
+                onChange={(c) => onChange({ ...background, type: "gradient", gradient: { ...grad, to: c } })}
                 presets={bgPresets}
                 compact
                 label="צבע תחתון"
@@ -2493,7 +2544,7 @@ function BackgroundControls({
               min={0}
               max={360}
               step={5}
-              onValueChange={([v]) => onChange({ type: "gradient", gradient: { ...grad, angle: v } })}
+              onValueChange={([v]) => onChange({ ...background, type: "gradient", gradient: { ...grad, angle: v } })}
             />
           </div>
         </div>
@@ -2502,6 +2553,75 @@ function BackgroundControls({
       {type === "image" && (
         <p className="text-[11px] text-[#F5EEDD]/50">רקע תמונה פעיל. לחיצה על “צבע מלא” או “גרדיאנט” תחליף אותו.</p>
       )}
+
+      {/* מרקם-על — כל ארבעת הדפוסים שהרנדרר מממש (וינייטה/זוהר/פשתן/דמשק) */}
+      {type !== "image" && (
+        <div className="space-y-2">
+          <Label className="mb-1 block text-xs text-[#F5EEDD]/70">מרקם</Label>
+          <div className="flex flex-wrap gap-1">
+            {(
+              [
+                ["none", "ללא"],
+                ["vignette", "וינייטה"],
+                ["radial_glow", "זוהר"],
+                ["linen", "פשתן"],
+                ["subtle_damask", "דמשק"],
+              ] as const
+            ).map(([value, label]) => {
+              const active = (background.pattern ?? "none") === value;
+              return (
+                <Button
+                  key={value}
+                  size="sm"
+                  variant={active ? "default" : "outline"}
+                  className={active ? "h-7 bg-[#C9A227] px-2 text-xs text-[#0B1220]" : "h-7 border-[#C9A227]/30 px-2 text-xs text-[#F5EEDD]/70"}
+                  onClick={() => onChange({ ...background, pattern: value })}
+                  data-testid={`button-bg-pattern-${value}`}
+                >
+                  {label}
+                </Button>
+              );
+            })}
+          </div>
+          {["radial_glow", "linen", "subtle_damask"].includes(background.pattern ?? "") && (
+            <div>
+              <Label className="mb-1 block text-xs text-[#F5EEDD]/70">צבע המרקם</Label>
+              <ColorPicker
+                value={background.patternColor ?? "#C9A227"}
+                onChange={(c) => onChange({ ...background, patternColor: c })}
+                presets={bgPresets}
+                compact
+                label="צבע המרקם"
+              />
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* ספריית הרקעים האצורה — גרדיאנט+מרקם מוכנים, בלי רשת ובלי מכסת AI */}
+      <div>
+        <Label className="mb-1 block text-xs text-[#F5EEDD]/70">ספריית רקעים</Label>
+        <div className="grid grid-cols-2 gap-1.5" data-testid="grid-bg-library">
+          {CURATED_BACKGROUNDS.map((p) => {
+            const g = p.background.gradient!;
+            return (
+              <button
+                key={p.id}
+                type="button"
+                onClick={() => onChange(cloneBackground(p.background))}
+                className="overflow-hidden rounded-md border border-[#C9A227]/25 text-right transition hover:border-[#C9A227]"
+                data-testid={`button-bg-library-${p.id}`}
+              >
+                <span
+                  className="block h-9 w-full"
+                  style={{ background: `linear-gradient(${(g.angle ?? 135) + 90}deg, ${g.from}, ${g.to})` }}
+                />
+                <span className="block px-1.5 py-0.5 text-[10px] text-[#F5EEDD]/75">{p.name}</span>
+              </button>
+            );
+          })}
+        </div>
+      </div>
     </div>
   );
 }
