@@ -370,7 +370,8 @@ const AdminDashboard = () => {
         .from("lessons")
         .update({ is_approved: true, status: "approved" }, { count: "exact" })
         .eq("rabbi_name", rabbiName)
-        .neq("is_approved", true);
+        .neq("is_approved", true)
+        .neq("status", "deleted");
       if (error) { toast.error("שגיאה: " + error.message); return; }
       toast.success(`${count ?? 0} שיעורים אושרו`);
       fetchAll();
@@ -387,7 +388,8 @@ const AdminDashboard = () => {
         .from("lessons")
         .update({ is_approved: true, status: "approved" }, { count: "exact" })
         .eq("org_name", orgName)
-        .neq("is_approved", true);
+        .neq("is_approved", true)
+        .neq("status", "deleted");
       if (error) { toast.error("שגיאה: " + error.message); return; }
       toast.success(`${count ?? 0} שיעורים אושרו`);
       fetchAll();
@@ -404,7 +406,8 @@ const AdminDashboard = () => {
         .from("lessons")
         .update({ is_approved: true, status: "approved" }, { count: "exact" })
         .eq("synagogue_portal_id", portalId)
-        .neq("is_approved", true);
+        .neq("is_approved", true)
+        .neq("status", "deleted");
       const { error: e2, count: c2 } = await supabase
         .from("study_day_events")
         .update({ is_approved: true, status: "approved" }, { count: "exact" })
