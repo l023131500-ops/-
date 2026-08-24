@@ -13,7 +13,7 @@ const getNextOccurrence = (lesson: any): number => {
   const now = new Date();
   const todayIdx = now.getDay();
   const currentMinutes = now.getHours() * 60 + now.getMinutes();
-  if (lesson.specific_date) return new Date(lesson.specific_date).getTime() - now.getTime();
+  if (lesson.specific_date) return (new Date(lesson.specific_date).getTime() - now.getTime()) / (1000 * 60);
   if (lesson.is_recurring && Array.isArray(lesson.schedule_days)) {
     let minDiff = Infinity;
     for (const d of lesson.schedule_days as { day: string; time: string }[]) {
