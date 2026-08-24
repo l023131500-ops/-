@@ -273,7 +273,7 @@ export async function createSynagogue(input: SynagogueInput): Promise<Synagogue>
     description: input.description || null, brand_gradient: input.brandGradient || null,
     logo_url: input.logoUrl || null, donation_link: input.donationLink || null, is_published: input.isPublished,
   }).select("*").single();
-  if (error) throw new Error(error.message);
+  if (error || !data) throw new Error(error?.message ?? `יצירת בית הכנסת "${input.name}" נכשלה`);
   return toSynagogue(data);
 }
 
