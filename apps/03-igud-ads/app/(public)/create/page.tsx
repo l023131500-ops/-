@@ -215,6 +215,10 @@ export default function CreatePage() {
         }
       } catch {
         if (tries < max) setTimeout(tick, 5000);
+        else {
+          setError("עיבוד אורך יותר מהצפוי, נסו שוב מאוחר יותר");
+          setLoading(false);
+        }
       }
     };
     tick();
