@@ -484,6 +484,65 @@ td .pickbox{width:auto;margin:0;accent-color:var(--gold)}
         </table>
         </div>
       </div>
+
+      <!-- hall showcase editor — the landing page is the shop window (EVENTS_BUILD §0/§7) -->
+      <div id="hallEditPanel" hidden style="margin-top:14px">
+        <h3 id="hePanelTitle" style="margin:0 0 4px"></h3>
+        <p class="muted">כל מה שנשמר כאן מופיע מיד בדף הנחיתה הציבורי של האולם — זה חלון הראווה שלכם.</p>
+        <div class="grid c2">
+          <div>
+            <label for="heName">שם האולם *</label>
+            <input id="heName" maxlength="120" />
+            <label for="heCity">עיר</label>
+            <input id="heCity" maxlength="80" />
+            <label for="heAddress">כתובת</label>
+            <input id="heAddress" maxlength="200" />
+            <label for="hePhone">טלפון</label>
+            <input id="hePhone" maxlength="30" />
+            <label for="heCapacity">קיבולת אורחים</label>
+            <input id="heCapacity" type="number" min="1" max="10000" />
+          </div>
+          <div>
+            <label for="heCover">תמונת שער (קישור https)</label>
+            <input id="heCover" style="direction:ltr" maxlength="500" placeholder="https://…" />
+            <label for="heLogo">לוגו האולם (קישור https)</label>
+            <input id="heLogo" style="direction:ltr" maxlength="500" placeholder="https://…" />
+            <label for="heVideo">סרטון האולם (קישור https)</label>
+            <input id="heVideo" style="direction:ltr" maxlength="500" placeholder="https://youtu.be/…" />
+            <label for="heAccent">צבע מותג (מיתוג לבן — צובע את דף הנחיתה)</label>
+            <input id="heAccent" type="color" value="#D9B36C" style="height:42px;padding:4px" />
+            <label for="heTagline">סלוגן (עד 140 תווים)</label>
+            <input id="heTagline" maxlength="140" placeholder="הערב שלכם, בבית שלנו" />
+          </div>
+        </div>
+        <label for="heDesc">תיאור לדף הנחיתה</label>
+        <textarea id="heDesc" maxlength="4000"></textarea>
+        <label for="heAmenities">מה יש באולם — מופרד בפסיקים (עד 16)</label>
+        <input id="heAmenities" placeholder="חניה צמודה, נגישות מלאה, מיזוג מרכזי, חדר התארגנות" />
+        <label for="heGallery">גלריה — קישור https אחד בכל שורה (עד 12 תמונות)</label>
+        <textarea id="heGallery" style="direction:ltr" placeholder="https://…&#10;https://…"></textarea>
+        <div id="heErr"></div>
+        <div class="rowline" style="justify-content:flex-start">
+          <button class="btn small" id="heSave">שמירת דף האולם</button>
+          <button class="btn ghost small" id="heCancel">סגירה</button>
+        </div>
+      </div>
+
+      <!-- hall analytics — leads funnel, conversion, events (EVENTS_BUILD §4) -->
+      <div id="hallStatsPanel" hidden style="margin-top:14px">
+        <h3 id="hsTitle" style="margin:0 0 8px"></h3>
+        <div class="grid c3" id="hsKpis"></div>
+        <div class="grid c2" style="margin-top:12px">
+          <div>
+            <h3 style="font-size:15px;margin:0 0 6px">לידים לפי חודש</h3>
+            <div id="hsMonths"></div>
+          </div>
+          <div>
+            <h3 style="font-size:15px;margin:0 0 6px">לידים לפי סוג אירוע</h3>
+            <div id="hsTypes"></div>
+          </div>
+        </div>
+      </div>
     </div>
 
     <!-- super-admin console — the fourth role of EVENTS_BUILD §1 -->
@@ -1911,19 +1970,27 @@ $('avSave').addEventListener('click', () => guarded($('avSave'), 'avSave', async
 // ---------- halls ----------
 function renderHalls() {
   const halls = ME.halls || [];
+  const safeImg = (u) => typeof u === 'string' && /^https:\/\//.test(u);
   $('hallsList').innerHTML = halls.length === 0
     ? '<p class="muted">אין אולמות בחשבון הזה.</p>'
     : halls.map((h) => `
       <div class="card" style="margin-bottom:10px">
         <div class="rowline">
-          <div>
-            <b>${esc(h.name)}</b> <span class="muted">· ${esc(h.city || '')}</span>
-            ${h.published
-              ? '<span class="pill yes">מפורסם</span> <a class="muted" href="/events/hall?h=' + esc(h.slug) + '">לצפייה בדף</a>'
-              : '<span class="pill pending">ממתין לאישור מנהל</span>'}
-            ${h.lead_count ? '<span class="pill new">' + h.lead_count + ' לידים חדשים</span>' : ''}
+          <div style="display:flex;gap:12px;align-items:center">
+            ${safeImg(h.cover_url) ? '<img src="' + esc(h.cover_url) + '" alt="" loading="lazy" style="width:64px;height:48px;object-fit:cover;border-radius:5px;border:1px solid var(--line-2)" />' : ''}
+            <div>
+              <b>${esc(h.name)}</b> <span class="muted">· ${esc(h.city || '')}</span>
+              ${h.published
+                ? '<span class="pill yes">מפורסם</span> <a class="muted" href="/events/hall?h=' + esc(h.slug) + '">לצפייה בדף</a>'
+                : '<span class="pill pending">ממתין לאישור מנהל</span>'}
+              ${h.lead_count ? '<span class="pill new">' + h.lead_count + ' לידים חדשים</span>' : ''}
+              ${!safeImg(h.cover_url) ? '<span class="pill maybe">חסרה תמונת שער</span>' : ''}
+              ${h.brand && h.brand.tagline ? '<div class="muted" style="font-size:12px">' + esc(h.brand.tagline) + '</div>' : ''}
+            </div>
           </div>
           <div>
+            <button class="btn ghost small" data-edit="${h.id}">עריכת דף האולם</button>
+            <button class="btn ghost small" data-stats="${h.id}" data-name="${esc(h.name)}">סטטיסטיקות</button>
             <button class="btn ghost small" data-leads="${h.id}" data-name="${esc(h.name)}">לידים</button>
             ${ME.is_super_admin ? '<button class="btn small" data-pub="' + h.id + '" data-to="' + (!h.published) + '">' + (h.published ? 'הסרה מפרסום' : 'אישור פרסום') + '</button>' : ''}
           </div>
@@ -1931,11 +1998,121 @@ function renderHalls() {
       </div>`).join('');
   for (const b of $('hallsList').querySelectorAll('[data-leads]'))
     b.addEventListener('click', () => openLeads(b.dataset.leads, b.dataset.name));
+  for (const b of $('hallsList').querySelectorAll('[data-edit]'))
+    b.addEventListener('click', () => {
+      const h = (ME.halls || []).find((x) => x.id === b.dataset.edit);
+      if (h) openHallEdit(h);
+    });
+  for (const b of $('hallsList').querySelectorAll('[data-stats]'))
+    b.addEventListener('click', () => guarded(b, 'stats' + b.dataset.stats, () =>
+      openHallStats(b.dataset.stats, b.dataset.name)));
   for (const b of $('hallsList').querySelectorAll('[data-pub]'))
     b.addEventListener('click', () => guarded(b, 'pub' + b.dataset.pub, async () => {
       await rpc('evg_hall_publish', { p_hall_id: b.dataset.pub, p_published: b.dataset.to === 'true' });
       await refreshMe();
     }));
+}
+
+// ---------- hall showcase editor ----------
+let editHallId = null;
+
+function openHallEdit(h) {
+  editHallId = h.id;
+  $('hallLeadsPanel').hidden = true;
+  $('hallStatsPanel').hidden = true;
+  $('hallEditPanel').hidden = false;
+  $('hePanelTitle').textContent = 'עריכת דף האולם — ' + h.name;
+  $('heName').value = h.name || '';
+  $('heCity').value = h.city || '';
+  $('heAddress').value = h.address || '';
+  $('hePhone').value = h.phone || '';
+  $('heCapacity').value = h.capacity_guests || '';
+  $('heCover').value = h.cover_url || '';
+  const brand = h.brand || {};
+  $('heLogo').value = brand.logo_url || '';
+  $('heAccent').value = /^#[0-9A-Fa-f]{6}$/.test(brand.accent || '') ? brand.accent : '#D9B36C';
+  $('heTagline').value = brand.tagline || '';
+  $('heVideo').value = h.video_url || '';
+  $('heDesc').value = h.description || '';
+  $('heAmenities').value = (Array.isArray(h.amenities) ? h.amenities : []).join(', ');
+  $('heGallery').value = (Array.isArray(h.gallery) ? h.gallery : []).join('\n');
+  $('heErr').innerHTML = '';
+  $('hallEditPanel').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+$('heCancel').addEventListener('click', () => { $('hallEditPanel').hidden = true; editHallId = null; });
+
+$('heSave').addEventListener('click', () => guarded($('heSave'), 'heSave', async () => {
+  $('heErr').innerHTML = '';
+  if (!editHallId) return;
+  const name = $('heName').value.trim();
+  if (!name) { $('heErr').innerHTML = '<div class="err">שם האולם חובה.</div>'; return; }
+  for (const [id, label] of [['heCover', 'תמונת השער'], ['heLogo', 'הלוגו'], ['heVideo', 'הסרטון']]) {
+    const u = $(id).value.trim();
+    if (u && !/^https:\/\//.test(u)) {
+      $('heErr').innerHTML = '<div class="err">קישור ' + label + ' חייב להתחיל ב-https://</div>'; return;
+    }
+  }
+  const gallery = $('heGallery').value.split('\n').map((s) => s.trim()).filter(Boolean);
+  const badUrl = gallery.find((u) => !/^https:\/\//.test(u));
+  if (badUrl) {
+    $('heErr').innerHTML = '<div class="err">כל קישור בגלריה חייב להתחיל ב-https:// (בעיה: ' + esc(badUrl.slice(0, 60)) + '…)</div>'; return;
+  }
+  if (gallery.length > 12) { $('heErr').innerHTML = '<div class="err">עד 12 תמונות בגלריה.</div>'; return; }
+  // the default gold is "no custom accent" — only a deliberate choice becomes branding
+  const brand = {};
+  const accent = $('heAccent').value;
+  if (/^#[0-9A-Fa-f]{6}$/.test(accent) && accent.toLowerCase() !== '#d9b36c') brand.accent = accent;
+  if ($('heLogo').value.trim()) brand.logo_url = $('heLogo').value.trim();
+  if ($('heTagline').value.trim()) brand.tagline = $('heTagline').value.trim();
+  const cap = parseInt($('heCapacity').value, 10);
+  try {
+    await rpc('evg_hall_update', {
+      p_hall_id: editHallId,
+      p_name: name,
+      p_city: $('heCity').value.trim() || null,
+      p_address: $('heAddress').value.trim() || null,
+      p_phone: $('hePhone').value.trim() || null,
+      p_description: $('heDesc').value.trim() || null,
+      p_cover_url: $('heCover').value.trim() || null,
+      p_gallery: gallery,
+      p_brand: brand,
+      p_capacity_guests: Number.isFinite(cap) && cap >= 1 ? Math.min(cap, 10000) : null,
+      p_amenities: $('heAmenities').value.split(',').map((s) => s.trim()).filter(Boolean).slice(0, 16),
+      p_video_url: $('heVideo').value.trim() || null,
+    });
+    $('hallEditPanel').hidden = true;
+    editHallId = null;
+    await refreshMe();
+  } catch (e) { $('heErr').innerHTML = '<div class="err">' + esc(e.message) + '</div>'; }
+}));
+
+// ---------- hall analytics ----------
+async function openHallStats(hallId, name) {
+  const s = await rpc('evg_hall_stats', { p_hall_id: hallId });
+  $('hallLeadsPanel').hidden = true;
+  $('hallEditPanel').hidden = true;
+  $('hallStatsPanel').hidden = false;
+  $('hsTitle').textContent = 'סטטיסטיקות — ' + name;
+  const conv = s.leads_total ? Math.round((s.leads_closed / s.leads_total) * 100) : 0;
+  $('hsKpis').innerHTML = [
+    [s.leads_total, 'לידים סה"כ'],
+    [s.leads_30d, 'לידים ב-30 הימים האחרונים'],
+    [s.leads_new, 'ממתינים לטיפול'],
+    [conv + '%', 'שיעור סגירה'],
+    [s.events_hosted, 'אירועים שנקבעו באולם'],
+    [s.events_upcoming, 'אירועים קרובים'],
+  ].map(([v, l]) => '<div><div class="stat">' + v + '</div><div class="statlbl">' + l + '</div></div>').join('');
+  const months = s.leads_by_month || [];
+  const maxM = Math.max(1, ...months.map((m) => m.count));
+  $('hsMonths').innerHTML = months.length
+    ? months.map((m) => '<div class="muted" style="font-size:13px">' + esc(m.month) + ' · ' + m.count +
+        '<div class="bar"><i style="width:' + Math.round((m.count / maxM) * 100) + '%"></i></div></div>').join('')
+    : '<p class="muted">אין עדיין לידים.</p>';
+  const types = Object.entries(s.leads_by_type || {}).sort((a, b) => b[1] - a[1]);
+  $('hsTypes').innerHTML = types.length
+    ? types.map(([t, n]) => '<div class="rowline" style="font-size:13px;border-bottom:1px solid var(--line-2);padding:4px 0"><span>' + (TYPE_LABEL[t] || 'אחר') + '</span><b>' + n + '</b></div>').join('')
+    : '<p class="muted">אין עדיין נתונים.</p>';
 }
 
 $('newHallToggle').addEventListener('click', () => { $('newHallForm').hidden = !$('newHallForm').hidden; });

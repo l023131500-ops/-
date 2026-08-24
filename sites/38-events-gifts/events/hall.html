@@ -17,6 +17,7 @@
   --gold:#D9B36C; --gold-soft:#EBD09A; --emerald:#19BE8E; --rose:#E0574E;
   --ink:#F0EDF9; --ink-2:#BDB8D9; --muted:#8B86AD;
   --line:rgba(217,179,108,.22); --line-2:rgba(240,237,249,.10);
+  --btn-ink:var(--night);
   --ease:cubic-bezier(.22,.61,.36,1);
 }
 *,*::before,*::after{box-sizing:border-box}
@@ -47,13 +48,18 @@ h2{font-family:'Frank Ruhl Libre',serif;font-weight:600;font-size:21px;margin:0 
 .meta b{color:var(--ink-2);font-weight:500}
 .gallery{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px;margin-top:14px}
 .gallery img{width:100%;height:110px;object-fit:cover;border-radius:5px;border:1px solid var(--line-2)}
+.logo{height:46px;width:auto;max-width:160px;object-fit:contain;display:block;margin-bottom:10px}
+.tagline{color:var(--ink-2);font-size:16px;margin-top:4px}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.chip{border:1px solid var(--line);border-radius:999px;padding:4px 14px;font-size:13px;color:var(--gold-soft)}
+a.btn.ghost{background:transparent;color:var(--gold-soft);text-decoration:none;margin-top:14px}
 label{display:block;font-size:13px;color:var(--ink-2);margin:0 0 5px}
 input,select,textarea{width:100%;background:var(--night-2);border:1px solid var(--line-2);border-radius:4px;
   color:var(--ink);font-family:inherit;font-size:14px;padding:9px 12px;margin-bottom:12px}
 textarea{min-height:80px;resize:vertical}
 input:focus,select:focus,textarea:focus{outline:2px solid var(--gold);outline-offset:1px;border-color:var(--gold)}
 .btn{display:inline-flex;align-items:center;justify-content:center;width:100%;font-size:15px;font-weight:500;
-  padding:12px 24px;border:1px solid var(--gold);border-radius:4px;background:var(--gold);color:var(--night);
+  padding:12px 24px;border:1px solid var(--gold);border-radius:4px;background:var(--gold);color:var(--btn-ink);
   cursor:pointer;transition:all .2s var(--ease)}
 .btn:hover:not(:disabled){background:transparent;color:var(--gold-soft)}
 .btn:disabled{opacity:.45;cursor:not-allowed}
@@ -88,8 +94,10 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--gold);outline-of
   <div id="content" hidden>
     <div class="cover" id="cover">
       <div class="inner">
+        <img id="brandLogo" class="logo" alt="" hidden />
         <h1 id="hallName"></h1>
         <div class="city" id="hallCity"></div>
+        <div class="tagline" id="tagline" hidden></div>
       </div>
     </div>
 
@@ -98,7 +106,9 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--gold);outline-of
         <h2>על האולם</h2>
         <div class="desc" id="hallDesc"></div>
         <div class="meta" id="hallMeta"></div>
+        <div class="chips" id="amenities" hidden></div>
         <div class="gallery" id="gallery" hidden></div>
+        <a id="videoLink" class="btn ghost" target="_blank" rel="noopener" hidden>▶ צפייה בסרטון האולם</a>
       </div>
 
       <div class="card" id="leadCard">
@@ -176,10 +186,45 @@ try {
   $('hallName').textContent = h.name;
   $('hallCity').textContent = h.city || '';
   $('hallDesc').textContent = h.description || 'פרטים נוספים — בטופס הפנייה.';
+
+  // white-label branding: the hall's accent recolors the page; dark accents
+  // get light button text so the CTA stays readable
+  const brand = (h.brand && typeof h.brand === 'object') ? h.brand : {};
+  if (typeof brand.accent === 'string' && /^#[0-9A-Fa-f]{6}$/.test(brand.accent)) {
+    const st = document.documentElement.style;
+    st.setProperty('--gold', brand.accent);
+    st.setProperty('--gold-soft', brand.accent);
+    const n = parseInt(brand.accent.slice(1), 16);
+    const lum = 0.2126 * ((n >> 16) & 255) + 0.7152 * ((n >> 8) & 255) + 0.0722 * (n & 255);
+    if (lum < 140) st.setProperty('--btn-ink', '#F0EDF9');
+    document.querySelector('meta[name="theme-color"]')?.setAttribute('content', brand.accent);
+  }
+  if (isSafeUrl(brand.logo_url)) {
+    $('brandLogo').src = brand.logo_url;
+    $('brandLogo').hidden = false;
+  }
+  if (typeof brand.tagline === 'string' && brand.tagline.trim()) {
+    $('tagline').textContent = brand.tagline;
+    $('tagline').hidden = false;
+  }
+
   const meta = [];
   if (h.address) meta.push('<div><b>כתובת:</b> ' + esc(h.address) + '</div>');
   if (h.phone) meta.push('<div><b>טלפון:</b> <bdo dir="ltr">' + esc(h.phone) + '</bdo></div>');
+  if (Number.isFinite(h.capacity_guests) && h.capacity_guests > 0)
+    meta.push('<div><b>קיבולת:</b> עד ' + Number(h.capacity_guests).toLocaleString('he-IL') + ' אורחים</div>');
   $('hallMeta').innerHTML = meta.join('');
+
+  const amenities = Array.isArray(h.amenities)
+    ? h.amenities.filter((a) => typeof a === 'string' && a.trim()).slice(0, 16) : [];
+  if (amenities.length) {
+    $('amenities').hidden = false;
+    $('amenities').innerHTML = amenities.map((a) => '<span class="chip">' + esc(a) + '</span>').join('');
+  }
+  if (isSafeUrl(h.video_url)) {
+    $('videoLink').href = h.video_url;
+    $('videoLink').hidden = false;
+  }
 
   if (isSafeUrl(h.cover_url)) {
     const img = document.createElement('img');
