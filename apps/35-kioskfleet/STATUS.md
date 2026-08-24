@@ -3875,3 +3875,75 @@ to that constraint: they import only dependency-free modules (`hosts.js`,
   real devices exist to open a real console socket and confirm the
   deactivate-mid-session close in production, the same constraint every
   REST/WS-only fix in this log has hit.
+
+- **[24/08/2026, Loop A] Remote screenshot — a spec item from KIOSK_BUILD.md
+  that was a dead command type, on `zol` not this tree** — KIOSK_BUILD.md's
+  remote-commands line (`אתחול, רענון, כיבוי מסך, החלפת כתובת, נעילה/שחרור,
+  **צילום מסך מרחוק**, עדכון מדיניות`) lists remote screenshot as
+  "already exists, expand." It didn't: `commands.js`'s `COMMAND_TYPES` and
+  `db.js`'s schema comment both named `screenshot`, but `AgentClient.execute()`
+  had no case for it — it fell to `else -> { ok = false; result = "unknown
+  command" }` — and there was no server endpoint to receive one, no storage
+  column, and no console button to trigger or view one. Any direct API caller
+  hitting `POST /devices/:id/command {type:'screenshot'}` got a command that
+  always failed; the console never offered it at all.
+
+  Built out the full path, both ends:
+  - **Android** (`KioskActivity.kt`, `AgentClient.kt`): `onScreenshot()`
+    captures the WebView via `View.draw()` onto a `Bitmap`, downscales to fit
+    within 720px on the long edge (a full-resolution capture can exceed the
+    server's 1mb JSON body limit; console viewing needs "what's on screen",
+    not print resolution), and hands off to `uploadScreenshot()`, which
+    JPEG-encodes off the UI thread and `POST`s a `data:image/jpeg;base64,…`
+    URL using the same `HttpURLConnection`+`X-Device-Token` shape `ack()`
+    already uses. `execute()` special-cases `"screenshot"` to skip the
+    generic synchronous `ack(id, ok, result)` at the bottom of the function —
+    capture and upload both finish asynchronously, and falling through would
+    report the command done before either had run.
+  - **Server**: new `POST /api/agent/screenshot` (device-token auth, same
+    `deviceFromToken()` as heartbeat/ack) validates the body against
+    `^data:image\/(?:png|jpe?g|webp);base64,[A-Za-z0-9+/]+=*$` before storing
+    it — this string is later rendered straight into the console as
+    `<img src="…">` (see `viewScreenshot()` below), so a device holding a
+    valid-but-compromised `device_token` should not be able to put an
+    arbitrary string into another tab's DOM by mis-shaping this one field,
+    the same "validate the shape of what a semi-trusted party sends before it
+    reaches another user's screen" reasoning `hosts.js` already applies to
+    the allow-list. New `GET /devices/:id/screenshot`, gated through the
+    existing `getOwnedDevice()`, serves the stored image on demand.
+  - **Storage**: two new `devices` columns, `last_screenshot` (the data URL)
+    and `last_screenshot_at`. `devicepayload.js`'s `CONSOLE_DEVICE_FIELDS`
+    allow-list gets only the timestamp — the image itself stays off every
+    `notifyConsolesOfDevice()` broadcast and off `GET /devices`, so a fleet
+    list doesn't pay for a screenshot nobody asked to see; a console fetches
+    the image only when the viewer clicks. Same "push the pointer, not the
+    payload" shape this file already documents for why `device_token` is
+    dropped.
+  - **Console** (`public/js/app.js`): a "📸 צילום מסך" button on every device
+    card issues the command; once `lastScreenshotAt` is set (arrives live
+    over the existing WS `device_update` frame, or on next poll/refresh), a
+    "🖼️ צילום אחרון" button appears and opens the image in a modal via the
+    new `GET` endpoint.
+
+  `node --check` clean on every touched JS file. Full suite: 22/24 — was
+  21/23; two new tests in `devicepayload.test.mjs` (image excluded from the
+  console allow-list, timestamp included) both pass, the two persistent
+  failures are the same pre-existing `express`/`node:sqlite`-not-installed
+  gap every entry in this log has hit. `SCREENSHOT_RE` exercised directly
+  against real image data URLs and injection attempts (`javascript:alert(1)`,
+  `<script>…</script>`, an `image/svg+xml` data URL) — all reject correctly.
+  Kotlin side is **not compiler-verified**: no gradle/kotlin toolchain in
+  this sandbox, the same constraint every prior Android-side entry in this
+  log has hit — reviewed against `AgentClient`'s own already-shipped
+  `ack()`/`heartbeat()` request pattern (same `HttpURLConnection` shape, same
+  `Thread { … }.start()` off the UI thread) rather than compiled.
+
+  Pushed to `l023131500-ops/zol`#`claude/what-do-you-see-gxo5tc` (`90d148d`).
+  `more30.com/kiosk/api/health` polled every 15s for ~2.5 minutes after the
+  push: `200, 200, 200, 502, 200, 200, 200, 200, 200, 200` — one build-in-flight
+  blip, recovered on the next poll, the same shape several earlier entries in
+  this log describe as harmless. **Not verified beyond the deploy-landing
+  signal and the isolated regex/unit checks above**: no test customer account
+  or real device exists to enroll, issue a live `screenshot` command against,
+  and confirm an actual capture round-trips through production — the same
+  constraint every fix in this log without a real device has hit.
