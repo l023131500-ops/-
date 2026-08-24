@@ -194,8 +194,10 @@ const AdminLeads = () => {
   const handleSaveLeadEdit = async () => {
     if (!editingLead) return;
     setSavingEdit(true);
-    const { id, created_at, ...rest } = editingLead;
-    const { error } = await supabase.from("leads").update(rest as any).eq("id", id);
+    const { id } = editingLead;
+    const updates: any = {};
+    for (const { key } of EDITABLE_FIELDS) updates[key] = editingLead[key];
+    const { error } = await supabase.from("leads").update(updates).eq("id", id);
     setSavingEdit(false);
     if (error) {
       toast({ title: "שגיאה", description: "עדכון פרטי הלקוח נכשל", variant: "destructive" });
