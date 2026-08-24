@@ -26,7 +26,10 @@
 
   var DATA = null, filtered = [], activeCat = "all", searchTerm = "", shown = 0, PAGE = 25;
 
-  fetch("site-data.json").then(function (r) { return r.json(); }).then(function (d) {
+  fetch("site-data.json").then(function (r) {
+    if (!r.ok) throw new Error("HTTP " + r.status);
+    return r.json();
+  }).then(function (d) {
     DATA = d;
     renderProfiles();
     renderCatFilter();
