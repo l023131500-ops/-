@@ -124,6 +124,26 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--gold);outline-of
   border-top-color:var(--gold);border-radius:50%;animation:spin .7s linear infinite;vertical-align:-2px;margin-inline-end:8px}
 @keyframes spin{to{transform:rotate(360deg)}}
 .muted{color:var(--muted);font-size:13px}
+.btn.line{background:transparent;color:var(--gold-soft)}
+.paybox{border:1px solid var(--line);border-radius:6px;padding:20px;background:var(--night-2)}
+.pay-head{display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-weight:500;font-size:15px;margin-bottom:12px}
+.pay-sum{display:flex;justify-content:space-between;gap:10px;border-top:1px solid var(--line-2);
+  border-bottom:1px solid var(--line-2);padding:10px 2px;margin-bottom:12px;font-size:14px}
+.pay-sum b{color:var(--gold-soft)}
+.pay-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:4px}
+.receipt{border:1px dashed var(--line);border-radius:6px;padding:18px;margin-top:14px;text-align:right;
+  background:var(--night-2);font-size:14px}
+.receipt .r-head{font-family:'Frank Ruhl Libre',serif;font-weight:600;font-size:16px;margin-bottom:2px}
+.receipt .r-row{display:flex;justify-content:space-between;gap:10px;padding:5px 0;border-bottom:1px solid var(--line-2)}
+.receipt .r-row:last-child{border-bottom:none}
+.receipt .r-row b{font-weight:500;color:var(--gold-soft)}
+@media print{
+  body *{visibility:hidden}
+  .receipt,.receipt *{visibility:visible}
+  .receipt{position:absolute;inset:16px auto auto 16px;width:calc(100% - 32px);
+    color:#000;background:#fff;border-color:#999}
+  .receipt .r-head,.receipt .r-row b{color:#000}
+}
 </style>
 </head>
 <body>
@@ -191,25 +211,44 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--gold);outline-of
         <div class="muted" id="goalTxt"></div>
         <div class="bar"><i id="goalBar" style="width:0%"></i></div>
       </div>
-      <div class="amounts" role="group" aria-label="בחירת סכום">
-        <button class="amount-btn" data-amt="180">₪180</button>
-        <button class="amount-btn" data-amt="360">₪360</button>
-        <button class="amount-btn" data-amt="520">₪520</button>
-        <button class="amount-btn" data-amt="1000">₪1,000</button>
+      <div id="giftForm">
+        <div class="amounts" role="group" aria-label="בחירת סכום">
+          <button class="amount-btn" data-amt="180">₪180</button>
+          <button class="amount-btn" data-amt="360">₪360</button>
+          <button class="amount-btn" data-amt="520">₪520</button>
+          <button class="amount-btn" data-amt="1000">₪1,000</button>
+        </div>
+        <label for="giftAmount">או סכום אחר (₪)</label>
+        <input id="giftAmount" type="number" min="1" max="100000" />
+        <label for="giftName">שם נותן/ת המתנה *</label>
+        <input id="giftName" maxlength="120" />
+        <label for="giftGreeting">ברכה (תופיע אצל בעלי השמחה)</label>
+        <textarea id="giftGreeting" maxlength="1000"></textarea>
+        <div id="giftErr"></div>
+        <button class="btn" id="giftSubmit">🔒 מעבר לתשלום מאובטח</button>
+        <p class="muted" style="margin-top:10px">התשלום מתבצע בטופס מאובטח של ספק הסליקה (נדרים פלוס / PayMe) —
+          פרטי האשראי לעולם לא עוברים דרך הפלטפורמה. עד אישור הספק: מצב טסט, ללא חיוב.</p>
       </div>
-      <label for="giftAmount">או סכום אחר (₪)</label>
-      <input id="giftAmount" type="number" min="1" max="100000" />
-      <label for="giftName">שם נותן/ת המתנה *</label>
-      <input id="giftName" maxlength="120" />
-      <label for="giftGreeting">ברכה (תופיע אצל בעלי השמחה)</label>
-      <textarea id="giftGreeting" maxlength="1000"></textarea>
-      <div id="giftErr"></div>
-      <button class="btn" id="giftSubmit">נתינת מתנה (טסט)</button>
-      <p class="muted" style="margin-top:10px">בגרסה המלאה התשלום יתבצע בטופס מאובטח של ספק הסליקה (נדרים פלוס / PayMe) —
-        פרטי האשראי לעולם לא עוברים דרך הפלטפורמה.</p>
+      <div id="payStep" hidden>
+        <div class="paybox" role="group" aria-label="עמוד תשלום">
+          <div class="pay-head">🔒 עמוד תשלום מאובטח
+            <span class="chip" title="עד חיבור ספק סליקה מאושר — אף חיוב אמיתי לא מתבצע">מצב טסט — סימולציה</span></div>
+          <div class="pay-sum" id="paySummary"></div>
+          <p class="muted" style="margin:0 0 12px">בשלב הזה ייפתח הטופס המאובטח של ספק הסליקה
+            (נדרים פלוס / PayMe) ברגע שהספק יאושר — פרטי האשראי לעולם לא עוברים דרך הפלטפורמה.
+            במצב טסט לא מתבצע שום חיוב.</p>
+          <div id="payErr"></div>
+          <div class="pay-actions">
+            <button class="btn" id="payConfirm">אישור תשלום (טסט)</button>
+            <button class="btn line" id="payCancel">ביטול וחזרה</button>
+          </div>
+        </div>
+      </div>
       <div id="giftDone" class="state ok" hidden role="status">
-        <h2>המתנה נרשמה 💛</h2>
+        <h2>המתנה התקבלה 💛</h2>
         <p id="giftDoneTxt"></p>
+        <div class="receipt" id="receiptBox" hidden></div>
+        <button class="btn line" id="receiptPrint" hidden style="margin-top:12px">🖨 הדפסת הקבלה</button>
       </div>
     </div>
   </div>
@@ -316,17 +355,21 @@ function renderEvent(d) {
 
   if (d.gifts_enabled) {
     $('giftCard').hidden = false;
-    if (d.gift_goal_agorot) {
-      $('goalWrap').hidden = false;
-      const pct = Math.min(100, Math.round(d.gift_total_agorot * 100 / d.gift_goal_agorot));
-      $('goalBar').style.width = pct + '%';
-      $('goalTxt').textContent = 'נאספו עד כה ' + shekel(d.gift_total_agorot) +
-        ' מתוך יעד של ' + shekel(d.gift_goal_agorot) + ' · ' + d.gift_count + ' מתנות';
-    } else if (d.gift_count > 0) {
-      $('goalWrap').hidden = false;
-      $('goalTxt').textContent = 'נאספו עד כה ' + shekel(d.gift_total_agorot) + ' · ' + d.gift_count + ' מתנות';
-      $('goalBar').style.width = '100%';
-    }
+    renderGoal(d);
+  }
+}
+
+function renderGoal(d) {
+  if (d.gift_goal_agorot) {
+    $('goalWrap').hidden = false;
+    const pct = Math.min(100, Math.round(d.gift_total_agorot * 100 / d.gift_goal_agorot));
+    $('goalBar').style.width = pct + '%';
+    $('goalTxt').textContent = 'נאספו עד כה ' + shekel(d.gift_total_agorot) +
+      ' מתוך יעד של ' + shekel(d.gift_goal_agorot) + ' · ' + d.gift_count + ' מתנות';
+  } else if (d.gift_count > 0) {
+    $('goalWrap').hidden = false;
+    $('goalTxt').textContent = 'נאספו עד כה ' + shekel(d.gift_total_agorot) + ' · ' + d.gift_count + ' מתנות';
+    $('goalBar').style.width = '100%';
   }
 }
 
@@ -384,6 +427,12 @@ $('giftAmount').addEventListener('input', () => {
   for (const x of document.querySelectorAll('.amount-btn')) x.classList.remove('on');
 });
 
+// gift flow = the same three steps a live provider needs:
+// begin (payment session) -> provider page (simulated while in test mode) ->
+// confirm (callback seam). The DB refuses live mode until a provider is
+// approved, so this UI is honest about what each step is.
+let PAY = null;   // { ref, amount_agorot, donor_name }
+
 $('giftSubmit').addEventListener('click', () => guarded($('giftSubmit'), 'gift', async () => {
   $('giftErr').innerHTML = '';
   const shekelAmt = pickedAmount || parseInt($('giftAmount').value, 10);
@@ -391,18 +440,64 @@ $('giftSubmit').addEventListener('click', () => guarded($('giftSubmit'), 'gift',
   if (!shekelAmt || shekelAmt < 1) { $('giftErr').innerHTML = '<div class="err">בחרו סכום.</div>'; return; }
   if (!name) { $('giftErr').innerHTML = '<div class="err">שם נותן המתנה חובה.</div>'; return; }
   try {
-    await rpc('evg_gift_create', {
+    const b = await rpc('evg_gift_begin', {
       p_token: T || S,
       p_donor_name: name,
       p_amount_agorot: shekelAmt * 100,
       p_greeting: $('giftGreeting').value.trim() || null,
     });
-    $('giftDone').hidden = false;
-    $('giftDoneTxt').textContent = 'מתנה של ' + shekel(shekelAmt * 100) +
-      ' נרשמה במצב טסט — לא בוצע חיוב אמיתי. בעלי השמחה רואים אותה בלוח שלהם.';
-    $('giftSubmit').hidden = true;
+    PAY = { ref: b.gift_ref, amount_agorot: b.amount_agorot, donor_name: name };
+    $('paySummary').innerHTML = '<span>מתנה לאירוע: ' + esc(b.event_title || '') + '</span>' +
+      '<b>' + shekel(b.amount_agorot) + '</b>';
+    $('payErr').innerHTML = '';
+    $('giftForm').hidden = true;
+    $('payStep').hidden = false;
   } catch (e) { $('giftErr').innerHTML = '<div class="err">' + esc(e.message) + '</div>'; }
 }));
+
+$('payCancel').addEventListener('click', () => guarded($('payCancel'), 'payCancel', async () => {
+  if (PAY) { try { await rpc('evg_gift_cancel', { p_gift_ref: PAY.ref }); } catch { /* session simply expires */ } }
+  PAY = null;
+  $('payStep').hidden = true;
+  $('giftForm').hidden = false;
+}));
+
+$('payConfirm').addEventListener('click', () => guarded($('payConfirm'), 'payConfirm', async () => {
+  if (!PAY) return;
+  $('payErr').innerHTML = '';
+  try {
+    const c = await rpc('evg_gift_confirm', { p_gift_ref: PAY.ref });
+    $('payStep').hidden = true;
+    $('giftDone').hidden = false;
+    $('giftDoneTxt').textContent = 'מתנה של ' + shekel(c.amount_agorot) +
+      ' התקבלה במצב טסט — לא בוצע חיוב אמיתי. בעלי השמחה רואים אותה בלוח שלהם.';
+    try {
+      const r = await rpc('evg_receipt_get', { p_gift_ref: PAY.ref });
+      if (r) {
+        $('receiptBox').innerHTML =
+          '<div class="r-head">קבלה מס\' ' + r.receipt_no + '</div>' +
+          '<div class="muted" style="margin-bottom:8px">מצב טסט — אינה חשבונית מס</div>' +
+          '<div class="r-row"><span>אירוע</span><b>' + esc(r.event_title) + '</b></div>' +
+          '<div class="r-row"><span>מאת</span><b>' + esc(r.donor_name) + '</b></div>' +
+          '<div class="r-row"><span>סכום</span><b>' + shekel(r.amount_agorot) + '</b></div>' +
+          '<div class="r-row"><span>תאריך</span><b>' +
+            new Date(r.issued_at).toLocaleDateString('he-IL') + '</b></div>' +
+          '<div class="r-row"><span>פלטפורמה</span><b>אירועים ומתנות · more30</b></div>';
+        $('receiptBox').hidden = false;
+        $('receiptPrint').hidden = false;
+      }
+    } catch { /* receipt display is a bonus — the gift itself is already in */ }
+    // the meter the donor just moved: reflect it without a refetch
+    if (DATA) {
+      DATA.gift_total_agorot = (DATA.gift_total_agorot || 0) + PAY.amount_agorot;
+      DATA.gift_count = (DATA.gift_count || 0) + 1;
+      renderGoal(DATA);
+    }
+    PAY = null;
+  } catch (e) { $('payErr').innerHTML = '<div class="err">' + esc(e.message) + '</div>'; }
+}));
+
+$('receiptPrint').addEventListener('click', () => window.print());
 
 // entry pass: the personal link itself, as a scannable QR. If the QR lib CDN
 // is unreachable the card simply stays hidden — the link still works manually

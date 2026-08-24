@@ -397,7 +397,7 @@ td .pickbox{width:auto;margin:0;accent-color:var(--gold)}
       <h3 style="margin-top:22px">מתנות <span class="chip test" style="font-size:10px;padding:1px 8px">מצב טסט</span></h3>
       <div style="overflow-x:auto">
       <table id="mGiftsTable">
-        <thead><tr><th>מאת</th><th>סכום</th><th>ברכה</th><th>תאריך</th><th>תודה</th></tr></thead>
+        <thead><tr><th>מאת</th><th>סכום</th><th>קבלה</th><th>ברכה</th><th>תאריך</th><th>תודה</th></tr></thead>
         <tbody></tbody>
       </table>
       </div>
@@ -614,6 +614,24 @@ td .pickbox{width:auto;margin:0;accent-color:var(--gold)}
         <tbody></tbody>
       </table>
       </div>
+
+      <h3 style="margin-top:22px">החזר מתנה <span class="chip test" style="font-size:10px;padding:1px 8px">מצב טסט</span></h3>
+      <p class="muted">החזר לפי מספר הקבלה שבידי הנותן או בעל האירוע. ההחזר רושם תנועות ארנק
+        הפוכות — כל הדוחות מתאזנים אוטומטית, וההיסטוריה נשמרת.</p>
+      <div class="grid c3">
+        <div>
+          <label for="arNo">מס' קבלה *</label>
+          <input id="arNo" type="number" min="1" />
+        </div>
+        <div>
+          <label for="arReason">סיבת ההחזר</label>
+          <input id="arReason" maxlength="300" placeholder="בקשת הנותן, סכום שגוי…" />
+        </div>
+        <div style="align-self:end">
+          <button class="btn small" id="arSubmit" style="margin-bottom:12px">↩ ביצוע החזר (טסט)</button>
+        </div>
+      </div>
+      <div id="arMsg"></div>
 
       <h3 style="margin-top:22px">מדריך הספקים <span class="muted" id="admVendorCount"></span></h3>
       <p class="muted">הדירקטורי שבעלי האירועים רואים בתקציב שלהם — כאן מוסיפים, עורכים ומסתירים ספקים.
@@ -870,7 +888,8 @@ async function openEvent(id, opts = {}) {
   const guests = d.guests || [], gifts = d.gifts || [];
   const yes = guests.filter(g => g.rsvp_status === 'yes').reduce((s, g) => s + (g.rsvp_count || 0), 0);
   const checkin = guests.filter(g => g.checkin_at).length;
-  const total = gifts.reduce((s, g) => s + g.amount_agorot, 0);
+  // refunded gifts stay visible in the table but never count as income
+  const total = gifts.filter(g => g.status === 'paid').reduce((s, g) => s + g.amount_agorot, 0);
   $('mYes').textContent = yes;
   $('mCheckin').textContent = checkin;
   $('mGifts').textContent = shekel(total);
@@ -909,13 +928,17 @@ async function openEvent(id, opts = {}) {
   $('mGiftsTable').querySelector('tbody').innerHTML = gifts.map((g) => `
     <tr>
       <td><b>${esc(g.donor_name)}</b> <span class="chip test" style="font-size:10px;padding:0 7px">${g.mode === 'test' ? 'טסט' : 'אמיתי'}</span></td>
-      <td>${shekel(g.amount_agorot)}</td>
+      <td>${g.status === 'refunded'
+        ? '<s class="muted">' + shekel(g.amount_agorot) + '</s> <span class="pill pending" title="' + esc(g.refund_reason || '') + '">↩ הוחזר</span>'
+        : shekel(g.amount_agorot)}</td>
+      <td class="muted">${g.receipt_no ? '#' + g.receipt_no : '—'}</td>
       <td class="muted">${esc(g.greeting || '')}</td>
       <td class="muted">${new Date(g.created_at).toLocaleDateString('he-IL')}</td>
-      <td style="white-space:nowrap">${g.thanked_at
+      <td style="white-space:nowrap">${g.status === 'refunded' ? '<span class="muted">—</span>'
+        : g.thanked_at
         ? '<span class="pill yes">✓ נאמרה תודה</span>'
         : '<button class="btn ghost small" data-thank="' + g.id + '">💛 תודה ' + (waPhone(g.donor_phone) ? 'בוואטסאפ' : '(העתקה)') + '</button>'}</td>
-    </tr>`).join('') || '<tr><td colspan="5" class="muted">עדיין לא התקבלו מתנות.</td></tr>';
+    </tr>`).join('') || '<tr><td colspan="6" class="muted">עדיין לא התקבלו מתנות.</td></tr>';
 
   for (const b of $('mGiftsTable').querySelectorAll('[data-thank]'))
     b.addEventListener('click', () => guarded(b, 'thank' + b.dataset.thank, async () => {
@@ -2046,6 +2069,23 @@ async function renderAdmin() {
 }
 
 $('admRefresh').addEventListener('click', () => guarded($('admRefresh'), 'admRefresh', renderAdmin));
+
+// refund by receipt number (super-admin; the DB verifies both role and status)
+$('arSubmit').addEventListener('click', () => guarded($('arSubmit'), 'arSubmit', async () => {
+  $('arMsg').innerHTML = '';
+  const no = parseInt($('arNo').value, 10);
+  if (!no || no < 1) { $('arMsg').innerHTML = '<div class="err">מספר קבלה חובה.</div>'; return; }
+  if (!confirm('להחזיר את המתנה שבקבלה #' + no + '? הפעולה תרשום תנועות ארנק הפוכות.')) return;
+  try {
+    const r = await rpc('evg_admin_gift_refund', {
+      p_receipt_no: no, p_reason: $('arReason').value.trim() || null,
+    });
+    $('arMsg').innerHTML = '<div class="state ok" style="padding:10px 14px;margin:0"><p>הוחזרה מתנה של ' +
+      shekel(r.amount_agorot) + ' (קבלה #' + no + ', מצב טסט).</p></div>';
+    $('arNo').value = ''; $('arReason').value = '';
+    await renderAdmin();
+  } catch (e) { $('arMsg').innerHTML = '<div class="err">' + esc(e.message) + '</div>'; }
+}));
 
 // vendor add/edit form (super-admin)
 let admVendorEdit = null;
