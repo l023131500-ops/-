@@ -275,11 +275,23 @@
     setTimeout(function () { URL.revokeObjectURL(a.href); }, 1000);
   }
 
+  // full_name/phone/email/topic/address/from_fund/to_fund come straight from
+  // the public contact form (app.js payload -> LeadsStore.insertLead), so a
+  // value starting with =/+/-/@ is parsed as a formula by Excel/Sheets the
+  // moment an admin opens this export -- a classic CSV-injection vector
+  // (e.g. DDE execution or data exfiltration via =HYPERLINK). Prefixing with
+  // a tab neutralizes the formula parse without changing the visible value.
+  function csvEscape(v) {
+    var s = String(v);
+    if (/^[=+\-@]/.test(s)) s = "\t" + s;
+    return s.replace(/"/g, '""');
+  }
+
   function exportCSV() {
     var rows = [COLS.map(function (c) { return c[1]; })];
     VIEW.forEach(function (r) {
       rows.push(COLS.map(function (c) {
-        var v = String(cellVal(r, c)).replace(/"/g, '""');
+        var v = csvEscape(cellVal(r, c));
         return '"' + v + '"';
       }));
     });
