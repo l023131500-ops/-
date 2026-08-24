@@ -7,6 +7,8 @@ import { ShieldCheck, LogOut, User, MessageSquare, FileText, ScrollText, Wallet,
 import { queryOptions } from "@tanstack/react-query";
 import { tenantModulesQuery } from "@/features/customize/queries";
 import { OPTIONAL_MODULES, isModuleEnabled } from "@/features/customize/modules";
+import { usePortalNotifications } from "@/features/clients/portalNotifications";
+import { NotificationsBell } from "@/features/clients/components/NotificationsBell";
 
 export const meClientQuery = () =>
   queryOptions({
@@ -55,6 +57,7 @@ function ClientAreaLayout() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const navigate = useNavigate();
   const qc = useQueryClient();
+  const notifications = usePortalNotifications(client?.id, modules);
 
   async function signOut() {
     await qc.cancelQueries();
@@ -89,7 +92,15 @@ function ClientAreaLayout() {
             <div className="text-xs text-muted-foreground">{client.first_name} {client.last_name}</div>
           </div>
         </div>
-        <Button variant="ghost" size="sm" onClick={signOut}><LogOut className="h-4 w-4 me-1" /> יציאה</Button>
+        <div className="flex items-center gap-1">
+          <NotificationsBell
+            items={notifications.items}
+            seen={notifications.seen}
+            unseenCount={notifications.unseenCount}
+            onOpened={notifications.markAllSeen}
+          />
+          <Button variant="ghost" size="sm" onClick={signOut}><LogOut className="h-4 w-4 me-1" /> יציאה</Button>
+        </div>
       </header>
       <nav className="border-b bg-card/40 px-2 sm:px-4 overflow-x-auto">
         <div className="flex gap-1">
@@ -104,6 +115,11 @@ function ClientAreaLayout() {
                 }`}
               >
                 <t.icon className="h-4 w-4" /> {t.label}
+                {t.url === "/client-area/consents" && notifications.pendingConsentCount > 0 && (
+                  <span className="min-w-[16px] h-4 px-1 rounded-full bg-amber-500 text-white text-[10px] font-bold flex items-center justify-center">
+                    {notifications.pendingConsentCount}
+                  </span>
+                )}
               </Link>
             );
           })}

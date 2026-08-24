@@ -54,6 +54,7 @@ function PendingRequestCard({ req }: { req: MyReferralRequest }) {
       toast.success(res.consent_status === "approved" ? "אישרת את העברת הפרטים" : "דחית את הבקשה — שום פרט לא הועבר");
       qc.invalidateQueries({ queryKey: ["my-referral-requests"] });
       qc.invalidateQueries({ queryKey: ["my-consent-state"] });
+      qc.invalidateQueries({ queryKey: ["portal-notifications"] });
     },
     onError: (e: Error) => toast.error("שגיאה", { description: e.message }),
   });
