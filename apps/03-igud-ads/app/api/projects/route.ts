@@ -16,10 +16,14 @@ export async function GET() {
   // the newest 100 rows *platform-wide* and filtered afterward, so a user's own
   // older project silently dropped out of view once >100 newer projects existed
   // from other users.
+  // PostgREST treats , and ( ) in an .or() filter string as condition/group
+  // separators; without escaping, an email containing them could break out
+  // of the intended filter and append arbitrary clauses.
+  const safeEmail = user.email.replace(/[,()]/g, "\\$&");
   const { data } = await svc
     .from("ad_projects")
     .select("*")
-    .or(`uploader_email.eq.${user.email},customer_data->>email.eq.${user.email},customer_data->>contact.eq.${user.email}`)
+    .or(`uploader_email.eq.${safeEmail},customer_data->>email.eq.${safeEmail},customer_data->>contact.eq.${safeEmail}`)
     .order("created_at", { ascending: false })
     .limit(100);
 
