@@ -1,0 +1,53 @@
+kiosk: surface the per-device event+command log that GET /devices/:id already computed but the console never read
+
+KIOSK_BUILD §9 "יומן אירועים לכל מכשיר". `routes/devices.js` has computed
+`events` (last 30) and `commands` (last 20), both newest-first, since the
+audit log was added — every config edit, client approval/revocation,
+enrollment, connect, screenshot and issued command already lands a row. But
+`GET /devices/:id` was never called from `app.js`; the only way to see a
+device's history was a raw HTTP request. A fleet-management console that
+tracks per-device activity server-side and shows none of it is not the
+"דשבורד צי" §8/§9 ask for.
+
+Added "📋 יומן" to each device card: fetches the endpoint that already exists
+and renders two read-only tables — recent commands (type + status) and recent
+events (type + detail), each with Hebrew labels and a raw-string fallback for
+whatever isn't mapped yet, so a future event/command type the label maps
+haven't caught up to still renders instead of going blank.
+
+Two decisions in it that are not cosmetic:
+
+- The label maps are exhaustive on purpose, not "cover what I tested with".
+  Every device-scoped `logEvent()` call site and every entry in
+  `COMMAND_TYPES` is represented — verified by parsing the real source, not by
+  hand — because a fleet operator reading "config_update" instead of "הגדרות
+  עודכנו" in a support call is exactly the kind of rough edge §0's "retail-
+  grade" bar rules out.
+
+- Every lookup falls back to the raw type/status string rather than `undefined`
+  or a blank cell. The log is a record of what already happened; a row that
+  renders nothing for an unrecognised type is worse than one that renders the
+  raw value, because the raw value is still informative and the blank looks
+  like a bug.
+
+Verified: `node --check public/js/app.js` passes. A real-browser pass
+(`QA/kiosk/device-log-0824/run.mjs`) is written — stub serves the real
+`public/`, fixtures cover all 9 event types + all 11 command types + an
+unmapped one, two devices (populated + empty-state) — but could not execute
+in this sandbox: `ldd` on both downloaded Chromium builds shows
+libatk/libatk-bridge/libgbm/libasound/libX{composite,damage,fixes,randr} all
+missing, and there is no passwordless sudo to install them. Ran
+`coverage-check.mjs` instead — a DOM-free static check parsing the real
+server source (not a hand-copied list) that confirms the label maps cover
+every type the server can emit, every lookup has its fallback, and every
+interpolated field in the new code is `esc()`-wrapped or otherwise safe.
+All pass; see `QA/kiosk/device-log-0824/_results.md`.
+
+Not deployed — the Railway service still serves the previous console until
+this is pushed and built. No schema change, no migration — the endpoint
+already existed; this is a console-only read. No test customer account or
+real device exists to confirm the modal against production history, the same
+constraint every entry in this log without a real device has hit.
+
+/apps/** is gitignored in this repo, so the source lives on disk only — this
+commit carries STATUS.md and the QA evidence, as the previous kiosk commits did.

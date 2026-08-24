@@ -4088,3 +4088,50 @@ to that constraint: they import only dependency-free modules (`hosts.js`,
   approve it on a device, and confirm `/api/agent/identify` resolves it in
   production, the same constraint every fix in this log without a real
   device has hit.
+
+- **[24/08/2026, Loop A] Per-device event/command log — KIOSK_BUILD.md §9
+  "יומן אירועים לכל מכשיר", on `zol` not this tree** — `routes/devices.js`'s
+  `GET /devices/:id` has computed `events` (last 30, newest-first) and
+  `commands` (last 20, newest-first) since the audit log was added — every
+  config edit, client approval/revocation, enrollment, agent connect,
+  screenshot, and issued command already lands a row via `logEvent()`. Nothing
+  in `public/js/app.js` ever called that endpoint or rendered the result; the
+  only way to see a device's history was a raw HTTP request. A fleet console
+  that computes a per-device audit trail server-side and shows none of it does
+  not meet §8/§9's "דשבורד צי" ask.
+
+  Added **📋 יומן** to each device card (`deviceCard()`): opens a read-only
+  modal, fetches `GET /devices/:id`, and renders two tables — recent commands
+  (type + status) and recent events (type + detail) — through Hebrew label
+  maps (`EVENT_LABELS`/`COMMAND_LABELS`/`COMMAND_STATUS_LABELS`). Every lookup
+  falls back to the raw string rather than `undefined` or a blank cell, so a
+  future event/command type the maps haven't caught up to still shows
+  something informative instead of looking broken. The label maps are
+  exhaustive on purpose — every device-scoped `logEvent()` call site across
+  `src/`/`src/routes/` and every entry in `commands.js`'s `COMMAND_TYPES` is
+  covered, checked by parsing the real source rather than by hand.
+
+  **New constraint hit this round**: real-browser QA could not run in this
+  sandbox at all. `ldd` on both downloaded Chromium builds
+  (`chromium-1234`, `chromium_headless_shell-1148`) shows
+  `libatk-1.0.so.0`/`libatk-bridge-2.0.so.0`/`libgbm.so.1`/`libasound.so.2`/
+  `libX{composite,damage,fixes,randr}` all missing, and `sudo -n true` fails —
+  no way to install them here. `QA/kiosk/device-log-0824/run.mjs` is written
+  and ready (drives the stub in real Chromium, light+dark, asserts all 9 event
+  types + all 11 command types + the empty state + the unmapped-type
+  fallback) but currently fails at `chromium.launch()` before opening a page.
+  In its place, `coverage-check.mjs` does a DOM-free static pass: parses the
+  actual server source (not a hand-copied list) to confirm the label maps are
+  exhaustive, every lookup has its `|| raw` fallback, and every interpolated
+  field in the new code is `esc()`-wrapped or otherwise safe (the device's own
+  numeric id in the API path, or the two pre-built already-escaped HTML
+  strings). All checks pass. `node --check public/js/app.js` also passes.
+
+  Pushed to `l023131500-ops/zol`#`claude/what-do-you-see-gxo5tc` (`4b86698`).
+  `more30.com/kiosk/api/health` polled every 15s for 90s after the push and
+  read `200` throughout — no build-in-flight blip observed. **Not verified
+  beyond the deploy-landing signal and the static check**: no real-browser
+  screenshot exists for this round (sandbox constraint above, not a code
+  issue), and no test customer account or real device exists to confirm the
+  log against real production history, the same constraint every fix in this
+  log without a real device has hit.

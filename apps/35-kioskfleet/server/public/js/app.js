@@ -35,37 +35,6 @@ function toast(msg, ok = true) {
   setTimeout(() => t.remove(), 2600);
 }
 
-// The .pw-wrap/.pw-toggle markup and CSS already live in console.html for the
-// login field. This reproduces the same markup for password fields rendered
-// dynamically here, so every password input gets the same "הצג סיסמה" toggle.
-function pwField(id, labelText, autocomplete) {
-  return `<div class="field">
-      <label for="${id}">${esc(labelText)}</label>
-      <div class="pw-wrap">
-        <input id="${id}" type="password"${autocomplete ? ` autocomplete="${autocomplete}"` : ''} />
-        <button type="button" class="pw-toggle" id="${id}-toggle" aria-pressed="false" aria-controls="${id}" aria-label="הצג סיסמה" title="הצג סיסמה">
-          <svg data-icon="eye" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
-          <svg data-icon="eye-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9.9 5.2A9.8 9.8 0 0 1 12 5c6.5 0 10 7 10 7a17.6 17.6 0 0 1-3.2 4.2M6.6 6.6A17.6 17.6 0 0 0 2 12s3.5 7 10 7a9.8 9.8 0 0 0 4.1-.9"/><path d="M10.6 10.6a2 2 0 0 0 2.8 2.8"/><path d="m2 2 20 20"/></svg>
-        </button>
-      </div>
-    </div>`;
-}
-
-function wirePwToggle(id) {
-  const input = $('#' + id);
-  const btn = $('#' + id + '-toggle');
-  if (!input || !btn) return;
-  btn.onclick = () => {
-    const reveal = input.type === 'password';
-    input.type = reveal ? 'text' : 'password';
-    btn.setAttribute('aria-pressed', reveal ? 'true' : 'false');
-    const label = reveal ? 'הסתר סיסמה' : 'הצג סיסמה';
-    btn.setAttribute('aria-label', label);
-    btn.setAttribute('title', label);
-    input.focus();
-  };
-}
-
 // ── allowed-domain list editor ──────────────────────────────────
 //
 // The allow-list is the product: it is the line between a locked device and
@@ -105,7 +74,7 @@ function hostListEditor(mountEl, initialCsv, locked) {
       <input class="hl-new" placeholder="example.com" dir="ltr" style="flex:1" aria-label="דומיין חדש" />
       <button type="button" class="btn btn-light btn-sm hl-add">הוספה</button>
     </div>
-    <p class="hl-err" style="display:none"></p>
+    <p class="hl-err" style="color:#b91c1c;font-size:12px;margin:6px 0 0;display:none"></p>
     <p style="color:var(--muted);font-size:12px;margin:6px 0 0">
       תת-דומיינים נכללים אוטומטית — <code dir="ltr">example.com</code> מתיר גם
       <code dir="ltr">pay.example.com</code>. הוסיפו כאן גם את שער התשלום.
@@ -122,7 +91,7 @@ function hostListEditor(mountEl, initialCsv, locked) {
     if (!hosts.length) {
       // Empty means "no lock configured", which the device treats as allow-all.
       // Saying so is the difference between a mistake and a decision.
-      listEl.innerHTML = `<p class="hl-empty">
+      listEl.innerHTML = `<p class="hl-empty" style="color:#b45309;font-size:13px;margin:0">
         אין דומיינים ברשימה — המכשיר יוכל לפתוח <b>כל</b> כתובת. הוסיפו לפחות אחד כדי לנעול.</p>`;
       return;
     }
@@ -182,101 +151,27 @@ function hostListEditor(mountEl, initialCsv, locked) {
   };
 }
 
-// ── dialogs ─────────────────────────────────────────────────────
-//
-// A `.modal-bg` is a sibling of `#app-view`, not a `<dialog>`, so the platform
-// does nothing for it: focus stays on whatever opened the dialog, Tab walks the
-// page *behind* it, and the only way out was the mouse — the backdrop click.
-// Every destructive confirmation in the console is one of these, so a keyboard
-// user could be reading a dialog while their focus was on a delete button
-// underneath it.
-const FOCUSABLE = 'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
-let MODAL_N = 0;
-
-// The Tab trap below covers Tab, which is what a keyboard user presses. It does
-// not cover the other ways into the page behind a dialog: a screen reader's
-// virtual cursor walks the whole document without ever pressing Tab, and so
-// does Ctrl+F → Enter. `inert` is what actually removes that page — from the
-// accessibility tree as well as from focus and from clicks.
-//
-// Driven off `#modal-root.children` rather than a boolean, so a dialog opened
-// on top of another one does not un-inert the page when only the top one
-// closes. `#toast-root` is deliberately NOT in this list: it is the live region
-// that announces what a dialog's save did, and inert would silence it.
-const BEHIND_MODAL = ['#login-view', '#app-view'];
-function syncInert() {
-  const open = $('#modal-root').children.length > 0;
-  for (const sel of BEHIND_MODAL) { const n = $(sel); if (n) n.toggleAttribute('inert', open); }
-}
-
 function modal(html) {
-  const bg = el(`<div class="modal-bg"><div class="modal" role="dialog" aria-modal="true" tabindex="-1">${html}</div></div>`);
-  const box = $('.modal', bg);
-  const opener = document.activeElement;
+  const bg = el(`<div class="modal-bg"><div class="modal">${html}</div></div>`);
   bg.addEventListener('click', (e) => { if (e.target === bg) bg.remove(); });
-
-  // Recomputed on every press, never cached: the wizard redraws its own list
-  // after each tick, and a cached first/last would point at detached nodes.
-  // `offsetParent` drops what is hidden — the exit-code dialog and the wizard
-  // both toggle `.hidden` sections in place.
-  const focusables = () => [...box.querySelectorAll(FOCUSABLE)].filter((e) => e.offsetParent !== null);
-
-  const onKey = (e) => {
-    // Only the topmost dialog acts. Two open at once would both preventDefault
-    // and fight over where focus lands.
-    if ($('#modal-root').lastElementChild !== bg) return;
-    if (e.key === 'Escape') { e.preventDefault(); bg.remove(); return; }
-    if (e.key !== 'Tab') return;
-    const f = focusables();
-    if (!f.length) { e.preventDefault(); box.focus(); return; }
-    const first = f[0], last = f[f.length - 1];
-    const cur = document.activeElement;
-    if (!box.contains(cur)) { e.preventDefault(); (e.shiftKey ? last : first).focus(); return; }
-    // `box` itself is the stop before `first` — it is what receives focus on
-    // open — so Shift+Tab from either wraps to the end rather than leaving.
-    if (e.shiftKey && (cur === first || cur === box)) { e.preventDefault(); last.focus(); }
-    else if (!e.shiftKey && cur === last) { e.preventDefault(); first.focus(); }
-  };
-  // Capture, so a field inside the dialog that swallows the key (the domain
-  // editor's Enter handler is one) cannot swallow Escape or Tab first.
-  document.addEventListener('keydown', onKey, true);
-
-  // Every close path in this file is `m.remove()` on the backdrop, so the
-  // teardown belongs on that one method rather than in forty call sites.
-  bg.remove = function () {
-    document.removeEventListener('keydown', onKey, true);
-    Element.prototype.remove.call(bg);
-    // Before the focus() below, not after: focus() on an element inside an
-    // inert subtree is a no-op, and the opener is one of those until this runs.
-    syncInert();
-    // Back to the button that opened it — but only if it is still on the page:
-    // a save reloads the device list, and the opener is then a detached node
-    // whose focus() silently sends focus to <body>, i.e. back to the top.
-    if (opener && opener.isConnected && typeof opener.focus === 'function') opener.focus();
-  };
-
   $('#modal-root').appendChild(bg);
-  syncInert();
-  // Every dialog here opens with an <h3>; that is its accessible name.
-  const h = $('h3', box);
-  if (h) { if (!h.id) h.id = 'modal-h-' + (++MODAL_N); box.setAttribute('aria-labelledby', h.id); }
-
-  // Focus the **dialog**, not its first control. The first control is `כן, בצע`
-  // in every confirmation here — landing there puts a reboot or a delete one
-  // Space away from someone who was only tabbing. A text field is different:
-  // it is why the dialog opened, and focusing it types nothing.
-  const firstField = box.querySelector('input:not([type=checkbox]):not([type=radio]):not([disabled]), textarea:not([disabled]), select:not([disabled])');
-  (firstField && firstField.offsetParent !== null ? firstField : box).focus();
   return bg;
 }
-// Not `innerHTML = ''` — that detaches the nodes without running the teardown
-// above, leaving a keydown listener on document for a dialog nobody can see.
-function closeModals() { [...$('#modal-root').children].forEach((c) => c.remove()); syncInert(); }
+function closeModals() { $('#modal-root').innerHTML = ''; }
 
 // ── auth ────────────────────────────────────────────────────────
 $('#login-form').addEventListener('submit', async (e) => {
   e.preventDefault();
   $('#login-error').classList.add('hidden');
+  // Every other form in this console guards its submit button against a
+  // second click firing a second in-flight request; this is the one every
+  // user hits first, on a touchscreen kiosk console where a double-tap is
+  // the normal way a tap misfires. A second request here does not create a
+  // duplicate row, but it can still race the first: both calls hit the
+  // login rate limiter, and boot() (which replaces this whole view) can run
+  // twice concurrently.
+  const btn = $('#login-submit');
+  btn.disabled = true;
   try {
     const data = await api('/auth/login', { method: 'POST', body: JSON.stringify({ username: $('#login-user').value, password: $('#login-pass').value }) });
     TOKEN = data.token; localStorage.setItem('kf_token', TOKEN);
@@ -284,6 +179,8 @@ $('#login-form').addEventListener('submit', async (e) => {
   } catch (err) {
     $('#login-error').textContent = err.message;
     $('#login-error').classList.remove('hidden');
+  } finally {
+    btn.disabled = false;
   }
 });
 
@@ -382,77 +279,27 @@ function connectSocket() {
 function mapDevice(d) {
   return { id: d.id, name: d.name, serial: d.serial, ownerName: d.owner_name || d.ownerName,
     online: d.online === 1 || d.online === true, status: d.status, homeUrl: d.home_url || d.homeUrl,
-    // §2★א's second field. `??` and not `||`: '' and null both mean "follows the
-    // main site", and the card has to be able to tell that apart from a link
-    // this device was actually given.
-    displayUrl: d.display_url ?? d.displayUrl ?? null,
     allowedHost: d.allowed_host || d.allowedHost, idleReturnSeconds: d.idle_return_seconds ?? d.idleReturnSeconds ?? 0,
     lastSeen: d.last_seen || d.lastSeen,
-    // §2★ז. Read from both shapes: the REST payload is publicDevice()'s camelCase,
-    // while a device_update over the socket is the raw row.
-    accessCode: d.access_code ?? d.accessCode ?? null,
-    // §2★ה/§4's maintenance code. `??` again: '' can never be stored (the server
-    // maps an empty submission to NULL), but reading it as falsy-or-null would
-    // make "cleared" and "never set" indistinguishable from a socket frame.
-    exitCode: d.exit_code ?? d.exitCode ?? null,
-    battery: d.battery, model: d.model, appVersion: d.app_version || d.appVersion, ip: d.ip };
+    battery: d.battery, model: d.model, appVersion: d.app_version || d.appVersion, ip: d.ip,
+    exitCode: d.exit_code || d.exitCode || '',
+    lastScreenshotAt: d.last_screenshot_at || d.lastScreenshotAt || null,
+    displayZoomPercent: d.display_zoom_percent ?? d.displayZoomPercent ?? 100 };
 }
 
 // ── routing ─────────────────────────────────────────────────────
 let CURRENT = 'devices';
 $('#menu').addEventListener('click', (e) => {
+  // Tag-agnostic on purpose: the menu items are <button> so they sit on the
+  // Tab path (WCAG 2.1.1). This also still matches the old <a data-view>,
+  // so it is safe to ship ahead of the markup change.
   const a = e.target.closest('[data-view]'); if (!a) return;
-  route(a.dataset.view, true);
+  route(a.dataset.view);
 });
-// `fromUser` is what tells a screen change from the boot render. Only the first
-// moves focus: at boot nothing holds focus yet, and dragging it to a heading
-// there would push the page past the login pill and the sidebar before anyone
-// pressed a key.
-function route(view, fromUser = false) {
+function route(view) {
   CURRENT = view;
   [...$('#menu').children].forEach((a) => a.classList.toggle('active', a.dataset.view === view));
-  if (fromUser) focusNewScreen();
   ({ devices: viewDevices, links: viewLinks, clients: viewClients, enroll: viewEnroll, guide: viewGuide, admin: viewAdmin, settings: viewSettings }[view] || viewDevices)();
-}
-
-// ── where focus lands after a screen redraw (WCAG 2.4.3) ────────
-//
-// route() replaces the whole of `#content`, and the control that asked for the
-// change is usually *inside* it — `➕ הוספת מכשיר` on the devices screen and
-// `🚀 אשף התקנה` on the guide screen both route. When the node holding focus is
-// removed the browser drops focus to `<body>`, so the next Tab restarts at the
-// top of the document rather than continuing into the screen that just opened:
-// on this console that is the whole sidebar again, seven stops, before the
-// first control of the thing the person actually asked for.
-//
-// So focus moves to the new screen's `<h1>`. Not to its first control: that is
-// `רענון` on one screen and a submit on another, and landing on a control means
-// a Space away from pressing it — the same rule `modal()` follows. A heading
-// also names the screen, which is what a screen reader announces after a route
-// change that is otherwise silent.
-//
-// Driven by a MutationObserver rather than by the seven view functions because
-// three of them `await` before they mount (`viewEnroll` loads the link library
-// first), so route() cannot find the heading synchronously — and a per-view
-// call is seven places to forget on the eighth screen.
-let SCREEN_FOCUS = null;
-function focusNewScreen() {
-  if (SCREEN_FOCUS) SCREEN_FOCUS.disconnect();
-  const root = $('#content');
-  const obs = new MutationObserver(() => {
-    const h = root.querySelector('h1');
-    if (!h) return; // an intermediate mutation; the mount has not happened yet
-    obs.disconnect(); if (SCREEN_FOCUS === obs) SCREEN_FOCUS = null;
-    h.setAttribute('tabindex', '-1');
-    h.focus();
-  });
-  // `childList` without `subtree`: every in-screen redraw — renderDevices(),
-  // the links table, the codes box — replaces the children of a box *inside*
-  // `#content`, and pulling focus back up to the heading on every list refresh
-  // would fight the person using the screen. Only a whole-screen mount is a
-  // direct-child change.
-  obs.observe(root, { childList: true });
-  SCREEN_FOCUS = obs;
 }
 
 // Cache of the customer's link library (used by enroll + edit selectors).
@@ -465,7 +312,7 @@ async function viewDevices() {
     <div><button class="btn btn-light btn-sm" id="refresh">רענון</button>
     <button class="btn btn-primary btn-sm" id="add">➕ הוספת מכשיר</button></div></div>
     <div id="dev-list" class="device-grid"><p style="color:var(--muted)">טוען…</p></div>`;
-  $('#add').onclick = () => route('enroll', true);
+  $('#add').onclick = () => route('enroll');
   $('#refresh').onclick = loadDevices;
   await loadDevices();
 }
@@ -489,47 +336,80 @@ function deviceCard(d) {
         <div class="serial">S/N: ${esc(d.serial)}</div>${owner}</div>
       <span class="pill ${d.online ? 'on' : 'off'}">${d.online ? 'מחובר' : 'מנותק'}</span>
     </div>
-    <div class="meta">🌐 אתר ראשי: <span dir="ltr">${esc(d.homeUrl || '—')}</span><br/>
-      ${d.displayUrl ? `📺 מוצג במכשיר: <span dir="ltr">${esc(d.displayUrl)}</span><br/>` : ''}
-      🔋 ${d.battery != null ? d.battery + '%' : '—'} · 📱 ${esc(d.model || '—')} · v${esc(d.appVersion || '?')}<br/>
-      🕑 ${d.lastSeen
-        // ‎toLocaleString('he-IL')‎ מחזיר ‎"11.8.2026, 4:40:00"‎ — שני רצפי ספרות
-        // מופרדים בפסיק־ורווח. הפסיק והרווח ניטרליים דו-כיווניים, ולכן בפסקה
-        // בעברית שני הרצפים הם שני runs נפרדים והם מסודרים מימין לשמאל: המסך
-        // הראה ‎"4:40:00 ,11.8.2026"‎ — השעה לפני התאריך, והפסיק על הצד הלא נכון.
-        // המחרוזת עצמה תקינה, ולכן רק צילום מסך תפס את זה — בדיוק כמו חלון
-        // ה-OTA ב-‎setupsteps.js‎, שהוצג ‎06:00–04:00‎. ‎dir="ltr"‎ הוא בידוד
-        // (‎unicode-bidi: isolate‎ בגיליון הדפדפן), כלומר אותו LRI…PDI שם, ובאותה
-        // צורה שבה שתי השורות מעל כבר עוטפות כתובות.
-        ? `<span dir="ltr">${esc(new Date(d.lastSeen + 'Z').toLocaleString('he-IL'))}</span>`
-        : 'טרם דיווח'}<br/>
-      🔑 קוד גישה: ${d.accessCode
-        ? `<span class="code-chip" dir="ltr" style="font-size:14px;letter-spacing:2px;padding:2px 9px">${esc(d.accessCode)}</span>`
-        : '<span style="color:var(--warn-ink)">טרם הונפק</span>'}<br/>
-      🚪 קוד יציאה: <span id="ex-state-${d.id}">${exitCodeState(d)}</span></div>
+    <div class="meta">🌐 ${esc(d.homeUrl || '—')}<br/>
+      🔋 ${d.battery != null ? d.battery + '%' : '—'} · 📱 ${esc(d.model || '—')} · v${esc(d.appVersion || '?')}${d.displayZoomPercent && d.displayZoomPercent !== 100 ? ` · 🔍 ${d.displayZoomPercent}%` : ''}<br/>
+      🕑 ${d.lastSeen ? new Date(d.lastSeen + 'Z').toLocaleString('he-IL') : 'טרם דיווח'}</div>
     <div class="actions"></div></div>`);
   const acts = $('.actions', c);
   const mk = (label, fn, cls = 'btn-light') => { const b = el(`<button class="btn ${cls} btn-sm">${label}</button>`); b.onclick = fn; acts.appendChild(b); };
-  // §2★א ends at "הפעל", and §2★ב is what that button opens. First in the row on
-  // purpose: on a device that is not installed yet it is the only button here
-  // that does anything — the rest are commands to an agent that is not running.
-  mk('🚀 הפעל', () => setupWizard(d), 'btn-primary');
   mk('🔄 רענן', () => cmd(d, 'reload'));
   mk('🔗 החלף אתר', () => promptUrl(d));
   mk('♻️ אתחל', () => confirmCmd(d, 'reboot', 'לאתחל את המכשיר?'));
   mk('🌙 כבה מסך', () => cmd(d, 'screen_off'));
   mk('☀️ הדלק מסך', () => cmd(d, 'screen_on'));
   mk('🧹 נקה מטמון', () => cmd(d, 'clear_cache'));
-  mk('🆔 מזהי לקוח', () => clientApprovals(d));
-  // §2★ה's other half. Next to the clients picker because on the device the two
-  // are one screen: the person standing there picks a מזהה לקוח *or* a קישור,
-  // and both lists are bounded by what was ticked here.
-  mk('📚 קישורים מאושרים', () => linkApprovals(d));
-  mk('🔑 קוד גישה', () => accessCodeDialog(d));
-  mk('🚪 קוד יציאה', () => exitCodeDialog(d));
+  mk('📸 צילום מסך', () => cmd(d, 'screenshot'));
+  if (d.lastScreenshotAt) mk('🖼️ צילום אחרון', () => viewScreenshot(d));
+  mk('📋 יומן', () => viewDeviceLog(d));
   mk('✏️ עריכה', () => editDevice(d));
   mk('🗑️', () => confirmDelete(d), 'btn-danger');
   return c;
+}
+
+// ── DEVICE ACTIVITY LOG (KIOSK_BUILD.md §9 "יומן אירועים לכל מכשיר") ────
+//
+// GET /devices/:id already returns `events` (last 30) and `commands` (last
+// 20) — the fleet-management audit trail the spec asks for — but nothing in
+// the console ever called that endpoint or rendered them; the only way to see
+// them was a raw HTTP request. This is the surface for that data, read-only.
+const EVENT_LABELS = {
+  command: 'פקודה נשלחה', command_ack: 'תגובת מכשיר לפקודה', connected: 'המכשיר התחבר',
+  enrolled: 'המכשיר נרשם', config_update: 'הגדרות עודכנו', screenshot: 'צילום מסך נלכד',
+  client_identified: 'זוהה לקוח במכשיר', client_approved: 'לקוח אושר למכשיר', client_revoked: 'אישור לקוח בוטל',
+};
+const COMMAND_LABELS = {
+  reboot: 'אתחול', reload: 'רענון', set_url: 'החלפת כתובת', screen_on: 'הדלקת מסך', screen_off: 'כיבוי מסך',
+  clear_cache: 'ניקוי מטמון', lock: 'נעילה', unlock: 'שחרור זמני', screenshot: 'צילום מסך',
+  message: 'הודעה על המסך', update_config: 'עדכון הגדרות',
+};
+const COMMAND_STATUS_LABELS = { pending: 'ממתין', delivered: 'נשלח', done: 'בוצע', failed: 'נכשל' };
+const fmtTime = (t) => (t ? new Date(t + 'Z').toLocaleString('he-IL') : '—');
+
+async function viewDeviceLog(d) {
+  const m = modal(`<h3>יומן פעילות — ${esc(d.name)}</h3><p style="color:var(--muted)">טוען…</p>`);
+  let detail;
+  try { ({ device: detail } = await api(`/devices/${d.id}`)); }
+  catch (e) { m.querySelector('.modal').innerHTML = `<h3>יומן פעילות — ${esc(d.name)}</h3>
+    <p style="color:#b91c1c">${esc(e.message)}</p><div class="row" style="margin-top:12px"><button class="btn btn-light" id="c">סגירה</button></div>`;
+    $('#c', m).onclick = () => m.remove(); return; }
+
+  const events = detail.events || [];
+  const commands = detail.commands || [];
+  const eventsHtml = events.length
+    ? '<table><tr><th>אירוע</th><th>פרטים</th><th>מתי</th></tr>' + events.map((ev) =>
+        `<tr><td>${esc(EVENT_LABELS[ev.type] || ev.type)}</td><td dir="ltr" style="font-size:12px;color:var(--muted)">${esc(ev.detail || '')}</td><td style="font-size:12px">${fmtTime(ev.created_at)}</td></tr>`).join('') + '</table>'
+    : '<p style="color:var(--muted);margin:0">אין עדיין אירועים.</p>';
+  const commandsHtml = commands.length
+    ? '<table><tr><th>פקודה</th><th>סטטוס</th><th>מתי</th></tr>' + commands.map((c) =>
+        `<tr><td>${esc(COMMAND_LABELS[c.type] || c.type)}</td><td>${esc(COMMAND_STATUS_LABELS[c.status] || c.status)}</td><td style="font-size:12px">${fmtTime(c.created_at)}</td></tr>`).join('') + '</table>'
+    : '<p style="color:var(--muted);margin:0">אין עדיין פקודות.</p>';
+
+  m.querySelector('.modal').innerHTML = `<h3>יומן פעילות — ${esc(d.name)}</h3>
+    <h4 style="margin-bottom:6px">פקודות אחרונות</h4>${commandsHtml}
+    <h4 style="margin:16px 0 6px">אירועים (30 אחרונים)</h4>${eventsHtml}
+    <div class="row" style="margin-top:12px"><button class="btn btn-light" id="c">סגירה</button></div>`;
+  $('#c', m).onclick = () => m.remove();
+}
+async function viewScreenshot(d) {
+  const m = modal(`<h3>צילום מסך — ${esc(d.name)}</h3><p style="color:var(--muted)">טוען…</p>`);
+  try {
+    const { image, takenAt } = await api(`/devices/${d.id}/screenshot`);
+    m.querySelector('.modal').innerHTML = `<h3>צילום מסך — ${esc(d.name)}</h3>
+      <p style="color:var(--muted);font-size:12px">${takenAt ? new Date(takenAt + 'Z').toLocaleString('he-IL') : ''}</p>
+      <img src="${esc(image)}" alt="צילום מסך של ${esc(d.name)}" style="max-width:100%;border-radius:8px;border:1px solid var(--line)" />
+      <div class="row" style="margin-top:12px"><button class="btn btn-light" id="c">סגירה</button></div>`;
+    $('#c', m).onclick = () => m.remove();
+  } catch (e) { m.remove(); toast(e.message, false); }
 }
 async function cmd(d, type, payload) {
   try { await api(`/devices/${d.id}/command`, { method: 'POST', body: JSON.stringify({ type, payload }) }); toast('הפקודה נשלחה למכשיר'); }
@@ -543,7 +423,7 @@ function confirmCmd(d, type, q) {
 }
 function promptUrl(d) {
   const m = modal(`<h3>החלפת אתר</h3><div class="field"><label>כתובת (חייבת להיות תחת ${esc(d.allowedHost || 'הדומיין המורשה')})</label>
-    <input id="u" value="${esc(d.homeUrl || '')}" dir="ltr" /></div>
+    <input id="u" value="${esc(d.homeUrl || '')}" /></div>
     <div class="row"><button class="btn btn-primary" id="go">שלח</button><button class="btn btn-light" id="c">ביטול</button></div>`);
   $('#go', m).onclick = () => { const url = $('#u', m).value.trim(); if (url) cmd(d, 'set_url', { url }); m.remove(); };
   $('#c', m).onclick = () => m.remove();
@@ -556,43 +436,29 @@ async function editDevice(d) {
   const m = modal(`<h3>עריכת מכשיר</h3>
     <div class="field"><label>שם ידידותי</label><input id="n" value="${esc(d.name)}" /></div>
     ${linkOpts}
-    <div class="field"><label>אתר ראשי</label><input id="h" value="${esc(d.homeUrl || '')}" dir="ltr" />
-      <div style="color:var(--muted);font-size:12px;margin-top:4px">הקישור שהמכשיר נעול עליו, ושאליו הוא חוזר אחרי חוסר פעילות או אתחול.</div></div>
-    <div class="field"><label>קישור שיוצג על המכשיר</label>
-      <input id="disp" value="${esc(d.displayUrl || '')}" dir="ltr" placeholder="ריק = מציג את האתר הראשי" />
-      <div style="color:var(--muted);font-size:12px;margin-top:4px" id="disp-hint"></div></div>
+    <div class="field"><label>קישור האירוע/אולם (Home URL)</label><input id="h" value="${esc(d.homeUrl || '')}" dir="ltr" /></div>
     <div class="field"><label>דומיינים מותרים לפתיחה במכשיר</label><div id="hl"></div></div>
     <div class="field"><label>חזרה אוטומטית לקישור לאחר חוסר פעילות (שניות; 0 = כבוי)</label><input id="idle" type="number" min="0" value="${d.idleReturnSeconds || 0}" dir="ltr" /></div>
+    <div class="field"><label>הגדלת תצוגה (זום): <span id="zoom-val">${d.displayZoomPercent || 100}%</span></label>
+      <input id="zoom" type="range" min="50" max="300" step="10" value="${d.displayZoomPercent || 100}" dir="ltr" /></div>
+    <div class="field"><label>קוד תחזוקה מקומי (5 הקשות בפינת המסך)</label>
+      <input id="ex" value="${esc(d.exitCode || '')}" dir="ltr" placeholder="${d.exitCode ? '' : 'לא הוגדר — מכשיר ללא אינטרנט ננעל לצמיתות'}" /></div>
+      <div style="font-size:12px;color:var(--muted);margin-top:-8px">
+        לפחות 4 תווים, לא רצף ולא תו חוזר (למשל 1234 או 1111). השאירו ריק כדי לבטל.</div>
+    <div class="field"><label>לקוחות מאושרים למכשיר זה (§2★ה — הזנת המזהה במכשיר תפתח רק את אלה)</label>
+      <div id="cl-approve">טוען…</div></div>
     <div class="row"><button class="btn btn-primary" id="s">שמירה</button><button class="btn btn-light" id="c">ביטול</button></div>`);
 
   let homeHost = '';
   try { homeHost = new URL(d.homeUrl).host; } catch { /* no home URL yet */ }
   const hl = hostListEditor($('#hl', m), d.allowedHost, homeHost);
-
-  // What the second field does depends on the first one and on the domain list,
-  // so the hint is recomputed rather than written once: an owner who clears the
-  // list in this same dialog is told the widening no longer applies.
-  const disp = $('#disp', m), dispHint = $('#disp-hint', m);
-  const refreshDispHint = () => {
-    dispHint.textContent = !disp.value.trim()
-      ? 'ריק — המכשיר מציג את האתר הראשי, וממשיך לעקוב אחריו גם כשישתנה.'
-      : String(hl.value() || '').trim()
-        ? 'המכשיר יציג את הקישור הזה. הדומיין שלו מתווסף אוטומטית לרשימת הדומיינים הנשלחת למכשיר, כדי שלא ייחסם.'
-        : 'המכשיר יציג את הקישור הזה. במכשיר הזה לא מוגדרת נעילת דומיינים, ולכן אין מה להתיר.';
-  };
-  refreshDispHint();
-  disp.addEventListener('input', refreshDispHint);
-  // The host editor has no change hook; its buttons all live under this mount,
-  // and the re-draw happens in the same click.
-  $('#hl', m).addEventListener('click', () => setTimeout(refreshDispHint, 0));
+  $('#zoom', m).oninput = (e) => { $('#zoom-val', m).textContent = `${e.target.value}%`; };
+  loadDeviceClients(d, m);
 
   $('#s', m).onclick = async () => {
     // Adopt a domain that was typed but not added, rather than dropping it.
     if (!hl.commitPending()) return;
-    // `displayUrl` is sent on every save, empty included: the server reads it by
-    // presence, and an omitted key would make clearing the field impossible.
-    const body = { name: $('#n', m).value, homeUrl: $('#h', m).value, displayUrl: disp.value.trim(),
-      allowedHost: hl.value(), idleReturnSeconds: Number($('#idle', m).value) };
+    const body = { name: $('#n', m).value, homeUrl: $('#h', m).value, allowedHost: hl.value(), idleReturnSeconds: Number($('#idle', m).value), exitCode: $('#ex', m).value, displayZoomPercent: Number($('#zoom', m).value) };
     const lk = $('#lk', m); if (lk && lk.value) body.linkId = Number(lk.value);
     try { await api(`/devices/${d.id}`, { method: 'PATCH', body: JSON.stringify(body) });
       toast('נשמר. המכשיר יתעדכן מיד.'); m.remove(); loadDevices(); }
@@ -600,472 +466,33 @@ async function editDevice(d) {
   };
   $('#c', m).onclick = () => m.remove();
 }
-// Which "מזהי לקוח" may come up on this device (§2★ה). The registry screen says
-// who the owner's clients are; this says which of them the staff standing at
-// *this* device can reach. Until now that was an HTTP call only.
-async function clientApprovals(d) {
-  let data;
-  try { data = await api(`/devices/${d.id}/clients`); }
-  catch (e) { return toast(e.message, false); }
-  const rows = data.clients || [];
-
-  if (!rows.length) {
-    const m = modal(`<h3>מזהי לקוח למכשיר "${esc(d.name)}"</h3>
-      <p style="color:var(--muted)">עדיין אין לקוחות רשומים. רשמו לקוח ב"מזהי לקוח", ואז אפשר יהיה לאשר אותו למכשיר הזה.</p>
-      <div class="row"><button class="btn btn-primary" id="go">למסך מזהי לקוח</button><button class="btn btn-light" id="c">סגירה</button></div>`);
-    $('#go', m).onclick = () => { m.remove(); route('clients', true); };
-    $('#c', m).onclick = () => m.remove();
+// Toggled immediately on click (POST/DELETE per checkbox), not batched into
+// the modal's "שמירה" — the same "act now, don't wait for a separate save"
+// shape the screenshot/command buttons on the device card already use, and
+// it means closing the modal with "ביטול" can never discard an approval
+// change that already reached the server.
+async function loadDeviceClients(d, m) {
+  const box = $('#cl-approve', m); if (!box) return;
+  let clients;
+  try { ({ clients } = await api(`/devices/${d.id}/clients`)); }
+  catch (e) { box.innerHTML = `<p style="color:#b91c1c;font-size:13px;margin:0">${esc(e.message)}</p>`; return; }
+  if (!clients.length) {
+    box.innerHTML = '<p style="color:var(--muted);font-size:13px;margin:0">אין עדיין לקוחות רשומים. הוסיפו ב"לקוחות" בתפריט.</p>';
     return;
   }
-
-  // Approving widens the device's allowed-domain list — but only if it has one.
-  // An unset list means "no lock configured" to the device, and the server
-  // leaves it unset rather than creating a lock; say which of the two this is,
-  // because "האתר חסום" in a hall looks like a broken kiosk.
-  const hint = d.allowedHost
-    ? 'הדומיינים של הלקוחות שתאשרו יתווספו אוטומטית לדומיינים המותרים של המכשיר.'
-    : 'למכשיר הזה לא הוגדרה רשימת דומיינים מותרים, ולכן הוא אינו חוסם כתובות. אישור מזהה אינו משנה זאת.';
-
-  const m = modal(`<h3>מזהי לקוח מאושרים</h3>
-    <p style="color:var(--muted);margin:-6px 0 14px">מכשיר: ${esc(d.name)}. רק המזהים המסומנים כאן יעלו עליו — מי שיקיש מזהה אחר לא יקבל דבר.</p>
-    <div style="display:flex;gap:8px;align-items:center;margin-bottom:6px">
-      <button class="btn btn-light btn-sm" id="all">סמן הכל</button>
-      <button class="btn btn-light btn-sm" id="none">נקה הכל</button>
-      <span id="cnt" style="color:var(--muted);font-size:13px"></span></div>
-    <div id="ap-list"></div>
-    <p style="color:var(--muted);font-size:12px;margin:12px 0 0">${hint}</p>
-    <div class="row"><button class="btn btn-primary" id="s">שמירה</button><button class="btn btn-light" id="c">ביטול</button></div>`);
-  $('.modal', m).style.maxWidth = '560px';
-
-  const list = $('#ap-list', m);
-  // A disabled client that is already approved is shown checked, not dropped:
-  // the server would happily store the row, and silently un-approving it here
-  // would mean re-enabling the client no longer brings it back to this device.
-  list.innerHTML = rows.map((c) => `
-    <label style="display:flex;gap:10px;align-items:flex-start;padding:10px 2px;border-bottom:1px solid var(--line);cursor:pointer">
-      <input type="checkbox" data-id="${c.id}"${c.approved ? ' checked' : ''} style="flex:none;width:18px;height:18px;margin-top:4px" />
-      <span style="min-width:0;flex:1">
-        <b>${esc(c.name)}</b>
-        <span dir="ltr" style="font-family:monospace;font-size:13px;background:var(--bg);color:var(--muted);border-radius:6px;padding:1px 7px;margin-inline-start:6px">${esc(c.code)}</span>
-        <span dir="ltr" style="display:block;font-size:12px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${esc(c.siteUrl || '')}">${esc(c.siteUrl || '')}</span>
-        ${c.active ? '' : '<span style="display:block;font-size:12px;color:var(--warn-ink)">⛔ הלקוח מושבת — לא יעלה על המכשיר עד להפעלתו מחדש</span>'}
-      </span></label>`).join('');
-
-  const boxes = [...list.querySelectorAll('input[type=checkbox]')];
-  const count = () => { $('#cnt', m).textContent = `${boxes.filter((b) => b.checked).length} מתוך ${boxes.length} מאושרים`; };
-  boxes.forEach((b) => b.addEventListener('change', count));
-  $('#all', m).onclick = () => { boxes.forEach((b) => { b.checked = true; }); count(); };
-  $('#none', m).onclick = () => { boxes.forEach((b) => { b.checked = false; }); count(); };
-  count();
-
-  $('#c', m).onclick = () => m.remove();
-  $('#s', m).onclick = async () => {
-    const clientIds = boxes.filter((b) => b.checked).map((b) => Number(b.dataset.id));
-    try {
-      const res = await api(`/devices/${d.id}/clients`, { method: 'PUT', body: JSON.stringify({ clientIds }) });
-      // An empty list is a legitimate save and it means "nothing" — absence of a
-      // row is a "no" here — so it must not read as the same success as an
-      // approval the owner just granted.
-      const n = (res.approvedIds || []).length;
-      toast(n ? `נשמר — ${n} מזהי לקוח מאושרים למכשיר` : 'נשמר — לא אושר למכשיר אף מזהה לקוח');
-      m.remove(); loadDevices();
-    } catch (e) { toast(e.message, false); }
-  };
-}
-
-/**
- * Which library links may come up on this device (§2★ה, second half).
- *
- * The mirror of `clientApprovals()` above, and a separate dialog for the same
- * reason the routes are separate: `PUT /devices/:id/links` replaces the whole
- * set, so one modal carrying both lists would make un-approving every client the
- * price of touching the links. They are also different things to tick — a client
- * is a business whose staff type a code on a keypad, a link is an address the
- * server has already decided to offer.
- *
- * Until now `device_links` was writable only by hand-writing an HTTP call, which
- * is what left the second half of the selection screen unreachable: the owner's
- * link library is fleet-wide, so without this every device offered nothing but
- * its own main site and its approved clients.
- */
-async function linkApprovals(d) {
-  let data;
-  try { data = await api(`/devices/${d.id}/links`); }
-  catch (e) { return toast(e.message, false); }
-  const rows = data.links || [];
-
-  if (!rows.length) {
-    const m = modal(`<h3>קישורים מאושרים למכשיר "${esc(d.name)}"</h3>
-      <p style="color:var(--muted)">ספריית הקישורים ריקה. הוסיפו קישור במסך "ספריית קישורים", ואז אפשר יהיה לאשר אותו למכשיר הזה.</p>
-      <div class="row"><button class="btn btn-primary" id="go">לספריית הקישורים</button><button class="btn btn-light" id="c">סגירה</button></div>`);
-    $('#go', m).onclick = () => { m.remove(); route('links', true); };
-    $('#c', m).onclick = () => m.remove();
-    return;
-  }
-
-  // Same two branches as the clients picker, and for the same reason: approving
-  // widens the device's allowed-domain list, but only if it has one. An unset
-  // list means "no lock configured", and the server leaves it unset rather than
-  // creating a lock — say which of the two this device is, because "האתר חסום"
-  // on a tablet in a hall reads as a broken kiosk.
-  const hint = d.allowedHost
-    ? 'הדומיינים של הקישורים שתאשרו יתווספו אוטומטית לדומיינים המותרים של המכשיר.'
-    : 'למכשיר הזה לא הוגדרה רשימת דומיינים מותרים, ולכן הוא אינו חוסם כתובות. אישור קישור אינו משנה זאת.';
-
-  const m = modal(`<h3>קישורים מאושרים</h3>
-    <p style="color:var(--muted);margin:-6px 0 14px">מכשיר: ${esc(d.name)}. רק הקישורים המסומנים כאן יוצעו במסך הבחירה שלו. זו אינה החלפת האתר הראשי — המכשיר נשאר נעול עליו וחוזר אליו.</p>
-    <div style="display:flex;gap:8px;align-items:center;margin-bottom:6px">
-      <button class="btn btn-light btn-sm" id="all">סמן הכל</button>
-      <button class="btn btn-light btn-sm" id="none">נקה הכל</button>
-      <span id="cnt" style="color:var(--muted);font-size:13px"></span></div>
-    <div id="lk-list"></div>
-    <p style="color:var(--muted);font-size:12px;margin:12px 0 0">${hint}</p>
-    <div class="row"><button class="btn btn-primary" id="s">שמירה</button><button class="btn btn-light" id="c">ביטול</button></div>`);
-  $('.modal', m).style.maxWidth = '560px';
-
-  const list = $('#lk-list', m);
-  // No disabled state to render, unlike a client: `links` has no `active`
-  // column, so the only ways a link leaves this list are being deleted from the
-  // library or un-ticked here — and both remove the row rather than greying it.
-  list.innerHTML = rows.map((l) => `
-    <label style="display:flex;gap:10px;align-items:flex-start;padding:10px 2px;border-bottom:1px solid var(--line);cursor:pointer">
-      <input type="checkbox" data-id="${l.id}"${l.approved ? ' checked' : ''} style="flex:none;width:18px;height:18px;margin-top:4px" />
-      <span style="min-width:0;flex:1">
-        <b>${esc(l.name)}</b>
-        <span dir="ltr" style="display:block;font-size:12px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${esc(l.url || '')}">${esc(l.url || '')}</span>
-      </span></label>`).join('');
-
-  const boxes = [...list.querySelectorAll('input[type=checkbox]')];
-  const count = () => { $('#cnt', m).textContent = `${boxes.filter((b) => b.checked).length} מתוך ${boxes.length} מאושרים`; };
-  boxes.forEach((b) => b.addEventListener('change', count));
-  $('#all', m).onclick = () => { boxes.forEach((b) => { b.checked = true; }); count(); };
-  $('#none', m).onclick = () => { boxes.forEach((b) => { b.checked = false; }); count(); };
-  count();
-
-  $('#c', m).onclick = () => m.remove();
-  $('#s', m).onclick = async () => {
-    const linkIds = boxes.filter((b) => b.checked).map((b) => Number(b.dataset.id));
-    try {
-      const res = await api(`/devices/${d.id}/links`, { method: 'PUT', body: JSON.stringify({ linkIds }) });
-      // Saving nothing is a legitimate save and it means "nothing" — absence of
-      // a row is a "no" here — so it must not read as the same success as an
-      // approval the owner just granted.
-      const n = (res.approvedIds || []).length;
-      toast(n ? `נשמר — ${n} קישורים מאושרים למכשיר` : 'נשמר — לא אושר למכשיר אף קישור');
-      m.remove(); loadDevices();
-    } catch (e) { toast(e.message, false); }
-  };
-}
-
-/**
- * The device's own access code (§2★ז) — read it out, or replace it.
- *
- * The code existed in the API and in the database and nowhere a person could
- * see it, which makes it useless: it is meant to be read off this screen by the
- * owner and typed by whoever is standing at the device. It is shown in full
- * rather than masked — a credential you cannot read is not one you can hand
- * over, and this screen is already behind the owner's own session.
- */
-function accessCodeDialog(d) {
-  const m = modal(`<h3>קוד גישה למכשיר</h3>
-    <p style="color:var(--muted);margin:-6px 0 14px">מכשיר: ${esc(d.name)} · S/N ${esc(d.serial)}</p>
-    <div style="text-align:center;padding:6px 0 2px">
-      <span class="code-chip" id="ac-code" dir="ltr" style="font-size:30px;letter-spacing:8px;padding:10px 18px">${esc(d.accessCode || '—')}</span>
-    </div>
-    <p style="color:var(--muted);font-size:13px;margin:14px 0 0">הקוד מזהה את המכשיר הזה במסך הפתיחה של הקיוסק. מי שמחזיק בו יכול לפתוח את המכשיר — על המזהים שאושרו לו בלבד — ולכן אם הקוד דלף (צולם, עובד עזב), הנפיקו חדש: הישן מפסיק לעבוד מיד.</p>
-    <div class="row" id="ac-actions">
-      <button class="btn btn-primary" id="cp">העתקה</button>
-      <button class="btn btn-light" id="new">הנפקת קוד חדש</button>
-      <button class="btn btn-light" id="c">סגירה</button></div>
-    <div id="ac-confirm"></div>`);
-  $('#c', m).onclick = () => m.remove();
-
-  $('#cp', m).onclick = async () => {
-    if (!d.accessCode) return toast('אין עדיין קוד להעתקה', false);
-    if (await copyText(d.accessCode)) toast('הקוד הועתק');
-    // A browser served over plain HTTP has no clipboard API at all, and failing
-    // silently would look like a copy that worked. The code is on screen either
-    // way, so the honest answer is "read it off".
-    else toast('לא ניתן להעתיק בדפדפן הזה — העתיקו את הקוד מהמסך', false);
-  };
-
-  // The confirmation is inline rather than a second modal: replacing a code that
-  // is taped to a wall next to a tablet strands whoever is standing there, so it
-  // must not be one stray click, but it also must not lose the code being shown.
-  $('#new', m).onclick = () => {
-    $('#ac-actions', m).classList.add('hidden');
-    $('#ac-confirm', m).innerHTML = `
-      <p style="color:var(--warn-ink);font-size:13px;margin:14px 0 0">הקוד הנוכחי יפסיק לעבוד מיד. כל מי שרשם אותו יצטרך לקבל את החדש.</p>
-      <div class="row"><button class="btn btn-danger" id="y">כן, הנפק קוד חדש</button>
-        <button class="btn btn-light" id="n">ביטול</button></div>`;
-    $('#n', m).onclick = () => { $('#ac-confirm', m).innerHTML = ''; $('#ac-actions', m).classList.remove('hidden'); };
-    $('#y', m).onclick = async () => {
-      $('#y', m).disabled = true;
+  box.innerHTML = clients.map((c) => `<label style="display:flex;align-items:center;gap:8px;padding:4px 0">
+    <input type="checkbox" data-client="${c.id}" ${c.approved ? 'checked' : ''} />
+    <span class="code-chip" dir="ltr" style="font-size:12px">${esc(c.code)}</span> ${esc(c.name)}</label>`).join('');
+  box.querySelectorAll('[data-client]').forEach((cb) => {
+    cb.onchange = async () => {
+      cb.disabled = true;
       try {
-        const res = await api(`/devices/${d.id}/access-code`, { method: 'POST' });
-        d.accessCode = res.accessCode;
-        $('#ac-code', m).textContent = res.accessCode;
-        $('#ac-confirm', m).innerHTML = '';
-        $('#ac-actions', m).classList.remove('hidden');
-        toast('הונפק קוד חדש');
-        loadDevices();
-      } catch (e) { $('#y', m).disabled = false; toast(e.message, false); }
+        await api(`/devices/${d.id}/clients/${cb.dataset.client}`, { method: cb.checked ? 'POST' : 'DELETE' });
+      } catch (e) { cb.checked = !cb.checked; toast(e.message, false); }
+      finally { cb.disabled = false; }
     };
-  };
+  });
 }
-
-/**
- * The maintenance code that lets a person out of the kiosk (§2★ה, §4).
- *
- * The column, the validation and the three config pushes landed server-side and
- * left the field reachable only by hand-writing a PATCH — so on every device the
- * corner-tap dialog still answers `קוד תחזוקה לא הוגדר`, and the only way out of
- * a locked tablet is the remote `unlock` command, which needs the network.
- *
- * It gets its own dialog rather than a row in `editDevice()`, and it is **not**
- * printed on the card the way the access code is. The two codes look alike and
- * are opposites: the access code is meant to be printed and taped beside the
- * tablet, so leaking is its normal end state, while this one is the way *out* of
- * the lock. A console left open on a desk in an office would otherwise show the
- * exit code of every device in the fleet at once. It is still readable on
- * demand — that is the whole point of storing it recoverable (see
- * `exitcode.js`): the scenario it exists for is an offline tablet, where reading
- * the code off this screen and walking over is the only remaining route in.
- *
- * The length range in the hint is wrapped U+2066…U+2069. `4–32` is
- * directionally-neutral inside a Hebrew sentence and renders as `32–4` without
- * the isolates — the same defect `windowLabel()` was written for, and again only
- * the screenshot caught it: the source string and `innerText` are both correct.
- */
-function exitCodeDialog(d) {
-  const has = !!d.exitCode;
-  const m = modal(`<h3>קוד יציאה מהקיוסק</h3>
-    <p style="color:var(--muted);margin:-6px 0 14px">מכשיר: ${esc(d.name)} · S/N ${esc(d.serial)}</p>
-    <p style="color:var(--muted);font-size:13px;margin:0 0 14px">חמש הקשות ברציפות בפינת המסך פותחות במכשיר חלון שמבקש את הקוד הזה. הבדיקה מתבצעת על המכשיר עצמו, ולכן זו הדרך היחידה לצאת מהנעילה כשאין אינטרנט — פקודת השחרור מרחוק דורשת רשת.</p>
-    <div id="ex-err"></div>
-    <div class="field"><label>הקוד</label>
-      <input id="ex-val" value="${esc(d.exitCode || '')}" dir="ltr" autocomplete="off" placeholder="${has ? '' : 'לדוגמה: keter7291'}" />
-      <div style="color:var(--muted);font-size:12px;margin-top:4px">⁦4–32⁩ תווים. לא רצף ולא תו חוזר ⁦(1234, 0000)⁩, ולא קוד הגישה של המכשיר — הוא מודבק לידו.</div></div>
-    <div class="row" id="ex-actions">
-      <button class="btn btn-primary" id="ex-save">שמירה</button>
-      <button class="btn btn-light" id="ex-close">סגירה</button></div>
-    <div id="ex-confirm"></div>`);
-  $('#ex-close', m).onclick = () => m.remove();
-
-  const showErr = (msg) => {
-    $('#ex-err', m).innerHTML = msg ? `<div class="alert alert-error">${esc(msg)}</div>` : '';
-  };
-
-  // The code is written straight into the device's `Prefs`, so it is saved
-  // through the ordinary PATCH: that is the one path that also pushes
-  // `update_config`, and a code stored here but never pushed is a code the
-  // device does not have.
-  const save = async (value) => {
-    try {
-      const res = await api(`/devices/${d.id}`, { method: 'PATCH', body: JSON.stringify({ exitCode: value }) });
-      d.exitCode = res.device.exitCode ?? null;
-      const cell = $(`#ex-state-${d.id}`);
-      if (cell) cell.innerHTML = exitCodeState(d);
-      toast(d.exitCode ? 'הקוד נשמר ונשלח למכשיר' : 'הקוד בוטל');
-      m.remove();
-      loadDevices();
-    } catch (e) {
-      // Inline rather than only as a toast: a toast is gone by the time the
-      // person has re-read what they typed, and every one of these messages is
-      // an instruction for the next attempt.
-      showErr(e.message);
-      throw e;
-    }
-  };
-
-  $('#ex-save', m).onclick = async () => {
-    showErr('');
-    const value = $('#ex-val', m).value.trim();
-    // Emptying the field and saving is a clear, and a clear is destructive: it
-    // takes the offline way out away. Both routes to it land on the same
-    // confirmation rather than one being a quiet side effect of a blank field.
-    if (!value) {
-      if (!has) return showErr('לא הוזן קוד.');
-      $('#ex-actions', m).classList.add('hidden');
-      $('#ex-confirm', m).innerHTML = `
-        <p style="color:var(--warn-ink);font-size:13px;margin:14px 0 0">ביטול הקוד מסיר את הדרך היחידה לצאת מהנעילה במכשיר עצמו. אם המכשיר יאבד חיבור לאינטרנט, לא תהיה דרך לפתוח אותו בלי איפוס להגדרות היצרן.</p>
-        <div class="row"><button class="btn btn-danger" id="ex-y">כן, בטל את הקוד</button>
-          <button class="btn btn-light" id="ex-n">ביטול</button></div>`;
-      $('#ex-n', m).onclick = () => {
-        $('#ex-confirm', m).innerHTML = '';
-        $('#ex-actions', m).classList.remove('hidden');
-        $('#ex-val', m).value = d.exitCode || '';
-      };
-      $('#ex-y', m).onclick = async () => {
-        $('#ex-y', m).disabled = true;
-        try { await save(''); }
-        catch { $('#ex-y', m).disabled = false; $('#ex-confirm', m).innerHTML = ''; $('#ex-actions', m).classList.remove('hidden'); }
-      };
-      return;
-    }
-    $('#ex-save', m).disabled = true;
-    try { await save(value); } catch { $('#ex-save', m).disabled = false; }
-  };
-}
-
-/**
- * The card's one-line state. The code itself is not printed here — see above.
- *
- * Neither state is coloured, deliberately — and it stays that way now that
- * `--warn-ink` exists, because only half of the reason was the contrast. There
- * is still no `--ok`, so colouring `מוגדר` has nothing to read from, and a pair
- * where only the bad half is coloured reads as an error rather than as a state.
- * So the distinction is carried by the words, which have to say it anyway, and
- * by weight; both states inherit `.meta`'s `--muted`, which measures 5.49:1 on
- * the card. (`טרם הונפק` on the line above is amber because that one *is* a
- * single state worth flagging, and it now uses `--warn-ink`.)
- */
-function exitCodeState(d) {
-  return d.exitCode ? 'מוגדר' : '<strong>לא הוגדר — אין יציאה מקומית</strong>';
-}
-
-/**
- * The installation wizard (§2★ב) — the live checklist behind "הפעל".
- *
- * What this replaces is `viewGuide()`: four paragraphs, no boxes, not tied to a
- * device, stopping at enrollment — i.e. never reaching the part that actually
- * locks the tablet. §2★ב asks for a step-by-step list where every step has a
- * tick box and says exactly what to tap, which button to confirm and what should
- * appear, ending with kiosk mode switched on. The content is `setupsteps.js` and
- * the ticks are `setupprogress.js`; both landed already, and this is the screen
- * between them and the owner.
- *
- * The list is **never rendered from local state**. Every tick round-trips and
- * the answer redraws the ticks, because §2★ב's flow is two people at once — the
- * owner here and an installer at the tablet — and the one failure that matters
- * is progress appearing to go backwards while someone is watching it.
- */
-async function setupWizard(d) {
-  let data;
-  try { data = await api(`/devices/${d.id}/setup`); }
-  catch (e) { return toast(e.message, false); }
-
-  const m = modal(`<h3>🚀 הפעלה — אשף התקנה</h3>
-    <p class="wz-sub">מכשיר: ${esc(d.name)} · S/N ${esc(d.serial)}. סמנו כל שלב אחרי שביצעתם אותו. הסימון נשמר על המכשיר עצמו — הוא שורד רענון, אתחול של הטאבלט, ומעבר בין מי שפותח את האשף בקונסולה לבין מי שעומד ליד המכשיר.</p>
-    <div class="wz-track" id="wz-track"></div>
-    <div class="wz-progress"><div class="wz-bar"><span id="wz-fill" style="width:0"></span></div>
-      <span class="wz-count" id="wz-count"></span></div>
-    <div class="wz-complete hidden" id="wz-complete">✅ כל השלבים סומנו — המכשיר נעול ומוכן. מכאן היציאה היא רק בקוד הניהול המקומי או בפקודת "פתיחה" מהקונסולה.</div>
-    <div id="wz-list"></div>
-    <div class="row">
-      <button class="btn btn-primary" id="wz-close">סגירה</button>
-      <button class="btn btn-light" id="wz-reset">התחל מחדש</button></div>
-    <div id="wz-reset-confirm"></div>`);
-  $('.modal', m).style.maxWidth = '720px';
-  $('#wz-close', m).onclick = () => m.remove();
-
-  // §2★ו's two tracks. Switching them keeps the ticks (the server does that
-  // deliberately — the tracks are one list with a flag), so the wizard says so
-  // rather than letting a switch look like it might wipe the work.
-  const drawTrack = () => {
-    $('#wz-track', m).innerHTML = (data.tracks || []).map((t) => `
-      <label><input type="radio" name="wz-track" value="${esc(t.id)}"${t.id === data.track ? ' checked' : ''} />
-        <span style="min-width:0"><b>${esc(t.name)}</b><span>${esc(t.hint)}</span></span></label>`).join('');
-    $('#wz-track', m).querySelectorAll('input').forEach((r) => r.onchange = async () => {
-      try {
-        data = await api(`/devices/${d.id}/setup/track`, { method: 'POST', body: JSON.stringify({ track: r.value }) });
-        draw();
-        toast('המסלול עודכן — הסימונים נשמרו');
-      } catch (e) { toast(e.message, false); drawTrack(); }
-    });
-  };
-
-  const drawProgress = () => {
-    const p = data.progress || { done: 0, total: 0, percent: 0, complete: false };
-    $('#wz-fill', m).style.width = p.percent + '%';
-    $('#wz-count', m).textContent = `${p.done} מתוך ${p.total} שלבים`;
-    $('#wz-complete', m).classList.toggle('hidden', !p.complete);
-  };
-
-  const drawSteps = () => {
-    const doneIds = (data.progress && data.progress.doneIds) || [];
-    const nextId = data.progress && data.progress.nextId;
-    $('#wz-list', m).innerHTML = (data.steps || []).map((s, i) => {
-      const ticked = doneIds.includes(s.id);
-      return `<label class="wz-step${ticked ? ' wz-ticked' : ''}${s.id === nextId ? ' wz-next' : ''}" data-step="${esc(s.id)}">
-        <input type="checkbox" data-id="${esc(s.id)}"${ticked ? ' checked' : ''} />
-        <span class="wz-body">
-          <span class="wz-title">${i + 1}. ${esc(s.title)}</span>
-          <span class="wz-do">${esc(s.do)}</span>
-          ${s.command ? `<span class="wz-cmd"><code>${esc(s.command)}</code>
-            <button type="button" class="btn btn-light btn-sm" data-copy="${esc(s.command)}">העתקה</button></span>` : ''}
-          ${s.expect ? `<span class="wz-expect">✅ אמור להופיע: ${esc(s.expect)}</span>` : ''}
-          ${s.warn ? `<span class="wz-warn">⚠️ ${esc(s.warn)}</span>` : ''}
-        </span></label>`;
-    }).join('');
-
-    // The copy button sits inside the <label>, so a click on it would toggle the
-    // box as well — the command steps are exactly the ones nobody wants to tick
-    // by accident, since ticking `set-owner` early hides where the install
-    // actually stopped.
-    $('#wz-list', m).querySelectorAll('[data-copy]').forEach((b) => b.onclick = async (ev) => {
-      ev.preventDefault(); ev.stopPropagation();
-      if (await copyText(b.dataset.copy)) toast('הפקודה הועתקה');
-      else toast('לא ניתן להעתיק בדפדפן הזה — העתיקו את הפקודה מהמסך', false);
-    });
-
-    $('#wz-list', m).querySelectorAll('input[type=checkbox]').forEach((b) => b.onchange = async () => {
-      const want = b.checked;
-      b.disabled = true;
-      try {
-        data = await api(`/devices/${d.id}/setup/step`, {
-          method: 'POST', body: JSON.stringify({ stepId: b.dataset.id, done: want }),
-        });
-        draw();
-      } catch (e) {
-        // Put the box back where the server still has it. A tick that failed but
-        // stayed on screen is the worst outcome here: the next person reads the
-        // list as "this was done".
-        b.checked = !want; b.disabled = false;
-        toast(e.message, false);
-      }
-    });
-  };
-
-  const draw = () => { drawTrack(); drawProgress(); drawSteps(); };
-  draw();
-
-  // Starting over is separate from unticking twelve boxes, and confirmed inline
-  // rather than in a second modal — a device being re-installed is a real case,
-  // but so is a stray click on a list somebody spent an hour filling in.
-  $('#wz-reset', m).onclick = () => {
-    $('#wz-reset-confirm', m).innerHTML = `
-      <p style="color:var(--warn-ink);font-size:13px;margin:14px 0 0">כל הסימונים יימחקו והרשימה תחזור לשלב הראשון. ההגדרות של המכשיר עצמו לא ישתנו.</p>
-      <div class="row"><button class="btn btn-danger" id="wz-y">כן, התחל מחדש</button>
-        <button class="btn btn-light" id="wz-n">ביטול</button></div>`;
-    $('#wz-n', m).onclick = () => { $('#wz-reset-confirm', m).innerHTML = ''; };
-    $('#wz-y', m).onclick = async () => {
-      $('#wz-y', m).disabled = true;
-      try {
-        data = await api(`/devices/${d.id}/setup`, { method: 'DELETE' });
-        $('#wz-reset-confirm', m).innerHTML = '';
-        draw();
-        toast('הצ׳קליסט אופס');
-      } catch (e) { $('#wz-y', m).disabled = false; toast(e.message, false); }
-    };
-  };
-}
-
-// Clipboard, with the fallback that matters: the console is reached over
-// more30.com, but a venue laptop pointed straight at the Railway host over
-// http:// gets no navigator.clipboard, and execCommand still works there.
-async function copyText(text) {
-  try { await navigator.clipboard.writeText(text); return true; } catch { /* fall through */ }
-  const ta = el(`<textarea style="position:fixed;top:-1000px;opacity:0"></textarea>`);
-  ta.value = text;
-  document.body.appendChild(ta);
-  ta.select();
-  let ok = false;
-  try { ok = document.execCommand('copy'); } catch { ok = false; }
-  ta.remove();
-  return ok;
-}
-
 function confirmDelete(d) {
   const m = modal(`<h3>מחיקת מכשיר</h3><p style="color:var(--muted)">"${esc(d.name)}" יוסר מהמערכת. פעולה זו אינה הפיכה.</p>
     <div class="row"><button class="btn btn-danger" id="y">מחק</button><button class="btn btn-light" id="n">ביטול</button></div>`);
@@ -1100,37 +527,19 @@ async function createEnrollment() {
   const linkId = $('#e-link') ? ($('#e-link').value || null) : null;
   const idleReturnSeconds = Math.max(0, Number($('#e-idle').value) || 0);
   if (!linkId && !homeUrl) return toast('בחרו קישור מהספרייה או הזינו כתובת אתר', false);
-  // The fields are only cleared on success, further down — so without a guard
-  // here, a second click (or a double-tap) fired while the first request is
-  // still in flight reads the same still-filled form and creates a second,
-  // independent enrollment. Nothing rejects that as a duplicate: it is a
-  // second code for what was meant to be one device, sitting in "קודי רישום
-  // פתוחים" until someone notices and deletes it — or worse, gets handed to
-  // an installer instead of the first one.
+  // The fields are only cleared on success, below — without a guard here a
+  // second click while the first /enrollments call is still in flight reads
+  // the same still-filled form and mints a second, independent code (each
+  // enrollment's `code` is unique, but that does not stop two rows for one
+  // intended device).
   const btn = $('#e-create');
   btn.disabled = true;
   try {
     const body = linkId ? { linkId: Number(linkId), name, idleReturnSeconds } : { homeUrl, name, idleReturnSeconds };
     const { enrollment } = await api('/enrollments', { method: 'POST', body: JSON.stringify(body) });
-    // The code alone was never enough (§2★א): the app asks for a server address
-    // too, and that is the value nobody can guess and everybody mistypes. The
-    // install link carries both, so it — not the code — is what gets sent on.
     $('#e-result').innerHTML = `<div class="alert alert-ok" style="margin-top:16px">
       נוצר קוד רישום! הזינו אותו באפליקציה במכשיר:<br/><br/>
-      <span class="code-chip">${esc(enrollment.code)}</span>
-      ${enrollment.installUrl ? `<div style="margin-top:14px">
-        <b>קישור ההתקנה</b> — שלחו אותו למי שמתקין. הוא נפתח בדפדפן של המכשיר ומכיל
-        גם את כתובת השרת, גם את הקוד וגם את השלבים:<br/>
-        <a href="${esc(enrollment.installUrl)}" target="_blank" rel="noopener" dir="ltr"
-           style="display:inline-block;margin-top:6px;word-break:break-all">${esc(enrollment.installUrl)}</a>
-        <button class="btn btn-light btn-sm" style="margin-inline-start:8px"
-          data-copy-link="${esc(enrollment.installUrl)}">העתקת הקישור</button>
-      </div>` : ''}</div>`;
-    const cp = $('#e-result').querySelector('[data-copy-link]');
-    if (cp) cp.onclick = async () => {
-      if (await copyText(cp.dataset.copyLink)) toast('קישור ההתקנה הועתק');
-      else toast('לא ניתן להעתיק בדפדפן הזה — הקישור מופיע במסך', false);
-    };
+      <span class="code-chip">${esc(enrollment.code)}</span></div>`;
     $('#e-url').value = ''; $('#e-name').value = '';
     loadEnrollments();
   } catch (e) { toast(e.message, false); }
@@ -1141,27 +550,9 @@ async function loadEnrollments() {
   const open = enrollments.filter((e) => !e.used);
   const box = $('#e-list'); if (!box) return;
   if (!open.length) { box.innerHTML = '<p style="color:var(--muted);margin:0">אין קודים פתוחים.</p>'; return; }
-  // Four columns ending in two buttons, and the אתר cell is an untruncated URL:
-  // the table wants 548px inside a 276px card at 390px and dragged the whole
-  // console sideways. Same wrapper, same reason, as loadClients() and loadUsers().
-  // The other two URL-bearing tables (loadLinks' l-list, loadClients' c-list)
-  // cap their URL cell at 220px/230px; this one was contained (wrapped in the
-  // overflow-x:auto div) but not bounded, so a long pasted URL alone could
-  // still push the cell — and with it every other column on the row — wider
-  // than the card. Same cap+ellipsis+title pattern as c-list's `trunc`.
-  box.innerHTML = '<div style="overflow-x:auto"><table><tr><th>קוד</th><th>אתר</th><th>שם</th><th></th></tr>' +
-    open.map((e) => `<tr><td><span class="code-chip" style="font-size:15px">${esc(e.code)}</span></td><td dir="ltr" style="font-size:12px;max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${esc(e.home_url)}">${esc(e.home_url)}</td><td>${esc(e.name || '')}</td><td class="row" style="gap:6px">${
-      // A code created in an earlier session is still handed to an installer, so
-      // the link belongs on every open row and not only on the one just created.
-      // nowrap: the cell is narrow and a two-line button in a row of one-line
-      // buttons is what pushed a column off the card edge in clients-console-0811.
-      e.installUrl ? `<button class="btn btn-light btn-sm" style="white-space:nowrap" data-copy-link="${esc(e.installUrl)}">קישור התקנה</button>` : ''
-    }<button class="btn btn-danger btn-sm" data-del="${e.id}">מחק</button></td></tr>`).join('') + '</table></div>';
+  box.innerHTML = '<table><tr><th>קוד</th><th>אתר</th><th>שם</th><th></th></tr>' +
+    open.map((e) => `<tr><td><span class="code-chip" style="font-size:15px">${esc(e.code)}</span></td><td dir="ltr">${esc(e.home_url)}</td><td>${esc(e.name || '')}</td><td><button class="btn btn-danger btn-sm" data-del="${e.id}">מחק</button></td></tr>`).join('') + '</table>';
   box.querySelectorAll('[data-del]').forEach((b) => b.onclick = async () => { await api('/enrollments/' + b.dataset.del, { method: 'DELETE' }); loadEnrollments(); });
-  box.querySelectorAll('[data-copy-link]').forEach((b) => b.onclick = async () => {
-    if (await copyText(b.dataset.copyLink)) toast('קישור ההתקנה הועתק');
-    else toast('לא ניתן להעתיק בדפדפן הזה', false);
-  });
 }
 
 // ── LINK LIBRARY ────────────────────────────────────────────────
@@ -1180,11 +571,9 @@ async function viewLinks() {
   $('#l-create').onclick = async () => {
     const name = $('#l-name').value.trim(), url = $('#l-url').value.trim(), allowedHost = linkHl.value();
     if (!name || !url) return toast('נא למלא שם וכתובת', false);
-    // The fields are only cleared on success, below — so without a guard here,
-    // a second click while the first POST is still in flight reads the same
-    // still-filled form and creates a second link row. Nothing on the server
-    // rejects it as a duplicate (no unique constraint on a link), same gap
-    // #e-create and #c-create had.
+    // Unlike enrollments, a link has no unique constraint at all — a second
+    // click while the first POST /links is in flight creates a duplicate row
+    // with nothing anywhere to reject it.
     const btn = $('#l-create');
     btn.disabled = true;
     try { await api('/links', { method: 'POST', body: JSON.stringify({ name, url, allowedHost }) });
@@ -1198,167 +587,64 @@ async function loadLinks() {
   const { links } = await api('/links'); LINKS = links;
   const box = $('#l-list'); if (!box) return;
   if (!links.length) { box.innerHTML = '<p style="color:var(--muted);margin:0">אין עדיין קישורים.</p>'; return; }
-  // The URL column is capped at 220px, which is not enough on its own: four
-  // columns still want 408px in a 276px card at 390px.
-  box.innerHTML = '<div style="overflow-x:auto"><table><tr><th>שם</th><th>כתובת</th><th>דומיינים מותרים</th><th></th></tr>' +
+  box.innerHTML = '<table><tr><th>שם</th><th>כתובת</th><th>דומיינים מותרים</th><th></th></tr>' +
     links.map((l) => `<tr><td><b>${esc(l.name)}</b></td><td dir="ltr" style="font-size:12px;max-width:220px;overflow:hidden;text-overflow:ellipsis">${esc(l.url)}</td>
       <td dir="ltr" style="font-size:12px;color:var(--muted)">${esc(l.allowed_host || '')}</td>
-      <td><button class="btn btn-danger btn-sm" data-del="${l.id}">מחק</button></td></tr>`).join('') + '</table></div>';
+      <td><button class="btn btn-danger btn-sm" data-del="${l.id}">מחק</button></td></tr>`).join('') + '</table>';
   box.querySelectorAll('[data-del]').forEach((b) => b.onclick = async () => { await api('/links/' + b.dataset.del, { method: 'DELETE' }); loadLinks(); });
 }
 
-// ── CLIENT REGISTRY (§2★ד) ──────────────────────────────────────
-//
-// Two tiers. Our customer — a hall operator, a chain — registers the businesses
-// *they* serve: each gets a short code and a brand site. Staff type the code on
-// a device and that business's site comes up, identical on every device. The
-// rows live behind /api/clients; this is the only screen that writes them.
-
-let CLIENTS = [];
-
-/** The host of a URL, or '' — used to pin a client's own site in the allow-list. */
-function hostOf(url) {
-  try { return new URL(url).host.toLowerCase(); } catch { return ''; }
-}
-
+// ── CLIENT DIRECTORY (KIOSK_BUILD.md §2★ד) ─────────────────────────
+// The owner's own registered customers: a short id typed on a locked
+// device, resolving to that customer's branded site. Separate from the
+// "ספריית קישורים" library above — a link is an event/venue picked in this
+// console; a client is entered by code on the device itself, and only opens
+// on a device this console has explicitly approved it for (§2★ה, below in
+// editDevice()).
 async function viewClients() {
-  $('#content').innerHTML = `<div class="topbar"><h1>מזהי לקוח</h1></div>
+  $('#content').innerHTML = `<div class="topbar"><h1>לקוחות</h1></div>
+    <p style="color:var(--muted);max-width:680px">כאן רושמים את הלקוחות של העסק: לכל לקוח מזהה קצר + אתר משלו.
+      במכשיר, הזנת המזהה פותחת את האתר של אותו לקוח — רק במכשירים שאישרתם לו למטה בעריכת המכשיר.</p>
     <div class="card" style="max-width:680px">
       <h3>לקוח חדש</h3>
-      <p style="color:var(--muted)">לכל לקוח מזהה קצר ואתר משלו. מי שיזין את המזהה על המכשיר יראה בדיוק את האתר הזה — אותה תצוגה בכל מכשיר.</p>
-      <div class="field"><label>שם הלקוח</label><input id="c-name" placeholder="למשל: אולם הדר" /></div>
-      <div class="field"><label>מזהה לקוח — אפשר להשאיר ריק ואנחנו נפיק אחד</label><input id="c-code" dir="ltr" placeholder="למשל: 1234" /></div>
-      <div class="field"><label>אתר הלקוח שיוצג על המכשיר</label><input id="c-url" placeholder="https://example.com" dir="ltr" /></div>
-      <div class="field"><label>דומיינים נוספים מותרים — למשל שער התשלום</label><div id="c-hl"></div></div>
-      <div class="field"><label>הערה פנימית (לא מוצגת על המכשיר)</label><input id="c-notes" /></div>
-      <button class="btn btn-primary" id="c-create">שמור לקוח</button>
+      <div class="field"><label>מזהה לקוח (יוקלד במכשיר)</label><input id="cl-code" placeholder="למשל: 7 או HALL7" dir="ltr" /></div>
+      <div class="field"><label>שם הלקוח</label><input id="cl-name" placeholder="למשל: משפחת כהן" /></div>
+      <div class="field"><label>כתובת אתר התדמית של הלקוח</label><input id="cl-url" placeholder="https://example.com/client/7" dir="ltr" /></div>
+      <div class="field"><label>דומיינים נוספים מותרים</label><div id="cl-hl"></div></div>
+      <button class="btn btn-primary" id="cl-create">שמור לקוח</button>
     </div>
-    <div class="card"><h3>הלקוחות שלי</h3><div id="c-list">טוען…</div></div>`;
-  // The site's own host is added by the server, so nothing is pinned here.
-  let hl = hostListEditor($('#c-hl'), '', '');
-  $('#c-create').onclick = async () => {
-    if (!hl.commitPending()) return;
-    const name = $('#c-name').value.trim(), siteUrl = $('#c-url').value.trim();
-    if (!name || !siteUrl) return toast('נא למלא שם וכתובת אתר', false);
-    // The fields are only cleared on success, below — so without a guard here,
-    // a second click while the first POST is still in flight reads the same
-    // still-filled form and creates a second client row. Unlike a duplicate
-    // enrollment code, an *explicit* code is the one case the server's
-    // UNIQUE(owner_id, code) constraint would catch — but "מזהה לקוח" documents
-    // leaving the field blank so the server mints one, and a minted code is
-    // different on every call, so nothing rejects a second business record for
-    // what was meant to be one registration.
-    const btn = $('#c-create');
+    <div class="card" style="max-width:680px"><h3>הלקוחות שלי</h3><div id="cl-list">טוען…</div></div>`;
+  const clientHl = hostListEditor($('#cl-hl'), '', '');
+  $('#cl-create').onclick = async () => {
+    const code = $('#cl-code').value.trim(), name = $('#cl-name').value.trim(), url = $('#cl-url').value.trim(), allowedHost = clientHl.value();
+    if (!code || !name || !url) return toast('נא למלא מזהה, שם וכתובת', false);
+    const btn = $('#cl-create');
     btn.disabled = true;
-    try {
-      const { client } = await api('/clients', { method: 'POST', body: JSON.stringify({
-        name, code: $('#c-code').value, siteUrl, allowedHost: hl.value(), notes: $('#c-notes').value }) });
-      // The generated code is the whole point of the row — say it out loud,
-      // because whoever adds the client is the one who has to hand it to staff.
-      toast(`הלקוח נשמר. המזהה: ${client.code}`);
-      for (const id of ['#c-name', '#c-code', '#c-url', '#c-notes']) $(id).value = '';
-      hl = hostListEditor($('#c-hl'), '', '');
-      loadClients();
-    } catch (e) { toast(e.message, false); }
+    try { await api('/clients', { method: 'POST', body: JSON.stringify({ code, name, url, allowedHost }) });
+      toast('הלקוח נשמר'); $('#cl-code').value = ''; $('#cl-name').value = ''; $('#cl-url').value = ''; loadClients(); }
+    catch (e) { toast(e.message, false); }
     finally { btn.disabled = false; }
   };
   loadClients();
 }
-
 async function loadClients() {
-  const { clients } = await api('/clients'); CLIENTS = clients;
-  const box = $('#c-list'); if (!box) return;
-  if (!clients.length) {
-    box.innerHTML = '<p style="color:var(--muted);margin:0">אין עדיין לקוחות רשומים. הוסיפו לקוח כדי שאפשר יהיה לבחור אותו לפי מזהה על המכשיר.</p>';
-    return;
-  }
-  // Six columns did not fit: the row ends in three buttons, and the table cut
-  // the last one off at the edge of the card. The allow-list sits under the URL
-  // it belongs to instead of in a column of its own, and the wrapper scrolls on
-  // a narrow screen rather than clipping the actions.
-  const trunc = 'max-width:230px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap';
-  box.innerHTML = '<div style="overflow-x:auto"><table>' +
-    '<tr><th>מזהה</th><th>שם</th><th>אתר ודומיינים מותרים</th><th>סטטוס</th><th></th></tr>' +
-    clients.map((c) => `<tr>
-      <td><span class="code-chip" style="font-size:15px">${esc(c.code)}</span></td>
-      <td style="min-width:120px"><b>${esc(c.name)}</b>${c.notes ? `<div class="serial">${esc(c.notes)}</div>` : ''}</td>
-      <td>
-        <div dir="ltr" style="font-size:12px;${trunc}" title="${esc(c.siteUrl)}">${esc(c.siteUrl)}</div>
-        <div dir="ltr" style="font-size:12px;color:var(--muted);${trunc}" title="${esc(c.allowedHost || '')}">${esc(c.allowedHost || '')}</div>
-      </td>
-      <td style="white-space:nowrap">${c.active ? '✅ פעיל' : '⛔ מושבת'}</td>
-      <td style="white-space:nowrap"><button class="btn btn-light btn-sm" data-edit="${c.id}">עריכה</button>
-        <button class="btn btn-light btn-sm" data-toggle="${c.id}">${c.active ? 'השבתה' : 'הפעלה'}</button>
-        <button class="btn btn-danger btn-sm" data-del="${c.id}">מחק</button></td></tr>`).join('') + '</table></div>';
-  const find = (id) => CLIENTS.find((c) => String(c.id) === String(id));
-  box.querySelectorAll('[data-edit]').forEach((b) => b.onclick = () => clientModal(find(b.dataset.edit)));
-  box.querySelectorAll('[data-toggle]').forEach((b) => b.onclick = async () => {
-    const c = find(b.dataset.toggle);
-    // Disabling beats deleting for a client that stopped: the code stays taken,
-    // so it cannot be handed to a different business and reach the old site.
-    try { await api('/clients/' + c.id, { method: 'PATCH', body: JSON.stringify({ active: !c.active }) }); loadClients(); }
-    catch (e) { toast(e.message, false); }
-  });
-  box.querySelectorAll('[data-del]').forEach((b) => b.onclick = () => confirmDeleteClient(find(b.dataset.del)));
-}
-
-function clientModal(c) {
-  if (!c) return;
-  const m = modal(`<h3>עריכת לקוח</h3>
-    <div class="field"><label>שם הלקוח</label><input id="k-name" value="${esc(c.name)}" /></div>
-    <div class="field"><label>מזהה לקוח</label><input id="k-code" value="${esc(c.code)}" dir="ltr" /></div>
-    <p style="color:var(--muted);font-size:12px;margin:-8px 0 14px">שינוי המזהה מבטל את הקוד שנמסר לצוות — הקוד הישן יפסיק להתאים לאף לקוח.</p>
-    <div class="field"><label>אתר הלקוח</label><input id="k-url" value="${esc(c.siteUrl || '')}" dir="ltr" /></div>
-    <div class="field"><label>דומיינים מותרים</label><div id="k-hl"></div></div>
-    <div class="field"><label>הערה פנימית</label><input id="k-notes" value="${esc(c.notes || '')}" /></div>
-    <div class="row"><button class="btn btn-primary" id="k-save">שמירה</button><button class="btn btn-light" id="k-cancel">ביטול</button></div>`);
-
-  let pinned = hostOf(c.siteUrl);
-  let hl = hostListEditor($('#k-hl', m), c.allowedHost, pinned);
-  const urlIn = $('#k-url', m);
-  urlIn.addEventListener('change', () => {
-    const next = hostOf(urlIn.value);
-    if (next === pinned) return;
-    // The old host was pinned because it *was* the site. It no longer is, so it
-    // must not stay on the list by inertia — moving a client to a new site
-    // would otherwise leave the previous one permanently open on the device.
-    const kept = hl.value().split(',').filter((h) => h && h !== pinned).join(',');
-    pinned = next;
-    hl = hostListEditor($('#k-hl', m), kept, next);
-  });
-
-  $('#k-cancel', m).onclick = () => m.remove();
-  $('#k-save', m).onclick = async () => {
-    if (!hl.commitPending()) return;
-    try {
-      await api('/clients/' + c.id, { method: 'PATCH', body: JSON.stringify({
-        name: $('#k-name', m).value, code: $('#k-code', m).value, siteUrl: urlIn.value,
-        allowedHost: hl.value(), notes: $('#k-notes', m).value }) });
-      toast('נשמר'); m.remove(); loadClients();
-    } catch (e) { toast(e.message, false); }
-  };
-}
-
-function confirmDeleteClient(c) {
-  if (!c) return;
-  const m = modal(`<h3>מחיקת לקוח</h3>
-    <p style="color:var(--muted)">"${esc(c.name)}" (מזהה ${esc(c.code)}) יימחק. מכשירים שהמזהה הזה אושר להם לא יוכלו עוד לפתוח את האתר שלו.</p>
-    <div class="row"><button class="btn btn-danger" id="y">מחק</button><button class="btn btn-light" id="n">ביטול</button></div>`);
-  $('#y', m).onclick = async () => {
-    try { await api('/clients/' + c.id, { method: 'DELETE' }); toast('נמחק'); m.remove(); loadClients(); }
-    catch (e) { toast(e.message, false); }
-  };
-  $('#n', m).onclick = () => m.remove();
+  const { clients } = await api('/clients');
+  const box = $('#cl-list'); if (!box) return;
+  if (!clients.length) { box.innerHTML = '<p style="color:var(--muted);margin:0">אין עדיין לקוחות.</p>'; return; }
+  box.innerHTML = '<table><tr><th>מזהה</th><th>שם</th><th>כתובת</th><th></th></tr>' +
+    clients.map((c) => `<tr><td><span class="code-chip" dir="ltr">${esc(c.code)}</span></td><td>${esc(c.name)}</td>
+      <td dir="ltr" style="font-size:12px;max-width:220px;overflow:hidden;text-overflow:ellipsis">${esc(c.url)}</td>
+      <td><button class="btn btn-danger btn-sm" data-del="${c.id}">מחק</button></td></tr>`).join('') + '</table>';
+  box.querySelectorAll('[data-del]').forEach((b) => b.onclick = async () => { await api('/clients/' + b.dataset.del, { method: 'DELETE' }); loadClients(); });
 }
 
 // ── SETTINGS ────────────────────────────────────────────────────
 function viewSettings() {
   $('#content').innerHTML = `<div class="topbar"><h1>הגדרות</h1></div>
     <div class="card" style="max-width:520px"><h3>שינוי סיסמה</h3>
-      ${pwField('cp', 'סיסמה נוכחית', 'current-password')}
-      ${pwField('np', 'סיסמה חדשה (8 תווים לפחות)', 'new-password')}
+      <div class="field"><label>סיסמה נוכחית</label><input id="cp" type="password" /></div>
+      <div class="field"><label>סיסמה חדשה (8 תווים לפחות)</label><input id="np" type="password" /></div>
       <button class="btn btn-primary" id="chp">עדכן סיסמה</button></div>`;
-  wirePwToggle('cp'); wirePwToggle('np');
   $('#chp').onclick = async () => {
     try { await api('/auth/change-password', { method: 'POST', body: JSON.stringify({ currentPassword: $('#cp').value, newPassword: $('#np').value }) });
       toast('הסיסמה עודכנה'); $('#cp').value = ''; $('#np').value = ''; }
@@ -1377,22 +663,13 @@ async function viewAdmin() {
   $('#stats').innerHTML = `
     <div class="stat"><div class="v">${stats.users}</div><div class="l">לקוחות</div></div>
     <div class="stat"><div class="v">${stats.devices}</div><div class="l">מכשירים</div></div>
-    <div class="stat"><div class="v" style="color:var(--ok-ink)">${stats.online}</div><div class="l">מחוברים כעת</div></div>
+    <div class="stat"><div class="v" style="color:var(--accent-2)">${stats.online}</div><div class="l">מחוברים כעת</div></div>
     <div class="stat"><div class="v" style="color:var(--muted)">${stats.offline}</div><div class="l">מנותקים</div></div>`;
   loadUsers();
 }
 async function loadUsers() {
   const { users } = await api('/admin/users');
-  // Seven columns ending in three buttons, in a card 276px wide on a phone. The
-  // same shape `loadClients()` wraps, and for the same reason — except that here
-  // the overflow is not merely cut off: the page is RTL, so it runs off the
-  // *left*, and `documentElement.scrollWidth` stays at the window width. Nothing
-  // scrolls to reach it. Measured at 390px before the wrapper: the table wanted
-  // 444px, and 🗑️ מחק was painted at x = −89, i.e. off screen with no way back.
-  // The scroll container is on a wrapper rather than on `#users` itself because
-  // the handlers below query `#users`, and an `overflow` on the element holding
-  // them would make the buttons scroll but not the header row above them.
-  $('#users').innerHTML = '<div style="overflow-x:auto"><table><tr><th>משתמש</th><th>שם</th><th>תפקיד</th><th>מכשירים</th><th>מכסה</th><th>פעיל</th><th></th></tr>' +
+  $('#users').innerHTML = '<table><tr><th>משתמש</th><th>שם</th><th>תפקיד</th><th>מכשירים</th><th>מכסה</th><th>פעיל</th><th></th></tr>' +
     users.map((u) => `<tr>
       <td><b>${esc(u.username)}</b></td><td>${esc(u.full_name || '')}</td>
       <td>${u.role === 'admin' ? '👑 מנהל-על' : 'לקוח'}</td>
@@ -1402,7 +679,7 @@ async function loadUsers() {
         <button class="btn btn-light btn-sm" data-edit="${u.id}">ערוך</button>
         <button class="btn btn-light btn-sm" data-pw="${u.id}">סיסמה</button>
         ${u.role === 'admin' ? '' : `<button class="btn btn-danger btn-sm" data-del="${u.id}">מחק</button>`}
-      </td></tr>`).join('') + '</table></div>';
+      </td></tr>`).join('') + '</table>';
   const box = $('#users');
   box.querySelectorAll('[data-edit]').forEach((b) => b.onclick = () => { const u = users.find((x) => x.id == b.dataset.edit); userModal(u); });
   box.querySelectorAll('[data-pw]').forEach((b) => b.onclick = () => resetPw(b.dataset.pw));
@@ -1419,12 +696,11 @@ function userModal(u) {
     <div class="row"><button class="btn btn-primary" id="u-save">שמירה</button><button class="btn btn-light" id="u-cancel">ביטול</button></div>`);
   $('#u-cancel', m).onclick = () => m.remove();
   $('#u-save', m).onclick = async () => {
-    // Same gap the three create-forms above had: the fields stay filled until
-    // the request resolves, so a second click while `POST /admin/users` is
-    // still in flight reads the same still-filled form and creates a second
-    // account. Unlike a client's מזהה, `username` has no server-minted
-    // fallback here — a duplicate click means a duplicate login the admin has
-    // to notice and clean up by hand.
+    // `username` is UNIQUE, so a double-submit on create cannot silently
+    // duplicate the account — but it does fire a second POST that fails on
+    // the constraint and surfaces as a confusing error toast. Guarded the
+    // same way as the two creates above, on both branches since the button
+    // is shared and the edit branch is a harmless repeat either way.
     const btn = $('#u-save', m);
     btn.disabled = true;
     try {
@@ -1451,65 +727,27 @@ function delUser(id) {
   $('#n', m).onclick = () => m.remove();
 }
 
-// ── GUIDE (the way into the per-device wizard) ──────────────────
-//
-// This screen used to hold install instructions of its own: four paragraphs, no
-// tick boxes, not tied to any device, and stopping at enrollment — it called
-// Device Owner "מומלץ" and never reached the part that actually locks the
-// tablet. Since `setupWizard()` landed, that made it the *second* description of
-// the same install, and the two disagreed. Two sets of instructions that
-// disagree are worse than one, and the wrong one to keep is the one that cannot
-// know the device's enrollment code, its server address or how far the
-// installer already got.
-//
-// So this screen no longer instructs. It says where the instructions are and
-// opens them — which is a real job, because the wizard lives behind a button on
-// a device card, and "הוראות הפעלה" in the sidebar is where someone looking for
-// instructions goes first.
-async function viewGuide() {
-  $('#content').innerHTML = `<div class="topbar"><h1>הוראות הפעלה</h1></div>
+// ── GUIDE (in-app Hebrew instructions) ──────────────────────────
+function viewGuide() {
+  $('#content').innerHTML = `<div class="topbar"><h1>הוראות הפעלת מכשיר</h1></div>
   <div class="card" style="max-width:820px">
-    <h3>ההוראות שייכות למכשיר עצמו</h3>
-    <p style="color:var(--muted)">כל שלבי ההתקנה — מהעברת קובץ ה-APK ועד שהטאבלט עולה נעול מעצמו אחרי אתחול — נמצאים ב<b>אשף ההתקנה</b> של אותו מכשיר: רשימה שבה לכל שלב יש תיבת סימון, וכתוב בו מה בדיוק ללחוץ, על מה לאשר ומה אמור להופיע על המסך אחרי הלחיצה.</p>
-    <p style="color:var(--muted)">האשף הוא היחיד שיכול להיות מדויק: הוא מציג בתוך השלבים את קוד הרישום ואת כתובת השרת של המכשיר שנבחר, ומתאים את הניסוח למסלול שלו (מכשיר עם שירותי Google או אנדרואיד גנרי). הסימונים נשמרים בשרת ולא בדפדפן, כך שאפשר לסמן חלק מהשלבים כאן, להמשיך ליד הטאבלט, ולעבור את האתחול שהרשימה עצמה מבקשת בלי לאבד אותם.</p>
-    <div id="gd-list" style="margin-top:20px"><p style="color:var(--muted)">טוען…</p></div>
-    <p style="margin:22px 0 0"><a href="${BASE}/docs/user-guide-he.md" target="_blank">📄 מדריך המשתמש המלא (רקע מורחב, מעבר לשלבי ההתקנה)</a></p>
+    <h3>הפעלת קיוסק על טאבלט חדש — שלב אחר שלב</h3>
+    <div class="steps" style="margin:20px 0">
+      <div class="step"><div class="n"></div><div><h4>הורידו והתקינו את האפליקציה</h4><p>העבירו את הקובץ <code>kioskfleet-agent.apk</code> למכשיר והתקינו אותו. אם מופיעה אזהרה — אשרו "התקנה ממקור לא ידוע" בהגדרות.</p></div></div>
+      <div class="step"><div class="n"></div><div><h4>הזינו קוד רישום</h4><p>פתחו את האפליקציה. במסך הראשון הזינו את קוד הרישום בן 6 התווים שיצרתם במסך "הוספת מכשיר".</p></div></div>
+      <div class="step"><div class="n"></div><div><h4>נעילת מצב קיוסק (מומלץ)</h4><p>לחסימה מלאה של כפתורי Home/Back, הפעילו Device Owner פעם אחת (דרך מחשב, ראו מדריך למטה). ללא זה — הנעילה עדיין פעילה אך פחות הרמטית.</p></div></div>
+      <div class="step"><div class="n"></div><div><h4>זהו! שליטה מרחוק</h4><p>המכשיר יופיע כאן כ"מחובר". מעכשיו אפשר לאתחל, לרענן ולהחליף אתר מרחוק — לפי המספר הסידורי.</p></div></div>
+    </div>
+    <h3>יציאה זמנית ממצב קיוסק (לתחזוקה)</h3>
+    <p style="color:var(--muted)">במכשיר עצמו: 5 נגיעות רצופות בפינה השמאלית-העליונה של המסך, ואז הזנת קוד הניהול המקומי. או פשוט שלחו פקודת "פתיחה" מרחוק מהדשבורד.</p>
+    <h3>הגדרות מומלצות במכשיר</h3>
+    <ul>
+      <li>הגדרות → תצוגה → מצב שינה → <b>לעולם לא</b> (המסך תמיד דלוק).</li>
+      <li>הגדרות → מערכת → עדכוני מערכת → <b>כבו עדכונים אוטומטיים</b>.</li>
+      <li>הגדרות → אפליקציות → KioskFleet → סוללה → <b>ללא הגבלה</b> (כדי שירוץ ברקע תמיד).</li>
+    </ul>
+    <p><a href="${BASE}/docs/user-guide-he.md" target="_blank">📄 מדריך המשתמש המלא (כולל הגדרת Device Owner)</a></p>
   </div>`;
-
-  // The devices are fetched rather than read off DEVICES: this screen can be the
-  // first one opened in a session, and an empty cache would render as "no
-  // devices" — the one state here that sends the reader somewhere else entirely.
-  try { await loadDevices(); }
-  catch (e) {
-    const box = $('#gd-list'); if (box) box.innerHTML = `<p style="color:var(--danger-text)">${esc(e.message)}</p>`;
-    return;
-  }
-
-  const box = $('#gd-list'); if (!box) return;   // navigated away while loading
-  if (!DEVICES.length) {
-    box.innerHTML = `<p style="color:var(--muted)">אין עדיין מכשירים, והאשף שייך למכשיר — הוא נפתח מכרטיס המכשיר ברשימה. השלב הראשון הוא ליצור קוד רישום; אחריו המכשיר מופיע כאן והאשף ממשיך משם.</p>`;
-    const b = el('<button class="btn btn-primary">➕ הוספת מכשיר</button>');
-    b.onclick = () => route('enroll', true);
-    box.appendChild(b);
-    return;
-  }
-
-  // No parentheses around the button's name: it is an LTR emoji next to Hebrew,
-  // and a bracket pair that wraps across a line lands on the wrong sides of it.
-  box.innerHTML = `<p style="color:var(--muted)">בחרו מכשיר כדי לפתוח את האשף שלו. אותו אשף נפתח גם מכרטיס המכשיר ברשימת המכשירים — הכפתור הראשון בכרטיס, <b>🚀 הפעל</b>.</p>`;
-  // `.hl-row` is the console's existing row shape (the domain allow-list uses
-  // it) and it is a flex row without spacing between rows, so the rows are laid
-  // out by their container here rather than by a new class.
-  const rows = el('<div style="display:grid;gap:8px"></div>');
-  for (const d of DEVICES) {
-    const row = el(`<div class="hl-row"><span style="flex:1;min-width:0">${esc(d.name)}
-      <span style="display:block;color:var(--muted);font-size:12px;font-family:monospace">S/N: ${esc(d.serial)}</span></span></div>`);
-    const b = el('<button class="btn btn-primary btn-sm">🚀 אשף התקנה</button>');
-    b.onclick = () => setupWizard(d);
-    row.appendChild(b);
-    rows.appendChild(row);
-  }
-  box.appendChild(rows);
 }
 
 // ── start ───────────────────────────────────────────────────────
