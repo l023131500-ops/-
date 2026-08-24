@@ -39,6 +39,34 @@ function singleQueryParam(v) {
   return Array.isArray(v) ? v[0] : v;
 }
 
+function clientIpFor(req) {
+  const xff = req.headers['x-forwarded-for'];
+  if (typeof xff === 'string' && xff.length > 0) return xff.split(',')[0].trim();
+  return req.ip || (req.socket && req.socket.remoteAddress) || 'unknown';
+}
+
+// מגביל לפי IP לנתיב ציבורי לא-מאומת שכותב ל-DB (הודעה) - אין לו admin_token
+// או JWT שיגביל קצב, אז קורא ללא הגבלה יכול להציף את public_subscription
+// leads (אותה תבנית שהוחלה על 19-igud-shiurim-portal/27-bkalut-price/
+// 28-kupot-health-funds בסבבים 505-512).
+const publicLeadHits = new Map();
+function publicLeadRateLimiter(routeKey, maxPerHour = 20) {
+  return (req, res, next) => {
+    const key = `${routeKey}:${clientIpFor(req)}`;
+    const now = Date.now();
+    const entry = publicLeadHits.get(key);
+    if (!entry || now > entry.resetAt) {
+      publicLeadHits.set(key, { count: 1, resetAt: now + 60 * 60 * 1000 });
+      return next();
+    }
+    entry.count += 1;
+    if (entry.count > maxPerHour) {
+      return res.status(429).json({ error: 'יותר מדי בקשות, נסו שוב מאוחר יותר' });
+    }
+    next();
+  };
+}
+
 app.get("/api/directory", async (req, res) => {
   const type = singleQueryParam(req.query.type);
   const city = singleQueryParam(req.query.city);
@@ -73,7 +101,7 @@ app.get("/api/admin/tenant/:adminToken", async (req, res) => {
   res.json(r.data);
 });
 
-app.post("/api/public/tenant/:token/message", async (req, res) => {
+app.post("/api/public/tenant/:token/message", publicLeadRateLimiter("tenant-message"), async (req, res) => {
   const { name, phone, email, subject, body } = req.body || {};
   const r = await callRpc("submit_public_lead", {
     p_token: req.params.token,
