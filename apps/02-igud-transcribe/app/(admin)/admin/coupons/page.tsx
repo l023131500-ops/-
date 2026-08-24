@@ -54,7 +54,7 @@ export default function CouponsPage() {
         setForm({ code: "", max_uploads: 1, expires_at: "" });
         load();
       } else {
-        const d = await res.json();
+        const d = await res.json().catch(() => ({}));
         alert(d.error || "שגיאה");
       }
     } finally {
