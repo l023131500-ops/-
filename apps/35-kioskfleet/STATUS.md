@@ -3947,3 +3947,62 @@ to that constraint: they import only dependency-free modules (`hosts.js`,
   or real device exists to enroll, issue a live `screenshot` command against,
   and confirm an actual capture round-trips through production — the same
   constraint every fix in this log without a real device has hit.
+
+- **[24/08/2026, Loop A] Display zoom — a spec item from KIOSK_BUILD.md §5
+  that was entirely unbuilt, on `zol` not this tree** — §5 ("הגדלת מסך (זום)
+  בהגדרות") requires a zoom/scale slider because many locked sites are built
+  mobile-first and render small on a 21"+ kiosk panel. Nothing in the code
+  implemented it: no `display_zoom_percent` column, no API field, no console
+  control, no WebView-side application. A kiosk locked to a phone-sized site
+  had no way from the console to make it fill a large screen.
+
+  Built out the full path, both ends:
+  - **Server**: new `devices.display_zoom_percent` column (default 100 = no
+    scaling). New `display.js` module's `clampZoomPercent()` clamps to
+    50–300 and falls back to 100 for anything that isn't really a number —
+    matters here because `Number(null)`/`Number('')` are both `0`, a finite
+    value that would otherwise silently clamp a missing/empty field down to
+    the 50% floor instead of leaving it at the default; caught by a unit
+    test before it shipped. Wired into `publicDevice()`, the console's
+    `CONSOLE_DEVICE_FIELDS` allow-list (unlike `last_screenshot`, this field
+    is small and safe to broadcast live), the `/enroll` and `/heartbeat`
+    config payloads, and the existing `update_config` command push — the
+    same four places `idleReturnSeconds`/`adminCode` already flow through.
+  - **Console** (`public/js/app.js`): a 50–300% range slider in the
+    device-edit modal with a live percent label, folded into the same PATCH
+    body the other fields already use; a small `🔍 NN%` badge on the device
+    card whenever zoom isn't the 100% default.
+  - **Android**: new `Prefs.DISPLAY_ZOOM` key. `AgentClient`'s
+    `CommandHandler.onConfigUpdated` gained a `displayZoomPercent`
+    parameter, threaded through both the heartbeat config-pull path and the
+    `update_config` command path, applying independently of a `homeUrl`
+    change — the same shape `adminCode` already uses, since an owner
+    adjusting only the zoom slider must not need a link change to ride
+    along before it takes effect. `KioskActivity.applyZoom()` sets
+    `document.documentElement.style.zoom` (Chromium-WebView-only, which is
+    exactly what this app runs on — chosen over `-webkit-transform: scale()`
+    because CSS `zoom` reflows the layout to fill the screen instead of
+    leaving empty space around a shrunk viewport) via `evaluateJavascript`,
+    re-run on every `onPageFinished` and, when a config update carries no
+    navigation to trigger that, applied directly. Deliberately **not**
+    skipped as a no-op at 100%: the direct-apply path can go from a
+    non-default zoom back to 100%, and skipping the reset there would leave
+    the *previous* zoom's already-injected style stuck on the page.
+
+  `node --check` clean on every touched JS file. Full suite: 27/29 — was
+  26/29 before this change (net +6: new `display.test.mjs`, one existing
+  `devicepayload.test.mjs` row extended to cover the new column); the two
+  persistent failures are the same pre-existing `express`/`node:sqlite`-not-
+  installed gap every prior entry in this log has hit. Kotlin side is
+  **not compiler-verified**: no gradle/kotlin toolchain in this sandbox —
+  reviewed against `AgentClient`'s own already-shipped `update_config`/
+  `onConfigUpdated` shape rather than compiled, the same constraint every
+  prior Android-side entry in this log has hit.
+
+  Pushed to `l023131500-ops/zol`#`claude/what-do-you-see-gxo5tc` (`021bb2c`).
+  `more30.com/kiosk/api/health` polled every 15s for ~2 minutes after the
+  push and read `200` throughout — no build-in-flight blip observed.
+  **Not verified beyond the deploy-landing signal and the server-side unit
+  tests**: no test customer account or real device exists to enroll and
+  confirm the zoom actually renders differently on a real WebView, the same
+  constraint every fix in this log without a real device has hit.
