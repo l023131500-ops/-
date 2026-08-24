@@ -15,9 +15,21 @@ export type NotificationSettings = {
   agent_email_assigned_client?: boolean;
 };
 
+// Yemot HaMashiach voice extension (flagship spec item 8) — consumed by
+// /api/public/yemot-ivr. api_secret doubles as the extension's password
+// (it is embedded in the api_link URL configured on the Yemot system).
+export type VoiceSettings = {
+  enabled?: boolean;
+  api_secret?: string;
+  yemot_phone?: string;
+  yemot_extension?: string;
+  id_method?: "phone" | "phone_id" | "id";
+};
+
 export type TenantSettings = {
   integrations?: IntegrationSettings;
   notifications?: NotificationSettings;
+  voice?: VoiceSettings;
 };
 
 export const myTenantQuery = () =>

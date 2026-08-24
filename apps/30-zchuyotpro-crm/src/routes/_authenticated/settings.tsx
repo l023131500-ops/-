@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -10,10 +10,10 @@ import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Loader2, Save, ExternalLink, Plug, CheckCircle2, XCircle } from "lucide-react";
+import { Loader2, Save, ExternalLink, Plug, CheckCircle2, XCircle, Phone, Copy, KeyRound } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
-import { myTenantQuery, tenantProfilesQuery, type TenantSettings, type IntegrationSettings, type NotificationSettings } from "@/features/settings/queries";
+import { myTenantQuery, tenantProfilesQuery, type TenantSettings, type IntegrationSettings, type NotificationSettings, type VoiceSettings } from "@/features/settings/queries";
 
 export const Route = createFileRoute("/_authenticated/settings")({
   head: () => ({ meta: [{ title: "הגדרות | זכויות פרו" }] }),
@@ -35,6 +35,7 @@ function SettingsPage() {
           <TabsTrigger value="partners">שותפים</TabsTrigger>
           <TabsTrigger value="entitlements">זכאויות</TabsTrigger>
           <TabsTrigger value="integrations">אינטגרציות</TabsTrigger>
+          <TabsTrigger value="voice">מערכת קולית</TabsTrigger>
           <TabsTrigger value="notifications">התראות</TabsTrigger>
         </TabsList>
 
@@ -52,6 +53,7 @@ function SettingsPage() {
           </CardContent></Card>
         </TabsContent>
         <TabsContent value="integrations" className="mt-4"><IntegrationsTab /></TabsContent>
+        <TabsContent value="voice" className="mt-4"><VoiceTab /></TabsContent>
         <TabsContent value="notifications" className="mt-4"><NotificationsTab /></TabsContent>
       </Tabs>
     </div>
@@ -231,6 +233,136 @@ function IntegrationsTab() {
             </div>
           );
         })}
+        <Button onClick={save} disabled={saving}>
+          {saving && <Loader2 className="h-4 w-4 animate-spin me-1" />}
+          <Save className="h-4 w-4 me-1" /> שמור הגדרות
+        </Button>
+      </CardContent>
+    </Card>
+  );
+}
+
+const ID_METHOD_LABELS: Record<string, string> = {
+  phone_id: "טלפון + תעודת זהות (מומלץ)",
+  phone: "טלפון בלבד — תעודת זהות רק כשהמספר לא מזוהה",
+  id: "תעודת זהות בלבד",
+};
+
+function VoiceTab() {
+  const { data: tenant, isLoading } = useQuery(myTenantQuery());
+  const qc = useQueryClient();
+  const settings = (tenant?.settings ?? {}) as TenantSettings;
+  const [form, setForm] = useState<VoiceSettings>(settings.voice ?? {});
+  const [saving, setSaving] = useState(false);
+  // window is unavailable during SSR — resolve the public origin on the client
+  const [origin, setOrigin] = useState("");
+  useEffect(() => setOrigin(window.location.origin), []);
+
+  async function save() {
+    if (!tenant?.id) return;
+    if (form.enabled && !form.api_secret) {
+      toast.error("להפעלת השלוחה יש ליצור מפתח סודי");
+      return;
+    }
+    setSaving(true);
+    const newSettings: TenantSettings = { ...settings, voice: form };
+    const { error } = await supabase.from("tenants").update({ settings: newSettings }).eq("id", tenant.id);
+    setSaving(false);
+    if (error) { toast.error("שמירה נכשלה", { description: error.message }); return; }
+    toast.success("הגדרות המערכת הקולית נשמרו");
+    qc.invalidateQueries({ queryKey: ["my-tenant"] });
+  }
+
+  if (isLoading) return <div className="flex justify-center py-6"><Loader2 className="h-5 w-5 animate-spin" /></div>;
+
+  const apiLink = tenant && form.api_secret && origin
+    ? `${origin}${import.meta.env.BASE_URL}api/public/yemot-ivr?tenant=${tenant.id}&key=${form.api_secret}`
+    : null;
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="text-base flex items-center gap-2"><Phone className="h-4 w-4" /> מערכת קולית — ימות המשיח</CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-5">
+        <p className="text-sm text-muted-foreground">
+          שלוחה טלפונית ללקוחות: זיהוי אוטומטי לפי טלפון ותעודת זהות, רישום הוצאה או הכנסה ליומן
+          התזרים (מסומן במקור &quot;קו טלפוני&quot;), שמיעת סיכום החודש ומצב התקציב. כל פעולה נרשמת גם
+          בציר ההודעות של הלקוח.
+        </p>
+
+        <div className="flex items-center justify-between border-b pb-3">
+          <Label htmlFor="voice-enabled">הפעלת השלוחה הקולית</Label>
+          <Switch
+            id="voice-enabled"
+            checked={!!form.enabled}
+            onCheckedChange={(v) => setForm({ ...form, enabled: v })}
+          />
+        </div>
+
+        <div className="grid gap-3 sm:grid-cols-2">
+          <div>
+            <Label>מספר המערכת בימות המשיח</Label>
+            <Input dir="ltr" placeholder="03-1234567" value={form.yemot_phone ?? ""}
+              onChange={(e) => setForm({ ...form, yemot_phone: e.target.value })} />
+          </div>
+          <div>
+            <Label>מספר השלוחה</Label>
+            <Input dir="ltr" placeholder="9" value={form.yemot_extension ?? ""}
+              onChange={(e) => setForm({ ...form, yemot_extension: e.target.value })} />
+          </div>
+        </div>
+
+        <div>
+          <Label>שיטת זיהוי הלקוח</Label>
+          <Select
+            value={form.id_method ?? "phone_id"}
+            onValueChange={(v) => setForm({ ...form, id_method: v as VoiceSettings["id_method"] })}
+          >
+            <SelectTrigger><SelectValue /></SelectTrigger>
+            <SelectContent>
+              {Object.entries(ID_METHOD_LABELS).map(([k, v]) => (
+                <SelectItem key={k} value={k}>{v}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div>
+          <Label className="flex items-center gap-2"><KeyRound className="h-3.5 w-3.5" /> מפתח סודי לשלוחה</Label>
+          <div className="flex gap-2">
+            <Input dir="ltr" readOnly value={form.api_secret ?? ""} placeholder="טרם נוצר מפתח" />
+            <Button type="button" variant="outline" onClick={() => {
+              const secret = crypto.randomUUID().replace(/-/g, "");
+              setForm({ ...form, api_secret: secret });
+              toast.info("נוצר מפתח חדש — יש לשמור ולעדכן את הקישור בימות");
+            }}>
+              {form.api_secret ? "החלף מפתח" : "צור מפתח"}
+            </Button>
+          </div>
+          <p className="text-xs text-muted-foreground mt-1">
+            המפתח משובץ בקישור השלוחה ומשמש כסיסמת הגישה שלה. החלפתו מנתקת קישור ישן.
+          </p>
+        </div>
+
+        {apiLink && (
+          <div>
+            <Label>קישור ה-API להגדרה בימות המשיח</Label>
+            <div className="flex gap-2">
+              <Input dir="ltr" readOnly className="text-xs" value={apiLink} />
+              <Button type="button" variant="outline" size="icon" onClick={() => {
+                void navigator.clipboard.writeText(apiLink);
+                toast.success("הקישור הועתק");
+              }}><Copy className="h-4 w-4" /></Button>
+            </div>
+            <div className="text-xs text-muted-foreground mt-2 space-y-1">
+              <p>בניהול השלוחה בימות המשיח (קובץ ext.ini של השלוחה) יש להגדיר:</p>
+              <pre dir="ltr" className="bg-muted/50 rounded p-2 overflow-x-auto">{`type=api\napi_link=${apiLink}`}</pre>
+              <p>לאחר השמירה כאן — כל שיחה לשלוחה תזוהה ותירשם אוטומטית לתיק הלקוח.</p>
+            </div>
+          </div>
+        )}
+
         <Button onClick={save} disabled={saving}>
           {saving && <Loader2 className="h-4 w-4 animate-spin me-1" />}
           <Save className="h-4 w-4 me-1" /> שמור הגדרות
