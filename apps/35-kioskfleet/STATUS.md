@@ -4006,3 +4006,85 @@ to that constraint: they import only dependency-free modules (`hosts.js`,
   tests**: no test customer account or real device exists to enroll and
   confirm the zoom actually renders differently on a real WebView, the same
   constraint every fix in this log without a real device has hit.
+
+- **[24/08/2026, Loop A] Client-directory model — KIOSK_BUILD.md §2★ד, marked
+  "מחייב, גובר על כל השאר" by the owner, was entirely unbuilt, on `zol` not
+  this tree** — §2★ is the core two-tier customer flow: a business owner
+  registers their *own* customers (short code + name + branded site),
+  approves which devices may switch to which of them, and a kiosk resolves a
+  typed code to that customer's site, locked, offline-capable. Grepping the
+  whole server for `client_id`/`hall_id`/`IdentifyDevice`/`kiosk-launcher`/
+  `access_code` turned up nothing — no table, no route, no console surface —
+  despite every narrower spec item nearby (screenshot, zoom, allow-list
+  gating) already being built out in prior entries in this log.
+
+  Built the server + console half (data model, ownership-scoped CRUD,
+  approvals, the device-facing identify endpoint, and the config payload a
+  future on-device screen will read):
+  - **Server**: new `clients` (an owner's customer directory: code/name/url,
+    `UNIQUE(owner_id, code)` so two owners can each use "1") and
+    `device_clients` (the per-device approval join — registering a customer
+    does not by itself expose them on every device, per §2★ה) tables. New
+    `routes/clients.js` mirrors `links.js`'s ownership pattern exactly (404,
+    not 403, for another owner's row — the same enumeration-safe shape
+    `getOwnedDevice()` already documents). `devices.js` gains
+    `GET/POST/DELETE /devices/:id/clients/:clientId`, each re-checking the
+    client's `owner_id` matches the device's — a client id can never be
+    approved onto a different owner's device even by a crafted request.
+    `agent.js` gains `POST /api/agent/identify` (device-token auth,
+    `{code}` → `{name,url}` only if that exact client is approved for that
+    exact device — a code approved for one of an owner's devices does not
+    resolve on another), the concrete `IdentifyDevice` the spec's §2★ז names.
+  - **Offline-readiness**: `approvedClients` (code/name/url per approved
+    client) is now folded into the enroll response, every heartbeat, and
+    every `update_config` push — the same "send the whole thing every time,
+    not a diff" shape `adminCode`/`displayZoomPercent` already use — so a
+    future on-device selection screen can read this straight from its local
+    config cache with zero online round-trip, matching §2★ה's offline
+    requirement. `pushConfigUpdate()` factors this out of `PATCH
+    /devices/:id` so approve/revoke and the existing config edits can never
+    drift into two different payload shapes.
+  - **Console**: new "👥 לקוחות" nav view (create/list/delete a client,
+    reusing the existing `hostListEditor` for its extra-hosts field, same
+    shape as "🔗 ספריית קישורים"). The device-edit modal gained a live
+    approval checklist — one checkbox per owner client, toggled immediately
+    per-click (POST/DELETE), not batched into the modal's "שמירה" — so
+    closing with "ביטול" can never discard an approval that already reached
+    the server, the same reasoning the screenshot/command buttons on the
+    device card already apply.
+
+  Kept `normalizeClientCode()` (uppercase, strip spaces/dashes, 2-24
+  alnum) in a `db.js`-free module on purpose, unlike `devices.js`/`agent.js`
+  — this checkout has no `better-sqlite3` installed, the same constraint
+  every entry in this log hits, so the db-touching half
+  (`approvedClientsForDevice`) lives in `db.js` next to `logEvent` instead,
+  keeping the validator unit-testable here.
+
+  `node --check` clean on every touched file (a backtick inside a SQL
+  *comment* nested in `db.js`'s `db.exec(\`...\`)` template literal closed it
+  early on the first pass — caught immediately by `node --check`, fixed by
+  swapping the comment's backticks for quotes). Full suite: 32/34 — was
+  27/29; 5 new tests in `clients.test.mjs` cover the code normaliser
+  (trim/case/dash-stripping, length bounds, non-alnum rejection), all pass;
+  the two persistent failures are the same pre-existing `express`/
+  `node:sqlite`-not-installed gap every prior entry in this log has hit.
+
+  **Deliberately not built this round**: the on-device screen where a kiosk
+  operator actually types a client code and switches customers (§2★ב/ג — new
+  Android UI, plus the exit-gesture-only navigation §2★ה requires between
+  approved choices). That is a new Kotlin UI flow, not a mechanical extension
+  of an already-shipped pattern the way zoom/screenshot's Kotlin changes
+  were — shipping it unverified (no gradle/kotlin toolchain in this sandbox,
+  the same constraint every Android entry in this log has hit) risked
+  exactly the "retail-grade, zero visible bugs" bar §0 sets. The server/
+  console half above is what that screen will call once built, so the next
+  iteration on this spec item is unblocked and scoped to Android alone.
+
+  Pushed to `l023131500-ops/zol`#`claude/what-do-you-see-gxo5tc` (`40b6012`).
+  `more30.com/kiosk/api/health` polled every 15s for 2 minutes after the push
+  and read `200` throughout — no build-in-flight blip observed. **Not
+  verified beyond the deploy-landing signal and the server-side unit
+  tests**: no test customer account or real device exists to create a client,
+  approve it on a device, and confirm `/api/agent/identify` resolves it in
+  production, the same constraint every fix in this log without a real
+  device has hit.
