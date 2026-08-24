@@ -50,10 +50,18 @@ serve(async (req) => {
       return null;
     };
 
+    // מגביל limit/offset לטווח סביר: קלט לא-מספרי (NaN) גורר range(offset, NaN)
+    // שנכשל ב-500, וללא תקרה עליונה בקשה כמו limit=999999999 מכריחה סריקה מלאה.
+    const clampInt = (raw: string | null, fallback: number, min: number, max: number) => {
+      const n = Number.parseInt(raw ?? "", 10);
+      if (!Number.isFinite(n)) return fallback;
+      return Math.min(Math.max(n, min), max);
+    };
+
     // ─── GET /api/lessons — approved lessons with filters ───
     if ((path === "lessons" || path === "") && method === "GET") {
-      const limit = parseInt(url.searchParams.get("limit") || "100");
-      const offset = parseInt(url.searchParams.get("offset") || "0");
+      const limit = clampInt(url.searchParams.get("limit"), 100, 1, 200);
+      const offset = clampInt(url.searchParams.get("offset"), 0, 0, 100000);
       const city = url.searchParams.get("city");
       const subject = url.searchParams.get("subject");
       const language = url.searchParams.get("language");
@@ -264,14 +272,18 @@ serve(async (req) => {
     // ─── GET /api/search — free text search across lessons ───
     if (path === "search" && method === "GET") {
       const q = url.searchParams.get("q") || "";
-      const limit = parseInt(url.searchParams.get("limit") || "20");
+      const limit = clampInt(url.searchParams.get("limit"), 20, 1, 100);
       if (!q) return json({ error: "חסר פרמטר חיפוש q" }, 400);
+
+      // PostgREST מפרש פסיק/סוגריים ב-.or() כמפרידי-תנאים/קבוצות — בלי בריחה,
+      // חיפוש כמו q="a,is_approved.eq.false" יכול לצרף תנאי-מסנן משלו לשאילתה.
+      const escaped = q.replace(/[,()]/g, "\\$&");
 
       const { data, error } = await supabase
         .from("lessons")
         .select("*")
         .eq("is_approved", true)
-        .or(`rabbi_name.ilike.%${q}%,subject.ilike.%${q}%,city.ilike.%${q}%,neighborhood.ilike.%${q}%,synagogue_name.ilike.%${q}%`)
+        .or(`rabbi_name.ilike.%${escaped}%,subject.ilike.%${escaped}%,city.ilike.%${escaped}%,neighborhood.ilike.%${escaped}%,synagogue_name.ilike.%${escaped}%`)
         .order("created_at", { ascending: false })
         .limit(limit);
       if (error) return json({ error: error.message }, 500);
