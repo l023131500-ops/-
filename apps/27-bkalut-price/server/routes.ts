@@ -927,7 +927,12 @@ export async function registerRoutes(
   });
 
   // ============ Admin auth ============
-  app.post("/api/admin/login", async (req, res) => {
+  // No attempt cap here compared identity/password against loginAdmin() with
+  // unlimited tries per IP, unlike every other public write endpoint in this
+  // file (byPhoneRateLimited/publicLeadRateLimiter) and the identical login
+  // pattern already rate-limited in 17-chizukim-transcribe/28-kupot-health-funds.
+  // Reusing the existing publicLeadRateLimiter at the same 20/hr/IP default.
+  app.post("/api/admin/login", publicLeadRateLimiter("admin-login"), async (req, res) => {
     const identity = String(req.body?.identity ?? req.body?.email ?? "").trim();
     // Accept either `password` (new) or `code` (legacy) from clients.
     const password = String(req.body?.password ?? req.body?.code ?? "").trim();
