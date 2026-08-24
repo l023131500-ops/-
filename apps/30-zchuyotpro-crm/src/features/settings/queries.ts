@@ -14,6 +14,11 @@ export type NotificationSettings = {
   admin_email_new_referral?: boolean;
   admin_email_inbound_msg?: boolean;
   agent_email_assigned_client?: boolean;
+  // client-facing proactive notices (features/clients/notifyClient.ts).
+  // Missing key = enabled — delivery itself stays test-mode gated, so the
+  // default only ever produces timeline rows, never an unapproved live send.
+  client_consent_email?: boolean;
+  client_consent_whatsapp?: boolean;
 };
 
 // Yemot HaMashiach voice extension (flagship spec item 8) — consumed by

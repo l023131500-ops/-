@@ -5,6 +5,7 @@ import { Plus, Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { referralsQuery, partnersQuery, clientQuery, meProfileQuery, useInvalidateClient } from "@/features/clients/queries";
 import { clientConsentsQuery, hasStandingConsent, CONSENT_STATUS_LABELS } from "@/features/clients/consents";
+import { notifyClientConsentRequest } from "@/features/clients/notifyClient";
 import { dispatchNotify } from "@/features/partners/queries";
 import { triggerN8nWebhook } from "@/lib/n8n";
 import { AllowedFieldsPreview } from "@/features/partners/components/AllowedFieldsChecklist";
@@ -102,6 +103,14 @@ export function ReferralsTab({ clientId }: { clientId: string }) {
           content: `בקשת אישור: העברת פרטים אל ${sel?.company_name ?? "שותף"} ממתינה לאישורך בלשונית "שיתופי פעולה" באזור האישי`,
           status: "sent",
           sent_by: me?.id ?? null,
+        });
+        // proactively reach the client on the real channels too — a request
+        // only visible inside the portal stalls for clients who never log in
+        void notifyClientConsentRequest({
+          tenantId: client.tenant_id,
+          clientId,
+          sentBy: me?.id ?? null,
+          partnerName: sel?.company_name,
         });
       }
       return { granted };

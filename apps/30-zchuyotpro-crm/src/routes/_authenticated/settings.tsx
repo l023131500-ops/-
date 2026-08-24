@@ -840,6 +840,12 @@ function NotificationsTab() {
     { key: "agent_email_assigned_client" as const, label: "התראת מייל לסוכן על הקצאת לקוח" },
   ];
 
+  // default-on (missing key = enabled) — see NotificationSettings
+  const clientToggles = [
+    { key: "client_consent_email" as const, label: "מייל ללקוח כשבקשת אישור העברת-מידע ממתינה לו" },
+    { key: "client_consent_whatsapp" as const, label: "וואטסאפ ללקוח כשבקשת אישור העברת-מידע ממתינה לו" },
+  ];
+
   return (
     <Card>
       <CardHeader><CardTitle className="text-base">הגדרות התראות</CardTitle></CardHeader>
@@ -850,6 +856,24 @@ function NotificationsTab() {
             <Switch
               id={t.key}
               checked={!!form[t.key]}
+              onCheckedChange={(v) => setForm({ ...form, [t.key]: v })}
+            />
+          </div>
+        ))}
+        <div className="pt-2">
+          <p className="text-sm font-medium">התראות ללקוח</p>
+          <p className="text-xs text-muted-foreground mt-1">
+            הפניה לשותף ללא הסכמה תקפה ממתינה לאישור הלקוח באזור האישי. ההתראות כאן מודיעות
+            לו על כך בערוצים האמיתיים, עם קישור ישיר למסך האישור. השליחה בפועל כפופה למצב
+            הטסט של לשוניות המייל והוואטסאפ — בלי הפעלת שליחה חיה שם, ההודעה רק נרשמת בציר.
+          </p>
+        </div>
+        {clientToggles.map((t) => (
+          <div key={t.key} className="flex items-center justify-between border-b pb-2">
+            <Label htmlFor={t.key}>{t.label}</Label>
+            <Switch
+              id={t.key}
+              checked={form[t.key] !== false}
               onCheckedChange={(v) => setForm({ ...form, [t.key]: v })}
             />
           </div>
