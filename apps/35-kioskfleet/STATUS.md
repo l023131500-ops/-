@@ -5132,3 +5132,136 @@ to that constraint: they import only dependency-free modules (`hosts.js`,
   Windows host available this round to validate the new script against —
   left as a reviewable branch for the owner or a future round to merge once
   someone can test-run the `.ps1` on an actual Windows PC.
+
+- **[24/08/2026, Loop A] Housekeeping — this log's own accuracy, checked
+  before building further on top of it.** Before starting this round's
+  work, this session fetched `/tmp/zol` with `git fetch --unshallow` (it had
+  been a shallow clone) and confirmed the checked-out `claude/what-do-you-see-gxo5tc`
+  is byte-for-byte up to date with `origin/claude/what-do-you-see-gxo5tc` —
+  not behind, not diverged. Despite that, several files this very log
+  describes as built and verified in detail — `server/src/accesscode.js`,
+  `launcher.js`, `identify.js`, `approvals.js`, `clientcode.js`,
+  `ratelimit.js`, `server/public/kiosk-launcher.html`, the `devices.access_code`
+  column, and the whole `/kiosk-launcher/:code` route (the 0811-dated
+  entries about KIOSK_BUILD.md §2★ז's device access-code) — **do not exist
+  anywhere in the actual repository**, checked by both `find`/`grep` across
+  the full `/tmp/zol` tree and `git log --all --oneline` across every branch
+  on the remote (`main`, `claude/what-do-you-see-gxo5tc`,
+  `feat/windows-kiosk-package-0824`, and an unrelated `claude/professional-build-0v044m`
+  branch that turned out to be a different project, #34 Kesef, sharing
+  nothing with this one). The rest of §2★ that those same entries describe
+  — the client directory (`clients.js`), per-device approval
+  (`device_clients`, inlined into `db.js`'s `approvedClientsForDevice` and
+  `routes/agent.js`'s `/identify`), and the on-device customer-switch screen
+  — **is** genuinely present and matches its description; only the
+  access-code/launcher convenience piece is missing. Recording this so a
+  future round does not spend a round re-verifying it from scratch, and so
+  it treats this log's older narrative entries as claims to spot-check
+  against the real tree (`grep`/`find` in `/tmp/zol`, not just reading this
+  file) rather than as ground truth — the same lesson the Windows-package
+  entry above already drew about checking `apps/35-kioskfleet` in *this*
+  repo instead of `/tmp/zol`, one layer deeper: even the right location can
+  be wrong if the log describing it was never actually pushed.
+
+- **[24/08/2026, Loop A] Fully offline USB install package — KIOSK_BUILD.md
+  §3 Route D, was entirely unbuilt, on `zol` not this tree.** The owner's
+  locked decision ("בנה גם A וגם B וגם C ל-Windows ו-D ל-USB") names four
+  device routes; B (Android Device Owner via ADB, online) and C (Windows,
+  first slice, previous entry) already ship. This is Route D's first slice.
+
+  Every other route still needs a network round-trip somewhere during
+  setup — B's `EnrollActivity` POSTs the enrollment code to
+  `/api/agent/enroll` over HTTP. §10-D's own steps are stricter than that:
+  "חיבור למכשיר והרצה — בלי אינטרנט כלל" (connect to the device and run —
+  with no internet at all), for the whole install, not just the device
+  afterward. So the device row and its token have to be minted *before* the
+  technician ever leaves the desk — by the owner generating the package
+  while still online — rather than by the physical device phoning in from
+  the venue the way every other route works.
+
+  New `server/src/usbpackage.js` (pure, no db/express — same "generate now,
+  verify by inspection" shape `windowspackage.js` already established)
+  builds the downloadable `.sh` script an operator runs with the device on
+  USB. It: (1) confirms exactly one authorized device is attached via
+  `adb devices` and that its serial matches the one the package was
+  generated for — refusing to run rather than silently handing one device's
+  token to a different physical unit; (2) installs the APK; (3) launches
+  the app once and force-stops it, so Android creates the app's
+  app-specific external-storage folder first — verified against Android's
+  own storage docs that this folder is created lazily on first use, **not**
+  at install time, so `adb push` into it would fail before the app has ever
+  run; (4) `adb push`es a config file into that folder — a local temp file
+  written by a `cat <<'EOF'` heredoc, entirely on the operator's own
+  machine, no network; (5) sets the app as Device Owner
+  (`dpm set-device-owner`, the same mechanism Route B uses online); (6)
+  relaunches the app. The pushed config is the **exact same**
+  `{deviceToken, device:{...}}` envelope `POST /api/agent/enroll` already
+  returns — `EnrollActivity.kt`'s success-path prefs-writing was extracted
+  into `applyEnrollResult(json)` so both the network path and a new
+  `applyOfflineConfigIfPresent()` (checks `getExternalFilesDir` for the
+  pushed file before falling back to the manual-code screen) share the one
+  place that decides which fields survive to `Prefs` — they cannot drift
+  apart on that decision.
+
+  New `POST /enrollments/:id/usb-package` (`routes/devices.js`) provisions
+  the `devices` row immediately from an unused enrollment code plus a
+  serial the owner already read off the physical unit (`adb devices`,
+  still at the desk, still online) — same quota/re-enroll shape
+  `/api/agent/enroll` uses, kept as its own ~15 lines rather than
+  refactoring that already-live, already-tested endpoint for fields it
+  doesn't have yet (`model`/`androidVersion`/`appVersion` — the device
+  hasn't run). Marks the enrollment used and mints the token right away,
+  then streams the script as a download, same `Content-Disposition`
+  pattern as the Windows package. Console gained a "📦 USB אופליין" button
+  per open enrollment code with an inline serial-input form — this app's
+  established "inline, not a second modal" pattern (no `prompt()`/`confirm()`
+  anywhere else in this codebase either) — and `downloadFile()` gained an
+  optional `opts` param so it can carry the `POST` body this endpoint needs
+  instead of a second near-identical helper.
+
+  **A real bug was found and fixed during testing, not just during review**:
+  the device name and APK filename are owner-settable text that landed raw
+  inside executable double-quoted `echo`/assignment lines in the generated
+  script. A device named with an embedded `"` broke the string; one with
+  `$(...)` or a backtick ran a command substitution the moment the operator
+  executed the script. Reproduced with `bash -n` and a live sample script
+  before fixing — not a hypothetical. Fixed by routing the label through a
+  `shQuote` (single-quote wrapped, concatenated *next to* the
+  double-quoted prefix rather than embedded inside it — the same shape
+  `windowspackage.js`'s `psQuote` already established, for bash instead of
+  PowerShell) and by allow-listing the APK filename to a safe character set
+  instead of only blacklisting `'"\r\n`. Two regression tests reproduce the
+  exact injection strings (embedded quote + `$(rm -rf ~)` + `` `whoami` ``)
+  and assert neither reaches an executable line.
+
+  20 new unit tests in `usbpackage.test.mjs` (serial/APK-filename
+  sanitization, the offline-enroll JSON envelope shape matching
+  `/api/agent/enroll`'s response exactly, the single-device/matching-serial
+  guard, the heredoc delimiter's safety against a payload value literally
+  containing the delimiter text, and the two injection regressions above).
+  `node --check` clean on every touched/added JS file
+  (`usbpackage.js`, `routes/devices.js`, `public/js/app.js`, the test
+  file). Full suite (`node --test test/*.test.mjs`, every file including
+  the two that cannot run here): **150/152 pass** — the 2 failures are
+  `routing.test.mjs`/`seedadmin.test.mjs`, the same pre-existing
+  `express`/`better-sqlite3`-not-installed gap every prior entry in this
+  log has hit, unrelated to this change. Generated-script
+  bash syntax verified with `bash -n` against several sample inputs,
+  including the hostile ones above.
+
+  **Not verified beyond that**: no real device/adb host in this sandbox to
+  actually run the generated script against — same category of gap every
+  Kotlin/Android entry in this log has hit. Kotlin is not compiler-verified
+  either (no gradle/kotlin toolchain here): reviewed by hand,
+  `EnrollActivity.kt` braces 35/35, parens 141/141.
+
+  Committed on a **new branch**, `feat/usb-offline-kiosk-package-0824`
+  (branched from this session's `feat/windows-kiosk-package-0824`, so it
+  carries the unmerged Windows-package commit as an ancestor — both are
+  slices of the same owner-locked "build A+B+C+D" decision, not
+  independent features competing for review order), pushed to
+  `l023131500-ops/zol` (`4330c64`) — **deliberately not** merged into
+  `claude/what-do-you-see-gxo5tc`, same reasoning as the Windows-package
+  entry above: this round's instructions say feature branch only, and
+  there is no real adb/device host here to validate the script against
+  before it would reach production.
