@@ -187,9 +187,15 @@
         $('app').innerHTML = '<option value="more30">הפורטל (more30)</option>' +
           (rep.systems||[]).map(x=>`<option value="${esc(x.app_key)}">${esc(x.number??'')} · ${esc(x.name)}</option>`).join('');
 
+        // מונע גזרת מסך: מעבר מהיר בין מערכות ברשימה עלול לשלוח כמה בקשות
+        // בו-זמנית, וללא השוואה כאן תשובה ישנה שחוזרת מאוחר יותר הייתה
+        // יכולה לדרוס את רשימת הלקוחות הנכונה בנתוני מערכת אחרת.
+        let reqId = 0;
         async function load(){
+          const myReqId = ++reqId;
           const app=$('app').value;
           const { data, error:e } = await sb.rpc('more30_admin_customers',{ p_app: app });
+          if(myReqId !== reqId) return;
           if(e){ $('list').innerHTML=`<p class="muted">${esc(e.message)}</p>`; return; }
           if(!data.length){ $('list').innerHTML='<p class="muted">אין עדיין לקוחות רשומים במערכת הזו.</p>'; return; }
           const withName = data.filter(c=>c.full_name).length;
