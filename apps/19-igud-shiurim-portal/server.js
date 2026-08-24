@@ -69,6 +69,19 @@ const APP_BASE_URL = process.env.APP_BASE_URL || '';
 const NEDARIM_HISTORY_URL = 'https://matara.pro/nedarimplus/Reports/Manage2.aspx';
 const NEDARIM_IFRAME_BASE = 'https://www.matara.pro/nedarimplus/iframe/';
 
+// קריאה יוצאת ל-API ההיסטוריה של נדרים פלוס בלי timeout הייתה תולה את
+// בקשת הסנכרון (ומחזיק handle) עד שנדרים פלוס עצמם היו עונים או שהפלטפורמה
+// הייתה קוטעת את החיבור - אין כאן שום AbortController קיים.
+async function fetchWithTimeout(url, init, timeoutMs = 15000) {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
+  try {
+    return await fetch(url, { ...init, signal: controller.signal });
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
 if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
   console.error('חסרים משתני סביבה: SUPABASE_URL / SUPABASE_ANON_KEY');
   process.exit(1);
@@ -871,7 +884,7 @@ app.post('/api/admin/tenant/:adminToken/nedarim/sync', async (req, res) => {
     });
     if (creds.last_sync_last_id) body.set('LastId', creds.last_sync_last_id);
 
-    const nedarimRes = await fetch(NEDARIM_HISTORY_URL, {
+    const nedarimRes = await fetchWithTimeout(NEDARIM_HISTORY_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
       body: body.toString(),
@@ -963,7 +976,7 @@ app.post('/api/admin/synagogue/:adminToken/nedarim/sync', async (req, res) => {
     });
     if (creds.last_sync_last_id) body.set('LastId', creds.last_sync_last_id);
 
-    const nedarimRes = await fetch(NEDARIM_HISTORY_URL, {
+    const nedarimRes = await fetchWithTimeout(NEDARIM_HISTORY_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
       body: body.toString(),
