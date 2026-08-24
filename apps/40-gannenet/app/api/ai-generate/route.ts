@@ -100,7 +100,7 @@ export async function POST(req: NextRequest) {
       // claude-3-5-sonnet-latest was retired; the API answered every request
       // with 404 not_found_error. On this model thinking is on by default and
       // max_tokens bounds thinking + text together, so 1500 would truncate.
-      model: "claude-opus-5",
+      model: "claude-opus-4-8",
       max_tokens: 16000,
       // Writing one worksheet from a fully specified brief is not an
       // intelligence-sensitive task, and at the default effort (high) it spent
