@@ -212,6 +212,9 @@ export default function HealthFundsAdmin() {
       if (patch.rangeMin === "" ) patch.rangeMin = null;
       if (patch.rangeMax === "") patch.rangeMax = null;
       delete patch.tiers;
+      // active is owned by the standalone toggleActive() switch (line ~227), not this form —
+      // sending the stale snapshot value here would silently revert a toggle made while the editor was open.
+      delete patch.active;
       const r = await apiRequest("PATCH", `/api/hf/admin/topics/${id}`, patch);
       if (!r.ok) throw new Error("save failed");
       toast({ title: "נשמר", description: `נושא #${draft.catalogNo} עודכן.` });
