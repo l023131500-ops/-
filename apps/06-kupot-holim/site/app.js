@@ -61,7 +61,8 @@
   /* ---------- Drawer ---------- */
   function openDrawer(idx) {
     var p = DATA.profiles[idx];
-    var maxWins = Math.max.apply(null, p.ranking.map(function (r) { return r.wins; })) || 1;
+    var wins = p.ranking.map(function (r) { return r.wins; });
+    var maxWins = (wins.length ? Math.max.apply(null, wins) : 0) || 1;
     var bars = p.ranking.map(function (r) {
       var k = fundKey(r.fund), w = Math.round((r.wins / maxWins) * 100);
       return '<div class="rank-row"><span class="rank-name">' + esc(r.fund) + '</span>' +
