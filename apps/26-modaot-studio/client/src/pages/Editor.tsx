@@ -78,7 +78,7 @@ import { getCategory } from "@shared/knowledge";
 import { getStyle } from "@shared/styles";
 import { FORMATS, getFormat } from "@shared/formats";
 import { downloadPNG, downloadPDF, downloadSVG } from "@/lib/exporter";
-import { exportPromoVideo, downloadBlob, videoFileExtension } from "@/lib/videoExport";
+import { exportPromoVideo, downloadBlob, videoFileExtension, PROMO_VIDEO_FORMATS, type PromoVideoFormat } from "@/lib/videoExport";
 import { downloadIDML } from "@/lib/idmlExporter";
 import { apiRequest, hasAuthSession } from "@/lib/queryClient";
 import { nextId } from "@shared/layers";
@@ -230,6 +230,10 @@ export default function Editor() {
   // כי רוב הצפייה במדיה חברתית ללא קול. ניתן לכבות לפני הייצוא.
   const [showCaptions, setShowCaptions] = useState(true);
   const [videoProgress, setVideoProgress] = useState(0);
+  // פורמט הפריים לוידאו (lib/videoExport.ts): "original" = יחס המודעה, כמו
+  // קודם; "story"/"square" = פורמט חברתי שבו המודעה נכנסת בשלמותה על רקע
+  // מטושטש שלה עצמה (אף טקסט לא נחתך). בחירה לכל-ייצוא, לא נשמרת עם הפרויקט.
+  const [videoFormat, setVideoFormat] = useState<PromoVideoFormat>("original");
 
   // כתוביות אנגליות מקבילות (POST /api/ai/translate-captions, תרגום Claude של
   // narrationScript) — כבויות כברירת מחדל; דורשות לחיצה מפורשת כי זו קריאת AI
@@ -832,6 +836,7 @@ export default function Editor() {
         captionScriptEn: includeEnglishCaptions ? captionScriptEn || undefined : undefined,
         musicUrl: musicUrl || undefined,
         musicVolume: musicVolume / 100,
+        format: videoFormat,
         sceneBuildUp,
         sceneLayers: doc.layers.map((l) => ({
           id: l.id,
@@ -843,7 +848,8 @@ export default function Editor() {
         })),
         onProgress: (fraction) => setVideoProgress(Math.round(fraction * 100)),
       });
-      downloadBlob(blob, `${selected?.name ?? "modaa"}.${videoFileExtension(blob)}`);
+      const formatSuffix = videoFormat === "original" ? "" : `-${videoFormat}`;
+      downloadBlob(blob, `${selected?.name ?? "modaa"}${formatSuffix}.${videoFileExtension(blob)}`);
       toast({ title: "הוידאו מוכן להורדה" });
     } catch (err: any) {
       toast({
@@ -2199,6 +2205,37 @@ export default function Editor() {
                   onCheckedChange={setSceneBuildUp}
                   data-testid="switch-video-scene-buildup"
                 />
+              </div>
+              <div className="flex flex-col gap-1.5 border-t border-[#C9A227]/15 pt-2">
+                <Label className="text-xs text-[#F5EEDD]/70">פורמט הוידאו</Label>
+                <div className="flex flex-wrap gap-1.5">
+                  {([
+                    ["original", doc ? `מקורי · ${doc.width}×${doc.height}` : "מקורי"],
+                    ["story", PROMO_VIDEO_FORMATS.story.label],
+                    ["square", PROMO_VIDEO_FORMATS.square.label],
+                  ] as [PromoVideoFormat, string][]).map(([value, label]) => (
+                    <Button
+                      key={value}
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      className={
+                        videoFormat === value
+                          ? "h-7 border-[#C9A227] bg-[#C9A227]/15 px-2.5 text-xs text-[#C9A227]"
+                          : "h-7 border-[#C9A227]/25 px-2.5 text-xs text-[#F5EEDD]/60 hover:text-[#F5EEDD]"
+                      }
+                      onClick={() => setVideoFormat(value)}
+                      data-testid={`button-video-format-${value}`}
+                    >
+                      {label}
+                    </Button>
+                  ))}
+                </div>
+                {videoFormat !== "original" && (
+                  <p className="text-xs text-[#F5EEDD]/50" data-testid="text-video-format-hint">
+                    המודעה נכנסת בשלמותה לפריים ({PROMO_VIDEO_FORMATS[videoFormat].width}×{PROMO_VIDEO_FORMATS[videoFormat].height}) על רקע מטושטש שלה עצמה — שום טקסט לא נחתך.
+                  </p>
+                )}
               </div>
               <div className="flex flex-col gap-1.5 border-t border-[#C9A227]/15 pt-2">
                 <div className="flex items-center justify-between gap-2">

@@ -21,6 +21,20 @@ import type { NarrationAlignment } from "@shared/tts-hebrew";
 
 const MAX_VIDEO_DIM = 1080;
 const FPS = 30;
+
+/** פורמטים חברתיים לייצוא הוידאו. "original" = יחס המודעה עצמה (ההתנהגות
+ * המקורית בדיוק, בלי אף העתקת-פריים נוספת). בפורמט חברתי המודעה נכנסת
+ * בשלמותה (contain — טיפוגרפיה לעולם לא נחתכת) לפריים היעד, והשוליים
+ * מושלמים ברקע-cover מטושטש של אותה קומפוזיציה + דוק כהה עדין — הטיפול
+ * המקצועי המקובל בכלי-וידאו שיווקיים, כך שהפריים מלא בכל יחס-מדיה. */
+export type PromoVideoFormat = "original" | "story" | "square";
+export const PROMO_VIDEO_FORMATS: Record<
+  Exclude<PromoVideoFormat, "original">,
+  { width: number; height: number; label: string }
+> = {
+  story: { width: 1080, height: 1920, label: "סטורי / רילס · 9:16" },
+  square: { width: 1080, height: 1080, label: "פוסט מרובע · 1:1" },
+};
 const FALLBACK_DURATION_SEC = 6;
 // פתיח "בניית סצנה" (scene build-up): הוידאו לא נפתח על המודעה הגמורה אלא בונה
 // אותה מול העיניים — רקע → עיטורים/צורות → תמונות → טיפוגרפיה לפי תפקיד
@@ -415,6 +429,10 @@ export interface PromoVideoOptions {
   /** פתיח בניית-סצנה (רקע → עיטורים → תמונות → טיפוגרפיה). ברירת מחדל: true
    * כש-sceneLayers קיים. false = ההתנהגות הישנה בדיוק. */
   sceneBuildUp?: boolean;
+  /** פורמט הפריים: "original" (יחס המודעה, כמו קודם), "story" (1080×1920) או
+   * "square" (1080×1080). בפורמט חברתי המודעה ממוקמת בשלמותה על רקע-cover
+   * מטושטש שלה עצמה — אף טקסט לא נחתך. ברירת מחדל: original. */
+  format?: PromoVideoFormat;
   onProgress?: (fraction: number) => void;
 }
 
@@ -433,13 +451,24 @@ export async function exportPromoVideo(
     throw new Error("הדפדפן הזה לא תומך בהקלטת וידאו (MediaRecorder חסר)");
   }
 
+  const format: PromoVideoFormat = opts.format ?? "original";
+  const preset = format === "original" ? null : PROMO_VIDEO_FORMATS[format];
+
   const displayW = stage.width();
   const basePixelRatio = fullWidth / displayW; // כמו stageToDataURL ב-lib/exporter.ts
   const longSide = Math.max(fullWidth, fullHeight);
   const videoScale = Math.min(1, MAX_VIDEO_DIM / longSide);
-  const sourceCanvas = stage.toCanvas({ pixelRatio: basePixelRatio * videoScale });
+  // בפורמט חברתי המודעה נכנסת בשלמותה (contain) למלבן הפנוי בפריים היעד —
+  // לעולם לא חותכים טיפוגרפיה; קנה-המידה של צילום הבמה נגזר מאותו מלבן
+  // (Konva מרנדר וקטורית, אז גם הגדלה קלה נשארת חדה), לא מ-MAX_VIDEO_DIM.
+  const fitScale = preset
+    ? Math.min(preset.width / fullWidth, preset.height / fullHeight)
+    : videoScale;
+  const sourceCanvas = stage.toCanvas({ pixelRatio: basePixelRatio * fitScale });
   const vw = sourceCanvas.width;
   const vh = sourceCanvas.height;
+  const outW = preset ? preset.width : vw;
+  const outH = preset ? preset.height : vh;
 
   // פתיח בניית-סצנה — צילום שלבי-החשיפה חייב לקרות כאן, באותו רגע-במה שבו
   // צולמה הקומפוזיציה המלאה (לפני כל await), כדי ששני המקורות יהיו זהים
@@ -449,7 +478,7 @@ export async function exportPromoVideo(
     try {
       const groups = buildEntranceGroups(opts.sceneLayers);
       if (groups.length) {
-        buildUpSnapshots = captureBuildUpSnapshots(stage, groups, basePixelRatio * videoScale);
+        buildUpSnapshots = captureBuildUpSnapshots(stage, groups, basePixelRatio * fitScale);
       }
     } catch {
       buildUpSnapshots = []; // אסור שהפתיח יפיל ייצוא שעבד עד היום
@@ -494,10 +523,57 @@ export async function exportPromoVideo(
     : [];
 
   const recordCanvas = document.createElement("canvas");
-  recordCanvas.width = vw;
-  recordCanvas.height = vh;
-  const ctx = recordCanvas.getContext("2d");
-  if (!ctx) throw new Error("לא ניתן ליצור הקשר ציור לקנבס הוידאו");
+  recordCanvas.width = outW;
+  recordCanvas.height = outH;
+  const outCtx = recordCanvas.getContext("2d");
+  if (!outCtx) throw new Error("לא ניתן ליצור הקשר ציור לקנבס הוידאו");
+
+  // בפורמט original מציירים ישירות על קנבס ההקלטה — בדיוק המסלול הישן, אפס
+  // העתקות נוספות. בפורמט חברתי ה-Ken Burns/פתיח מצוירים על קנבס-תוכן בגודל
+  // המודעה, וכל פריים מורכב על פריים היעד: רקע-cover מטושטש מאותו פריים עצמו,
+  // דוק כהה, ואז העותק החד ממורכז — אף פיקסל תוכן לא נחתך בשום יחס-מדיה.
+  let ctx = outCtx;
+  let contentCanvas: HTMLCanvasElement = recordCanvas;
+  let backdropTiny: HTMLCanvasElement | null = null;
+  let backdropTinyCtx: CanvasRenderingContext2D | null = null;
+  if (preset) {
+    contentCanvas = document.createElement("canvas");
+    contentCanvas.width = vw;
+    contentCanvas.height = vh;
+    const contentCtx = contentCanvas.getContext("2d");
+    if (!contentCtx) throw new Error("לא ניתן ליצור הקשר ציור לקנבס הוידאו");
+    ctx = contentCtx;
+    // "טשטוש" בלי ctx.filter (שחסר בספארי ישן): הפריים מצטלם לקנבס זעיר ומוגדל
+    // חזרה עם החלקת-תמונה — תוצאה רכה, זולה לכל פריים, ועובדת בכל הדפדפנים.
+    backdropTiny = document.createElement("canvas");
+    backdropTiny.width = Math.max(2, Math.round(32 * (outW / outH)));
+    backdropTiny.height = 32;
+    backdropTinyCtx = backdropTiny.getContext("2d");
+    outCtx.imageSmoothingEnabled = true;
+    if ("imageSmoothingQuality" in outCtx) outCtx.imageSmoothingQuality = "high";
+  }
+
+  /** הרכבת פריים-יעד בפורמט חברתי; ב-original — no-op (התוכן כבר על קנבס ההקלטה). */
+  function compositeFramedFrame() {
+    if (!preset || !backdropTinyCtx || !backdropTiny) return;
+    const coverScale = Math.max(outW / vw, outH / vh);
+    const sw = outW / coverScale;
+    const sh = outH / coverScale;
+    backdropTinyCtx.drawImage(
+      contentCanvas,
+      (vw - sw) / 2, (vh - sh) / 2, sw, sh,
+      0, 0, backdropTiny.width, backdropTiny.height,
+    );
+    outCtx!.drawImage(backdropTiny, 0, 0, backdropTiny.width, backdropTiny.height, 0, 0, outW, outH);
+    // דוק כהה עדין — מפריד את המודעה החדה מהרקע הרך ושומר קריאות כתוביות.
+    outCtx!.fillStyle = "rgba(8, 10, 14, 0.42)";
+    outCtx!.fillRect(0, 0, outW, outH);
+    outCtx!.save();
+    outCtx!.shadowColor = "rgba(0, 0, 0, 0.55)";
+    outCtx!.shadowBlur = Math.round(outH * 0.018);
+    outCtx!.drawImage(contentCanvas, Math.round((outW - vw) / 2), Math.round((outH - vh) / 2));
+    outCtx!.restore();
+  }
 
   // ציר-זמן הפתיח: כל מעבר (רקע→קבוצה 1→...→קומפוזיציה מלאה) מקבל פרוסה שווה
   // מתוך אורך הפתיח. ה-Ken Burns רץ ברציפות מ-t=0 על כל מקור שמצויר, כך
@@ -522,10 +598,13 @@ export async function exportPromoVideo(
     } else {
       drawKenBurnsFrame(ctx!, sourceCanvas, vw, vh, t);
     }
+    // בפורמט חברתי — הרכבת רקע+תוכן על פריים היעד; ב-original זה no-op ואז
+    // outCtx===ctx ו-outW/outH===vw/vh, כך שהכתוביות מצוירות בדיוק כמו קודם.
+    compositeFramedFrame();
     if (captionSegments.length) {
       const text = activeCaption(captionSegments, elapsedSec);
       const textEn = captionSegmentsEn.length ? activeCaption(captionSegmentsEn, elapsedSec) : null;
-      if (text) drawCaptionOverlay(ctx!, vw, vh, text, textEn);
+      if (text) drawCaptionOverlay(outCtx!, outW, outH, text, textEn);
     }
   }
 
