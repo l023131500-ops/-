@@ -5,6 +5,19 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version',
 };
 
+// setting.value (n8n_webhook_url) is admin-configured and can point to any host;
+// without a timeout a dead/slow endpoint hangs this invocation (and the
+// leads-webhook call chain that awaits it) until the platform kills it.
+async function fetchWithTimeout(url: string, init: RequestInit, timeoutMs = 8000) {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
+  try {
+    return await fetch(url, { ...init, signal: controller.signal });
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
@@ -143,7 +156,7 @@ Deno.serve(async (req) => {
     };
 
     // Send to n8n
-    const webhookResponse = await fetch(setting.value, {
+    const webhookResponse = await fetchWithTimeout(setting.value, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),

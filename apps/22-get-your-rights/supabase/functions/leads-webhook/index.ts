@@ -5,6 +5,19 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
+// site_settings.webhook_url / n8n_webhook_url are admin-configured and can point
+// to any host; without a timeout a dead/slow endpoint hangs this invocation
+// until the platform kills it, instead of failing fast like a normal delivery error.
+async function fetchWithTimeout(url: string, init: RequestInit, timeoutMs = 8000) {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
+  try {
+    return await fetch(url, { ...init, signal: controller.signal });
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
@@ -35,7 +48,7 @@ Deno.serve(async (req) => {
 
     if (webhookSetting?.value) {
       try {
-        const webhookResponse = await fetch(webhookSetting.value, {
+        const webhookResponse = await fetchWithTimeout(webhookSetting.value, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -60,7 +73,7 @@ Deno.serve(async (req) => {
     if (n8nSetting?.value) {
       try {
         // Call n8n-notify edge function internally
-        const n8nResponse = await fetch(`${supabaseUrl}/functions/v1/n8n-notify`, {
+        const n8nResponse = await fetchWithTimeout(`${supabaseUrl}/functions/v1/n8n-notify`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

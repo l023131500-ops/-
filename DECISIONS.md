@@ -14375,3 +14375,44 @@
     #62/#88/#94/#115/#164/#169/#254/#312 נשארים חסומים על החלטת
     משתמש/גישת תשתית, ללא שינוי.
     via cloud server 167.99.131.167 [loop B]
+
+515. **עדשה חדשה לפי הצעת סבב 514: fetch יוצא בלי timeout/AbortController
+    בזרימות webhook ב-22-get-your-rights.** שני קבצים —
+    `supabase/functions/leads-webhook/index.ts` (מופעל כ-DB webhook על
+    הוספת ליד חדש) ו-`supabase/functions/n8n-notify/index.ts` (נקרא גם
+    פנימית מ-leads-webhook וגם מה-UI הניהולי) — שולחים POST לכתובת
+    שמוגדרת ע"י המנהל דרך `site_settings.webhook_url`/`n8n_webhook_url`,
+    כלומר לכל host שהמנהל יקליד, בלי שום timeout. אם ה-endpoint תקוע/מת,
+    הקריאה תלויה עד שהפלטפורמה עצמה תפסיק את ה-invocation, ובשרשרת
+    leads-webhook → n8n-notify זה מוכפל (הראשונה מחכה לשנייה). זה בדיוק
+    הדפוס שכבר טופל ב-27-bkalut-price (`server/webhook-bus.ts`,
+    `postWithTimeout` עם `AbortController`+8000ms) — כאן זה לא היה קיים
+    בכלל.
+
+    **התיקון:** נוספה פונקציית עזר מקומית `fetchWithTimeout` (זהה בהיגיון
+    ל-`postWithTimeout` של 27, timeout 8000ms) בכל אחד משני הקבצים
+    (אין תיקיית `_shared` ב-edge functions של המערכת הזו — כל פונקציה
+    נבנית/נפרסת בנפרד, אז שכפול מקומי קטן עדיף על תלות חוצה-פונקציות
+    שעלולה לא להיפרס נכון), ושלושת קריאות ה-fetch היוצאות (שתיים ב-
+    leads-webhook, אחת ב-n8n-notify) עברו מ-`fetch` ל-`fetchWithTimeout`.
+    ההתנהגות בטעות נשארת זהה — עדיין נתפסת ב-`try/catch` הקיים ומוחזרת
+    כ-`success:false, error:...` (ב-leads-webhook) או כ-500 (ב-n8n-notify,
+    ששם אין try/catch פנימי סביב הקריאה הזו) — רק שעכשיו זה קורה תוך 8
+    שניות במקום תלייה בלתי מוגבלת.
+
+    **בדיקות תקינות:** קריאת קוד בלבד (אין `node_modules`/tsc באפליקציה
+    הזו — Deno edge functions). איזון סוגריים בפייתון על שני הקבצים אחרי
+    השינוי: leads-webhook `()`43/43 `{}`41/41, n8n-notify `()`61/61
+    `{}`52/52 — מאוזן בשניהם. `git diff --stat`: 2 קבצים, +23/-2.
+
+    לא נגעתי במערכות מוגנות 08/09/bkalut-app/bkalot-admin/zr_*/NEDARIM3873/
+    csj/csj_src/igud, ב-`main`, או במערכת מחוץ להיקף. ענף חדש
+    `fix/b-22-get-your-rights-webhook-fetch-timeout-round515-0824`, נדחף.
+
+    **הבא בתור:** אותה עדשה (fetch יוצא בלי timeout) קיימת גם ב-
+    21-mthbram (`supabase/functions/chat`, `search-lessons`) וב-
+    18-torah-editor-mvp (`lib/htr-vision.ts`/`htr-corrector.ts`/`htr-engine.ts`,
+    קריאות ל-API חיצוני של מודל AI) — לא נבדקו עדיין בסבב הזה, מומלץ
+    להמשיך שם. נושאים #62/#88/#94/#115/#164/#169/#254/#312 נשארים חסומים
+    על החלטת משתמש/גישת תשתית, ללא שינוי.
+    via cloud server 167.99.131.167 [loop B]
