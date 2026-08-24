@@ -301,10 +301,20 @@
         return null;
       }
 
+      // נשמר בשני מקומות בכוונה: sessionStorage הוא per-tab, ולכן קישור אישור
+      // הרשמה שנפתח מאפליקציית המייל (טאב/הקשר חדש לגמרי) לא רואה אותו לעולם —
+      // כל הרשמה שדורשת אישור מייל הייתה מאבדת את היעד ונוחתת ב-/me, לא במוצר
+      // שממנו נרשמו. אותו כישלון שקט קורה גם אם sessionStorage.setItem נכשל
+      // (מצב פרטי/מדיניות דפדפן). RETURN_PATH מצורף גם כפרמטר על כתובת היעד
+      // עצמה, ששורד את שני המקרים.
+      const RETURN_PATH = safeReturnPath(back);
       try {
-        const safe = safeReturnPath(back);
-        if (safe) sessionStorage.setItem('more30-return-to', safe);
+        if (RETURN_PATH) sessionStorage.setItem('more30-return-to', RETURN_PATH);
       } catch {}
+
+      function callbackUrl() {
+        return CALLBACK + (RETURN_PATH ? '?from=' + encodeURIComponent(RETURN_PATH) : '');
+      }
 
       function show(text, kind) {
         msg.textContent = text;
@@ -417,7 +427,7 @@
         try {
           const { error } = await sb.auth.signInWithOAuth({
             provider: 'google',
-            options: { redirectTo: location.origin + CALLBACK },
+            options: { redirectTo: location.origin + callbackUrl() },
           });
           if (error) show('הכניסה עם Google נכשלה: ' + error.message, 'err');
         } finally {
@@ -430,7 +440,7 @@
       async function refresh() {
         const { data } = await sb.auth.getUser();
         if (!data?.user) return;
-        location.replace(CALLBACK);
+        location.replace(callbackUrl());
       }
 
       function friendly(error) {
@@ -474,7 +484,7 @@
               password,
               options: {
                 data: { full_name: fullName, phone: phoneDigits },
-                emailRedirectTo: location.origin + CALLBACK,
+                emailRedirectTo: location.origin + callbackUrl(),
               },
             })
           : await sb.auth.signInWithPassword({ email: toEmail(ident), password });
@@ -492,7 +502,7 @@
         }
 
         show(up ? 'החשבון נוצר ואתה מחובר.' : 'נכנסת בהצלחה.', 'ok');
-        location.replace(CALLBACK);
+        location.replace(callbackUrl());
       });
 
       // ── שכחתי סיסמה ────────────────────────────────────────────────────────

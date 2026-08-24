@@ -127,9 +127,14 @@
       // `https://more30.com/` ולכן דחתה כל ערך אמיתי — אותו באג משני צדדיו,
       // והתוצאה הייתה שכל לקוח שהתחבר מתוך מערכת נחת ב-`/me`.
       // ההגנה מפני הפניה פתוחה נשמרת: נתיב יחיד בלבד, לא `//`.
+      //
+      // sessionStorage הוא per-tab: קישור אישור הרשמה שנפתח מאפליקציית המייל
+      // הוא הקשר/טאב חדש, ואינו רואה מה ש-/login שמר בטאב המקורי — כל הרשמה
+      // שדורשת אישור מייל הייתה מאבדת את היעד. ‎/login‎ מצרף אותו גם כפרמטר
+      // `from` על כתובת היעד עצמה, ששורד טאב חדש; נבדק כאן באותה הגנה בדיוק.
       function returnTo() {
         try {
-          const v = sessionStorage.getItem('more30-return-to');
+          const v = sessionStorage.getItem('more30-return-to') || params.get('from');
           if (!v) return null;
           if (v.startsWith('/') && !v.startsWith('//')) return v;
           const u = new URL(v, location.origin);
