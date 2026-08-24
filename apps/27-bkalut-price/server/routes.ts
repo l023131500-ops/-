@@ -1,4 +1,4 @@
-import type { Express } from "express";
+import type { Express, Request } from "express";
 import type { Server } from "node:http";
 import crypto from "node:crypto";
 import { sendYemotVoice } from "./yemot";
@@ -342,6 +342,36 @@ function cleanPhone(value: unknown) {
   return String(value ?? "").replace(/[^\d+]/g, "").trim();
 }
 
+// /api/clients/by-phone returns a client's full PII (id number, birth date,
+// email, city) to any caller who supplies their phone number, with no login
+// -- needed so a returning client can resume the public form without
+// retyping, but that also means anyone who guesses/enumerates phone numbers
+// can harvest that PII today. There's no auth/OTP layer to gate this on, so
+// this throttles lookups per source IP (falling back to a shared bucket if
+// the proxy doesn't forward the real client IP) to blunt bulk enumeration
+// without touching the legitimate one-lookup-per-visit flow.
+const byPhoneLookupAttempts = new Map<string, { count: number; resetAt: number }>();
+const BY_PHONE_WINDOW_MS = 60_000;
+const BY_PHONE_MAX_PER_WINDOW = 20;
+
+function clientIpFor(req: Request) {
+  const xff = req.headers["x-forwarded-for"];
+  if (typeof xff === "string" && xff.length > 0) return xff.split(",")[0].trim();
+  return req.ip || req.socket?.remoteAddress || "unknown";
+}
+
+function byPhoneRateLimited(req: Request) {
+  const key = clientIpFor(req);
+  const now = Date.now();
+  const entry = byPhoneLookupAttempts.get(key);
+  if (!entry || now > entry.resetAt) {
+    byPhoneLookupAttempts.set(key, { count: 1, resetAt: now + BY_PHONE_WINDOW_MS });
+    return false;
+  }
+  entry.count += 1;
+  return entry.count > BY_PHONE_MAX_PER_WINDOW;
+}
+
 function potentialLevel(percent: number) {
   if (percent >= 75) return "פוטנציאל גבוה";
   if (percent >= 45) return "פוטנציאל בינוני";
@@ -419,6 +449,7 @@ export async function registerRoutes(
   });
 
   app.get("/api/clients/by-phone", async (req, res) => {
+    if (byPhoneRateLimited(req)) return res.status(429).json(null);
     const phone = cleanPhone(req.query.phone);
     if (!phone || phone.length < 6) return res.json(null);
     const client = await storage.getClientByPhone(phone);
