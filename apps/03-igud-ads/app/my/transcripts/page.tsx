@@ -14,12 +14,19 @@ type Upload = {
 export default function MyTranscriptsPage() {
   const [uploads, setUploads] = useState<Upload[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
 
   useEffect(() => {
-    fetch("/modaot/api/my/transcripts").then((r) => r.json()).then((j) => {
-      setUploads(j.uploads || []);
-      setLoading(false);
-    });
+    fetch("/modaot/api/my/transcripts")
+      .then((r) => (r.ok ? r.json() : Promise.reject(new Error(String(r.status)))))
+      .then((j) => {
+        setUploads(j.uploads || []);
+        setLoading(false);
+      })
+      .catch(() => {
+        setError(true);
+        setLoading(false);
+      });
   }, []);
 
   return (
@@ -30,6 +37,10 @@ export default function MyTranscriptsPage() {
       <div aria-live="polite">
       {loading ? (
         <div className="text-gray-500">טוען...</div>
+      ) : error ? (
+        <div className="text-center py-12">
+          <p className="text-red-600 mb-4">שגיאה בטעינת התמלולים. נסו לרענן את הדף.</p>
+        </div>
       ) : uploads.length === 0 ? (
         <div className="text-center py-12">
           <p className="text-gray-500 mb-4">עוד לא העלית קבצים לתמלול</p>
