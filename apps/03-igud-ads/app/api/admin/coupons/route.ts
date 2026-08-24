@@ -19,11 +19,15 @@ export async function POST(req: Request) {
   if (denied) return denied;
 
   const body = await req.json();
+  const maxDesigns = body.max_designs === undefined || body.max_designs === null ? 3 : Number(body.max_designs);
+  if (!Number.isFinite(maxDesigns) || !Number.isInteger(maxDesigns) || maxDesigns < 1) {
+    return NextResponse.json({ error: "max_designs must be a positive integer" }, { status: 400 });
+  }
   const svc = createSupabaseService();
   const code = body.code?.trim() || (await generateCouponCode());
   const { data, error } = await svc.from("ad_coupons").insert({
     code,
-    max_designs: body.max_designs || 3,
+    max_designs: maxDesigns,
     expires_at: body.expires_at || null,
     note: body.note || null,
     is_active: true,
@@ -37,6 +41,14 @@ export async function PATCH(req: Request) {
   if (denied) return denied;
 
   const { id, ...rest } = await req.json();
+  for (const field of ["max_designs", "used_designs"] as const) {
+    if (rest[field] === undefined) continue;
+    const n = Number(rest[field]);
+    if (!Number.isFinite(n) || !Number.isInteger(n) || n < 0) {
+      return NextResponse.json({ error: `${field} must be a non-negative integer` }, { status: 400 });
+    }
+    rest[field] = n;
+  }
   const svc = createSupabaseService();
   const { data, error } = await svc.from("ad_coupons").update(rest).eq("id", id).select("*").single();
   if (error) return NextResponse.json({ error: error.message }, { status: 400 });
