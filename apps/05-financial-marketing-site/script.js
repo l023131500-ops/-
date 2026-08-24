@@ -19,7 +19,8 @@
   function sanitizeAppBase(value) {
     if (!value) return null;
     const trimmed = value.replace(/\/+$/, "");
-    if (trimmed.startsWith("/") && !trimmed.startsWith("//")) return trimmed;
+    if (trimmed.startsWith("//")) return null;
+    if (trimmed.startsWith("/")) return trimmed;
     try {
       const u = new URL(trimmed, window.location.origin);
       if (u.protocol === "http:" || u.protocol === "https:") return trimmed;
