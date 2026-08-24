@@ -4947,3 +4947,102 @@ to that constraint: they import only dependency-free modules (`hosts.js`,
   has hit, unrelated to this change. **Not verified beyond that**: no real
   browser/device in this sandbox to click through the new console section
   end-to-end — same constraint every fix in this log without one has hit.
+
+- **[24/08/2026, Loop A] Remote maintenance mode — KIOSK_BUILD.md §9 "מצב
+  תחזוקה מרחוק", was entirely unbuilt, on `zol` not this tree** — an owner
+  had no way to take one device out of customer-facing service (cleaning, a
+  stuck payment terminal, a venue between events) without either
+  disenrolling it or overwriting its allow-list/home-URL by hand and typing
+  them back in later. Every other §9/§8 policy field (schedule, signage,
+  zoom, exit code) already flows through one shared write path —
+  `applyDevicePolicy` in `policy.js`, shared by `PATCH /devices/:id` and
+  template bulk-apply — so maintenance mode was added as a first-class
+  member of that same pipeline rather than a bolt-on: two new columns,
+  `devices.maintenance_enabled`/`maintenance_message` (new
+  `src/maintenance.js`, dependency-free like `schedule.js`/`signage.js`,
+  holds `validateMaintenanceMessage()` — a 200-char cap, blank treated as
+  "use the on-device default", the honest "never configured" value every
+  other policy column on this table already uses). Wired into every place a
+  policy field already reaches: `templatepolicy.js`'s `buildTemplateFields`/
+  `policyPatchFromTemplate`/`TEMPLATE_COLUMNS` (so a template can turn a
+  whole fleet's maintenance on/off in one apply), `snapshots.js`'s
+  `SNAPSHOT_COLUMNS`/`POLICY_BODY_KEYS` (so a maintenance toggle is
+  backed up and restorable the same as any other edit — `patchFromSnapshot`
+  needed no special case, since `maintenance_enabled` is `NOT NULL` on
+  `devices` the same way `schedule_enabled`/`signage_enabled` already are),
+  `devicepayload.js`'s console allow-list, and `routes/devices.js`/
+  `routes/templates.js`'s public shape. The message field uses a `CASE WHEN
+  ? = 1 THEN ? ELSE maintenance_message END` write (not a plain `COALESCE`,
+  which cannot express "clear the message while leaving other fields
+  alone") — the same pattern `schedule_last_state`'s own reset clause in
+  this file already established for "explicit clear, not merely absent".
+  `pushConfigUpdate` and both `routes/agent.js` response shapes (enroll,
+  heartbeat) now carry `maintenanceEnabled`/`maintenanceMessage` alongside
+  every other config field, so a device picks up the state whether it is
+  live on the WebSocket, polling on the heartbeat fallback, or enrolling
+  for the first time.
+
+  **Android**: `Prefs.MAINTENANCE_ENABLED`/`MAINTENANCE_MESSAGE`, persisted
+  from both `AgentClient.kt`'s heartbeat-config path and its
+  `update_config` WS command path — same silent-persist shape
+  `signageEnabled` already uses (`KioskActivity` reads Prefs directly, no
+  new `CommandHandler` parameter). Unlike signage, though, a maintenance
+  toggle has to take effect the moment it changes, not just whenever the
+  idle timer next fires — so, on the heartbeat path specifically, a new
+  `maintenanceChanged` was folded into the same `changed`/`zoomChanged` gate
+  that decides whether `onConfigUpdated()` fires this round (the
+  `update_config` WS path already calls `onConfigUpdated()` unconditionally
+  on every push, so it needed no equivalent gate change). `KioskActivity`
+  gained `applyMaintenanceState()`, called from both `onCreate()` (resume
+  into the same blocked state after a crash/reboot — the same "must survive
+  a restart" reasoning `LAST_URL` already documents for its own Prefs key)
+  and `onConfigUpdated()` (live toggle). It shows a **new, separate**
+  `maintenanceOverlay` — deliberately not a reuse of the existing
+  `overlay`/`showOverlay()` used by `onMessage()`/`onScreenOff()`:
+  `onScreenOn()` unconditionally calls `removeOverlay()`, which would have
+  silently cleared a maintenance block the instant a remote "הדלק מסך"
+  command landed, and `onMessage()` repurposes the same view's text, which
+  would have clobbered a maintenance message with an unrelated operator
+  note. Two independent views mean neither feature can step on the other's
+  state. Like the existing `overlay`, the new one is non-interactive (no
+  click listener) so touches fall through to `webView` underneath — the
+  hidden 5-corner-tap admin-unlock gesture (§4) keeps working under the
+  maintenance screen exactly as it already does under the screen_off
+  blackout, so a technician can still reach local device settings without
+  needing the console to turn maintenance off first.
+
+  **Console**: the device edit modal gained a "מצב תחזוקה מרחוק" checkbox +
+  optional message textarea, same shape the schedule/signage sections
+  already use; `deviceCard()` shows a prominent "🛠 בתחזוקה מרחוק" pill (plus
+  the message, if set) when active, distinct from the quieter inline
+  schedule/signage summary lines since a maintained device is fully out of
+  service. The templates form gained the matching "כלול מצב תחזוקה מרחוק
+  בתבנית" section and `templateSummary()` now reports it.
+
+  9 new unit tests in `maintenance.test.mjs` (null/empty/whitespace-only
+  treated as "no message"; non-string rejected; 200-char cap enforced
+  exactly at the boundary). `snapshots.test.mjs` and `templatepolicy.test.mjs`
+  each gained a maintenance-specific case (field extraction, patch
+  round-trip, template-column membership). `node --check` clean on every
+  touched/added JS file (`maintenance.js`, `db.js`, `templatepolicy.js`,
+  `snapshots.js`, `policy.js`, `devicepayload.js`, `routes/agent.js`,
+  `routes/devices.js`, `routes/templates.js`, `public/js/app.js`, all three
+  test files). Full suite: 116/118 (was 109/111 before this round's 9 new +
+  3 extended tests) — the 2 failures (`routing.test.mjs`/`seedadmin.test.mjs`)
+  are the same pre-existing `express`/`better-sqlite3`-not-installed gap
+  every prior entry in this log has hit, unrelated to this change.
+  **Kotlin is not compiler-verified**: no gradle/kotlin toolchain in this
+  sandbox, the same constraint every Android-side entry in this log has hit
+  — reviewed by hand; brace/paren counts balance on every touched file
+  (`AgentClient.kt` 83/83 braces, 338/338 parens; `KioskActivity.kt` 116/116,
+  423/423; `Prefs.kt` 2/2, 23/23).
+
+  Pushed to `l023131500-ops/zol`#`claude/what-do-you-see-gxo5tc` (`06fec9f`).
+  `more30.com/kiosk/api/health` returned `200` after the redeploy; a
+  regression check confirmed `PATCH /devices/:id`, `GET /devices`, and
+  `GET /templates` all still answer `401` with no auth token, matching
+  their pre-existing shape. **Not verified beyond that**: no real
+  device/browser in this sandbox to click through the new console section
+  or confirm the on-device maintenance screen actually appears and the
+  corner-tap gesture still reaches it through the overlay on real
+  hardware — the same constraint every fix in this log without one has hit.
