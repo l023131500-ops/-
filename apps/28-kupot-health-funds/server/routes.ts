@@ -23,6 +23,10 @@ import { hitRateLimit, clientIp } from "./rate-limit";
 // בקשות לשעה, לכל כתובת IP, ל-/api/agent (קריאת Anthropic בתשלום, ר' rate-limit.ts).
 const AGENT_RATE_LIMIT_PER_HOUR = 20;
 
+// בקשות לשעה, לכל כתובת IP, ל-/api/switch-lead (טופס ציבורי בלי אימות -- בלי
+// תקרה, בקשות חוזרות היו כותבות שורות ליד ללא הגבלה לטבלה המקומית ול-Supabase).
+const SWITCH_LEAD_RATE_LIMIT_PER_HOUR = 20;
+
 // קריאת נושאים — מ-Supabase בפרודקשן, אחרת מ-SQLite המקומי.
 async function readTopics(): Promise<HfTopic[]> {
   return useSupabaseStore() ? fetchTopicsFromSupabase() : storage.listTopics();
@@ -106,6 +110,11 @@ export async function registerRoutes(
 
   // ---- טופס מעבר קופה (ליד) ----
   app.post("/api/switch-lead", async (req, res) => {
+    if (hitRateLimit(`switch-lead:${clientIp(req)}`, SWITCH_LEAD_RATE_LIMIT_PER_HOUR)) {
+      return res
+        .status(429)
+        .json({ error: "יותר מדי בקשות מהכתובת הזו. נא לנסות שוב בעוד שעה." });
+    }
     const parsed = insertSwitchLeadSchema.safeParse(req.body);
     if (!parsed.success) {
       return res
