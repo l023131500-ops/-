@@ -29,9 +29,15 @@ export async function POST(req: Request) {
 
   const svc = createSupabaseService();
 
-  // Check if auth user exists by email - create invite if not
-  const { data: authUser } = await svc.auth.admin.listUsers();
-  const existing = authUser?.users?.find((u) => u.email === email);
+  // Check if auth user exists by email - create invite if not.
+  // listUsers() paginates (default 50/page), so page through until found or exhausted -
+  // otherwise emails on page 2+ are missed and createUser() below fails with "already registered".
+  let existing: { id: string } | undefined;
+  for (let page = 1; !existing; page++) {
+    const { data: authUser } = await svc.auth.admin.listUsers({ page, perPage: 1000 });
+    existing = authUser?.users?.find((u) => u.email === email);
+    if (!authUser?.users || authUser.users.length < 1000) break;
+  }
 
   let userId: string;
   if (existing) {
