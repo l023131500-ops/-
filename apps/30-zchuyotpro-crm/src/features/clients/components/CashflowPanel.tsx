@@ -35,6 +35,7 @@ import {
   futureValue,
   SAVINGS_PRESETS,
 } from "@/features/clients/finance";
+import { LoansPlanningSection } from "@/features/clients/components/LoansPlanningSection";
 
 function todayISO(): string {
   const d = new Date();
@@ -105,6 +106,8 @@ export function CashflowPanel({ clientId, tenantId, mode, profileId }: Props) {
       </Card>
 
       <BudgetCard clientId={clientId} tenantId={tenantId} limits={limits ?? []} spentByCategory={summary.expenseByCategory} onSaved={invalidate} />
+
+      <LoansPlanningSection clientId={clientId} tenantId={tenantId} mode={mode} profileId={profileId} monthIncome={summary.income} />
 
       <SavingsCalculatorCard />
     </div>

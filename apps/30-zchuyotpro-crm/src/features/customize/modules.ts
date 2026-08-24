@@ -15,7 +15,7 @@ export type ModuleDef = {
 // documents) are core CRM and cannot be hidden. These are the optional ones.
 export const OPTIONAL_MODULES: ModuleDef[] = [
   { key: "financial", label: "פרופיל פיננסי", description: "הכנסות, הוצאות קבועות, חובות וחסכונות בתיק הלקוח" },
-  { key: "cashflow", label: "תזרים חודשי", description: "יומן הכנסות/הוצאות, תקרות תקציב ומחשבוני חיסכון — בתיק ובאזור האישי", portalUrl: "/client-area/finance" },
+  { key: "cashflow", label: "תזרים חודשי", description: "יומן הכנסות/הוצאות, תקרות תקציב, ניהול הלוואות ומחשבוני חיסכון ורכישת דירה — בתיק ובאזור האישי", portalUrl: "/client-area/finance" },
   { key: "housing", label: "דיור וחשבונות", description: "פרטי דיור, משכנתא, ארנונה, חשמל ומים" },
   { key: "vehicles", label: "רכבים", description: "רכבי הלקוח ותו נכה" },
   { key: "property-media", label: "תמונות ווידאו", description: "גלריית מדיה של נכס הלקוח" },

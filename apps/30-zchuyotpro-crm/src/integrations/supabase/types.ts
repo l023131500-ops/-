@@ -404,6 +404,82 @@ export type Database = {
           },
         ]
       }
+      client_loans: {
+        Row: {
+          annual_rate_pct: number | null
+          balance: number
+          client_id: string
+          created_at: string
+          created_by: string | null
+          end_date: string | null
+          id: string
+          lender: string
+          loan_type: string
+          monthly_payment: number
+          notes: string | null
+          principal: number | null
+          start_date: string | null
+          tenant_id: string
+          updated_at: string
+        }
+        Insert: {
+          annual_rate_pct?: number | null
+          balance: number
+          client_id: string
+          created_at?: string
+          created_by?: string | null
+          end_date?: string | null
+          id?: string
+          lender: string
+          loan_type?: string
+          monthly_payment: number
+          notes?: string | null
+          principal?: number | null
+          start_date?: string | null
+          tenant_id: string
+          updated_at?: string
+        }
+        Update: {
+          annual_rate_pct?: number | null
+          balance?: number
+          client_id?: string
+          created_at?: string
+          created_by?: string | null
+          end_date?: string | null
+          id?: string
+          lender?: string
+          loan_type?: string
+          monthly_payment?: number
+          notes?: string | null
+          principal?: number | null
+          start_date?: string | null
+          tenant_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "client_loans_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "client_loans_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "client_loans_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       client_consents: {
         Row: {
           category: string

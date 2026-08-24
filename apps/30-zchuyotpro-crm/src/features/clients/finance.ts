@@ -5,6 +5,7 @@ import type { Database } from "@/integrations/supabase/types";
 type Tables = Database["public"]["Tables"];
 export type TransactionRow = Tables["client_transactions"]["Row"];
 export type BudgetLimitRow = Tables["client_budget_limits"]["Row"];
+export type LoanRow = Tables["client_loans"]["Row"];
 
 export const INCOME_CATEGORIES = {
   salary: "משכורת",
@@ -90,11 +91,29 @@ export const budgetLimitsQuery = (clientId: string | undefined) =>
     enabled: !!clientId,
   });
 
+export const loansQuery = (clientId: string | undefined) =>
+  queryOptions({
+    queryKey: ["client-loans", clientId],
+    queryFn: async () => {
+      if (!clientId) return [];
+      const { data, error } = await supabase
+        .from("client_loans")
+        .select("*")
+        .eq("client_id", clientId)
+        .order("monthly_payment", { ascending: false })
+        .order("created_at", { ascending: true });
+      if (error) throw error;
+      return data ?? [];
+    },
+    enabled: !!clientId,
+  });
+
 export function useInvalidateFinance(clientId: string) {
   const qc = useQueryClient();
   return () => {
     void qc.invalidateQueries({ queryKey: ["client-transactions", clientId] });
     void qc.invalidateQueries({ queryKey: ["client-budget-limits", clientId] });
+    void qc.invalidateQueries({ queryKey: ["client-loans", clientId] });
   };
 }
 
@@ -184,3 +203,104 @@ export const SAVINGS_PRESETS: SavingsPreset[] = [
     years: 6,
   },
 ];
+
+// ---------- loans & home purchase (spec item 7: ניהול הלוואות / רכישת דירה / דירה להשקעה) ----------
+
+export const LOAN_TYPES = {
+  mortgage: "משכנתא",
+  bank: "הלוואה בנקאית",
+  credit_card: "אשראי / מסגרת",
+  gmach: "גמ״ח",
+  family: "משפחה וחברים",
+  other: "אחר",
+} as const;
+
+export type LoansSummary = { count: number; totalBalance: number; totalMonthly: number };
+
+export function summarizeLoans(rows: LoanRow[]): LoansSummary {
+  const s: LoansSummary = { count: rows.length, totalBalance: 0, totalMonthly: 0 };
+  for (const r of rows) {
+    s.totalBalance += Number(r.balance) || 0;
+    s.totalMonthly += Number(r.monthly_payment) || 0;
+  }
+  return s;
+}
+
+/**
+ * Fixed monthly payment on an amortized loan (Spitzer schedule):
+ * PMT = L·r / (1 - (1+r)^-n)  (r = monthly rate, n = months).
+ */
+export function loanMonthlyPayment(principal: number, annualRatePct: number, years: number): number {
+  const n = Math.max(1, Math.round(years * 12));
+  const r = annualRatePct / 100 / 12;
+  if (principal <= 0) return 0;
+  if (r === 0) return principal / n;
+  return (principal * r) / (1 - Math.pow(1 + r, -n));
+}
+
+/**
+ * Months until a balance is repaid at a fixed monthly payment:
+ * n = -ln(1 - r·B/PMT) / ln(1+r). Returns null when the payment does not
+ * even cover the interest (the loan never amortizes) or is not positive.
+ */
+export function monthsToPayoff(balance: number, annualRatePct: number, monthlyPayment: number): number | null {
+  if (balance <= 0) return 0;
+  if (monthlyPayment <= 0) return null;
+  const r = annualRatePct / 100 / 12;
+  if (r === 0) return Math.ceil(balance / monthlyPayment);
+  if (monthlyPayment <= balance * r) return null;
+  return Math.ceil(-Math.log(1 - (r * balance) / monthlyPayment) / Math.log(1 + r));
+}
+
+// Bank-of-Israel LTV (loan-to-value) caps per buyer type. The payment-burden
+// warning threshold mirrors the common bank practice of capping the total
+// monthly repayments at ~40% of net income (the regulatory hard stop is 50%).
+export const HOME_PURCHASE_MODES = {
+  first: { label: "דירה ראשונה", maxLtv: 0.75 },
+  replace: { label: "משפרי דיור", maxLtv: 0.7 },
+  investment: { label: "דירה להשקעה", maxLtv: 0.5 },
+} as const;
+
+export type HomePurchaseModeKey = keyof typeof HOME_PURCHASE_MODES;
+
+export const PAYMENT_BURDEN_WARN = 0.4;
+export const PAYMENT_BURDEN_MAX = 0.5;
+
+export type HomePurchasePlan = {
+  loanNeeded: number;
+  ltv: number; // 0..1 of the price the loan covers
+  maxLtv: number;
+  ltvOk: boolean;
+  /** minimum equity the LTV cap requires; > equity when ltvOk is false */
+  minEquity: number;
+  monthlyPayment: number;
+  /** (new payment + existing loan payments) / net income; null when income unknown */
+  burden: number | null;
+};
+
+export function planHomePurchase(input: {
+  mode: HomePurchaseModeKey;
+  price: number;
+  equity: number;
+  annualRatePct: number;
+  years: number;
+  netIncome: number;
+  existingMonthlyLoans: number;
+}): HomePurchasePlan {
+  const price = Math.max(0, input.price);
+  const equity = Math.max(0, Math.min(input.equity, price));
+  const maxLtv = HOME_PURCHASE_MODES[input.mode].maxLtv;
+  const loanNeeded = price - equity;
+  const ltv = price > 0 ? loanNeeded / price : 0;
+  const monthlyPayment = loanNeeded > 0 ? loanMonthlyPayment(loanNeeded, input.annualRatePct, input.years) : 0;
+  const totalMonthly = monthlyPayment + Math.max(0, input.existingMonthlyLoans);
+  return {
+    loanNeeded,
+    ltv,
+    maxLtv,
+    ltvOk: ltv <= maxLtv + 1e-9,
+    minEquity: price * (1 - maxLtv),
+    monthlyPayment,
+    burden: input.netIncome > 0 ? totalMonthly / input.netIncome : null,
+  };
+}
