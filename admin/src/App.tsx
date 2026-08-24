@@ -225,6 +225,7 @@ function adminHref(r: Overview): string | null {
 export function App() {
   const [view, setView] = useState<"systems" | "access" | "users" | "keys" | "ideas" | "specs">("systems");
   const [users, setUsers] = useState<PlatformUser[]>([]);
+  const [usersBusy, setUsersBusy] = useState(false);
   const [userApp, setUserApp] = useState("");
   /**
    * ההרשאה נשאלת מהשרת (`more30_is_admin`), לא נגזרת מקיום סשן. מחובר ≠ מנהל:
@@ -253,6 +254,7 @@ export function App() {
   const [authReady, setAuthReady] = useState(false);
   const [credits, setCredits] = useState<ProviderCredit[] | null>(null);
   const [creditsMsg, setCreditsMsg] = useState<string | null>(null);
+  const [creditsBusy, setCreditsBusy] = useState(false);
   const [msg, setMsg] = useState<string | null>(sb ? null : "מצב לא-מקוון: אין חיבור Supabase.");
   const [fDept, setFDept] = useState(""); const [fStage, setFStage] = useState(""); const [fLive, setFLive] = useState(false); const [q, setQ] = useState("");
   const [fClass, setFClass] = useState("");
@@ -286,18 +288,21 @@ export function App() {
    * כדי שלא נצטרך קריאה לכל מערכת בנפרד — 33 קריאות רק כדי לצייר טבלה.
    */
   async function loadUsers() {
-    if (!sb) return;
-    const { data, error } = await sb.rpc("more30_admin_users");
-    if (error) {
-      setMsg(
-        error.message.includes("super admin")
-          ? "רשימת המשתמשים פתוחה לסופר-אדמין של הפלטפורמה בלבד."
-          : "טעינת המשתמשים נכשלה: " + error.message,
-      );
-      setUsers([]);
-      return;
-    }
-    setUsers((data ?? []) as PlatformUser[]);
+    if (!sb || usersBusy) return;
+    setUsersBusy(true);
+    try {
+      const { data, error } = await sb.rpc("more30_admin_users");
+      if (error) {
+        setMsg(
+          error.message.includes("super admin")
+            ? "רשימת המשתמשים פתוחה לסופר-אדמין של הפלטפורמה בלבד."
+            : "טעינת המשתמשים נכשלה: " + error.message,
+        );
+        setUsers([]);
+        return;
+      }
+      setUsers((data ?? []) as PlatformUser[]);
+    } finally { setUsersBusy(false); }
   }
 
   async function setUserRole(userId: string, appKey: string, role: string) {
@@ -407,19 +412,20 @@ export function App() {
    * הפונקציה מקבלת את ה-JWT ומאמתת אותו מול `more30_is_admin()`.
    */
   async function loadCredits() {
-    if (!sb) return;
+    if (!sb || creditsBusy) return;
+    setCreditsBusy(true);
     setCreditsMsg(null);
-    await sb.auth.refreshSession().catch(() => null);
-    const jwt = (await sb.auth.getSession()).data.session?.access_token ?? "";
-    if (!jwt) { setCreditsMsg("צריך התחברות אדמין."); return; }
     try {
+      await sb.auth.refreshSession().catch(() => null);
+      const jwt = (await sb.auth.getSession()).data.session?.access_token ?? "";
+      if (!jwt) { setCreditsMsg("צריך התחברות אדמין."); return; }
       const res = await fetch(`${API_BASE}/api/credits`, { headers: { Authorization: `Bearer ${jwt}` } });
       const body = await res.json().catch(() => null);
       if (!res.ok) { setCreditsMsg(body?.error ?? `שגיאה ${res.status}`); return; }
       setCredits(body.providers as ProviderCredit[]);
     } catch (e: any) {
       setCreditsMsg("לא הצלחנו לבדוק את הספקים: " + (e?.message ?? e));
-    }
+    } finally { setCreditsBusy(false); }
   }
 
   /**
@@ -863,7 +869,7 @@ export function App() {
                 <option key={k} value={k}>{merged.find((r) => r.path === k)?.name_he ?? k}</option>
               ))}
             </select>
-            <button onClick={loadUsers} style={btn}>רענון</button>
+            <button onClick={loadUsers} disabled={usersBusy} style={btn}>{usersBusy ? "טוען…" : "רענון"}</button>
             <span style={{ fontSize: 12, color: "var(--muted)" }}>
               נקרא חי מ-<code style={code}>auth.users</code> + <code style={code}>core.app_memberships</code> +
               {" "}<code style={code}>core.subscriptions</code>.
@@ -943,7 +949,7 @@ export function App() {
         <section>
           <div style={{ display: "flex", alignItems: "center", gap: 10, marginTop: 12, flexWrap: "wrap" }}>
             <h2 style={{ fontSize: 18, margin: 0 }}>קרדיטים אצל הספקים</h2>
-            <button onClick={loadCredits} style={btn}>בדוק עכשיו</button>
+            <button onClick={loadCredits} disabled={creditsBusy} style={btn}>{creditsBusy ? "בודק…" : "בדוק עכשיו"}</button>
             <span style={{ fontSize: 12, color: "var(--muted)" }}>
               נמדד בשרת מול הספק עצמו. אף מפתח אינו מגיע לדפדפן.
             </span>
