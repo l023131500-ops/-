@@ -520,8 +520,11 @@ export async function registerRoutes(
           : text.split(/\s+/).filter(Boolean).slice(0, 8).join(" ");
 
       // 7) cost estimate — per the engine that actually ran
+      // `null` (not 0) when duration is unknown: the engine still ran and was
+      // billed, so reporting $0 would falsely read as "free". The client's
+      // formatCost() already renders null as "—".
       const perMinute = hasRunpodToken() ? COST_PER_MINUTE_USD : OPENAI_COST_PER_MINUTE_USD;
-      const cost = duration ? Number(((duration / 60) * perMinute).toFixed(6)) : 0;
+      const cost = duration ? Number(((duration / 60) * perMinute).toFixed(6)) : null;
 
       // 8) finalize -> ready
       const updated = await patchRecording(id, {
