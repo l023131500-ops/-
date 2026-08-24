@@ -201,7 +201,22 @@ const AdminDashboard = () => {
 
   const saveEdit = async () => {
     if (!editingLesson) return;
-    const { id, created_at, updated_at, ...updateFields } = editData;
+    // Whitelist only the fields the edit form actually exposes -- editData is a full-row
+    // snapshot taken when the dialog opened (startEditing), so spreading it wholesale would
+    // silently overwrite fields (e.g. is_approved/status) changed by a concurrent
+    // approve/reject/delete action while this dialog stayed open.
+    const {
+      rabbi_name, subject, city, neighborhood, synagogue_name, street,
+      lesson_style, language, rabbi_role, rabbi_phone, contact_name,
+      contact_phone, contact_email, donation_link, is_recorded,
+      is_live_stream, is_recurring, submitter_notes,
+    } = editData;
+    const updateFields = {
+      rabbi_name, subject, city, neighborhood, synagogue_name, street,
+      lesson_style, language, rabbi_role, rabbi_phone, contact_name,
+      contact_phone, contact_email, donation_link, is_recorded,
+      is_live_stream, is_recurring, submitter_notes,
+    };
     const { error } = await supabase.from("lessons").update(updateFields).eq("id", editingLesson);
     if (!error) {
       toast.success("השיעור עודכן בהצלחה!");
