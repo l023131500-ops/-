@@ -421,7 +421,7 @@ export function App() {
       if (!jwt) { setCreditsMsg("צריך התחברות אדמין."); return; }
       const res = await fetch(`${API_BASE}/api/credits`, { headers: { Authorization: `Bearer ${jwt}` } });
       const body = await res.json().catch(() => null);
-      if (!res.ok) { setCreditsMsg(body?.error ?? `שגיאה ${res.status}`); return; }
+      if (!res.ok || !body?.providers) { setCreditsMsg(body?.error ?? `שגיאה ${res.status}`); return; }
       setCredits(body.providers as ProviderCredit[]);
     } catch (e: any) {
       setCreditsMsg("לא הצלחנו לבדוק את הספקים: " + (e?.message ?? e));
