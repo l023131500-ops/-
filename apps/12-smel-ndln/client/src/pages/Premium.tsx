@@ -171,7 +171,10 @@ export default function Premium() {
 
         <Form {...form}>
           <form
-            onSubmit={form.handleSubmit((v) => submitLead.mutate(v))}
+            onSubmit={form.handleSubmit((v) => {
+              if (submitLead.isPending) return;
+              submitLead.mutate(v);
+            })}
             className="space-y-8"
           >
             {/* Contact details */}
