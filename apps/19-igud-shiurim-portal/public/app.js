@@ -1315,12 +1315,15 @@ async function renderAdmin(token) {
       document.getElementById('lesson-form')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     });
     content.querySelectorAll('[data-del]').forEach(btn => btn.onclick = async () => {
+      if (btn.disabled) return;
       if (!confirm('למחוק את השיעור?')) return;
+      btn.disabled = true;
       try {
         await api(`/api/admin/tenant/${encodeURIComponent(token)}/lessons/${btn.dataset.del}`, { method: 'DELETE' });
         if (editingLesson && String(editingLesson.id) === btn.dataset.del) editingLesson = null;
         await refresh(); draw();
       } catch (err) {
+        btn.disabled = false;
         document.getElementById('lessons-alert').innerHTML = `<div class="alert alert-error">${esc(err.message)}</div>`;
       }
     });
@@ -1381,11 +1384,14 @@ async function renderAdmin(token) {
       }
     });
     content.querySelectorAll('[data-del-service]').forEach(btn => btn.onclick = async () => {
+      if (btn.disabled) return;
       if (!confirm('למחוק את השירות?')) return;
+      btn.disabled = true;
       try {
         await api(`/api/admin/tenant/${encodeURIComponent(token)}/services/${btn.dataset.delService}`, { method: 'DELETE' });
         await refresh(); draw();
       } catch (err) {
+        btn.disabled = false;
         document.getElementById('services-alert').innerHTML = `<div class="alert alert-error">${esc(err.message)}</div>`;
       }
     });
