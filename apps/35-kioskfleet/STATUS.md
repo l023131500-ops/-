@@ -3405,3 +3405,36 @@ to that constraint: they import only dependency-free modules (`hosts.js`,
   with its own `#login-form` markup, so there is nothing here to keep in
   sync with; only the file this session actually shipped to a customer
   (production's) was edited.
+
+- **[24/08/2026, Loop A] `POST /api/agent/enroll`, `zol`'s one endpoint with
+  no auth at all, had no rate limit either.** The other five entries today
+  closed a double-submit sweep; this is a different class of gap on the
+  same file's neighbour. Enrollment is redeemed by a bare 6-character code
+  (33-symbol alphabet, ~1.29e9 combinations) — no device_token, no session,
+  nothing else checked before the DB lookup. `/auth/login` guards the same
+  shape of secret (unauthenticated caller presents a credential) with
+  `loginLimiter`; `/enroll` had never been given the equivalent. Unthrottled,
+  a script sweeping the code space would, on every hit before the real
+  device enrolls: flip that owner's code to `used` (the device standing at
+  the venue then gets "קוד רישום כבר נוצל" — a real device stolen out from
+  under its own owner), and read back `homeUrl`/`allowedHost` in the
+  response — that owner's site, disclosed to a caller holding no credential
+  at all.
+
+  Added `enrollLimiter` to `src/routes/agent.js` (`express-rate-limit`,
+  already a dependency, same shape as `loginLimiter`): 20 attempts / 15 min,
+  keyed by IP — the real device tries one code once, so the whole budget is
+  spent on whoever is scanning.
+
+  `node --check` clean. `node --test` in the `zol` checkout: `hosts.test.mjs`
+  7/7 (untouched); `routing.test.mjs`/`seedadmin.test.mjs` fail on the same
+  pre-existing, unrelated gaps (no `express`, no `node:sqlite` in this
+  container's Node 20.20.2) every prior entry in this log has hit. Pushed to
+  `l023131500-ops/zol`#`claude/what-do-you-see-gxo5tc` (`87b0694`).
+  **Confirmed live**: 22 back-to-back `POST more30.com/kiosk/api/agent/enroll`
+  calls with a fabricated code returned `404` (unknown code — the pre-existing,
+  correct behaviour) until the Railway build landed, then `429` with
+  `{"error":"יותר מדי ניסיונות רישום. נסו שוב בעוד מספר דקות."}` on the 22nd —
+  the exact message and threshold this commit added. No real enrollment code
+  or device was touched; the probe used a fabricated code that never matched
+  a row.
