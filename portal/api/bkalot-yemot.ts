@@ -112,7 +112,15 @@ export default async function handler(req: any, res: any) {
     return;
   }
 
-  const r = await intake(topicNo, phone, consent);
+  let r: any;
+  try {
+    r = await intake(topicNo, phone, consent);
+  } catch {
+    // fetch עצמה נכשלה (רשת) או שהתשובה אינה JSON תקין — בלי לתפוס את זה כאן
+    // הפונקציה הייתה קורסת בלי תשובה בכלל, והמתקשר שומע שקט/ניתוק במקום הודעה.
+    res.status(200).send('id_list_message=t-המערכת אינה זמינה כעת. נסו מאוחר יותר.&go_to_folder=hangup');
+    return;
+  }
 
   // ההודעה למתקשר משקפת את מה שקרה באמת. "נרשמת" למי שנחסם היה שקר שהוא
   // ישמע פעם אחת ויאמין לו לתמיד.
