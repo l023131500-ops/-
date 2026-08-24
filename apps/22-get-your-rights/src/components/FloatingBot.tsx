@@ -303,11 +303,19 @@ const FloatingBot = () => {
         const updatePayload: Record<string, any> = {};
         for (const [key, val] of Object.entries(payload)) {
           if (key === "source") continue; // don't overwrite source
+          if (key === "service_type") continue; // handled separately below - it's current intent, not a fill-in-the-blank field
           if (val !== null && val !== undefined && val !== "") {
             if (!(existing as any)[key] || (existing as any)[key] === "" || (existing as any)[key] === null) {
               updatePayload[key] = val;
             }
           }
+        }
+        // service_type reflects the user's latest request; a "paid" intent (this or previous
+        // submission) always wins so staff don't lose a lead that upgraded from free to paid.
+        if (payload.service_type === "paid" || (existing as any).service_type === "paid") {
+          updatePayload.service_type = "paid";
+        } else if (payload.service_type) {
+          updatePayload.service_type = payload.service_type;
         }
         // Always append document_urls
         if (payload.document_urls?.length) {
