@@ -115,7 +115,6 @@ const UpdateLesson = () => {
       target_audience: audienceType,
       language,
       audience_type: [gender],
-      lesson_style: lessonStyle.join(", "),
       synagogue_name: synagogueName,
       city, neighborhood, street, street_number: streetNumber,
       is_recurring: updateType === "שיעור קבוע",
@@ -123,7 +122,7 @@ const UpdateLesson = () => {
       schedule_days: scheduleDays as unknown as any,
       is_recorded: isRecorded, recording_location: recordingDetail,
       is_live_stream: isLiveStream,
-      submitter_notes: `${speakingStyle ? `סגנון דיבור: ${speakingStyle}. ` : ""}${updateNotes}`,
+      submitter_notes: `${lessonStyle.length ? `אופי השיעור: ${lessonStyle.join(", ")}. ` : ""}${speakingStyle ? `סגנון דיבור: ${speakingStyle}. ` : ""}${updateNotes}`,
       contact_name: contactName, contact_phone: contactPhone, contact_email: contactEmail,
       logo_url: logoUrl,
     }]);
@@ -208,7 +207,9 @@ const UpdateLesson = () => {
                 <Button size="sm" className="mt-3 bg-gradient-gold text-primary-foreground font-body hover:opacity-90" onClick={() => autoAdvance(5)}>המשך ←</Button>
               </ProgressiveFormStep>
 
-              {/* Step 5: Lesson Style (multi) */}
+              {/* Step 5: Lesson Style (multi) -- stored in submitter_notes ("אופי השיעור: ..."), not
+                  lesson_style: that column holds the single hashkafa taxonomy (see PortalLessonForm's
+                  "סגנון" section / BulkLessonForm / FindLesson's style filter), a different value set. */}
               <ProgressiveFormStep visible={step === 5} stepIndex={5} showSkip showBack onSkip={() => autoAdvance(6)} onBack={() => setStep(4)}>
                 <ChipSelect label="מה אופי השיעור?" icon={<BookOpen className="w-4 h-4 text-gold" />} options={LESSON_STYLES} selected={lessonStyle}
                   onSelect={(v) => setLessonStyle(prev => toggleArray(prev, v))} multi />
