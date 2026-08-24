@@ -975,9 +975,12 @@ const KashrutManager = () => {
       return obj;
     }).filter(r => r.name);
 
+    const { data: existing } = await supabase.from('kashrut_establishments').select('id, name');
+    const existingIdByName = new Map((existing || []).map((e: any) => [e.name, e.id]));
+
     let failedRows = 0;
     for (const row of rows) {
-      const { error } = await supabase.from('kashrut_establishments').upsert({
+      const payload = {
         name: row.name,
         category: row.category || 'כללי',
         address: row.address || '',
@@ -989,7 +992,11 @@ const KashrutManager = () => {
         opening_hours: row.opening_hours || null,
         notes: row.notes || null,
         is_active: true,
-      }, { onConflict: 'id' });
+      };
+      const existingId = existingIdByName.get(row.name);
+      const { error } = existingId
+        ? await supabase.from('kashrut_establishments').update(payload).eq('id', existingId)
+        : await supabase.from('kashrut_establishments').insert(payload);
       if (error) failedRows += 1;
     }
     setImportErrors(failedRows);
