@@ -44,7 +44,12 @@ async function callAdmin(action: string, payload: Record<string, any> = {}) {
     headers: { "Authorization": `Bearer ${token}`, "Content-Type": "application/json" },
     body: JSON.stringify({ action, ...payload }),
   });
-  const json = await res.json();
+  let json: any;
+  try {
+    json = await res.json();
+  } catch {
+    throw new Error(res.ok ? "שגיאה" : `שגיאת שרת (${res.status})`);
+  }
   if (!json.ok) throw new Error(json.error || "שגיאה");
   return json;
 }
