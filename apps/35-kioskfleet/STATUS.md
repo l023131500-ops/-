@@ -3314,3 +3314,62 @@ to that constraint: they import only dependency-free modules (`hosts.js`,
   existing id (repeating either just re-applies the same value), unlike the
   four creates above, so neither carries the duplicate-row risk this heading
   is about.
+
+- **[24/08/2026, Loop A] The last four entries above never had a path to
+  production, and this one does — pushed and verified against the real
+  `zol` repo, not this tree.** `NEEDS_USER.md` §0תג (`core.issues #215`,
+  13/08) already says it in as many words: this checkout,
+  `apps/35-kioskfleet/server/public`, is not an old or new version of what
+  Railway runs — it is a **different, unmerged build** (1,442 lines /
+  89,844 bytes here vs. 578 / 35,627 in production at the time of that note).
+  Production is built from `l023131500-ops/zol`, branch
+  `claude/what-do-you-see-gxo5tc`, root `kiosk/server`, and every entry in
+  this log above this one edited only the tree here — so the double-submit
+  guards on `#e-create`/`#c-create`/`#l-create`/`#u-save` documented earlier
+  today are real, tested, and **do not run anywhere a customer can reach
+  them**. That is exactly the trap `#215` names: "the commit looks like
+  work and changes zero in production."
+
+  Confirmed directly rather than taken on the note's word: this session has
+  push access to `l023131500-ops/zol` with the same token as this repo's own
+  `origin`, cloned `claude/what-do-you-see-gxo5tc` fresh, and found
+  production's `app.js` (578 lines) has the identical shape — `#e-create`
+  (`createEnrollment`), `#l-create` (`viewLinks`, and `links` there also has
+  no unique constraint), and `#u-save` (`userModal`'s create branch) all
+  clear their fields only on success and none of the three disable the
+  button first. So the same fix landed there, ported by hand against the
+  real file rather than copied — it does not have `hostListEditor`'s newer
+  RTL/contrast decisions this tree carries, so the diff is smaller than the
+  one here: three buttons disabled before their request and re-enabled in a
+  `finally`. `users.username` is UNIQUE in production's schema (verified by
+  reading `db.js`), so `#u-save`'s create branch was already safe from
+  silent duplication — the guard there is for a clean UX instead of a
+  constraint-violation toast, not for data safety, and the commit message
+  says so rather than reusing this tree's "worst-consequence" framing for a
+  case the production schema does not actually have.
+
+  `node --check` clean. `node --test` in the `zol` checkout: `hosts.test.mjs`
+  7/7 (untouched by this change); `routing.test.mjs` and `seedadmin.test.mjs`
+  fail for the same pre-existing, unrelated reasons as in this tree (no
+  `express` installed, no `node:sqlite` in this container's Node 20.20.2) —
+  same baseline before and after. Pushed to
+  `l023131500-ops/zol`#`claude/what-do-you-see-gxo5tc` (`987ab9c`). Railway
+  auto-deploys that branch; `more30.com/kiosk/js/app.js` read 35,844 bytes /
+  zero `disabled = true` matches ~45s after the push (build still in
+  flight), and **37,026 bytes / three `disabled = true` matches on the next
+  fetch** — the exact size of the locally-edited file and the exact count of
+  the three guards added. **Confirmed live**, not only pushed.
+
+  **What this means for every future iteration on system 35:** editing
+  `apps/35-kioskfleet/server/public/**` in this monorepo checkout produces a
+  real, tested commit that ships nothing. `#215` is still an open,
+  owner-only product question (does the `clients` screen / launcher /
+  wizard / everything else built only in this tree belong on live 35?) —
+  this entry does not answer it and does not touch that question. What it
+  does establish is that the origin remote's token also reaches
+  `l023131500-ops/zol`, so a **narrow, already-understood fix** (like this
+  one) can be re-derived against the real file and shipped the same way
+  `#214`/`#216` were on 13/08 — "surgical edits on `zol` files only," per
+  the rule that note already set. A wholesale port of this tree's newer
+  build is still exactly the risk `#215` describes and is not what
+  happened here.
