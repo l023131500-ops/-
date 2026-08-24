@@ -3236,3 +3236,26 @@ to that constraint: they import only dependency-free modules (`hosts.js`,
   not available in this container's Node 20.20.2 build. **Not deployed** —
   same as every other change in this log, Railway builds from a different
   branch than this checkout.
+
+- **[24/08/2026, Loop A] `viewClients()`'s "שמור לקוח" guarded against
+  double-submit too** — the same gap `createEnrollment()` had just above, in
+  the one other create-form in this file where it is worse: `#c-name`/`#c-url`/
+  `#c-code`/`#c-notes` are only cleared **after** the `POST /clients` resolves,
+  so a second click while the first is in flight reads the same still-filled
+  form and creates a second client row. An *explicit* מזהה would collide with
+  the server's `UNIQUE(owner_id, code)` and be rejected — but the field's own
+  placeholder documents leaving it blank so the server mints one, and a minted
+  code is different on every call, so nothing rejects a second business record
+  for what was meant to be one registration: two rows, two codes, both
+  resolving to the same site, and no natural key tying them together the way
+  the enrollment table at least has "unused" to fall back on. `#c-create` is
+  now disabled for the duration of the request and re-enabled in a `finally`
+  on both paths, same as `#e-create` — this screen also stays mounted after a
+  successful save, so the button has to come back rather than stay disabled.
+
+  `node --check` on `app.js` is clean; `node --test` still only runs
+  `seedadmin.test.mjs`, same pre-existing `node:sqlite` failure every entry in
+  this log has noted, unrelated to this change. **Not deployed** — same as
+  every other change in this log. `viewLinks()`'s `#l-create` has the identical
+  gap (no unique constraint on a link at all, per the schema note above) and
+  is the next one to close under this heading.

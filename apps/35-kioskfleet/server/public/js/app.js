@@ -1232,6 +1232,16 @@ async function viewClients() {
     if (!hl.commitPending()) return;
     const name = $('#c-name').value.trim(), siteUrl = $('#c-url').value.trim();
     if (!name || !siteUrl) return toast('נא למלא שם וכתובת אתר', false);
+    // The fields are only cleared on success, below — so without a guard here,
+    // a second click while the first POST is still in flight reads the same
+    // still-filled form and creates a second client row. Unlike a duplicate
+    // enrollment code, an *explicit* code is the one case the server's
+    // UNIQUE(owner_id, code) constraint would catch — but "מזהה לקוח" documents
+    // leaving the field blank so the server mints one, and a minted code is
+    // different on every call, so nothing rejects a second business record for
+    // what was meant to be one registration.
+    const btn = $('#c-create');
+    btn.disabled = true;
     try {
       const { client } = await api('/clients', { method: 'POST', body: JSON.stringify({
         name, code: $('#c-code').value, siteUrl, allowedHost: hl.value(), notes: $('#c-notes').value }) });
@@ -1242,6 +1252,7 @@ async function viewClients() {
       hl = hostListEditor($('#c-hl'), '', '');
       loadClients();
     } catch (e) { toast(e.message, false); }
+    finally { btn.disabled = false; }
   };
   loadClients();
 }
