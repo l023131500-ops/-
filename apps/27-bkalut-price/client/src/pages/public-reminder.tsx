@@ -11,6 +11,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Logo } from "@/components/logo";
 import { ArrowRight, Bell, CalendarDays, CheckCircle2, Clock, HeartHandshake, Search, Sparkles } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
+import { localDateStr } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
 
 type Choice = "yes" | "not_yet" | "not_eligible";
@@ -77,7 +78,7 @@ function StarBurst() {
 function todayPlusDays(days: number): string {
   const d = new Date();
   d.setDate(d.getDate() + days);
-  return d.toISOString().slice(0, 10);
+  return localDateStr(d);
 }
 
 export default function PublicReminder() {

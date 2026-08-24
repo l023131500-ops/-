@@ -9,6 +9,7 @@ import { useLocation, Link } from "wouter";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useUserAuth } from "@/lib/user-auth";
+import { localDateStr } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -206,7 +207,7 @@ function TransactionsTab({ data, onCreate }: { data: DashboardPayload; onCreate:
   const [amount, setAmount] = useState("");
   const [categoryId, setCategoryId] = useState<number | null>(null);
   const [description, setDescription] = useState("");
-  const [occurredOn, setOccurredOn] = useState<string>(new Date().toISOString().slice(0, 10));
+  const [occurredOn, setOccurredOn] = useState<string>(localDateStr());
   const filteredCats = data.categories.filter((c) => c.kind === kind);
 
   return (

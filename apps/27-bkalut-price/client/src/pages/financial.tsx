@@ -7,6 +7,7 @@ import { useMemo, useState } from "react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useAdminAuth } from "@/lib/admin-auth";
+import { localDateStr } from "@/lib/utils";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -337,7 +338,7 @@ function TransactionsTab({ client }: { client: FinClient }) {
   const { toast } = useToast();
   const { data: list = [] } = useQuery<FinTransaction[]>({ queryKey: [`/api/financial/clients/${client.id}/transactions`] });
   const { data: cats = [] } = useQuery<FinCategory[]>({ queryKey: ["/api/financial/categories"] });
-  const [form, setForm] = useState({ kind: "expense", amount: "", categoryId: "", description: "", occurredOn: new Date().toISOString().slice(0, 10) });
+  const [form, setForm] = useState({ kind: "expense", amount: "", categoryId: "", description: "", occurredOn: localDateStr() });
   const amountValid = Number.isFinite(Number(form.amount)) && Number(form.amount) > 0;
   const create = useMutation({
     mutationFn: async () => (await apiRequest("POST", "/api/financial/transactions", { ...form, amount: Number(form.amount), categoryId: form.categoryId ? Number(form.categoryId) : null, clientId: client.id })).json(),
@@ -456,11 +457,11 @@ function BudgetsTab({ client }: { client: FinClient }) {
 function RecurringTab({ client }: { client: FinClient }) {
   const { toast } = useToast();
   const { data: list = [] } = useQuery<FinRecurring[]>({ queryKey: [`/api/financial/clients/${client.id}/recurring`] });
-  const [form, setForm] = useState({ title: "", amount: "", kind: "reminder", cadence: "monthly", nextDate: new Date().toISOString().slice(0, 10), description: "" });
+  const [form, setForm] = useState({ title: "", amount: "", kind: "reminder", cadence: "monthly", nextDate: localDateStr(), description: "" });
   const amountValid = form.amount.trim() === "" || (Number.isFinite(Number(form.amount)) && Number(form.amount) > 0);
   const create = useMutation({
     mutationFn: async () => (await apiRequest("POST", "/api/financial/recurring", { ...form, amount: form.amount ? Number(form.amount) : null, clientId: client.id })).json(),
-    onSuccess: () => { queryClient.invalidateQueries({ queryKey: [`/api/financial/clients/${client.id}/recurring`] }); setForm({ title: "", amount: "", kind: "reminder", cadence: "monthly", nextDate: new Date().toISOString().slice(0, 10), description: "" }); },
+    onSuccess: () => { queryClient.invalidateQueries({ queryKey: [`/api/financial/clients/${client.id}/recurring`] }); setForm({ title: "", amount: "", kind: "reminder", cadence: "monthly", nextDate: localDateStr(), description: "" }); },
     onError: () => toast({ title: "הוספת התזכורת נכשלה", variant: "destructive" }),
   });
   const del = useMutation({

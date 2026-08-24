@@ -29,3 +29,14 @@ export function getPublicOrigin(): string {
   const basePath = pathname.replace(/\/$/, "");
   return `${protocol}//${publicHost}${port ? `:${port}` : ""}${basePath}`;
 }
+
+// Formats a Date as YYYY-MM-DD in the browser's local timezone. Unlike
+// d.toISOString().slice(0, 10) (which converts to UTC first), this doesn't
+// roll the date back a day for users east of UTC (e.g. Israel, UTC+2/+3)
+// during the early-morning hours when local and UTC dates differ.
+export function localDateStr(d: Date = new Date()): string {
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
