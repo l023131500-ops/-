@@ -154,11 +154,22 @@ function StatusPill({ ok, okLabel, badLabel }: { ok: boolean; okLabel: string; b
   );
 }
 
+// שרת תקוע היה תולה את בדיקת סטטוס Google OAuth בלי גבול זמן — ה-UI נשאר על "טוען…" לנצח.
+async function fetchWithTimeout(url: string, timeoutMs = 10000): Promise<Response> {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
+  try {
+    return await fetch(url, { signal: controller.signal });
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
 function AdminDocsInner() {
   const googleQ = useQuery<GoogleStatus>({
     queryKey: ["/api/admin/google/status"],
     queryFn: async () => {
-      const r = await fetch(`${API_BASE}/api/admin/google/status`);
+      const r = await fetchWithTimeout(`${API_BASE}/api/admin/google/status`);
       if (!r.ok) throw new Error("status fetch failed");
       const j = await r.json();
       return j as GoogleStatus;
