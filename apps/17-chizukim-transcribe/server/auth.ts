@@ -1,5 +1,6 @@
 import crypto from "node:crypto";
 import type { Request, Response } from "express";
+import { hitRateLimit, clientIp } from "./rate-limit";
 
 // ---------------------------------------------------------------------------
 // כניסת ניהול מבוססת עוגייה, אותה תבנית בדיוק כמו apps/28-kupot-health-funds
@@ -11,6 +12,12 @@ import type { Request, Response } from "express";
 
 const COOKIE_NAME = "chizukim_admin_token";
 const COOKIE_MAX_AGE_MS = 8 * 60 * 60 * 1000; // 8 שעות
+
+// handleAdminLogin השווה עד כה סיסמה מול STD_ADMIN_PASSWORD ללא שום תקרת
+// ניסיונות — בניגוד ל-28-kupot-health-funds/server/auth.ts שכבר מגן על אותו
+// endpoint בדיוק (login) עם hitRateLimit. כתובת אחת יכלה לנחש סיסמה ללא הגבלה.
+// אותו דפוס הגנה בדיוק, מוחל כאן.
+const ADMIN_LOGIN_RATE_LIMIT_PER_HOUR = 20;
 
 function timingSafeEqualStr(a: string, b: string): boolean {
   const bufA = Buffer.from(a, "utf8");
@@ -53,6 +60,9 @@ export function handleAdminLogin(req: Request, res: Response) {
   const user = String(req.body?.username || "").trim();
   const password = String(req.body?.password || "");
   if (!user || !timingSafeEqualStr(user, expectedUser) || !password || !timingSafeEqualStr(password, pw)) {
+    if (hitRateLimit(`admin-login:${clientIp(req)}`, ADMIN_LOGIN_RATE_LIMIT_PER_HOUR)) {
+      return res.status(429).json({ error: "יותר מדי ניסיונות התחברות. נא לנסות שוב בעוד שעה." });
+    }
     return res.status(401).json({ error: "שם משתמש או סיסמה שגויים" });
   }
   res.cookie(COOKIE_NAME, pw, {
