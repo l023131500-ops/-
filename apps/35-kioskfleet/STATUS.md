@@ -3813,3 +3813,65 @@ to that constraint: they import only dependency-free modules (`hosts.js`,
   accounts or real devices exist to script the enumeration against and
   confirm the status codes actually collapsed in production, the same
   constraint every REST-only fix in this log has hit.
+
+- **[24/08/2026, Loop A] A deactivated user's console socket outlived their
+  account, on `zol` not this tree** — found comparing `hub.js`'s `/ws/console`
+  auth against `auth.js`'s `requireAuth`, the same "two enforcement paths for
+  the same session, only one re-checks the DB" shape as the last several
+  entries in this log. `requireAuth` guards every REST route by re-running
+  `SELECT * FROM users WHERE id = ? AND active = 1` on **every request** — so
+  `PATCH /api/admin/users/:id` flipping `active` to `0` (the super-admin's
+  "suspend this customer" action, in `routes/admin.js`) cuts that customer off
+  from the REST API within one request. The WebSocket console connection
+  never had an equivalent: `attachHub()`'s `/ws/console` upgrade handler
+  called `verifyToken(token)` — signature + expiry only — and stopped there.
+  `signToken()` mints a 12h JWT at login, so a customer suspended mid-session
+  could still open a **brand-new** console socket on that same token, and one
+  **already open** when the suspension landed kept receiving
+  `notifyConsolesOfDevice()`'s live `device_update` frames for their own
+  devices for the rest of the token's 12h life either way — a customer who
+  should have zero further access to the fleet dashboard the moment an admin
+  suspends them in fact keeps a live view of it.
+
+  Not a cross-tenant leak (a suspended user's socket only ever received
+  updates for devices `owner_id` still points at, or admin-wide updates if
+  they were an admin — both already gated live per-frame in
+  `notifyConsolesOfDevice()`, which re-queries `role = 'admin' AND active = 1`
+  from the DB on every call). The gap is session **revocation**, not
+  isolation: "suspend this account" silently meant "suspend it for REST, but
+  leave any open dashboard tab live," the same asymmetry every prior
+  active/inactive-shaped entry in this log has closed for a different code
+  path.
+
+  Fixed on both ends:
+  - `hub.js`'s `/ws/console` connect handler now runs the identical
+    `active = 1` check `requireAuth` uses before accepting the socket —
+    closes the *new-connection* half.
+  - New `disconnectConsole(userId)` export in `hub.js`: force-closes every
+    open console socket for a user id and clears them from the `consoles`
+    map. `routes/admin.js`'s `PATCH /users/:id` calls it right after the
+    `UPDATE` whenever `active` is explicitly turned off; `DELETE /users/:id`
+    calls it unconditionally after the row is deleted — closes the
+    *already-open-socket* half, the part a connect-time check alone can never
+    reach.
+
+  Scoped to consoles only, deliberately: device agent sockets authenticate by
+  `device_token` (a per-device secret issued at enrollment, unrelated to any
+  user's `active` flag), so this change touches none of that path.
+
+  `node --check` clean on both changed files. Full suite: 21/23 — unchanged
+  from the prior baseline; `routing.test.mjs`/`seedadmin.test.mjs` fail for
+  the same pre-existing, unrelated reasons every prior entry in this log has
+  hit (no `express`, no `node:sqlite` in this container's Node 20.20.2). No
+  new test: `hub.js` has no unit test of its own, the same constraint every
+  prior `hub.js` entry in this log has hit (`ws`/`better-sqlite3` are not
+  installed here) — verification is code review against `requireAuth`'s
+  already-shipped, already-tested pattern, not a new automated check.
+
+  Pushed to `l023131500-ops/zol`#`claude/what-do-you-see-gxo5tc` (`8e80d4c`).
+  `more30.com/kiosk/api/health` polled every 15s for 2 minutes after the push
+  and read `200` throughout — no build-in-flight blip observed. **Not
+  verified beyond the deploy-landing signal**: no test customer accounts or
+  real devices exist to open a real console socket and confirm the
+  deactivate-mid-session close in production, the same constraint every
+  REST/WS-only fix in this log has hit.
