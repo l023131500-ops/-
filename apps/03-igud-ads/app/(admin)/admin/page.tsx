@@ -13,11 +13,17 @@ type Stats = {
 export default function AdminDashboard() {
   const [s, setS] = useState<Stats | null>(null);
   const [running, setRunning] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   async function load() {
-    const r = await fetch("/modaot/api/admin/stats");
-    const j = await r.json();
-    setS(j);
+    try {
+      const r = await fetch("/modaot/api/admin/stats");
+      if (!r.ok) throw new Error();
+      setS(await r.json());
+      setError(null);
+    } catch {
+      setError("שגיאה בטעינת נתוני הדשבורד — הנתונים המוצגים עשויים להיות לא מעודכנים");
+    }
   }
   useEffect(() => { load(); const id = setInterval(load, 15000); return () => clearInterval(id); }, []);
 
@@ -55,6 +61,7 @@ export default function AdminDashboard() {
           {running ? "מריץ..." : "הרץ Worker עכשיו"}
         </button>
       </div>
+      {error && <div className="mb-4 text-sm text-red-600">{error}</div>}
       <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
         {cards.map((c) => (
           <div key={c.label} className="bg-surface rounded-xl border p-5">
