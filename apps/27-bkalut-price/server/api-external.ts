@@ -22,7 +22,7 @@ import { loadAll } from "./data-loader";
 import * as paramsTopics from "./params-topics";
 import * as potential from "./potential-scanner";
 import { finStorage } from "./fin-storage";
-import { clientIdQueryParam } from "./fin-routes";
+import { clientIdQueryParam, limitQueryParam } from "./fin-routes";
 
 const AUTOMATION_API_KEY = "automation_api";
 
@@ -222,7 +222,7 @@ export function registerExternalApi(app: Express) {
   });
 
   app.get("/api/external/potential/submissions", gate, (req, res) => {
-    const limit = Math.min(Number(req.query.limit) || 200, 1000);
+    const limit = limitQueryParam(req, 200, 1000);
     res.json(potential.listSubmissions(limit));
   });
 
@@ -232,7 +232,7 @@ export function registerExternalApi(app: Express) {
   });
 
   app.get("/api/external/inbound-leads", gate, async (req, res) => {
-    const limit = Math.min(Number(req.query.limit) || 200, 1000);
+    const limit = limitQueryParam(req, 200, 1000);
     res.json(await storage.listInboundLeads(limit));
   });
 
@@ -271,7 +271,7 @@ export function registerExternalApi(app: Express) {
 
   app.get("/api/external/financial/activity", gate, async (req, res) => {
     const clientId = clientIdQueryParam(req);
-    const limit = Math.min(Number(req.query.limit) || 200, 1000);
+    const limit = limitQueryParam(req, 200, 1000);
     res.json(finStorage.listActivity(clientId, limit));
   });
 

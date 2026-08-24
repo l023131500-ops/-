@@ -26,7 +26,7 @@ import express from "express";
 import multer from "multer";
 import * as community from "./community-questionnaire";
 import { loginAdmin, requireAdmin, getSessionFromRequest, ADMIN_LOGIN_HINTS, type AuthedRequest } from "./auth";
-import { registerFinancialRoutes } from "./fin-routes";
+import { registerFinancialRoutes, limitQueryParam } from "./fin-routes";
 import { normalizeQuestions, mergeDeduped, isModestySensitive, buildEligibilityForRight } from "./question-normalizer";
 import { dispatchWebhook, retryWebhookLog, DEFAULT_LEAD_WEBHOOK_URL } from "./webhook-bus";
 import { registerGoogleAuthRoutes, getGoogleAuthStatus } from "./google-auth";
@@ -1172,7 +1172,7 @@ export async function registerRoutes(
 
   // ============ Webhook log (admin visibility for NEDARIM3873 deliveries) ============
   app.get("/api/admin/webhook-log", requireAdmin, async (req, res) => {
-    const limit = Math.min(Number(req.query.limit) || 200, 1000);
+    const limit = limitQueryParam(req, 200, 1000);
     const rows = await storage.listWebhookLog(limit);
     res.json(rows.map((r) => ({
       ...r,
@@ -1634,7 +1634,7 @@ export async function registerRoutes(
 
   // Admin-only list of recent inbound leads
   app.get("/api/admin/inbound-leads", requireAdmin, async (req, res) => {
-    const limit = Math.min(Number(req.query.limit) || 200, 1000);
+    const limit = limitQueryParam(req, 200, 1000);
     const rows = await storage.listInboundLeads(limit);
     res.json(rows);
   });
@@ -1739,7 +1739,7 @@ export async function registerRoutes(
 
   // Admin listing of reminder responses.
   app.get("/api/admin/reminder-responses", requireAdmin, async (req, res) => {
-    const limit = Math.min(Number(req.query.limit) || 200, 1000);
+    const limit = limitQueryParam(req, 200, 1000);
     res.json(listReminderResponses(limit));
   });
 
@@ -2290,7 +2290,7 @@ export async function registerRoutes(
   });
 
   app.get("/api/admin/potential/submissions", requireAdmin, async (req, res) => {
-    const limit = Math.min(Number(req.query.limit) || 200, 1000);
+    const limit = limitQueryParam(req, 200, 1000);
     const rows = potential.listSubmissions(limit).map((r) => ({
       id: r.id,
       slug: r.slug,
@@ -3795,7 +3795,7 @@ export async function registerRoutes(
   // ---- Admin: submissions ----
   app.get("/api/community/admin/submissions", requireAdmin, (req, res) => {
     const questionnaireId = req.query.questionnaireId ? Number(req.query.questionnaireId) : undefined;
-    const limit = Math.min(Number(req.query.limit) || 200, 1000);
+    const limit = limitQueryParam(req, 200, 1000);
     res.json(community.listSubmissions(questionnaireId, limit));
   });
 

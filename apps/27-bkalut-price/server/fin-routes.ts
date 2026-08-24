@@ -44,6 +44,21 @@ export function clientIdQueryParam(req: Request): number | undefined {
   return Number.isNaN(num) ? undefined : num;
 }
 
+// `Math.min(Number(req.query.limit) || def, max)` (the pattern used across
+// this app's list endpoints) only caps the *upper* bound — a negative
+// `?limit=` survives `|| def` (negative numbers are truthy) and Math.min()
+// happily returns it unchanged. Several sinks (community-questionnaire.ts,
+// potential-scanner.ts, storage.ts webhook_log) feed that value straight
+// into a raw `LIMIT ?` on SQLite, where a negative LIMIT means "no limit at
+// all" — so a negative query param silently defeats the 1000-row cap instead
+// of being rejected. Guard here so only a finite positive number survives.
+export function limitQueryParam(req: Request, def: number, max: number): number {
+  const raw = req.query.limit;
+  const single = Array.isArray(raw) ? raw[0] : raw;
+  const num = Number(single);
+  return Number.isFinite(num) && num > 0 ? Math.min(Math.floor(num), max) : def;
+}
+
 async function requireUser(req: UserRequest, res: Response, next: NextFunction) {
   const header = req.header("authorization");
   const token = header?.match(/^Bearer\s+(.+)$/i)?.[1];
@@ -572,7 +587,7 @@ export function registerFinancialRoutes(app: Express) {
 
   // ===== CRM: Activity =====
   app.get("/api/financial/clients/:clientId/activity", requireAdmin, async (req, res) => {
-    const limit = Math.min(Number(req.query.limit) || 100, 1000);
+    const limit = limitQueryParam(req, 100, 1000);
     res.json(finStorage.listActivity(Number(req.params.clientId), limit));
   });
 
