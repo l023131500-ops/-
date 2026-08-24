@@ -3373,3 +3373,35 @@ to that constraint: they import only dependency-free modules (`hosts.js`,
   the rule that note already set. A wholesale port of this tree's newer
   build is still exactly the risk `#215` describes and is not what
   happened here.
+
+- **[24/08/2026, Loop A] A fifth double-submit gap, on `zol`: the login
+  form itself.** The four guards shipped to production above covered every
+  create-form in the console except the one every user hits first —
+  `#login-form`'s submit button had no `id` and was never disabled while
+  `POST /api/auth/login` was in flight. This is the console's own login
+  screen on a **touchscreen kiosk device**, where a double-tap misfiring is
+  the normal failure mode, not an edge case; a second tap fired a second
+  concurrent login request racing the shared rate limiter and could run
+  `boot()` (which replaces the entire view) twice at once. Not a
+  data-duplication risk like the four creates — no row is written — but the
+  same missed-guard class, on the highest-traffic form in the app.
+
+  Fixed directly in `l023131500-ops/zol`#`claude/what-do-you-see-gxo5tc`
+  (production's real 578→now-589-line `app.js`), not in this tree, per the
+  rule `#215` set: added `id="login-submit"` to the button (`console.html`
+  had none to target) and wrapped the handler in the same
+  disable-on-submit/re-enable-in-`finally` pattern as `#e-create`.
+  `node --check` clean. `node --test` in the `zol` checkout: `hosts.test.mjs`
+  7/7 (untouched); `routing.test.mjs`/`seedadmin.test.mjs` fail on the same
+  pre-existing, unrelated gaps (no `express`, no `node:sqlite` in this
+  container's Node 20.20.2) as every prior entry in this log. Pushed
+  (`a3f6f20`); confirmed live by polling `more30.com/kiosk/console.html`
+  until it carried `login-submit` (deploy landed) and then re-fetching both
+  files — `console.html` and `js/app.js` on live are **byte-identical** to
+  the locally edited `zol` files (`disabled = true` count 3→4, one new
+  `login-submit` match). Not ported into this tree's own `console.html`/
+  `app.js`: as `#215` documents, this tree's build is not an older or newer
+  version of production's — it is a different, unmerged 1,442-line `app.js`
+  with its own `#login-form` markup, so there is nothing here to keep in
+  sync with; only the file this session actually shipped to a customer
+  (production's) was edited.
