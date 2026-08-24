@@ -4561,3 +4561,74 @@ to that constraint: they import only dependency-free modules (`hosts.js`,
   register a client with a logo+colour, switch to it on-device, and confirm
   the splash actually renders and hands off to the real site — the same
   constraint every fix in this log without a real device has hit.
+
+- **[24/08/2026, Loop A] Device-group templates — KIOSK_BUILD.md §8
+  "קבוצות/תבניות: להחיל מדיניות על קבוצת מכשירים בבת אחת", was entirely
+  unbuilt, on `zol` not this tree** — every policy field (allow-list,
+  business-hours schedule, signage playlist, zoom, exit code) lived only on
+  `devices` and was only ever set through `editDevice()`, one device at a
+  time. An owner with, say, ten kiosks in one hall who wanted to add the
+  same business-hours schedule to all of them had to open the edit modal ten
+  times and retype the same open/close pair each time — no server-side
+  concept of "apply this policy to a group" existed at all.
+
+  **Server**: a new `templates` table (owner-scoped, `UNIQUE(owner_id,
+  name)`), every policy column nullable and independent — NULL means "not
+  part of this template", the same "never configured" convention
+  `exit_code`/`schedule_*`/`signage_*` already established on `devices`
+  itself, not "off". The validation (`src/templatepolicy.js`) is
+  dependency-free like `hosts.js`/`schedule.js`/`signage.js`/`display.js`/
+  `exitcode.js`/`clients.js`, so it unit-tests in this sandbox with no
+  `better-sqlite3` installed. `routes/templates.js` adds CRUD plus `POST
+  /templates/:id/apply` (body `{ deviceIds: [...] }`), never all-or-nothing:
+  a stale or not-owned device id lands in the response's `skipped` list
+  rather than failing the whole batch.
+
+  The actual per-device write was already the most validation-heavy code
+  path in the server — `PATCH /devices/:id`'s host/schedule/signage/zoom
+  checks. Duplicating that in the new bulk-apply route would have let a
+  template apply drift from what a single-device edit does (exactly the
+  failure mode `pushConfigUpdate`'s own comment already warns about one
+  function over). Extracted it instead: `src/policy.js`'s
+  `applyDevicePolicy(device, patch, userId)` now holds that whole
+  validate-write-log-push sequence, `routes/devices.js`'s PATCH handler is a
+  five-line caller of it, and `POST /templates/:id/apply` calls the exact
+  same function once per selected device with the patch
+  `templatepolicy.js`'s `policyPatchFromTemplate()` derives from the
+  template row. One code path, two callers, same guarantees either way
+  (the home-URL/allow-list-mismatch guard, the schedule window check, the
+  signage playlist check — none of it had to be re-implemented or re-proven
+  for the bulk path).
+
+  **Console**: new "🧩 תבניות" tab. The create form gates every optional
+  field group behind its own checkbox (so a schedule template does not
+  silently also carry a home-URL/zoom change), the list shows a
+  plain-language summary of what each template actually sets
+  (`templateSummary()`), and "החלה על מכשירים" opens a fresh device-picker
+  modal (not the possibly-stale devices-view cache) with a checkbox per
+  device and a skipped-count toast if any selected device could not be
+  applied to.
+
+  16 new unit tests in `templatepolicy.test.mjs` (empty-body no-op; name
+  required-when-touched; allow-list normalization and all-junk rejection;
+  `idleReturnSeconds`/`displayZoomPercent` null/''-means-unset; `exitCode`
+  `''` as a real "clear" value distinct from "not part of the template";
+  schedule/signage validated only when enabled, disable-without-times
+  allowed; `policyPatchFromTemplate` on a partial and an all-null row).
+  `node --check` clean on every touched/added file. Full pure-logic suite:
+  76/76 (was 62/64 total before this round's 16 new tests — hosts/schedule/
+  signage/display/exitcode/clients/devicepayload all re-run unchanged); the
+  2 failures every prior entry in this log has hit (`routing.test.mjs`/
+  `seedadmin.test.mjs`, both need `express`/`better-sqlite3`, not installed
+  in this sandbox) are unrelated to this change.
+
+  Pushed to `l023131500-ops/zol`#`claude/what-do-you-see-gxo5tc` (`3d2a93f`).
+  `more30.com/kiosk/api/health` polled 3× after the push and read `200`
+  throughout; additionally, `GET /kiosk/api/templates` with no auth token now
+  answers `401` (route exists, auth-gated) where it answered `404` before
+  this deploy — the one server-side signal available here that the new route
+  actually shipped. **Not verified beyond that and the unit tests**: no real
+  device and no browser exist in this sandbox to click through the new
+  "תבניות" tab, create a template, and confirm applying it actually updates
+  several real kiosks — the same constraint every fix in this log without a
+  real device/browser has hit.
