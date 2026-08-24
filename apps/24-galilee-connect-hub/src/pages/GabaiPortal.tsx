@@ -1620,7 +1620,18 @@ const GabaiPortal = () => {
   const handleLogin = async () => {
     if (loginType === 'admin') {
       // Check admin from gabai_accounts table
-      const { data, error: dbError } = await supabase.from('gabai_accounts').select('*').eq('is_admin', true).eq('is_active', true);
+      // The password check is pushed into the query filter (.eq('password_hash', ...))
+      // instead of select('*') + client-side .find(), and the select list drops
+      // password_hash entirely -- so a login attempt (right or wrong) no longer
+      // ships any admin's password_hash to the browser. This closes the leak for
+      // normal app usage; it does NOT change the RLS policy itself (still anon
+      // SELECT-all on gabai_accounts), so a direct REST call with select=* can
+      // still read password_hash straight from the table. That part needs a
+      // DB-side RLS/RPC fix -- draft already written in
+      // supabase/migrations/20260823233500_gabai_login_rpc_no_hash_leak.sql,
+      // pending because project mwljkonwdeuaahsigjdp is not reachable from this
+      // session's Supabase MCP (see CONNECTIONS.md). See core.issues (critical).
+      const { data, error: dbError } = await supabase.from('gabai_accounts').select('id, display_name').eq('is_admin', true).eq('is_active', true).eq('password_hash', password.trim());
       // No console.log here. The line that was here printed
       // `{ data, dbError, passwordEntered: password }` — the password the user
       // just typed, plus every admin account row (password_hash included), into
@@ -1629,7 +1640,7 @@ const GabaiPortal = () => {
         setError('שגיאת חיבור למסד הנתונים. נסה שוב.');
         return;
       }
-      const admin = data?.find(a => a.password_hash === password.trim());
+      const admin = data?.[0];
       if (admin) {
         setView('admin');
         setError('');
@@ -1641,12 +1652,16 @@ const GabaiPortal = () => {
       // admin's own credentials cannot also authenticate through the gabai tab
       // (mirrors the is_admin=false filter already used in
       // SynagogueDetailsManager.tsx for the same table).
-      const { data, error: dbError } = await supabase.from('gabai_accounts').select('*, synagogues(name)').eq('username', username.trim()).eq('is_active', true).eq('is_admin', false);
+      // Same fix as the admin branch above: password check moved into the query
+      // filter and password_hash dropped from the select list, so it never
+      // reaches the browser on a login attempt. RLS-level exposure (direct REST
+      // reads) is unchanged -- see the admin branch's comment above.
+      const { data, error: dbError } = await supabase.from('gabai_accounts').select('id, display_name, synagogue_id, synagogues(name)').eq('username', username.trim()).eq('is_active', true).eq('is_admin', false).eq('password_hash', password.trim());
       if (dbError) {
         setError('שגיאת חיבור למסד הנתונים. נסה שוב.');
         return;
       }
-      const account = data?.find(a => a.password_hash === password.trim());
+      const account = data?.[0];
       if (account) {
         setLoggedGabai({ name: (account as any).synagogues?.name || account.display_name, id: account.synagogue_id || '' });
         setView('gabai');
