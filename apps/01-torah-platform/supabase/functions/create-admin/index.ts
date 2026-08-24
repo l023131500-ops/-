@@ -63,8 +63,15 @@ Deno.serve(async (req) => {
 
     if (error) {
       if (error.message?.includes("already")) {
-        const { data: users } = await supabase.auth.admin.listUsers();
-        const adminUser = users?.users?.find(u => u.email === email);
+        // listUsers() paginates (default 50/page), so page through until found or
+        // exhausted - otherwise an email on page 2+ is missed and this falls through
+        // to the generic error below instead of updating the existing user's password.
+        let adminUser: { id: string } | undefined;
+        for (let page = 1; !adminUser; page++) {
+          const { data: users } = await supabase.auth.admin.listUsers({ page, perPage: 1000 });
+          adminUser = users?.users?.find(u => u.email === email);
+          if (!users?.users || users.users.length < 1000) break;
+        }
         if (adminUser) {
           const { error: updateError } = await supabase.auth.admin.updateUserById(adminUser.id, { password });
           if (updateError) {
