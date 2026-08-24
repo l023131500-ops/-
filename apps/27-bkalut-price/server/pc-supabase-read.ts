@@ -337,7 +337,7 @@ async function loadContext(opts: { includeSample?: boolean }) {
     chainKindMap(),
   ]);
   const catMap = new Map(cats.map((c) => [c.id, c.name]));
-  const stores = new Map(storeList.filter((s) => opts.includeSample || !s.isSample).map((s) => [s.id, s]));
+  const stores = new Map(storeList.filter((s) => s.active && (opts.includeSample || !s.isSample)).map((s) => [s.id, s]));
   return { catMap, stores, kinds };
 }
 

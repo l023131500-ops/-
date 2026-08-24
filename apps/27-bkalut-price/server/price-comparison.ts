@@ -705,7 +705,7 @@ export function publicSearch(opts: PcSearchFilters = {}): PcSearchRow[] {
   // Product-level text/category/barcode/brand filtering first.
   const products = listProductsAdvanced(opts);
   const cats = new Map(listCategories(true).map((c) => [c.id, c.name]));
-  const stores = new Map(listStores(true).filter((s) => opts.includeSample || !s.isSample).map((s) => [s.id, s]));
+  const stores = new Map(listStores(true).filter((s) => s.active && (opts.includeSample || !s.isSample)).map((s) => [s.id, s]));
 
   const cityF = opts.city?.trim().toLowerCase() || "";
   const hoodF = opts.neighborhood?.trim().toLowerCase() || "";
@@ -822,7 +822,7 @@ export function productDetail(id: number, includeSample = false, track: "officia
   const p = getProduct(id);
   if (!p) return undefined;
   if (!includeSample && p.isSample) return undefined;
-  const stores = new Map(listStores(true).filter((s) => includeSample || !s.isSample).map((s) => [s.id, s]));
+  const stores = new Map(listStores(true).filter((s) => s.active && (includeSample || !s.isSample)).map((s) => [s.id, s]));
   const cats = new Map(listCategories(true).map((c) => [c.id, c.name]));
   const offers: PcSearchOffer[] = listPrices(p.id)
     .filter((pr) => stores.has(pr.storeId))
@@ -964,7 +964,7 @@ function summarizeOffers(offers: PcCatalogOffer[]) {
 export function catalogSearch(opts: PcCatalogFilters = {}): PcCatalogRow[] {
   const products = listProductsAdvanced(opts);
   const cats = new Map(listCategories(true).map((c) => [c.id, c.name]));
-  const stores = new Map(listStores(true).filter((s) => opts.includeSample || !s.isSample).map((s) => [s.id, s]));
+  const stores = new Map(listStores(true).filter((s) => s.active && (opts.includeSample || !s.isSample)).map((s) => [s.id, s]));
   const kinds = chainKindMap();
   const minChains = opts.minChains != null && opts.minChains > 0 ? opts.minChains : 0;
 
@@ -1020,7 +1020,7 @@ export function comparisonByBarcode(barcode: string, opts: { includeSample?: boo
   if (!row) return undefined;
   const p = mapProduct(row);
   const cats = new Map(listCategories(true).map((c) => [c.id, c.name]));
-  const stores = new Map(listStores(true).filter((s) => includeSample || !s.isSample).map((s) => [s.id, s]));
+  const stores = new Map(listStores(true).filter((s) => s.active && (includeSample || !s.isSample)).map((s) => [s.id, s]));
   const kinds = chainKindMap();
   const base = buildCatalogOffers(p.id, stores, kinds, { track: opts.track || "official", includeSample });
   const offers: PcCompareOffer[] = base.map((o, i) => ({ ...o, isCheapest: i === 0 }));
