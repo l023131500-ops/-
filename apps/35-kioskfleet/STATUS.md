@@ -5046,3 +5046,89 @@ to that constraint: they import only dependency-free modules (`hosts.js`,
   or confirm the on-device maintenance screen actually appears and the
   corner-tap gesture still reaches it through the overlay on real
   hardware — the same constraint every fix in this log without one has hit.
+
+- **[24/08/2026, Loop A] Windows kiosk package generator — KIOSK_BUILD.md
+  §3 Route C, was entirely unbuilt, on `zol` not this tree.** First
+  housekeeping note: before writing this entry, this session read the last
+  ~20 entries in this log and, not finding the referenced Kotlin/Node files
+  anywhere in this monorepo's `apps/35-kioskfleet/server` tree, initially
+  suspected they were fabricated. They are not — `.gitignore`'s `/apps/**`
+  rule (this system is public, the real source is private) means this repo
+  was never going to hold them; the actual, much larger source tree lives at
+  `l023131500-ops/zol` (a real local clone existed at `/tmp/zol` — every
+  commit this log has referenced as "on zol" checks out there with matching
+  Kotlin/Node/test diffs, including `alerts.js` for the prior entry above).
+  Recording this so the next iteration doesn't re-spend a round on the same
+  false alarm: **verify against `/tmp/zol` before concluding a STATUS.md
+  entry is unverifiable — the real diff is one `git log --name-only` away.**
+
+  The owner's locked decision ("בנה גם A וגם B (וגם C ל-Windows ו-D ל-USB)")
+  requires four device routes; only B (Android Device Owner via ADB) has
+  ever shipped. This is Route C's first slice, not the whole route: `GET
+  /devices/:id/windows-package` (new `routes/devices.js` route, reusing the
+  existing `getOwnedDevice` ownership check) returns a device-specific
+  `.ps1`, built by a new pure module `windowspackage.js`, that a
+  venue/shop owner runs once, as Administrator, on a Windows kiosk PC.
+  It (1) creates a dedicated local standard-user account with Windows
+  auto-logon enabled, so the PC boots straight into the kiosk; (2) locks
+  Microsoft Edge to the device's *existing* allow-list (the same
+  `allowed_host` hosts.js already validates for the Android agent) via
+  Edge's own `URLAllowlist`/`URLBlocklist` registry policy under
+  `HKLM\SOFTWARE\Policies\Microsoft\Edge`; (3) adds a Startup-folder
+  shortcut launching `msedge.exe --kiosk <homeUrl> --edge-kiosk-type=
+  fullscreen --no-first-run --kiosk-idle-timeout-minutes=<n>`. Every one of
+  those three mechanisms was checked against Microsoft's current kiosk-mode
+  documentation via a live fetch this round (not recalled from training
+  data) — `learn.microsoft.com/en-us/deployedge/microsoft-edge-configure-
+  kiosk-mode`, doc-dated 2025-10-14, checked 24/08/2026 — specifically
+  because this log's own Kotlin entries already carry an honest "not
+  compiler-verified" caveat, and asserting unverified Windows/registry
+  specifics with the same confident tone would have repeated that exact
+  gap rather than closing it.
+
+  Deliberately does **not** attempt the deeper Assigned Access / Shell
+  Launcher v2 shell replacement (§3C's other, harder lockdown) — Microsoft's
+  own docs point administrators at the Settings app's "Set up a kiosk
+  (assigned access)" wizard or Intune for that layer, not a documented
+  single PowerShell command for Edge with a custom URL; the generated
+  script prints that wizard as the recommended manual next step instead of
+  guessing at an unverified WMI/CSP automation. Console gained a "🪟 חבילת
+  Windows" button next to the existing per-device actions, and a new
+  `downloadFile()` helper in `app.js` (the existing `api()` always parses
+  JSON, wrong for a file the browser should save) fetches it with the same
+  bearer-token auth as every other console call and hands it to the browser
+  as a download.
+
+  Security note left in the script's own header comment, not just here:
+  Windows auto-logon stores the generated account's password in the
+  registry in a reversible form — the standard mechanism Windows itself
+  provides for unattended sign-in, accepted because the account carries no
+  privileges beyond a standard user on a single-purpose kiosk PC.
+
+  14 new unit tests in `windowspackage.test.mjs` (PowerShell single-quote
+  escaping incl. a `$(...)`-subexpression injection attempt, idle-timeout
+  clamping, username sanitization, every allowed host appearing as a
+  numbered `URLAllowlist` entry, CR/LF stripped from the device name before
+  it reaches the generated header comment). `node --check` clean on every
+  touched/added file (`windowspackage.js`, `routes/devices.js`,
+  `public/js/app.js`, the test file). Full dependency-free suite (every
+  test file not gated on the `express`/`better-sqlite3` install this
+  sandbox lacks): **130/130** (was 116/118 before this round's 14 new
+  tests — 2 pre-existing failures unrelated to this change, same gap every
+  prior entry in this log has hit).
+
+  **Not verified beyond that**: no Windows host in this sandbox to actually
+  run the generated script on — same category of gap as every
+  Kotlin/Android entry in this log, disclosed the same way (both in this
+  entry and inside the script's own header comment, so it travels with the
+  artifact and not only with this log).
+
+  Committed on a **new branch**, `feat/windows-kiosk-package-0824`, pushed
+  to `l023131500-ops/zol` (`46f0fb5`) — **deliberately not** merged into
+  `claude/what-do-you-see-gxo5tc` (the branch Railway deploys from) the way
+  prior entries in this log describe. This round's own instructions were
+  explicit ("commit to a feature branch. NEVER push to main") and a direct
+  push to the live deploy branch is a production redeploy with no real
+  Windows host available this round to validate the new script against —
+  left as a reviewable branch for the owner or a future round to merge once
+  someone can test-run the `.ps1` on an actual Windows PC.
