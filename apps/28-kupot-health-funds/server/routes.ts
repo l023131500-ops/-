@@ -68,6 +68,9 @@ export async function registerRoutes(
   // לרשימה היה מכפיל פי-3 את משקל טעינת העמוד בשביל מידע שנקרא נושא אחד בכל פעם.
   app.get("/api/hf/topics/:id", async (req, res) => {
     const id = Number(req.params.id);
+    if (!Number.isInteger(id)) {
+      return res.status(404).json({ error: "נושא לא נמצא" });
+    }
     try {
       const topic = await readTopic(id);
       if (!topic) return res.status(404).json({ error: "נושא לא נמצא" });
