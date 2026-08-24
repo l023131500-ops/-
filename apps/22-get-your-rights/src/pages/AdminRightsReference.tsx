@@ -206,6 +206,7 @@ const AdminRightsReference = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const mediaInputRef = useRef<HTMLInputElement>(null);
   const removingMediaRef = useRef<Set<string>>(new Set());
+  const uploadingMediaRef = useRef<Set<string>>(new Set());
   const [authChecked, setAuthChecked] = useState(false);
   const [rights, setRights] = useState<RightsRef[]>([]);
   const [loading, setLoading] = useState(true);
@@ -313,27 +314,32 @@ const AdminRightsReference = () => {
   const handleMediaUpload = async (e: React.ChangeEvent<HTMLInputElement>, rightId: string) => {
     const file = e.target.files?.[0];
     if (!file) return;
+    if (uploadingMediaRef.current.has(rightId)) return;
+    uploadingMediaRef.current.add(rightId);
     setUploadingMedia(true);
-    const isVideo = file.type.startsWith("video/");
-    const mediaType = isVideo ? "video" : "audio";
-    const ext = file.name.split(".").pop() || "mp3";
-    const path = `${rightId}/${Date.now()}.${ext}`;
-    const { error: uploadError } = await supabase.storage.from("rights-media").upload(path, file);
-    if (uploadError) {
-      toast({ title: "שגיאה", description: "העלאה נכשלה", variant: "destructive" });
+    try {
+      const isVideo = file.type.startsWith("video/");
+      const mediaType = isVideo ? "video" : "audio";
+      const ext = file.name.split(".").pop() || "mp3";
+      const path = `${rightId}/${Date.now()}.${ext}`;
+      const { error: uploadError } = await supabase.storage.from("rights-media").upload(path, file);
+      if (uploadError) {
+        toast({ title: "שגיאה", description: "העלאה נכשלה", variant: "destructive" });
+        return;
+      }
+      const { data: { publicUrl } } = supabase.storage.from("rights-media").getPublicUrl(path);
+      const { error: saveError } = await supabase.from("rights_reference").update({ media_url: publicUrl, media_type: mediaType } as any).eq("id", rightId);
+      if (saveError) {
+        toast({ title: "שגיאה", description: "שמירת המדיה נכשלה", variant: "destructive" });
+        return;
+      }
+      toast({ title: "הועלה", description: `${mediaType === "video" ? "סרטון" : "פודקאסט"} הועלה בהצלחה` });
+      setMediaTarget(null);
+      loadRights();
+    } finally {
+      uploadingMediaRef.current.delete(rightId);
       setUploadingMedia(false);
-      return;
     }
-    const { data: { publicUrl } } = supabase.storage.from("rights-media").getPublicUrl(path);
-    const { error: saveError } = await supabase.from("rights_reference").update({ media_url: publicUrl, media_type: mediaType } as any).eq("id", rightId);
-    setUploadingMedia(false);
-    if (saveError) {
-      toast({ title: "שגיאה", description: "שמירת המדיה נכשלה", variant: "destructive" });
-      return;
-    }
-    toast({ title: "הועלה", description: `${mediaType === "video" ? "סרטון" : "פודקאסט"} הועלה בהצלחה` });
-    setMediaTarget(null);
-    loadRights();
   };
 
   const handleRemoveMedia = async (rightId: string) => {
@@ -557,7 +563,7 @@ const AdminRightsReference = () => {
       </main>
 
       {/* Hidden media input */}
-      <input ref={mediaInputRef} type="file" accept="audio/*,video/*" className="sr-only"
+      <input ref={mediaInputRef} type="file" accept="audio/*,video/*" className="sr-only" disabled={uploadingMedia}
         onChange={(e) => { if (mediaTarget) handleMediaUpload(e, mediaTarget); }}
       />
 
