@@ -92,7 +92,9 @@ export async function POST(req: NextRequest) {
 
   const citations = results.map((span: any) => ({
     matchedText:
-      typeof span.startChar === 'number' ? text.slice(span.startChar, span.endChar) : (span.text ?? null),
+      typeof span.startChar === 'number' && typeof span.endChar === 'number'
+        ? text.slice(span.startChar, span.endChar)
+        : (span.text ?? null),
     startChar: span.startChar ?? null,
     endChar: span.endChar ?? null,
     refs: span.refs ?? [],
