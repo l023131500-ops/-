@@ -159,9 +159,12 @@ async function processJob(jobId: string) {
       if (up1.error || up2.error || up3.error) {
         throw new Error(up1.error?.message || up2.error?.message || up3.error?.message || "upload failed");
       }
-      const { data: sMain } = await raw.storage.from("ad-outputs").createSignedUrl(mainKey, 3600);
-      const { data: sWa }   = await raw.storage.from("ad-outputs").createSignedUrl(waKey, 3600);
-      const { data: sPdf }  = await raw.storage.from("ad-outputs").createSignedUrl(pdfKey, 3600);
+      const { data: sMain, error: eMain } = await raw.storage.from("ad-outputs").createSignedUrl(mainKey, 3600);
+      const { data: sWa, error: eWa }     = await raw.storage.from("ad-outputs").createSignedUrl(waKey, 3600);
+      const { data: sPdf, error: ePdf }   = await raw.storage.from("ad-outputs").createSignedUrl(pdfKey, 3600);
+      if (eMain || eWa || ePdf) {
+        throw new Error(eMain?.message || eWa?.message || ePdf?.message || "signed url failed");
+      }
 
       await svc.from("ad_generations").insert({
         project_id: project.id,
