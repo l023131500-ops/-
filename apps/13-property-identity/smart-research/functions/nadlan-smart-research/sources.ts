@@ -3,7 +3,7 @@
 // כל המקורות ללא מפתח/רישום. datastore_search מחזיר JSON.
 // ============================================================================
 
-import { itmToWgs84 } from "./geo.ts";
+import { itmToWgs84, haversineMeters } from "./geo.ts";
 
 const CKAN = "https://data.gov.il/api/3/action/datastore_search";
 
@@ -140,6 +140,7 @@ export async function fetchSchoolsNear(lat: number, lon: number, radiusM = 3000,
     let plat: number, plon: number;
     if (r.UTM_X && r.UTM_Y) { plon = Number(r.UTM_X); plat = Number(r.UTM_Y); }
     else { const w = itmToWgs84(x, y); plat = w.lat; plon = w.lon; }
+    if (haversineMeters(lat, lon, plat, plon) > radiusM) continue;
     out.push({ name: r.SHEM_MOSAD, subtype: "school", lat: plat, lon: plon, attrs: { semel: r.SEMEL_MOSAD } });
   }
   return out;
