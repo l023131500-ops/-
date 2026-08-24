@@ -83,6 +83,13 @@ a{color:inherit;text-decoration:none}
   border:2px solid var(--royal);transform:translate(50%,-50%)}
 .range .nat{position:absolute;top:-3px;width:2px;height:12px;background:var(--ink-2);opacity:.7}
 .rlbl{display:flex;justify-content:space-between;font-size:11.5px;color:var(--muted)}
+.mhist{display:flex;align-items:flex-end;gap:5px;height:44px;margin-top:14px}
+.mhist .hb{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;min-width:0}
+.mhist .hcol{width:100%;max-width:26px;background:rgba(201,162,39,.55);border-radius:1px 1px 0 0;min-height:2px}
+.mhist .hcol.cur{background:var(--gold)}
+.mhist .hcol.negcol{background:rgba(228,96,78,.6)}
+.mhist .hy{font-size:10px;color:var(--muted)}
+.mhist-lbl{font-size:11px;color:var(--muted);margin-top:4px}
 
 table{width:100%;border-collapse:collapse;font-size:14.5px}
 th,td{padding:9px 10px;text-align:right;border-bottom:1px solid var(--line-2)}
@@ -274,7 +281,7 @@ const fmtK = (v) => { // value in אלפי ש"ח
   return nf.format(v) + ' אלף ₪';
 };
 
-function metricCard(def, m) {
+function metricCard(def, m, hist) {
   const fmt = def.kind === 'pct' ? fmtPct : def.kind === 'ils' ? fmtIls : fmtIls1;
   const v = Number(m.value);
   let peerLine = 'אין נתון קבוצת שווים.';
@@ -301,15 +308,31 @@ function metricCard(def, m) {
     const word = d >= 0 ? 'מעל ' : 'מתחת ל';
     badge = ' <span class="' + cls + '" style="font-size:14px">' + nf1.format(Math.abs(d)) + '% ' + word + 'חציון השווים</span>';
   }
+  /* per-metric history: exactly the loaded years, oldest→newest; the current
+     card year is highlighted. Bars scale to the metric's own max — the point
+     is direction over time, and each bar carries its exact value in the title. */
+  let histHtml = '';
+  if (hist && hist.length > 1) {
+    const hmax = Math.max(...hist.map((h) => Math.abs(h.v)), 1e-9);
+    histHtml = '<div class="mhist" aria-hidden="true">' + hist.map((h) =>
+      '<div class="hb"><span class="hcol' + (h.v < 0 ? ' negcol' : '') + (h.y === m.fiscal_year ? ' cur' : '') +
+      '" style="height:' + Math.max(2, (Math.abs(h.v) / hmax) * 34).toFixed(0) + 'px" title="' + h.y + ': ' + fmt(h.v) + '"></span>' +
+      '<span class="hy">' + h.y + '</span></div>').join('') +
+      '</div><div class="mhist-lbl">' + hist[0].y + '–' + hist[hist.length - 1].y + ' · השנים שנטענו בלבד</div>';
+  }
   return '<div class="mcard"><h3>' + esc(def.label) + '</h3>' +
     '<div class="mval">' + fmt(v) + badge + '</div>' +
-    '<div class="mpeer">' + peerLine + '</div>' + range + '</div>';
+    '<div class="mpeer">' + peerLine + '</div>' + range + histHtml + '</div>';
 }
 
-/* citizen_report rows → lookup by (row, col) for a given year */
+/* citizen_report rows → lookup by (row, col) for a given year.
+   The 2018/2019/2022 source files write labels with gershayim (סה"כ הוצאות,
+   ממוצע ארנונה למגורים למ"ר) where 2023/2024 write them bare — the facts are
+   stored verbatim, so the lookup normalizes quotes instead of the data. */
+const normLbl = (s) => String(s).replace(/["״]/g, '');
 function rowMap(rows) {
   const map = new Map();
-  for (const r of rows) map.set(r.row + '|' + r.col, Number(r.value));
+  for (const r of rows) map.set(normLbl(r.row) + '|' + normLbl(r.col), Number(r.value));
   return map;
 }
 const INCOME_ROWS = [
@@ -388,15 +411,26 @@ async function show(symbol) {
     (a.population != null ? '<span><b>' + nf.format(a.population) + '</b> תושבים (' + a.population_year + ')</span>' : '') +
     (a.socio_cluster != null ? '<span>אשכול חברתי-כלכלי <b>' + a.socio_cluster + '</b></span>' : '');
 
-  // metrics — all are fiscal_year 2024 today; read the year from the data, not a constant
-  const byKey = new Map(d.metrics.map((m) => [m.key, m]));
-  const my = d.metrics.length ? d.metrics[0].fiscal_year : null;
+  // metrics — multi-year since the 2018–2023 backfill: group by key, card shows
+  // the latest loaded year, the strip below it shows the loaded history
+  const byKey = new Map();
+  for (const m of d.metrics) {
+    if (!byKey.has(m.key)) byKey.set(m.key, []);
+    byKey.get(m.key).push(m);
+  }
+  for (const g of byKey.values()) g.sort((x, y) => x.fiscal_year - y.fiscal_year);
+  const latestOf = (k) => { const g = byKey.get(k); return g[g.length - 1]; };
+  const my = d.metrics.length ? Math.max(...d.metrics.map((m) => m.fiscal_year)) : null;
   $('metricYear').textContent = my ? 'שנת הדוח ' + my : '';
   $('peerDef').textContent = d.metrics.length
     ? 'קבוצת השווים: ' + d.peer_count + ' רשויות מאותו מעמד מוניציפלי (' + (STATUS_HE[a.status] || a.status) + ') באשכול חברתי-כלכלי ' +
       (a.socio_cluster != null ? (a.socio_cluster - 1) + '–' + (a.socio_cluster + 1) : 'דומה') + ', בלי הרשות עצמה.'
     : 'לרשות זו אין עדיין מדדים מחושבים.';
-  $('metricCards').innerHTML = METRICS.filter((def) => byKey.has(def.key)).map((def) => metricCard(def, byKey.get(def.key))).join('');
+  $('metricCards').innerHTML = METRICS.filter((def) => byKey.has(def.key)).map((def) => {
+    const cur = latestOf(def.key);
+    const hist = byKey.get(def.key).map((m) => ({ y: m.fiscal_year, v: Number(m.value) }));
+    return metricCard(def, cur, hist);
+  }).join('');
 
   // budget + arnona from the latest loaded year
   const years = Object.keys(d.citizen_report).map(Number).sort((x, y) => x - y);
