@@ -219,7 +219,7 @@ export function registerFinancialRoutes(app: Express) {
   });
 
   // ----- Categories -----
-  app.get("/api/financial/categories", async (req, res) => {
+  app.get("/api/financial/categories", requireAdmin, async (req, res) => {
     const clientId = clientIdQueryParam(req);
     res.json(finStorage.listCategories(clientId ?? null));
   });
