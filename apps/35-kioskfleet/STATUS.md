@@ -4135,3 +4135,83 @@ to that constraint: they import only dependency-free modules (`hosts.js`,
   issue), and no test customer account or real device exists to confirm the
   log against real production history, the same constraint every fix in this
   log without a real device has hit.
+
+- **[24/08/2026, Loop A] On-device customer-switch screen — KIOSK_BUILD.md
+  §2★ה, the owner-flagged "מחייב, גובר על כל השאר" (mandatory, overrides
+  everything else) piece of the client-directory flow, was entirely unbuilt,
+  on `zol` not this tree** — a prior round built the server+console half of
+  §2★ד (clients table, per-device approvals, `/api/agent/identify`,
+  `approvedClients` folded into enroll/heartbeat/`update_config`) but
+  deliberately stopped short of the Android UI, flagging it as "a new Kotlin
+  UI flow, not a mechanical extension" and the natural next step. Nothing on
+  the device read any of that data: `Prefs` had no slot for it, `AgentClient`
+  never parsed it, and the 5-corner-tap gesture went straight to the
+  password-gated maintenance dialog with no no-password tier for switching
+  customers, which is exactly what §2★ה requires be possible without one.
+
+  **Real bug found while wiring this up, fixed first**: `approvedClientsForDevice()`
+  (db.js) and `/api/agent/identify` only ever sent `{code,name,url}` to the
+  device — never the client's own `allowed_host`. A client's branded site is
+  very often a different domain than the device's `home_url`, so without this
+  the device would load a client's first page fine (a direct `loadUrl()` isn't
+  gated) but block every in-page link/redirect on that same site the instant
+  one fired, since `hostAllowed()` would be checking the device's own scope,
+  not the client's — a real "looks fine, breaks on the second click" bug. Both
+  endpoints now also `SELECT c.allowed_host AS allowedHost`; `clients.js`'s
+  `INSERT` already guarantees this is never empty (every client URL is run
+  through `hostsForUrl`, which folds in the URL's own host at minimum — the
+  existing `hosts.test.mjs` coverage for that already holds).
+
+  **Android**: `Prefs` gains `APPROVED_CLIENTS` (raw JSON array, cached for
+  fully-offline use per §2★ה). `EnrollActivity`, and `AgentClient`'s heartbeat
+  + `update_config` paths, all persist it unconditionally — the same "must
+  land on its own, not piggybacked on an unrelated change" shape `adminCode`/
+  `displayZoomPercent` already use, since approving/revoking a client doesn't
+  touch `home_url`. In `KioskActivity`, the 5-corner-tap gesture now opens a
+  selection dialog first (🏠 home / each approved client by name / ⚙️ ניהול
+  מכשיר) instead of going straight to the password prompt; only the admin item
+  still hands off to the unchanged, code-gated `showAdminDialog()`. Picking a
+  client is a tap against the already-cached, already-approved list — no typed
+  code, no network call, works fully offline. Introduced `deviceAllowedHosts`
+  (the device's own baseline scope) alongside the existing `allowedHosts`
+  (now "whatever scope is currently active" — the baseline, or a selected
+  client's own `allowedHost` while showing their site); `onSetUrl`/
+  `onConfigUpdated`/`returnToVenue` all now check against and restore the
+  baseline explicitly, so a remote command, an idle-timeout, or a
+  server-pushed home-link change while a client's page is on screen can't
+  silently misjudge scope or leave a stale client selection active.
+
+  **Deliberately not built this round**: free-text client-code entry through
+  `/api/agent/identify`. The device already holds the full `{code,name,url,
+  allowedHost}` for every approved client, so a typed-code input would be a
+  second, network-dependent validation path duplicating one that already
+  works fully offline, for no behavior the tap list doesn't already cover.
+
+  `node --check` clean on every touched JS file. Added
+  `QA/kiosk/client-switch-android-0824/coverage-check.mjs` (static, DB-free —
+  `better-sqlite3` is still not installed in this checkout) verifying the
+  `allowedHost` alias on both endpoints, that `pushConfigUpdate()` didn't
+  drift from `approvedClientsForDevice()`, and that client creation still
+  guarantees a non-empty `allowed_host`; all pass. Full JS suite: 32/34 —
+  unchanged from before this round; the two failures are the same
+  pre-existing `express`/`node:sqlite`-not-installed gap every prior entry in
+  this log has hit. **Kotlin is not compiler-verified**: no gradle/kotlin
+  toolchain in this sandbox, the same constraint every Android-side entry in
+  this log has hit — reviewed by hand against `AgentClient`'s own
+  already-shipped config-parsing shape and `KioskActivity`'s own
+  already-shipped allow-list/`AlertDialog` patterns rather than compiled. The
+  new dialog's item list is built as `List<CharSequence>` (not
+  `List<String>.toTypedArray()`) specifically to avoid relying on Kotlin's
+  Java-array-covariance interop for `setItems()`'s `CharSequence[]` signature.
+
+  Pushed to `l023131500-ops/zol`#`claude/what-do-you-see-gxo5tc` (`795340a`).
+  `more30.com/kiosk/api/health` polled every 15s for ~2 minutes after the push
+  and read `200` throughout — no build-in-flight blip observed. **Not
+  verified beyond the deploy-landing signal, the static check, and manual
+  Kotlin review**: no test customer account or real device exists to approve
+  a client on a device, trigger the corner-tap gesture, and confirm the
+  selection dialog actually switches and re-scopes correctly on a real
+  WebView, the same constraint every fix in this log without a real device
+  has hit. The on-device Android UI half of §2★ (typed-code identify, and the
+  exact wording/UX of the selection dialog) can still be refined once a real
+  device is available to test against.
