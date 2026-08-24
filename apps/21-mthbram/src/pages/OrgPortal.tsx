@@ -366,11 +366,15 @@ const OrgPortal = () => {
             )}
 
             <Button
+              disabled={rabbis.length === 0}
               onClick={() => { setAddingNew(true); setEditData({ subject: "", city: "", neighborhood: "", street: "", street_number: "", synagogue_name: "", rabbi_name: rabbis[0]?.rabbi_name || "", language: "עברית", target_audience: [], audience_type: [], lesson_style: "", rabbi_role: "", rabbi_phone: "", contact_name: "", contact_phone: "", contact_email: "", donation_link: "", schedule_days: [], schedule_notes: "", is_recurring: false, is_recorded: false, is_live_stream: false, recording_location: "", submitter_notes: "", status: "pending", is_approved: false, org_name: portal?.org_name || "" }); }}
-              className="w-full mb-6 bg-gradient-gold text-navy font-display font-black py-6 rounded-2xl gap-2 hover:opacity-90 text-lg"
+              className="w-full mb-6 bg-gradient-gold text-navy font-display font-black py-6 rounded-2xl gap-2 hover:opacity-90 text-lg disabled:opacity-50 disabled:pointer-events-none"
             >
               <Plus className="w-5 h-5" /> הוספת שיעור חדש
             </Button>
+            {rabbis.length === 0 && (
+              <p className="text-sm text-muted-foreground -mt-4 mb-6">יש להוסיף רב אחד לפחות בלשונית "רבנים" לפני הוספת שיעור</p>
+            )}
 
             <AnimatePresence>
               {addingNew && (
