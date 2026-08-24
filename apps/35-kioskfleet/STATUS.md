@@ -3211,3 +3211,28 @@ to that constraint: they import only dependency-free modules (`hosts.js`,
      `l023131500-ops/zol`#`claude/what-do-you-see-gxo5tc`, not this checkout —
      see "Next, in order" #1); the source-of-truth change is committed to this
      tracked copy the same way every prior console fix in this log has been.
+
+- **[24/08/2026, Loop A] `createEnrollment()` guarded against double-submit** —
+  the pattern this exact file already applies to re-issuing an access code, to
+  saving an exit code, and to resetting the setup wizard (`disabled = true`
+  before the request, restored after) had never reached the enrollment form,
+  the actual entry point of onboarding a device. `$('#e-url')`/`$('#e-name')`
+  are only cleared **after** the request resolves, so a second click while the
+  first `POST /enrollments` is still in flight reads the same still-filled
+  form and creates a second, independent enrollment — nothing on the server
+  rejects it as a duplicate, since each enrollment is its own unclaimed code
+  with no natural key tying it to "the device this owner meant." The result
+  sits in "קודי רישום פתוחים" as a stray open code until someone notices and
+  deletes it, or — worse — an installer is handed the wrong one of the two.
+  `#e-create` is now disabled for the duration of the request and
+  re-enabled in a `finally`, on both the success and error paths: unlike the
+  one-shot dialogs above, this form stays on screen after a successful create
+  (the owner may reasonably enroll a second device right after), so the
+  button has to come back rather than stay disabled.
+
+  `node --check` on `app.js` is clean. `node --test` here still only runs
+  `seedadmin.test.mjs`, and its failure is the same pre-existing,
+  unrelated one every prior entry in this log has noted — `node:sqlite` is
+  not available in this container's Node 20.20.2 build. **Not deployed** —
+  same as every other change in this log, Railway builds from a different
+  branch than this checkout.

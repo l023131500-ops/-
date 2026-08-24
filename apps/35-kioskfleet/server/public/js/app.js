@@ -1100,6 +1100,15 @@ async function createEnrollment() {
   const linkId = $('#e-link') ? ($('#e-link').value || null) : null;
   const idleReturnSeconds = Math.max(0, Number($('#e-idle').value) || 0);
   if (!linkId && !homeUrl) return toast('בחרו קישור מהספרייה או הזינו כתובת אתר', false);
+  // The fields are only cleared on success, further down — so without a guard
+  // here, a second click (or a double-tap) fired while the first request is
+  // still in flight reads the same still-filled form and creates a second,
+  // independent enrollment. Nothing rejects that as a duplicate: it is a
+  // second code for what was meant to be one device, sitting in "קודי רישום
+  // פתוחים" until someone notices and deletes it — or worse, gets handed to
+  // an installer instead of the first one.
+  const btn = $('#e-create');
+  btn.disabled = true;
   try {
     const body = linkId ? { linkId: Number(linkId), name, idleReturnSeconds } : { homeUrl, name, idleReturnSeconds };
     const { enrollment } = await api('/enrollments', { method: 'POST', body: JSON.stringify(body) });
@@ -1125,6 +1134,7 @@ async function createEnrollment() {
     $('#e-url').value = ''; $('#e-name').value = '';
     loadEnrollments();
   } catch (e) { toast(e.message, false); }
+  finally { btn.disabled = false; }
 }
 async function loadEnrollments() {
   const { enrollments } = await api('/enrollments');
