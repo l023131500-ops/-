@@ -3660,3 +3660,61 @@ to that constraint: they import only dependency-free modules (`hosts.js`,
   Android toolchain in this container, so `onConfigUpdated`'s fix is a
   careful read against `onSetUrl`'s existing, already-shipped pattern in the
   same file, not a device-verified change.
+
+- **[24/08/2026, Loop A] The WS agent's ack could touch any device's
+  commands, on `zol` not this tree** — a different class of gap than the
+  eight entries above, found reading `hub.js` end to end after the console-
+  socket token leak was already closed there. `routes/agent.js`'s REST
+  `/ack` (the fallback path for when the socket is down) already scopes its
+  UPDATE with `WHERE id = ? AND device_id = ?`; `hub.js`'s
+  `handleAgentMessage()` — the **primary** ack path, since the socket is up
+  whenever the agent is online at all — never went through the same check:
+  `UPDATE commands SET status = ?, result = ?, ... WHERE id = ?`, keyed on
+  `commands.id` alone, which is a single global `AUTOINCREMENT` shared by
+  every device on the service, not one sequence per device. The only
+  identity check on the message is that the socket itself was authenticated
+  by a valid `device_token` at connection time (`deviceId` is that device's
+  own id) — nothing then confirmed the `commandId` in the ack belongs to
+  *that* device. So any enrolled device, sending an ordinary ack over its
+  own legitimate connection, could mark **another owner's** pending or
+  delivered command as `done` (e.g. an `unlock` that never actually ran on
+  the real target, or a `reboot`/`lock` silently reported complete) or as
+  `failed` with up to 2000 characters of attacker-controlled `result` text
+  that owner's console then displays — cross-tenant interference with no
+  authorization check at all, on the fleet's own control-channel command
+  queue.
+
+  Fixed by adding the identical `AND device_id = ?` clause `routes/agent.js`
+  already carries, bound to the authenticated `deviceId` the socket
+  connection already trusts:
+  ```
+  UPDATE commands SET status = ?, result = ?, done_at = datetime('now')
+  WHERE id = ? AND device_id = ?
+  ```
+  A command id that does not belong to the calling device now matches zero
+  rows and is silently ignored, the same shape the REST fallback already
+  had — no new error path for the legitimate case (a device only ever acks
+  its own commands) to hit.
+
+  `node --check` clean. Full suite: 21/23 — `hosts.test.mjs`,
+  `devicepayload.test.mjs` and `exitcode.test.mjs` unchanged;
+  `routing.test.mjs`/`seedadmin.test.mjs` fail for the same pre-existing,
+  unrelated reasons every prior entry in this log has hit (no `express`, no
+  `node:sqlite` in this container's Node 20.20.2) — same baseline as
+  before. `hub.js` has no unit test of its own, the same constraint every
+  prior `hub.js`/`index.js` entry in this log has hit (`ws` is not
+  installed here) — verification is code review against the REST path's
+  already-shipped, already-tested-in-production shape, not a new automated
+  check.
+
+  Pushed to `l023131500-ops/zol`#`claude/what-do-you-see-gxo5tc` (`082c2b3`).
+  `more30.com/kiosk/api/health` polled every 15-20s for ~3 minutes after the
+  push and read `200` throughout — no build-in-flight blip this time (a
+  faster or zero-downtime rebuild than the 502→200 transition earlier
+  entries in this log observed), so the deploy landing itself is not
+  independently confirmed by this signal alone. **The ack behaviour was not
+  device-verified**: as prior entries in this log establish, `kiosk.more30.com`
+  does not resolve from this container and the portal's WS path answers an
+  upgrade with 404, so there is no route to open a real `wss://…/ws/agent`
+  connection from here, live or otherwise, and no real device or command
+  was touched to probe it.
