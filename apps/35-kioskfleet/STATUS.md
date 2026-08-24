@@ -4788,3 +4788,105 @@ to that constraint: they import only dependency-free modules (`hosts.js`,
   or drive a real client-switch sequence on a device and confirm the numbers
   it shows — the same constraint every fix in this log without a real
   device/browser has hit.
+
+- **[24/08/2026, Loop A] Watchdog — crash auto-restart, frozen-screen
+  reboot, KIOSK_BUILD.md §0 "התאוששות אוטומטית מכל תקלה (watchdog)" / §8
+  "Watchdog: אם האפליקציה קורסת/נסגרת → מופעלת מחדש אוטומטית; אם המסך תקוע
+  → אתחול", was entirely unbuilt, on `zol` not this tree** — nothing in the
+  app caught an uncaught exception or noticed a frozen main thread; a crash
+  fell straight through to Android's own "האפליקציה נעצרה" dialog (a
+  visible error the §0 quality bar explicitly forbids) and a genuine UI
+  freeze had no detector at all, so retail-grade "אפס קריסות גלויות" had a
+  real gap under it. Two independent failure modes needed two independent
+  detectors: a crash throws something to catch; a frozen main thread throws
+  nothing and has to be noticed from a second thread instead.
+
+  **Android**: new `Watchdog.kt` — `install()` (called once from the new
+  `KioskApp.onCreate()`, the only place that runs before any activity, so a
+  crash in the very first `onCreate()` is still caught) replaces
+  `Thread.defaultUncaughtExceptionHandler`: on a crash it persists `reason
+  ("crash") + the exception message` to two new `Prefs` keys
+  (`PENDING_WATCHDOG_REASON`/`_DETAIL` — a dying/rebooting process cannot
+  reliably make an HTTP call, the same reasoning `LAST_URL`'s own "resume
+  after crash/reboot" comment already documents for on-device state), then
+  schedules an `AlarmManager` one-shot to relaunch `LockTaskActivity` in a
+  fresh, cleared task ~700ms later before finally chaining to any previous
+  handler or killing the process. Separately, a main-thread `Handler` posts
+  a tick every 5s and a daemon watch thread checks every 15s whether that
+  tick has gone stale past 45s — if so, the main thread is frozen (an
+  ANR-shaped hang, not a crash) and, only if the app is Device Owner,
+  `DevicePolicyManager.reboot()` is called (a hang the watchdog cannot clear
+  by posting to that same frozen main thread will not clear by starting
+  another activity on it either, so this path reboots instead of
+  relaunching). `KioskApp.onCreate()` also calls the new
+  `Watchdog.flushPendingReport()`, which reads and clears the two pending
+  keys and — only if the device is enrolled — fires the report through a
+  new static `AgentClient.reportWatchdog()` (static, unlike
+  `reportExitAttempt()`, because it has to run before any activity/instance
+  exists, so it reads `Prefs` directly instead of an instance's cached
+  server/token).
+
+  **Server**: new dependency-free `src/watchdog.js` (unit-tests with no
+  `better-sqlite3` installed, same convention as
+  `alerts.js`/`hosts.js`/`schedule.js`/etc): `validateWatchdogReportBody()`
+  restricts `reason` to exactly `crash`/`anr_reboot` (anything else would let
+  a forged report inject an arbitrary label into the per-device activity
+  log, the same reasoning `validateExitAttemptBody()` already applies to
+  `ok`) and caps `detail` at 500 chars; `summarizeCrashLoop()` groups
+  already-fetched `watchdog` events by device and flags any device at or
+  over a threshold within the caller's window — independent of input row
+  order (each event's own `created_at` is compared directly, not "first row
+  wins"), so a device that recovered repeatedly in a short window surfaces
+  as unstable rather than each recovery looking like an isolated, handled
+  event. New device-facing `POST /api/agent/watchdog-report`
+  (`routes/agent.js`, device-token auth like `exit-attempt`) logs a
+  `watchdog` event — the server never re-derives whether the recovery was
+  warranted, only records what the device's own detector decided, the same
+  "device decided, server just logs it" shape `exit-attempt` established.
+  `GET /api/alerts` (`routes/alerts.js`) now also queries `watchdog` events
+  within a new `CRASH_LOOP_WINDOW_HOURS` (default 1) and folds them through
+  `summarizeCrashLoop()` against a new `CRASH_LOOP_THRESHOLD` (default 3) —
+  deliberately a short window: 3 recoveries in an hour is a device actually
+  looping, not one that rebooted twice over a slow week.
+  `alerts.js`'s `summarizeAlerts()` gained an optional `crashLoopDevices`
+  param (default `[]`, so it does not break any caller built before this)
+  whose length now also feeds the alerts badge total.
+
+  **Console**: `viewAlerts()`/`loadAlerts()` render a new "🔁 יציבות" card
+  listing any device at/over the crash-loop threshold with its count and
+  most recent event time, next to the existing offline/battery/exit-attempt
+  cards — the same `<table>`/`.card` shape those three already use.
+
+  11 new unit tests in `watchdog.test.mjs` (reason enum acceptance/rejection;
+  detail truncation at 500 chars and non-string rejection; empty/under-
+  threshold/at-threshold crash-loop grouping; order-independence of the
+  "latest event" pick; two devices tracked independently and sorted by
+  count). `alerts.test.mjs` gained a `crashLoopDevices` case and its
+  existing empty-summary assertion was updated to include the new
+  `crashLoopCount: 0` field. `node --check` clean on every touched/added JS
+  file (`watchdog.js`, `config.js`, `alerts.js`, `routes/alerts.js`,
+  `routes/agent.js`, `public/js/app.js`, both test files). Full suite:
+  102/104 (was 89/91 before this round's 13 new/changed tests) — the 2
+  failures (`routing.test.mjs`/`seedadmin.test.mjs`) are the same
+  pre-existing `express`/`better-sqlite3`-not-installed gap every prior
+  entry in this log has hit, unrelated to this change. **Kotlin is not
+  compiler-verified**: no gradle/kotlin toolchain in this sandbox, the same
+  constraint every Android-side entry in this log has hit — reviewed by
+  hand; brace/paren counts balance on every touched/added file
+  (`Watchdog.kt` 26/26 braces, 73/73 parens; `KioskApp.kt` 2/2, 7/7;
+  `AgentClient.kt` 82/82, 318/318; `Prefs.kt` 2/2, 22/22),
+  `AndroidManifest.xml` parses as well-formed XML after adding
+  `android:name=".KioskApp"`, and `minSdk 26` covers every API used
+  (`DevicePolicyManager.reboot()` needs 24+, `PendingIntent.FLAG_IMMUTABLE`
+  needs 23+).
+
+  Pushed to `l023131500-ops/zol`#`claude/what-do-you-see-gxo5tc` (`1efb18c`).
+  `more30.com/kiosk/api/health` polled repeatedly through the post-push
+  redeploy (one `502` mid-rollout, then `200` and stable); `POST
+  /kiosk/api/agent/watchdog-report` with no device token answered `401`
+  (route exists, auth-gated) once the deploy landed, matching
+  `exit-attempt`'s own shape. **Not verified beyond that and the unit
+  tests**: no real device exists in this sandbox to force a crash or a
+  frozen main thread and confirm the relaunch/reboot and the new "🔁
+  יציבות" card actually fire on real hardware — the same constraint every
+  fix in this log without a real device/browser has hit.
