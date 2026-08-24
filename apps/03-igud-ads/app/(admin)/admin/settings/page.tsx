@@ -82,6 +82,7 @@ export default function SettingsAdmin() {
   const [localValues, setLocalValues] = useState<Record<string, unknown>>({});
   const [saving, setSaving] = useState<Record<string, boolean>>({});
   const [saved, setSaved] = useState<Record<string, boolean>>({});
+  const [saveError, setSaveError] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(true);
 
   async function load() {
@@ -98,14 +99,24 @@ export default function SettingsAdmin() {
 
   async function saveSetting(key: string) {
     setSaving((prev) => ({ ...prev, [key]: true }));
-    await fetch("/modaot/api/admin/settings", {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ key, value: localValues[key] }),
-    });
-    setSaving((prev) => ({ ...prev, [key]: false }));
-    setSaved((prev) => ({ ...prev, [key]: true }));
-    setTimeout(() => setSaved((prev) => ({ ...prev, [key]: false })), 2000);
+    setSaveError((prev) => ({ ...prev, [key]: "" }));
+    try {
+      const r = await fetch("/modaot/api/admin/settings", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ key, value: localValues[key] }),
+      });
+      if (!r.ok) {
+        const j = await r.json().catch(() => null);
+        throw new Error(j?.error || `שגיאה ${r.status}`);
+      }
+      setSaved((prev) => ({ ...prev, [key]: true }));
+      setTimeout(() => setSaved((prev) => ({ ...prev, [key]: false })), 2000);
+    } catch (e) {
+      setSaveError((prev) => ({ ...prev, [key]: e instanceof Error ? e.message : "השמירה נכשלה" }));
+    } finally {
+      setSaving((prev) => ({ ...prev, [key]: false }));
+    }
   }
 
   useEffect(() => { load(); }, []);
@@ -141,7 +152,7 @@ export default function SettingsAdmin() {
                     onChange={(v) => setLocalValues((prev) => ({ ...prev, [s.key]: v }))}
                   />
                 </div>
-                <div className="flex-shrink-0 pt-6">
+                <div className="flex-shrink-0 pt-6 text-left">
                   <button
                     onClick={() => saveSetting(s.key)}
                     disabled={saving[s.key]}
@@ -153,6 +164,9 @@ export default function SettingsAdmin() {
                   >
                     {saved[s.key] ? "נשמר ✓" : saving[s.key] ? "שומר..." : "שמור"}
                   </button>
+                  {saveError[s.key] && (
+                    <div className="text-xs text-red-600 mt-1 max-w-[10rem]">{saveError[s.key]}</div>
+                  )}
                 </div>
               </div>
             ))}
