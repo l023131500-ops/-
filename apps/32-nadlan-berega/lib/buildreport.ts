@@ -2,7 +2,14 @@
 // כאן נפגשים כל המקורות. הכלל: כל שדה יוצא מכאן עם ודאות מוצהרת,
 // ושדה בלי נתון יוצא עם משפט הסבר — לא עם "—" יבש ולא עם ניחוש.
 
-import { geocodeAddress, verifyCity } from './geocode';
+import {
+  geocodeAddress,
+  verifyCity,
+  verifyStreetName,
+  verifyHouseNumber,
+  houseNumberOfLabel,
+  type GeocodeResult,
+} from './geocode';
 import {
   geocodeGoogle,
   googleConfigured,
@@ -827,18 +834,49 @@ export async function buildReport(
     }
   }
 
+  /**
+   * האם מספר הבית בנקודה שנבחרה אומת מול המבוקש. null = לא בוקש מספר.
+   * false פירושו שהנקודה — ואיתה החלקה, תמונת הרחוב ומרכז המפה — עלולה
+   * להיות של בניין שכן, גם כשהיישוב עצמו אומת.
+   */
+  let geoHouseVerified: boolean | null = null;
+
   if (parsed.kind === 'address') {
     try {
+      // ⚠️ אימות יישוב לבדו אינו מספיק: ההתאמה המטושטשת של GovMap מחזירה
+      // גם "הרצל 4" כשבוקש "הרצל 42" וגם רחוב דומה-שם באותו יישוב — שניהם
+      // עוברים את verifyCity בשקט. לכן מעדיפים מועמד שמאומת בכל שלוש הרמות
+      // (יישוב+רחוב+מספר). הרחוב מושווה גם מול השם הרשמי וכל הכינויים
+      // מהמרשם, כדי ששם-נרדף ("אתרוג"/"דרך מרדכי") לא ייפסל כאי-התאמה.
+      const knownStreetNames = [
+        parsed.street,
+        streetResolved?.official,
+        streetResolved?.matchedAs,
+        ...(streetResolved?.aliases ?? []),
+        ...(streetResolved?.registryNames ?? []),
+      ];
+      const streetOk = (c: GeocodeResult) =>
+        c.streetVerified !== false ||
+        verifyStreetName(parsed.raw, c.label, knownStreetNames) !== false;
+      const fullyVerified = (c: GeocodeResult) =>
+        c.cityVerified && c.houseVerified !== false && streetOk(c);
+
       let candidates = await geocodeAddress(searchAddress);
-      let chosen = candidates.find((c) => c.cityVerified) ?? candidates[0] ?? null;
+      let chosen =
+        candidates.find(fullyVerified) ??
+        candidates.find((c) => c.cityVerified) ??
+        candidates[0] ??
+        null;
 
       // ⚠️ החלפה לשם הרשמי עלולה להזיק כששם הרחוב מכיל שם של יישוב אחר.
       // נבדק: "שדרות ירושלים 30 יפו" הפך ל"שד' ירושלים 30 יפו", ושירות האיתור
       // נתפס למילה "ירושלים" והחזיר כתובת בירושלים. לכן אם התוצאה לא אומתה
-      // מול היישוב המבוקש — חוזרים ומנסים עם מה שהוקלד במקור.
-      if ((!chosen || !chosen.cityVerified) && searchAddress !== parsed.raw) {
+      // במלואה (יישוב/רחוב/מספר) — חוזרים ומנסים עם מה שהוקלד במקור.
+      if ((!chosen || !fullyVerified(chosen)) && searchAddress !== parsed.raw) {
         const retry = await geocodeAddress(parsed.raw);
-        const better = retry.find((c) => c.cityVerified);
+        const better =
+          retry.find(fullyVerified) ??
+          (chosen?.cityVerified ? undefined : retry.find((c) => c.cityVerified));
         if (better) {
           candidates = retry;
           chosen = better;
@@ -852,9 +890,23 @@ export async function buildReport(
         itmY = chosen.itmY;
         matchedLabel = chosen.label;
         geoCityVerified = chosen.cityVerified;
+        geoHouseVerified = chosen.houseVerified;
         if (!chosen.cityVerified) {
           warnings.push(
             `לא הצלחנו לאמת שהכתובת שנמצאה היא בדיוק זו שחיפשת. המערכת זיהתה "${chosen.label}". כדאי לבדוק שזו אכן הכתובת הנכונה.`,
+          );
+        } else if (chosen.houseVerified === false && parsed.houseNum != null) {
+          // היישוב אומת אבל הבניין לא — אזהרה נפרדת ומדויקת, כי המשמעות
+          // שונה: הדוח, התמונה והחלקה עלולים להתייחס לבניין סמוך.
+          const gotNum = houseNumberOfLabel(chosen.label);
+          warnings.push(
+            gotNum == null
+              ? `שירות האיתור מצא את הרחוב אך לא את מספר בית ${parsed.houseNum} — הנקודה שהוצגה היא ברמת הרחוב. החלקה ותמונת הרחוב עשויות להתייחס לבניין אחר ברחוב.`
+              : `שירות האיתור החזיר את "${chosen.label}" — מספר בית ${gotNum} במקום ${parsed.houseNum} שביקשת. ייתכן שהמספר אינו רשום עדיין; החלקה ותמונת הרחוב עשויות להתייחס לבניין סמוך.`,
+          );
+        } else if (!streetOk(chosen)) {
+          warnings.push(
+            `שירות האיתור החזיר את "${chosen.label}" — שם הרחוב בו אינו תואם את "${parsed.street ?? parsed.raw}". ייתכן שזוהה רחוב דומה-שם באותו יישוב. כדאי לבדוק את הכתובת.`,
           );
         }
       }
@@ -876,7 +928,9 @@ export async function buildReport(
     googleConfigured() &&
     tierMayUsePaidSources(tier) &&
     parsed.kind === 'address' &&
-    (lat == null || !geoCityVerified)
+    // גם כשהיישוב אומת אבל מספר הבית לא (geoHouseVerified===false) — גוגל
+    // מנוסה כתיקון: יש לו כיסוי מספרי-בית שלם יותר מה-autocomplete הממשלתי.
+    (lat == null || !geoCityVerified || geoHouseVerified === false)
   ) {
     const g = await geocodeGoogle(searchAddress === parsed.raw ? parsed.raw : searchAddress);
     if (g) {
@@ -887,7 +941,12 @@ export async function buildReport(
         ? verifyCity(parsed.raw, formattedNoCountry) ||
           cityAppearsAsToken(parsed.city, formattedNoCountry)
         : false;
-      if (lat == null || googleVerifies) {
+      // כשהגענו לכאן רק בגלל מספר-בית שגוי, נקודת GovMap מוחלפת אך ורק
+      // בנקודה שגם היישוב וגם המספר בה אומתו — אחרת נשארים עם מה שיש,
+      // כדי שגיבוי לא יוריד את הדיוק במקום להעלות אותו.
+      const cameForHouseFix = lat != null && geoCityVerified && geoHouseVerified === false;
+      const googleHouse = verifyHouseNumber(parsed.raw, formattedNoCountry);
+      if (cameForHouseFix ? googleVerifies && googleHouse === true : lat == null || googleVerifies) {
         lat = g.lat;
         lng = g.lng;
         // הנקודה מגוגל היא WGS84; צריך להמיר לרשת ישראל בשביל הקדסטר והתכנון.
@@ -902,6 +961,13 @@ export async function buildReport(
           // האזהרה הקודמת על זיהוי לא ודאי כבר אינה נכונה.
           const i = warnings.findIndex((w) => w.startsWith('לא הצלחנו לאמת'));
           if (i >= 0) warnings.splice(i, 1);
+          if (googleHouse === true && geoHouseVerified === false) {
+            // גוגל מצא את מספר הבית המדויק שהמרשם הממשלתי פספס — גם
+            // אזהרת מספר-הבית כבר אינה נכונה.
+            geoHouseVerified = true;
+            const j = warnings.findIndex((w) => w.startsWith('שירות האיתור'));
+            if (j >= 0) warnings.splice(j, 1);
+          }
         } else {
           // ⚠️ מגיע לכאן רק כש-lat היה null (המרשם הממשלתי לא החזיר כלום) —
           // אחרת התנאי `lat == null || googleVerifies` לא היה מתקיים. במקרה הזה
@@ -918,11 +984,24 @@ export async function buildReport(
 
   // הגיבוי החינמי לרמה החינמית: Nominatim/OSM. הוא פחות מדויק מגוגל ולכן הוא
   // מתקבל רק כשאין נקודה בכלל, או כשהוא מצליח לאמת את היישוב שהוזן.
-  if (!tierMayUsePaidSources(tier) && parsed.kind === 'address' && (lat == null || !geoCityVerified)) {
+  if (
+    !tierMayUsePaidSources(tier) &&
+    parsed.kind === 'address' &&
+    (lat == null || !geoCityVerified || geoHouseVerified === false)
+  ) {
     try {
       const hadNoPointYet = lat == null;
+      // כשהגענו רק בגלל מספר-בית שגוי: OSM מחליף את נקודת GovMap אך ורק אם
+      // גם היישוב וגם מספר הבית אומתו בו (בשדות המובנים) — גיבוי שאינו
+      // מדויק יותר לא מחליף נקודה קיימת.
+      const cameForHouseFix = lat != null && geoCityVerified && geoHouseVerified === false;
       const [osm] = await geocodeAddress(searchAddress, { skipGovmap: true });
-      if (osm && (lat == null || osm.cityVerified)) {
+      if (
+        osm &&
+        (cameForHouseFix
+          ? osm.cityVerified && osm.houseVerified === true
+          : lat == null || osm.cityVerified)
+      ) {
         lat = osm.lat;
         lng = osm.lng;
         if (isPlausibleItm(osm.itmX, osm.itmY)) {
@@ -934,6 +1013,11 @@ export async function buildReport(
           geoCityVerified = true;
           const i = warnings.findIndex((w) => w.startsWith('לא הצלחנו לאמת'));
           if (i >= 0) warnings.splice(i, 1);
+          if (osm.houseVerified === true && geoHouseVerified === false) {
+            geoHouseVerified = true;
+            const j = warnings.findIndex((w) => w.startsWith('שירות האיתור'));
+            if (j >= 0) warnings.splice(j, 1);
+          }
         } else if (hadNoPointYet) {
           // ⚠️ מגיע לכאן רק כשלא הייתה נקודה בכלל קודם (המרשם הממשלתי לא
           // החזיר כלום ורמה חינמית לא קוראת לגוגל) — התוצאה של Nominatim

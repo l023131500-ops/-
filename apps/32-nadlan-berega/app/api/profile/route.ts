@@ -77,12 +77,25 @@ export async function GET(req: NextRequest) {
   let chosen: Awaited<ReturnType<typeof geocodeAddress>>[number] | null = null;
   try {
     const candidates = await geocodeAddress(q, { skipGovmap });
-    chosen = candidates.find((c) => c.cityVerified) ?? candidates[0] ?? null;
+    // אימות מלא (יישוב+רחוב+מספר בית) קודם לאימות-יישוב בלבד: ההתאמה
+    // המטושטשת מחזירה גם "הרצל 4" כשבוקש "הרצל 42" — אותו יישוב, בניין אחר.
+    chosen =
+      candidates.find(
+        (c) => c.cityVerified && c.streetVerified !== false && c.houseVerified !== false,
+      ) ??
+      candidates.find((c) => c.cityVerified) ??
+      candidates[0] ??
+      null;
     if (!chosen) warnings.push('לא נמצאו תוצאות גיאוקודינג לכתובת.');
     else if (!chosen.cityVerified) {
       warnings.push(
         `זיהוי הכתובת אינו ודאי: המקור החזיר "${chosen.label}" שאינו תואם את היישוב שהוזן. ` +
           'ייתכן שמדובר בכתובת אחרת — נדרש אימות.',
+      );
+    } else if (chosen.houseVerified === false) {
+      warnings.push(
+        `זיהוי הבניין אינו ודאי: המקור החזיר "${chosen.label}" ולא נמצא בו מספר הבית שהוזן. ` +
+          'הנקודה, החלקה והנתונים הנגזרים ממנה עשויים להתייחס לבניין סמוך.',
       );
     }
   } catch (e: any) {
@@ -148,6 +161,7 @@ export async function GET(req: NextRequest) {
       sourceType: chosen.source === 'govmap' ? 'official' : 'community',
       // זיהוי נחשב ודאי רק אם גם הגיאוקודר וגם הקדסטר מסכימים.
       cityVerified: chosen.cityVerified && !localityMismatch,
+      houseVerified: chosen.houseVerified,
       cadastreLocality: parcel?.localityName ?? null,
     };
   }

@@ -136,6 +136,11 @@ export interface PropertyProfile {
     sourceType: SourceType; // official | community
     /** האם היישוב בתוצאה אומת מול השאילתה. */
     cityVerified: boolean;
+    /**
+     * האם מספר הבית בתוצאה זהה למספר שבשאילתה. null = לא הוזן מספר.
+     * false = הנקודה עלולה להיות של בניין סמוך גם כשהיישוב אומת.
+     */
+    houseVerified?: boolean | null;
     /** האם היישוב שבקדסטר תואם את התוצאה — אימות בלתי תלוי. */
     cadastreLocality: string | null;
   } | null;
