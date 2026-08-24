@@ -433,6 +433,7 @@ export const finStorage = {
     for (const k of ["creditor", "kind", "originalAmount", "currentBalance", "monthlyPayment", "interestRate", "startDate", "endDate", "status", "notes"] as const) {
       if ((patch as any)[k] !== undefined) values[k] = (patch as any)[k];
     }
+    if (values.currentBalance !== undefined) values.currentBalance = nonNegInt(values.currentBalance);
     finDb.update(finDebts).set(values).where(eq(finDebts.id, id)).run();
     return finDb.select().from(finDebts).where(eq(finDebts.id, id)).get();
   },
@@ -465,6 +466,8 @@ export const finStorage = {
     for (const k of ["title", "targetAmount", "savedAmount", "targetDate", "monthlyContribution", "category", "status", "notes"] as const) {
       if ((patch as any)[k] !== undefined) values[k] = (patch as any)[k];
     }
+    if (values.targetAmount !== undefined) values.targetAmount = nonNegInt(values.targetAmount);
+    if (values.savedAmount !== undefined) values.savedAmount = nonNegInt(values.savedAmount);
     finDb.update(finGoals).set(values).where(eq(finGoals.id, id)).run();
     return finDb.select().from(finGoals).where(eq(finGoals.id, id)).get();
   },
