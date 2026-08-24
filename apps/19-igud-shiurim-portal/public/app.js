@@ -2298,7 +2298,7 @@ async function renderMyEntities(client) {
   try { await api('/api/superadmin/stats', { auth: true }); isSuperAdmin = true; } catch (e) { /* לא סופר-אדמין */ }
 
   const entityLinks = {
-    tenant: id => `#/admin/`, synagogue: id => `#/admin-syn/`, teacher: id => `#/te/`,
+    tenant: id => `#/admin/`, synagogue: id => `#/admin-syn/`, teacher: id => `#/admin-te/`,
   };
 
   APP.innerHTML = `
