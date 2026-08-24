@@ -43,7 +43,7 @@ export async function POST(req: Request) {
     }
 
     // העלאה ל-Storage (bucket: audio)
-    const ext = file.name.split(".").pop()?.toLowerCase() || "mp3";
+    const ext = file.name.includes(".") ? file.name.split(".").pop()!.toLowerCase() : "mp3";
     const id = randomUUID();
     const path = `${id}.${ext}`;
     const raw = createSupabaseServiceRaw();
