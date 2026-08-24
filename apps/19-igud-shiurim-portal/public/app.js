@@ -1453,12 +1453,15 @@ async function renderAdmin(token) {
       document.getElementById('ad-form')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     });
     content.querySelectorAll('[data-del-ad]').forEach(btn => btn.onclick = async () => {
+      if (btn.disabled) return;
       if (!confirm('למחוק את המודעה?')) return;
+      btn.disabled = true;
       try {
         await api(`/api/admin/tenant/${encodeURIComponent(token)}/ads/${btn.dataset.delAd}`, { method: 'DELETE' });
         if (editingAd && String(editingAd.id) === btn.dataset.delAd) editingAd = null;
         await refresh(); draw();
       } catch (err) {
+        btn.disabled = false;
         document.getElementById('ads-alert').innerHTML = `<div class="alert alert-error">${esc(err.message)}</div>`;
       }
     });
@@ -1892,11 +1895,14 @@ async function renderSynagogueAdmin(token) {
       }
     });
     content.querySelectorAll('[data-del-prayer]').forEach(btn => btn.onclick = async () => {
+      if (btn.disabled) return;
       if (!confirm('למחוק?')) return;
+      btn.disabled = true;
       try {
         await api(`/api/admin/synagogue/${encodeURIComponent(token)}/prayer-times/${btn.dataset.delPrayer}`, { method: 'DELETE' });
         await refresh(); draw();
       } catch (err) {
+        btn.disabled = false;
         document.getElementById('prayers-alert').innerHTML = `<div class="alert alert-error">${esc(err.message)}</div>`;
       }
     });
@@ -2187,12 +2193,15 @@ async function renderTeacherAdmin(token) {
       document.getElementById('te-ad-form')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     });
     content.querySelectorAll('[data-del-ad]').forEach(btn => btn.onclick = async () => {
+      if (btn.disabled) return;
       if (!confirm('למחוק את המודעה?')) return;
+      btn.disabled = true;
       try {
         await api(`/api/admin/teacher/${encodeURIComponent(token)}/ads/${btn.dataset.delAd}`, { method: 'DELETE' });
         if (editingAd && String(editingAd.id) === btn.dataset.delAd) editingAd = null;
         await refresh(); draw();
       } catch (err) {
+        btn.disabled = false;
         document.getElementById('te-ads-alert').innerHTML = `<div class="alert alert-error">${esc(err.message)}</div>`;
       }
     });
