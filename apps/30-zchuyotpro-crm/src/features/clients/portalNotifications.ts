@@ -121,15 +121,19 @@ export function buildNotifications(src: PortalNotificationSources, modules: Modu
 }
 
 // ---------- seen state (localStorage, per client) ----------
+// The helpers are namespace-parametric so the staff bell (staffNotifications)
+// shares them without sharing storage; the default keeps the portal's
+// original storage key byte-identical.
 
 export type SeenState = { keys: string[] };
+export type SeenItem = { key: string; sticky?: boolean };
 
 const SEEN_KEY_CAP = 1000;
-const storageKey = (clientId: string) => `crm30-portal-seen:${clientId}`;
+const storageKey = (id: string, ns: string) => `crm30-${ns}-seen:${id}`;
 
-export function loadSeen(clientId: string): SeenState {
+export function loadSeen(id: string, ns = "portal"): SeenState {
   try {
-    const raw = localStorage.getItem(storageKey(clientId));
+    const raw = localStorage.getItem(storageKey(id, ns));
     if (!raw) return { keys: [] };
     const parsed = JSON.parse(raw) as SeenState;
     return Array.isArray(parsed?.keys) ? { keys: parsed.keys.filter((k) => typeof k === "string") } : { keys: [] };
@@ -139,26 +143,26 @@ export function loadSeen(clientId: string): SeenState {
 }
 
 /** Pure: mark every non-sticky item as seen, keeping older keys (capped). */
-export function withSeen(prev: SeenState, items: PortalNotification[]): SeenState {
+export function withSeen(prev: SeenState, items: SeenItem[]): SeenState {
   const next = new Set(prev.keys);
   for (const i of items) if (!i.sticky) next.add(i.key);
   const keys = [...next];
   return { keys: keys.length > SEEN_KEY_CAP ? keys.slice(keys.length - SEEN_KEY_CAP) : keys };
 }
 
-export function saveSeen(clientId: string, state: SeenState) {
+export function saveSeen(id: string, state: SeenState, ns = "portal") {
   try {
-    localStorage.setItem(storageKey(clientId), JSON.stringify(state));
+    localStorage.setItem(storageKey(id, ns), JSON.stringify(state));
   } catch {
     // storage full/blocked — the bell just stays conservative and re-shows
   }
 }
 
-export function isUnseen(item: PortalNotification, seen: SeenState): boolean {
+export function isUnseen(item: SeenItem, seen: SeenState): boolean {
   return !!item.sticky || !seen.keys.includes(item.key);
 }
 
-export function countUnseen(items: PortalNotification[], seen: SeenState): number {
+export function countUnseen(items: SeenItem[], seen: SeenState): number {
   return items.filter((i) => isUnseen(i, seen)).length;
 }
 
