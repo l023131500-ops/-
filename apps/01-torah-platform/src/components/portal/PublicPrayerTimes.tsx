@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Clock, Building2, MapPin, Phone, Filter } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
@@ -16,16 +16,19 @@ const PublicPrayerTimes = ({ orgId }: PublicPrayerTimesProps) => {
   const [loading, setLoading] = useState(true);
   const [viewMode, setViewMode] = useState<"synagogue" | "next">("synagogue");
   const [filterSynagogue, setFilterSynagogue] = useState<string>("all");
+  const loadSeq = useRef(0);
 
   useEffect(() => { fetchData(); }, [orgId]);
 
   const fetchData = async () => {
+    const seq = ++loadSeq.current;
     const [synRes, ptRes] = await Promise.all([
       // Synagogues hang off the tenant now, not an org, and the time column is
       // time_hhmm — both names were left over from the pre-migration schema.
       supabase.from("synagogues").select("*").eq("tenant_id", orgId).order("name"),
       supabase.from("prayer_times").select("*").order("time_hhmm"),
     ]);
+    if (seq !== loadSeq.current) return;
     const syns = synRes.data || [];
     setSynagogues(syns);
     const synIds = syns.map((s: any) => s.id);

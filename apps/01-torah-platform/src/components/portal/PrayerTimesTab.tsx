@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import { Plus, Trash2, Clock, MapPin, Phone, Save, X, Building2, Edit3 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -23,14 +23,17 @@ const PrayerTimesTab = ({ orgId }: PrayerTimesTabProps) => {
   const [synForm, setSynForm] = useState({ name: "", address: "", city: "", neighborhood: "", phone: "", notes: "" });
   const [addingPrayer, setAddingPrayer] = useState<string | null>(null); // synagogue_id
   const [prayerForm, setPrayerForm] = useState({ prayer_type: "שחרית", day_of_week: "יומי", time: "", notes: "", custom_category: "" });
+  const loadSeq = useRef(0);
 
   useEffect(() => { fetchData(); }, [orgId]);
 
   const fetchData = async () => {
+    const seq = ++loadSeq.current;
     const [synRes, ptRes] = await Promise.all([
       supabase.from("synagogues").select("*").eq("org_id", orgId).order("created_at", { ascending: false }),
       supabase.from("prayer_times").select("*").order("created_at", { ascending: false }),
     ]);
+    if (seq !== loadSeq.current) return;
     const syns = synRes.data || [];
     setSynagogues(syns);
     // Filter prayer times to only our synagogues
