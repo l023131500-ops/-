@@ -127,6 +127,22 @@ const DEFAULT_TIPS: Array<Omit<FinTip, "id" | "createdAt">> = [
 
 // ----- API -----
 
+// Money/quantity fields are always a non-negative magnitude — sign/direction
+// comes from the sibling "kind" column (income vs. expense), so a negative
+// value here would silently invert monthlySummary()'s income/expense totals
+// and budget-overrun alerts. Bad/missing input coerces to 0 (or null for the
+// nullable client fields) rather than being rejected, matching the existing
+// silent-coercion style in this file.
+function nonNegInt(v: unknown): number {
+  const n = Math.round(Number(v));
+  return Number.isFinite(n) && n > 0 ? n : 0;
+}
+function nonNegIntOrNull(v: unknown): number | null {
+  if (v === null || v === undefined) return null;
+  const n = Math.round(Number(v));
+  return Number.isFinite(n) && n >= 0 ? n : null;
+}
+
 export const finStorage = {
   // Clients
   listClients(): FinClient[] {
@@ -142,9 +158,9 @@ export const finStorage = {
       phone: input.phone || "",
       email: input.email || "",
       mode: (input.mode as string) || "household",
-      familySize: input.familySize ?? null,
+      familySize: nonNegIntOrNull(input.familySize),
       city: input.city || "",
-      monthlyIncome: input.monthlyIncome ?? null,
+      monthlyIncome: nonNegIntOrNull(input.monthlyIncome),
       coachId: input.coachId ?? null,
       notes: input.notes || "",
       createdAt: now,
@@ -158,6 +174,8 @@ export const finStorage = {
     for (const k of ["fullName", "phone", "email", "mode", "familySize", "city", "monthlyIncome", "coachId", "notes"] as const) {
       if ((patch as any)[k] !== undefined) values[k] = (patch as any)[k];
     }
+    if (values.familySize !== undefined) values.familySize = nonNegIntOrNull(values.familySize);
+    if (values.monthlyIncome !== undefined) values.monthlyIncome = nonNegIntOrNull(values.monthlyIncome);
     finDb.update(finClients).set(values).where(eq(finClients.id, id)).run();
     return this.getClient(id);
   },
@@ -216,7 +234,7 @@ export const finStorage = {
       clientId: Number(input.clientId),
       categoryId: input.categoryId ?? null,
       kind: (input.kind as string) || "expense",
-      amount: Math.round(Number(input.amount) || 0),
+      amount: nonNegInt(input.amount),
       description: input.description || "",
       occurredOn: input.occurredOn || now.slice(0, 10),
       source: input.source || "manual",
@@ -228,7 +246,7 @@ export const finStorage = {
     for (const k of ["categoryId", "kind", "amount", "description", "occurredOn"] as const) {
       if ((patch as any)[k] !== undefined) values[k] = (patch as any)[k];
     }
-    if (values.amount !== undefined) values.amount = Math.round(Number(values.amount) || 0);
+    if (values.amount !== undefined) values.amount = nonNegInt(values.amount);
     finDb.update(finTransactions).set(values).where(eq(finTransactions.id, id)).run();
     return finDb.select().from(finTransactions).where(eq(finTransactions.id, id)).get();
   },
@@ -245,7 +263,7 @@ export const finStorage = {
     return finDb.insert(finBudgets).values({
       clientId: Number(input.clientId),
       categoryId: Number(input.categoryId),
-      monthlyLimit: Math.round(Number(input.monthlyLimit) || 0),
+      monthlyLimit: nonNegInt(input.monthlyLimit),
       note: input.note || "",
       createdAt: now,
     }).returning().get();
@@ -255,7 +273,7 @@ export const finStorage = {
     for (const k of ["monthlyLimit", "note", "categoryId"] as const) {
       if ((patch as any)[k] !== undefined) values[k] = (patch as any)[k];
     }
-    if (values.monthlyLimit !== undefined) values.monthlyLimit = Math.round(Number(values.monthlyLimit) || 0);
+    if (values.monthlyLimit !== undefined) values.monthlyLimit = nonNegInt(values.monthlyLimit);
     finDb.update(finBudgets).set(values).where(eq(finBudgets.id, id)).run();
     return finDb.select().from(finBudgets).where(eq(finBudgets.id, id)).get();
   },
@@ -272,7 +290,7 @@ export const finStorage = {
     return finDb.insert(finRecurring).values({
       clientId: Number(input.clientId),
       title: input.title || "תזכורת",
-      amount: input.amount ?? null,
+      amount: nonNegIntOrNull(input.amount),
       kind: (input.kind as string) || "reminder",
       categoryId: input.categoryId ?? null,
       cadence: (input.cadence as string) || "monthly",
@@ -287,6 +305,7 @@ export const finStorage = {
     for (const k of ["title", "amount", "kind", "categoryId", "cadence", "nextDate", "active", "description"] as const) {
       if ((patch as any)[k] !== undefined) values[k] = (patch as any)[k];
     }
+    if (values.amount !== undefined) values.amount = nonNegIntOrNull(values.amount);
     finDb.update(finRecurring).set(values).where(eq(finRecurring.id, id)).run();
     return finDb.select().from(finRecurring).where(eq(finRecurring.id, id)).get();
   },
