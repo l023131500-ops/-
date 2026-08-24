@@ -9,9 +9,17 @@ import { formatDateTimeHe } from "@/lib/format";
 import { triggerN8nWebhook } from "@/lib/n8n";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
+
+// Delivery states written by /api/email-send onto outbound email rows.
+const EMAIL_STATUS: Record<string, string> = {
+  test_mode: "טסט — לא נשלח בפועל",
+  delivered: "נשלח במייל",
+  failed: "שליחה נכשלה",
+};
 
 const channelIcon: Record<string, React.ComponentType<{ className?: string }>> = {
   whatsapp: MessageCircle,
@@ -28,6 +36,7 @@ export function MessagesTab({ clientId }: { clientId: string }) {
   const { data: messages } = useSuspenseQuery(messagesQuery(clientId));
   const [content, setContent] = useState("");
   const [channel, setChannel] = useState<string>("whatsapp");
+  const [emailSubject, setEmailSubject] = useState("");
 
   useEffect(() => {
     const ch = supabase
@@ -53,7 +62,7 @@ export function MessagesTab({ clientId }: { clientId: string }) {
     mutationFn: async () => {
       if (!content.trim()) throw new Error("הקלד הודעה");
       const body = content.trim();
-      const { error } = await supabase.from("messages").insert({
+      const { data: inserted, error } = await supabase.from("messages").insert({
         tenant_id: client.tenant_id,
         client_id: clientId,
         channel,
@@ -61,7 +70,7 @@ export function MessagesTab({ clientId }: { clientId: string }) {
         status: "sent",
         content: body,
         sent_by: me?.id ?? null,
-      });
+      }).select("id").single();
       if (error) throw error;
       // Fire-and-forget n8n automation; never blocks the save above.
       if (channel !== "internal") {
@@ -72,8 +81,33 @@ export function MessagesTab({ clientId }: { clientId: string }) {
           tenantId: client.tenant_id,
         });
       }
+      // Email channel: real dispatch through the server (Resend, test-mode
+      // gated). The timeline row above is already saved either way — this
+      // only performs delivery and updates the row's status.
+      if (channel === "email" && inserted?.id) {
+        try {
+          const { data: session } = await supabase.auth.getSession();
+          const token = session.session?.access_token;
+          if (!token) throw new Error("נדרשת התחברות מחדש");
+          const res = await fetch(`${import.meta.env.BASE_URL}api/email-send`, {
+            method: "POST",
+            headers: { "content-type": "application/json", authorization: `Bearer ${token}` },
+            body: JSON.stringify({ messageId: inserted.id, subject: emailSubject.trim() || undefined }),
+          });
+          const out = await res.json().catch(() => null);
+          if (!res.ok) {
+            toast.error("שליחת המייל נכשלה", { description: out?.error ?? `שגיאה ${res.status}` });
+          } else if (out?.mode === "test") {
+            toast.info("המייל נרשם במצב טסט", { description: out?.detail });
+          } else {
+            toast.success("המייל נשלח ללקוח");
+          }
+        } catch (e) {
+          toast.error("שליחת המייל נכשלה", { description: e instanceof Error ? e.message : undefined });
+        }
+      }
     },
-    onSuccess: () => { setContent(""); qc.invalidateQueries({ queryKey: ["messages", clientId] }); },
+    onSuccess: () => { setContent(""); setEmailSubject(""); qc.invalidateQueries({ queryKey: ["messages", clientId] }); },
     onError: (e: Error) => toast.error("שגיאה", { description: e.message }),
   });
 
@@ -94,6 +128,12 @@ export function MessagesTab({ clientId }: { clientId: string }) {
                     <span>{(CHANNEL as Record<string, string>)[m.channel] ?? m.channel}</span>
                     <span>·</span>
                     <span>{formatDateTimeHe(m.created_at)}</span>
+                    {m.channel === "email" && outbound && EMAIL_STATUS[m.status] && (
+                      <>
+                        <span>·</span>
+                        <span className={m.status === "failed" ? "text-red-300 font-medium" : ""}>{EMAIL_STATUS[m.status]}</span>
+                      </>
+                    )}
                   </div>
                   <div className="text-sm whitespace-pre-wrap">{m.content}</div>
                 </div>
@@ -108,6 +148,14 @@ export function MessagesTab({ clientId }: { clientId: string }) {
               <SelectTrigger className="w-40"><SelectValue /></SelectTrigger>
               <SelectContent>{Object.entries(CHANNEL).map(([k, v]) => <SelectItem key={k} value={k}>{v}</SelectItem>)}</SelectContent>
             </Select>
+            {channel === "email" && (
+              <Input
+                className="flex-1"
+                placeholder="נושא המייל (לא חובה)"
+                value={emailSubject}
+                onChange={(e) => setEmailSubject(e.target.value)}
+              />
+            )}
           </div>
           <div className="flex gap-2 items-end">
             <Textarea rows={2} placeholder="הקלד הודעה..." value={content} onChange={(e) => setContent(e.target.value)} />

@@ -26,10 +26,22 @@ export type VoiceSettings = {
   id_method?: "phone" | "phone_id" | "id";
 };
 
+// Two-way email sync (flagship spec item 9) — consumed by /api/email-send
+// (outbound, live only when live_enabled AND platform EMAIL_LIVE_MODE=live)
+// and /api/public/email-inbound (inbound_secret is the webhook's password,
+// same convention as VoiceSettings.api_secret).
+export type EmailSettings = {
+  enabled?: boolean;
+  inbound_secret?: string;
+  live_enabled?: boolean;
+  reply_to?: string;
+};
+
 export type TenantSettings = {
   integrations?: IntegrationSettings;
   notifications?: NotificationSettings;
   voice?: VoiceSettings;
+  email?: EmailSettings;
   // per-tenant module visibility (flagship spec item 2) — key: enabled.
   // Missing key means enabled; see features/customize/modules.ts
   modules?: Record<string, boolean>;

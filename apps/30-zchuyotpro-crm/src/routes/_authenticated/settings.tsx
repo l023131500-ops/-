@@ -10,10 +10,10 @@ import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Loader2, Save, ExternalLink, Plug, CheckCircle2, XCircle, Phone, Copy, KeyRound } from "lucide-react";
+import { Loader2, Save, ExternalLink, Plug, CheckCircle2, XCircle, Phone, Copy, KeyRound, Mail } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
-import { myTenantQuery, tenantProfilesQuery, type TenantSettings, type IntegrationSettings, type NotificationSettings, type VoiceSettings } from "@/features/settings/queries";
+import { myTenantQuery, tenantProfilesQuery, type TenantSettings, type IntegrationSettings, type NotificationSettings, type VoiceSettings, type EmailSettings } from "@/features/settings/queries";
 import { CustomizeTab } from "@/features/customize/CustomizeTab";
 
 export const Route = createFileRoute("/_authenticated/settings")({
@@ -37,6 +37,7 @@ function SettingsPage() {
           <TabsTrigger value="entitlements">זכאויות</TabsTrigger>
           <TabsTrigger value="integrations">אינטגרציות</TabsTrigger>
           <TabsTrigger value="voice">מערכת קולית</TabsTrigger>
+          <TabsTrigger value="email">סנכרון מייל</TabsTrigger>
           <TabsTrigger value="customize">התאמה אישית + AI</TabsTrigger>
           <TabsTrigger value="notifications">התראות</TabsTrigger>
         </TabsList>
@@ -56,6 +57,7 @@ function SettingsPage() {
         </TabsContent>
         <TabsContent value="integrations" className="mt-4"><IntegrationsTab /></TabsContent>
         <TabsContent value="voice" className="mt-4"><VoiceTab /></TabsContent>
+        <TabsContent value="email" className="mt-4"><EmailTab /></TabsContent>
         <TabsContent value="customize" className="mt-4"><CustomizeTab /></TabsContent>
         <TabsContent value="notifications" className="mt-4"><NotificationsTab /></TabsContent>
       </Tabs>
@@ -363,6 +365,126 @@ function VoiceTab() {
               <pre dir="ltr" className="bg-muted/50 rounded p-2 overflow-x-auto">{`type=api\napi_link=${apiLink}`}</pre>
               <p>לאחר השמירה כאן — כל שיחה לשלוחה תזוהה ותירשם אוטומטית לתיק הלקוח.</p>
             </div>
+          </div>
+        )}
+
+        <Button onClick={save} disabled={saving}>
+          {saving && <Loader2 className="h-4 w-4 animate-spin me-1" />}
+          <Save className="h-4 w-4 me-1" /> שמור הגדרות
+        </Button>
+      </CardContent>
+    </Card>
+  );
+}
+
+function EmailTab() {
+  const { data: tenant, isLoading } = useQuery(myTenantQuery());
+  const qc = useQueryClient();
+  const settings = (tenant?.settings ?? {}) as TenantSettings;
+  const [form, setForm] = useState<EmailSettings>(settings.email ?? {});
+  const [saving, setSaving] = useState(false);
+  // window is unavailable during SSR — resolve the public origin on the client
+  const [origin, setOrigin] = useState("");
+  useEffect(() => setOrigin(window.location.origin), []);
+
+  async function save() {
+    if (!tenant?.id) return;
+    if (form.enabled && !form.inbound_secret) {
+      toast.error("להפעלת הסנכרון יש ליצור מפתח סודי לקליטת מיילים");
+      return;
+    }
+    setSaving(true);
+    const newSettings: TenantSettings = { ...settings, email: form };
+    const { error } = await supabase.from("tenants").update({ settings: newSettings }).eq("id", tenant.id);
+    setSaving(false);
+    if (error) { toast.error("שמירה נכשלה", { description: error.message }); return; }
+    toast.success("הגדרות סנכרון המייל נשמרו");
+    qc.invalidateQueries({ queryKey: ["my-tenant"] });
+  }
+
+  if (isLoading) return <div className="flex justify-center py-6"><Loader2 className="h-5 w-5 animate-spin" /></div>;
+
+  const inboundUrl = tenant && form.inbound_secret && origin
+    ? `${origin}${import.meta.env.BASE_URL}api/public/email-inbound?tenant=${tenant.id}&key=${form.inbound_secret}`
+    : null;
+  const senderConfigured = !!settings.integrations?.email_sender?.trim();
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="text-base flex items-center gap-2"><Mail className="h-4 w-4" /> סנכרון מייל דו־כיווני</CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-5">
+        <p className="text-sm text-muted-foreground">
+          יוצא: הודעת מייל שנשלחת מציר התקשורת של הלקוח נשלחת אליו בפועל (Resend).
+          נכנס: כל מייל שמגיע לכתובת המשרד נקלט אוטומטית — שולח מזוהה נרשם בציר ההודעות
+          של הלקוח, שולח לא מוכר נפתח כפנייה בלוח הפניות. שום מייל לא הולך לאיבוד.
+        </p>
+
+        <div className="flex items-center justify-between border-b pb-3">
+          <Label htmlFor="email-enabled">הפעלת קליטת מיילים נכנסים</Label>
+          <Switch
+            id="email-enabled"
+            checked={!!form.enabled}
+            onCheckedChange={(v) => setForm({ ...form, enabled: v })}
+          />
+        </div>
+
+        <div className="flex items-center justify-between border-b pb-3">
+          <div>
+            <Label htmlFor="email-live">שליחה חיה (מחוץ למצב טסט)</Label>
+            <p className="text-xs text-muted-foreground mt-1">
+              כבוי = מצב טסט: מיילים יוצאים נרשמים בציר עם סימון &quot;טסט&quot; ולא נשלחים בפועל.
+              שליחה חיה דורשת גם הפעלה כאן וגם EMAIL_LIVE_MODE=live בהגדרות הסביבה של הפלטפורמה.
+            </p>
+          </div>
+          <Switch
+            id="email-live"
+            checked={!!form.live_enabled}
+            onCheckedChange={(v) => setForm({ ...form, live_enabled: v })}
+          />
+        </div>
+
+        <div>
+          <Label>כתובת Reply-To (אליה יגיעו תשובות הלקוח)</Label>
+          <Input dir="ltr" placeholder="office@example.com" value={form.reply_to ?? ""}
+            onChange={(e) => setForm({ ...form, reply_to: e.target.value })} />
+          <p className="text-xs text-muted-foreground mt-1">
+            כתובת השולח עצמה מוגדרת בלשונית &quot;אינטגרציות&quot; (Email sender address){senderConfigured ? "" : " — טרם הוגדרה שם"}.
+          </p>
+        </div>
+
+        <div>
+          <Label className="flex items-center gap-2"><KeyRound className="h-3.5 w-3.5" /> מפתח סודי לקליטת מיילים</Label>
+          <div className="flex gap-2">
+            <Input dir="ltr" readOnly value={form.inbound_secret ?? ""} placeholder="טרם נוצר מפתח" />
+            <Button type="button" variant="outline" onClick={() => {
+              const secret = crypto.randomUUID().replace(/-/g, "");
+              setForm({ ...form, inbound_secret: secret });
+              toast.info("נוצר מפתח חדש — יש לשמור ולעדכן את כתובת ה-Webhook אצל ספק המייל");
+            }}>
+              {form.inbound_secret ? "החלף מפתח" : "צור מפתח"}
+            </Button>
+          </div>
+          <p className="text-xs text-muted-foreground mt-1">
+            המפתח משובץ בכתובת ה-Webhook ומשמש כסיסמת הגישה שלה. החלפתו מנתקת קישור ישן.
+          </p>
+        </div>
+
+        {inboundUrl && (
+          <div>
+            <Label>כתובת Webhook לקליטת מייל נכנס</Label>
+            <div className="flex gap-2">
+              <Input dir="ltr" readOnly className="text-xs" value={inboundUrl} />
+              <Button type="button" variant="outline" size="icon" onClick={() => {
+                void navigator.clipboard.writeText(inboundUrl);
+                toast.success("הכתובת הועתקה");
+              }}><Copy className="h-4 w-4" /></Button>
+            </div>
+            <p className="text-xs text-muted-foreground mt-2">
+              הדביקו את הכתובת אצל ספק המייל הנכנס (Resend Inbound / n8n / CloudMailin) כיעד
+              ה-Webhook. המערכת מזהה אוטומטית גם מבנה Resend וגם JSON שטוח (from / subject / text).
+            </p>
           </div>
         )}
 
