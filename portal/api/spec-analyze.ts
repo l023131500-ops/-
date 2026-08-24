@@ -136,7 +136,12 @@ export default async function handler(req: any, res: any) {
   const jwt = auth.startsWith('Bearer ') ? auth.slice(7).trim() : '';
   if (!jwt) return res.status(401).json({ error: 'נדרשת התחברות אדמין' });
 
-  const body = typeof req.body === 'string' ? JSON.parse(req.body || '{}') : req.body ?? {};
+  let body: any;
+  try {
+    body = typeof req.body === 'string' ? JSON.parse(req.body || '{}') : req.body ?? {};
+  } catch {
+    return res.status(400).json({ error: 'גוף הבקשה אינו JSON תקין' });
+  }
   const id = String(body.id ?? '').trim();
   if (!id) return res.status(400).json({ error: 'חסר id' });
 
