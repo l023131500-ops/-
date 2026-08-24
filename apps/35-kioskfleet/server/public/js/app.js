@@ -1180,9 +1180,17 @@ async function viewLinks() {
   $('#l-create').onclick = async () => {
     const name = $('#l-name').value.trim(), url = $('#l-url').value.trim(), allowedHost = linkHl.value();
     if (!name || !url) return toast('נא למלא שם וכתובת', false);
+    // The fields are only cleared on success, below — so without a guard here,
+    // a second click while the first POST is still in flight reads the same
+    // still-filled form and creates a second link row. Nothing on the server
+    // rejects it as a duplicate (no unique constraint on a link), same gap
+    // #e-create and #c-create had.
+    const btn = $('#l-create');
+    btn.disabled = true;
     try { await api('/links', { method: 'POST', body: JSON.stringify({ name, url, allowedHost }) });
       toast('הקישור נשמר'); $('#l-name').value = ''; $('#l-url').value = ''; loadLinks(); }
     catch (e) { toast(e.message, false); }
+    finally { btn.disabled = false; }
   };
   loadLinks();
 }

@@ -3259,3 +3259,24 @@ to that constraint: they import only dependency-free modules (`hosts.js`,
   every other change in this log. `viewLinks()`'s `#l-create` has the identical
   gap (no unique constraint on a link at all, per the schema note above) and
   is the next one to close under this heading.
+
+- **[24/08/2026, Loop A] `viewLinks()`'s "שמור קישור" guarded against
+  double-submit, closing the heading** — the same gap `createEnrollment()` and
+  `viewClients()`'s `#c-create` had, and here there is **no** server-side
+  fallback at all: a link has no unique constraint (per the schema note
+  earlier in this log), unlike an explicit client מזהה which at least
+  collides on `UNIQUE(owner_id, code)`. `#l-name`/`#l-url` are only cleared
+  **after** `POST /links` resolves, so a second click while the first request
+  is in flight read the same still-filled form and created a second,
+  identical link row with nothing anywhere to reject it as a duplicate — it
+  would then sit in "הקישורים שלי" as a redundant entry an owner has to
+  notice and delete by hand, or pick the wrong one of the two when enrolling
+  a device. `#l-create` is now disabled for the duration of the request and
+  re-enabled in a `finally` on both paths, matching `#c-create`'s shape —
+  this screen also stays mounted after a successful save.
+
+  `node --check` on `app.js` is clean. `node --test` here still only runs
+  `seedadmin.test.mjs`, same pre-existing `node:sqlite` failure every entry in
+  this log has noted, unrelated to this change. **Not deployed** — same as
+  every other change in this log. This closes the double-submit sweep across
+  all three create-forms in this file (`#e-create`, `#c-create`, `#l-create`).
