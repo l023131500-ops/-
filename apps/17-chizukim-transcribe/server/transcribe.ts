@@ -240,11 +240,22 @@ async function transcribeChunk(
   form.append("temperature", "0");
   form.append("response_format", supportsSegments(model) ? "verbose_json" : "json");
 
-  const res = await fetch(OPENAI_TRANSCRIBE_URL, {
-    method: "POST",
-    headers: { Authorization: `Bearer ${openaiKey()}` },
-    body: form,
-  });
+  // maxDuration בפריסה הוא 300s ועלולים לרוץ כמה קטעים ברצף (ראה transcribe()
+  // למטה) — טיימאאוט לקטע בודד מונע מקריאה תקועה אחת לבלוע את כל התקציב על
+  // חשבון הקטעים שאחריה, בלי לחתוך תמלול אמיתי שפשוט לוקח זמן.
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 120_000);
+  let res: Response;
+  try {
+    res = await fetch(OPENAI_TRANSCRIBE_URL, {
+      method: "POST",
+      headers: { Authorization: `Bearer ${openaiKey()}` },
+      body: form,
+      signal: controller.signal,
+    });
+  } finally {
+    clearTimeout(timeout);
+  }
   if (!res.ok) {
     throw new Error(`מנוע התמלול החזיר שגיאה (${res.status}): ${(await res.text()).slice(0, 300)}`);
   }

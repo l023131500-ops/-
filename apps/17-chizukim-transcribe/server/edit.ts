@@ -128,6 +128,8 @@ export async function editTranscript(raw: string, ctx?: EditContext): Promise<Ed
     return { text: mechanicalEdit(clean), method: "mechanical", note: "אין מפתח למודל עריכה" };
   }
 
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 90_000);
   try {
     const res = await fetch(OPENAI_CHAT_URL, {
       method: "POST",
@@ -140,6 +142,7 @@ export async function editTranscript(raw: string, ctx?: EditContext): Promise<Ed
           { role: "user", content: clean },
         ],
       }),
+      signal: controller.signal,
     });
     if (!res.ok) throw new Error(`${res.status} ${(await res.text()).slice(0, 200)}`);
     const data: any = await res.json();
@@ -168,5 +171,7 @@ export async function editTranscript(raw: string, ctx?: EditContext): Promise<Ed
     return { text: edited, method: "llm", note: `שונו ${(changed * 100).toFixed(1)}% מהמילים` };
   } catch (e: any) {
     return { text: mechanicalEdit(clean), method: "mechanical", note: `עריכה נכשלה: ${e?.message ?? e}` };
+  } finally {
+    clearTimeout(timeout);
   }
 }
