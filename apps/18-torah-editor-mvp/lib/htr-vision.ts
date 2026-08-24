@@ -2,6 +2,7 @@ import Anthropic from '@anthropic-ai/sdk';
 import type { HtrLine, HtrMaterial } from './htr-types';
 import type { HtrEngine, HtrResult } from './htr-engine';
 import { HtrEngineNotConfigured } from './htr-engine';
+import { fetchWithTimeout } from './fetch-with-timeout';
 
 // ============================================================
 // VisionEngine — זיהוי כתב יד עברי בעזרת מודלי ראייה.
@@ -115,7 +116,7 @@ async function readWithOpenAI(
   material: HtrMaterial,
 ): Promise<Reading> {
   const key = (process.env.OPENAI_API_KEY || '').replace(/﻿/g, '').trim();
-  const res = await fetch(OPENAI_URL, {
+  const res = await fetchWithTimeout(OPENAI_URL, {
     method: 'POST',
     headers: { Authorization: `Bearer ${key}`, 'Content-Type': 'application/json' },
     body: JSON.stringify({
@@ -132,7 +133,7 @@ async function readWithOpenAI(
         },
       ],
     }),
-  });
+  }, 60000);
   if (!res.ok) {
     throw new Error(`מנוע הראייה השני החזיר ${res.status}: ${(await res.text()).slice(0, 200)}`);
   }
@@ -238,7 +239,7 @@ export class VisionEngine implements HtrEngine {
       );
     }
 
-    const img = await fetch(imageUrl);
+    const img = await fetchWithTimeout(imageUrl, {}, 20000);
     if (!img.ok) throw new Error(`הורדת התמונה נכשלה: ${img.status}`);
     const mediaType = (img.headers.get('content-type') || 'image/jpeg').split(';')[0];
     const imageBase64 = Buffer.from(await img.arrayBuffer()).toString('base64');

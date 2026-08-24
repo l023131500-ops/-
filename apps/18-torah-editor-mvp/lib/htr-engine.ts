@@ -1,4 +1,5 @@
 import type { HtrLine, HtrMaterial, HtrTier } from './htr-types';
+import { fetchWithTimeout } from './fetch-with-timeout';
 
 // ============================================================
 // שכבת אבסטרקציה למנועי HTR.
@@ -72,14 +73,14 @@ export class KrakenEngine implements HtrEngine {
     // ---- REAL MODE ----
     // חוזה API מול שרת ה-Kraken (eScriptorium-compatible):
     // POST { image_url, model } -> { lines: [{text, confidence, bbox}], ... }
-    const resp = await fetch(`${this.endpoint.replace(/\/$/, '')}/recognize`, {
+    const resp = await fetchWithTimeout(`${this.endpoint.replace(/\/$/, '')}/recognize`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         ...(this.apiKey ? { Authorization: `Bearer ${this.apiKey}` } : {})
       },
       body: JSON.stringify({ image_url: imageUrl, model })
-    });
+    }, 60000);
 
     if (!resp.ok) {
       const detail = await resp.text().catch(() => '');
@@ -152,7 +153,7 @@ export class TranskribusEngine implements HtrEngine {
         `הגדר TRANSKRIBUS_MODEL_${material.toUpperCase()} או TRANSKRIBUS_MODEL_DEFAULT.`
       );
     }
-    const submitResp = await fetch(`${this.apiBase}/processes`, {
+    const submitResp = await fetchWithTimeout(`${this.apiBase}/processes`, {
       method: 'POST',
       headers: {
         Authorization: `Bearer ${token}`,
@@ -162,7 +163,7 @@ export class TranskribusEngine implements HtrEngine {
         config: { textRecognition: { htrId: modelId }, modelId },
         image: { imageUrl }
       })
-    });
+    }, 20000);
     if (!submitResp.ok) {
       const detail = await submitResp.text().catch(() => '');
       throw new Error(
@@ -183,9 +184,9 @@ export class TranskribusEngine implements HtrEngine {
     let result: any = null;
     for (let i = 0; i < maxAttempts; i++) {
       await new Promise((r) => setTimeout(r, intervalMs));
-      const statusResp = await fetch(`${this.apiBase}/processes/${processId}`, {
+      const statusResp = await fetchWithTimeout(`${this.apiBase}/processes/${processId}`, {
         headers: { Authorization: `Bearer ${token}` }
-      });
+      }, 15000);
       if (!statusResp.ok) {
         const detail = await statusResp.text().catch(() => '');
         throw new Error(
@@ -223,11 +224,11 @@ export class TranskribusEngine implements HtrEngine {
       password: this.pass,
       client_id: this.clientId
     });
-    const resp = await fetch(this.tokenUrl, {
+    const resp = await fetchWithTimeout(this.tokenUrl, {
       method: 'POST',
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
       body: body.toString()
-    });
+    }, 15000);
     if (!resp.ok) {
       const detail = await resp.text().catch(() => '');
       throw new Error(
@@ -260,9 +261,10 @@ export class TranskribusEngine implements HtrEngine {
     // ניסיון 3: הורדת תוצאה ייעודית אם יש נתיב
     if (!text && !pageXml) {
       try {
-        const txtResp = await fetch(
+        const txtResp = await fetchWithTimeout(
           `${this.apiBase}/processes/${processId}/text`,
-          { headers: { Authorization: `Bearer ${token}` } }
+          { headers: { Authorization: `Bearer ${token}` } },
+          15000
         );
         if (txtResp.ok) text = await txtResp.text();
       } catch {

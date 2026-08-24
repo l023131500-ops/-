@@ -1,5 +1,6 @@
 import Anthropic from '@anthropic-ai/sdk';
 import type { HtrTier } from './htr-types';
+import { fetchWithTimeout } from './fetch-with-timeout';
 
 // ============================================================
 // שכבת תיקון-אחר (post-OCR correction).
@@ -75,7 +76,7 @@ export class DictaLMCorrector {
       );
     }
     // חוזה תואם-OpenAI: POST /v1/chat/completions
-    const resp = await fetch(`${this.endpoint.replace(/\/$/, '')}/v1/chat/completions`, {
+    const resp = await fetchWithTimeout(`${this.endpoint.replace(/\/$/, '')}/v1/chat/completions`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -86,7 +87,7 @@ export class DictaLMCorrector {
           { role: 'user', content: `הטקסט הגולמי מ-HTR:\n\n${rawText}` }
         ]
       })
-    });
+    }, 60000);
     if (!resp.ok) {
       const d = await resp.text().catch(() => '');
       throw new Error(`DictaLM החזיר ${resp.status}: ${d.slice(0, 300)}`);
