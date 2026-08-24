@@ -19,6 +19,7 @@ import { isAdminRequest, handleAdminLogin, handleAdminLogout } from "./auth";
 import { renderAdminPage } from "./admin-page";
 import { filterTopicsForReport, renderHfReportHtml } from "./hf-report";
 import { hitRateLimit, clientIp } from "./rate-limit";
+import { hfMeta } from "./storage";
 
 // בקשות לשעה, לכל כתובת IP, ל-/api/agent (קריאת Anthropic בתשלום, ר' rate-limit.ts).
 const AGENT_RATE_LIMIT_PER_HOUR = 20;
@@ -95,7 +96,10 @@ export async function registerRoutes(
       const rows = filterTopicsForReport(topics, { kind, category, fund, search });
       const parts: string[] = [];
       if (category) parts.push(`קטגוריה: ${category}`);
-      if (fund) parts.push(fund === "undecided" ? "טעון השוואה פרטנית" : `הקופה הבולטת: ${fund}`);
+      if (fund) {
+        const fundName = hfMeta.funds.find((f) => f.key === fund)?.name ?? fund;
+        parts.push(fund === "undecided" ? "טעון השוואה פרטנית" : `הקופה הבולטת: ${fundName}`);
+      }
       if (search) parts.push(`חיפוש: ${search}`);
       const html = renderHfReportHtml({
         kind,
