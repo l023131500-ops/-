@@ -66,8 +66,18 @@ export default function UploadPage() {
 
       xhr.onload = () => {
         if (xhr.status >= 200 && xhr.status < 300) {
-          const data = JSON.parse(xhr.responseText);
-          router.push(`/success?id=${data.upload_id}`);
+          // A 2xx status with a body that isn't valid JSON (proxy/timeout
+          // hiccup) used to throw uncaught here, leaving `loading` stuck
+          // `true` forever — the button reads "מעלה..." with no way to
+          // retry, since only the `else` branch and `onerror` call
+          // setLoading(false).
+          try {
+            const data = JSON.parse(xhr.responseText);
+            router.push(`/success?id=${data.upload_id}`);
+          } catch {
+            setError("ההעלאה הסתיימה אך התקבלה תשובה לא תקינה מהשרת. נסה שוב.");
+            setLoading(false);
+          }
         } else {
           try {
             const data = JSON.parse(xhr.responseText);
