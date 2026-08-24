@@ -63,6 +63,7 @@ const SynagogueManager = () => {
   const [saveError, setSaveError] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
   const [deleteError, setDeleteError] = useState(false);
+  const [deleting, setDeleting] = useState(false);
   const csvRef = useRef<HTMLInputElement>(null);
   const [importing, setImporting] = useState(false);
   const [importErrors, setImportErrors] = useState(0);
@@ -107,6 +108,8 @@ const SynagogueManager = () => {
   };
 
   const handleDelete = async (id: string) => {
+    if (deleting) return;
+    setDeleting(true);
     setDeleteError(false);
     // Delete related data first
     const relatedResults = await Promise.all([
@@ -117,9 +120,11 @@ const SynagogueManager = () => {
     ]);
     if (relatedResults.some(r => r.error)) {
       setDeleteError(true);
+      setDeleting(false);
       return;
     }
     const { error } = await supabase.from('synagogues').delete().eq('id', id);
+    setDeleting(false);
     if (error) {
       setDeleteError(true);
       return;
@@ -299,10 +304,10 @@ const SynagogueManager = () => {
                   </Button>
                   {confirmDelete === syn.id ? (
                     <div className="flex gap-1">
-                      <Button variant="destructive" size="sm" onClick={() => handleDelete(syn.id)} className="text-xs font-bold px-2">
-                        אישור מחיקה
+                      <Button variant="destructive" size="sm" disabled={deleting} onClick={() => handleDelete(syn.id)} className="text-xs font-bold px-2">
+                        {deleting ? <RefreshCw className="w-3 h-3 animate-spin" /> : 'אישור מחיקה'}
                       </Button>
-                      <Button variant="ghost" size="sm" onClick={() => setConfirmDelete(null)} className="text-xs">
+                      <Button variant="ghost" size="sm" disabled={deleting} onClick={() => setConfirmDelete(null)} className="text-xs">
                         ביטול
                       </Button>
                     </div>
