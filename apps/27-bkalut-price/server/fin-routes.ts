@@ -4,6 +4,7 @@ import { finStorage } from "./fin-storage";
 import { storage } from "./storage";
 import { loadAll } from "./data-loader";
 import { dispatchWebhook } from "./webhook-bus";
+import { publicLeadRateLimiter } from "./routes";
 
 export interface UserRequest extends Request {
   appUser?: any;
@@ -108,7 +109,7 @@ export function registerFinancialRoutes(app: Express) {
   });
 
   // ----- Public lead intake (used by financial marketing site and the in-app contact form) -----
-  app.post("/api/financial/leads", async (req, res) => {
+  app.post("/api/financial/leads", publicLeadRateLimiter("financial-leads"), async (req, res) => {
     const body = req.body ?? {};
     const fullName = String(body.fullName || body.full_name || "").trim();
     const phone = String(body.phone || "").trim();

@@ -377,7 +377,7 @@ function byPhoneRateLimited(req: Request) {
 // These create DB rows and fire an outbound webhook with no auth gate, so an
 // unthrottled caller could spam both the DB and the webhook target.
 const publicLeadHits = new Map<string, { count: number; resetAt: number }>();
-function publicLeadRateLimiter(routeKey: string, maxPerHour = 20) {
+export function publicLeadRateLimiter(routeKey: string, maxPerHour = 20) {
   return (req: Request, res: import("express").Response, next: () => void) => {
     const key = `${routeKey}:${clientIpFor(req)}`;
     const now = Date.now();
@@ -487,7 +487,7 @@ export async function registerRoutes(
     res.json(await storage.listServiceSubmissionRows());
   });
 
-  app.post("/api/service-submissions", async (req, res) => {
+  app.post("/api/service-submissions", publicLeadRateLimiter("service-submissions"), async (req, res) => {
     const body = req.body ?? {};
     const rightId = Number(body.rightId);
     const row = getData().rights.find((r) => r.id === rightId);
