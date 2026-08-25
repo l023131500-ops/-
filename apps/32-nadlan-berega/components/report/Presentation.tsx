@@ -7,6 +7,7 @@ import { distanceText, walkText } from '@/lib/report';
 import { apiUrl } from '@/lib/basepath';
 import { MARKER_LABELS } from '@/lib/googlemaps';
 import { hasValuation } from '@/lib/valuation';
+import { computeStreetStats } from '@/lib/streetstats';
 
 /**
  * מצגת חיה להצגה מול לקוח — מסך מלא, ניווט בחצים.
@@ -274,6 +275,25 @@ function buildSlides(d: PropertyReport): Slide[] {
         label: `${x.address ?? ''} · ${x.date ? new Date(x.date).toLocaleDateString('he-IL') : ''}`,
         value: ils(x.price),
         note: x.pricePerSqm ? `${new Intl.NumberFormat('he-IL').format(x.pricePerSqm)} ₪ למ"ר` : undefined,
+      })),
+    });
+  }
+
+  // §7 "הרחוב" is one of the four layers the spec requires (property, building,
+  // street, neighborhood) and already stands on its own on-screen (StreetPanel.tsx)
+  // and in the emailed report (reporthtml.ts) — the deck never had a slide for it.
+  const streetStats = computeStreetStats(d);
+  if (streetStats && streetStats.onStreet.length > 0) {
+    s.push({
+      kicker: 'הרחוב',
+      title: `${streetStats.onStreet.length} עסקאות נרשמו ב${streetStats.street}`,
+      subtitle: streetStats.perSqm
+        ? `מחיר למ"ר חציוני ברחוב: ${ils(streetStats.perSqm.median)} · רוב העסקאות בין ${ils(streetStats.perSqm.p25)} ל-${ils(streetStats.perSqm.p75)}`
+        : undefined,
+      rows: streetStats.rows.slice(0, 4).map((r) => ({
+        label: `מספר ${r.houseNum}${r.isSubject ? ' (הנכס שלכם)' : ''}`,
+        value: r.medianPerSqm ? `${new Intl.NumberFormat('he-IL').format(r.medianPerSqm)} ₪ למ"ר` : '—',
+        note: `${r.homeSales} מכירות דירות`,
       })),
     });
   }

@@ -13,6 +13,7 @@ import { dealIdentity } from './buildreport';
 import { CERTAINTY_LABEL, TIER_LABEL, tierAllows, formatFactValue } from './report';
 import type { Fact } from './report';
 import type { TabuAnalysis, TabuDocRow } from './requests';
+import { computeStreetStats } from './streetstats';
 
 const INK = '#141619';
 const MUTED = '#6b7280';
@@ -179,6 +180,92 @@ function tabuBlock(docs: TabuDocRow[]): string {
     'טאבו — מתוך הנסח שהופק',
     'הנתונים הבאים חולצו מנסח טאבו רשמי שצורף לדוח הזה, ומשויכים לנכס לפי היקף הנסח.',
     blocks.join(''),
+  );
+}
+
+/**
+ * §7 · שכבת "הרחוב" — זהה בנתונים ל-`StreetPanel.tsx` (המסך), דרך
+ * `computeStreetStats` המשותף. לפני הרשומה הזו הסעיף היה קיים במסך בלבד:
+ * מי שרואה רק את המייל לא ראה כלל מה נמכר ברחוב הזה, למרות שהמידע כבר זורם
+ * לתשובת ה-API בכל רמה (אינו מושך מקור בתשלום).
+ */
+function streetBlock(report: PropertyReport): string {
+  const stats = computeStreetStats(report);
+  if (!stats) return '';
+
+  const aliasNote = stats.aliases.length
+    ? `<div style="margin-top:4px;font-size:12px;color:${MUTED}">מוכר גם בשם ${esc(stats.aliases.join(' · '))} — ומרשם העסקאות רושם לפעמים תחת הכינוי ולא תחת השם הרשמי, ולכן שני השמות נספרים כאן יחד.</div>`
+    : '';
+
+  if (stats.onStreet.length === 0) {
+    return section(
+      'הרחוב',
+      'מה שנמכר ברחוב הזה עצמו — לא באזור.',
+      `${aliasNote}<div style="margin-top:8px;font-size:14px;color:${MUTED}">לא נרשמה אף עסקה שנושאת את שם הרחוב הזה בתקופה שנבדקה. זה קורה ברחובות קצרים, ברחובות חדשים, וכשהמרשם רושם את העסקאות תחת כינוי אחר של הרחוב.</div>`,
+    );
+  }
+
+  const perSqmValue = stats.perSqm ? `${stats.perSqm.median.toLocaleString('he-IL')} ₪` : 'לא זמין';
+  const perSqmNote = stats.perSqm
+    ? `רוב העסקאות בין ${stats.perSqm.p25.toLocaleString('he-IL')} ל-${stats.perSqm.p75.toLocaleString('he-IL')} ₪ · ${stats.perSqm.count} עסקאות`
+    : 'אין עסקה עם שטח ומחיר שאפשר לחשב ממנה';
+  const spanValue = stats.span
+    ? `${heDate(stats.span.from)} – ${heDate(stats.span.to)}`
+    : 'לא זמין';
+
+  const statsRow = `<tr>
+  <td style="padding:9px 12px;border-bottom:1px solid ${LINE};font-size:13px;color:${MUTED}">עסקאות שנרשמו ברחוב</td>
+  <td style="padding:9px 12px;border-bottom:1px solid ${LINE};font-size:14px;font-weight:700;color:${INK}">${stats.onStreet.length}</td>
+  <td style="padding:9px 12px;border-bottom:1px solid ${LINE};font-size:11px;color:${MUTED}">מתוכן ${stats.homeSales} מכירות דירות${stats.suspect ? ` · ${stats.suspect} רשומות חריגות לא נספרו במחירים` : ''}</td>
+</tr>
+<tr>
+  <td style="padding:9px 12px;border-bottom:1px solid ${LINE};font-size:13px;color:${MUTED}">מחיר למ״ר חציוני ברחוב</td>
+  <td style="padding:9px 12px;border-bottom:1px solid ${LINE};font-size:14px;font-weight:700;color:${INK}">${esc(perSqmValue)}</td>
+  <td style="padding:9px 12px;border-bottom:1px solid ${LINE};font-size:11px;color:${MUTED}">${esc(perSqmNote)}</td>
+</tr>
+<tr>
+  <td style="padding:9px 12px;font-size:13px;color:${MUTED}">טווח התאריכים</td>
+  <td style="padding:9px 12px;font-size:14px;font-weight:700;color:${INK}">${esc(spanValue)}</td>
+  <td style="padding:9px 12px;font-size:11px;color:${MUTED}">מהעסקה הישנה ביותר ועד האחרונה שנמצאה</td>
+</tr>`;
+
+  const topRows = stats.rows.slice(0, 8);
+  const houseRows = topRows.length
+    ? `<table role="presentation" cellpadding="0" cellspacing="0" border="0" dir="rtl" style="width:100%;margin-top:10px;border-collapse:collapse;border:1px solid ${LINE}">
+  <tr style="background:#f8fafc">
+    <th style="padding:8px 10px;text-align:right;font-size:12px;color:${MUTED}">מספר בית</th>
+    <th style="padding:8px 10px;text-align:right;font-size:12px;color:${MUTED}">עסקאות</th>
+    <th style="padding:8px 10px;text-align:right;font-size:12px;color:${MUTED}">מכירות דירות</th>
+    <th style="padding:8px 10px;text-align:right;font-size:12px;color:${MUTED}">מחיר למ״ר חציוני</th>
+    <th style="padding:8px 10px;text-align:right;font-size:12px;color:${MUTED}">העסקה האחרונה</th>
+  </tr>
+  ${topRows
+    .map(
+      (r) => `<tr${r.isSubject ? ` style="background:#eefaf9"` : ''}>
+    <td style="padding:7px 10px;border-bottom:1px solid ${LINE};font-size:13px;font-weight:${r.isSubject ? 700 : 400}">${r.houseNum}${r.isSubject ? ' (הנכס שלכם)' : ''}</td>
+    <td style="padding:7px 10px;border-bottom:1px solid ${LINE};font-size:13px">${r.deals}</td>
+    <td style="padding:7px 10px;border-bottom:1px solid ${LINE};font-size:13px">${r.homeSales}</td>
+    <td style="padding:7px 10px;border-bottom:1px solid ${LINE};font-size:13px">${r.medianPerSqm ? r.medianPerSqm.toLocaleString('he-IL') + ' ₪' : '—'}</td>
+    <td style="padding:7px 10px;border-bottom:1px solid ${LINE};font-size:12px;color:${MUTED}">${r.lastDate ? heDate(r.lastDate) : '—'}</td>
+  </tr>`,
+    )
+    .join('')}
+</table>${
+        stats.rows.length > topRows.length
+          ? `<div style="margin-top:6px;font-size:11px;color:${MUTED}">מוצגים ${topRows.length} מתוך ${stats.rows.length} מספרי בית — הקרובים ביותר למספר הנכס.</div>`
+          : ''
+      }`
+    : '';
+
+  const subjectMissing =
+    stats.subjectNum != null && !stats.rows.some((r) => r.isSubject)
+      ? `<div style="margin-top:8px;font-size:12px;color:${MUTED}">במספר ${stats.subjectNum} עצמו לא נרשמה אף עסקה. המספרים שבטבלה הם השכנים הקרובים ביותר שכן נמכר בהם.</div>`
+      : '';
+
+  return section(
+    'הרחוב',
+    'מה שנמכר ברחוב הזה עצמו — לא באזור.',
+    `${aliasNote}${table(statsRow)}${houseRows}${subjectMissing}`,
   );
 }
 
@@ -382,6 +469,7 @@ export function reportEmailHtml(report: PropertyReport, opts: ReportEmailOptions
   ${warnings}
   ${imgs.length ? `<div style="margin-top:18px">${imgs.join('')}</div>` : ''}
   ${backgroundBlock}
+  ${streetBlock(report)}
   ${categories}
   ${
     soldTable
@@ -468,6 +556,52 @@ export function reportEmailText(report: PropertyReport): string {
     );
   }
   lines.push('');
+
+  // ⚠️ אותה שכבת "הרחוב" ש-HTML/המסך כבר מציגים (§7) — ראו `streetBlock`.
+  const streetStats = computeStreetStats(report);
+  if (streetStats) {
+    lines.push('== הרחוב ==');
+    if (streetStats.aliases.length) {
+      lines.push(`מוכר גם בשם: ${streetStats.aliases.join(' · ')}`);
+    }
+    if (streetStats.onStreet.length === 0) {
+      lines.push(
+        'לא נרשמה אף עסקה שנושאת את שם הרחוב הזה בתקופה שנבדקה. זה קורה ברחובות קצרים, ברחובות חדשים, וכשהמרשם רושם את העסקאות תחת כינוי אחר של הרחוב.',
+      );
+    } else {
+      lines.push(
+        `עסקאות שנרשמו ברחוב: ${streetStats.onStreet.length} (מתוכן ${streetStats.homeSales} מכירות דירות${
+          streetStats.suspect ? ` · ${streetStats.suspect} רשומות חריגות לא נספרו במחירים` : ''
+        })`,
+      );
+      lines.push(
+        `מחיר למ"ר חציוני ברחוב: ${
+          streetStats.perSqm ? `${streetStats.perSqm.median.toLocaleString('he-IL')} ₪` : 'לא זמין'
+        }`,
+      );
+      lines.push(
+        `טווח התאריכים: ${
+          streetStats.span ? `${heDate(streetStats.span.from)} – ${heDate(streetStats.span.to)}` : 'לא זמין'
+        }`,
+      );
+      if (
+        streetStats.subjectNum != null &&
+        !streetStats.rows.some((r) => r.isSubject)
+      ) {
+        lines.push(
+          `במספר ${streetStats.subjectNum} עצמו לא נרשמה אף עסקה. המספרים שלהלן הם השכנים הקרובים ביותר שכן נמכר בהם.`,
+        );
+      }
+      for (const r of streetStats.rows.slice(0, 8)) {
+        lines.push(
+          `    מספר ${r.houseNum}${r.isSubject ? ' (הנכס שלכם)' : ''}: ${r.deals} עסקאות, ${r.homeSales} מכירות דירות, ${
+            r.medianPerSqm ? `${r.medianPerSqm.toLocaleString('he-IL')} ₪ למ"ר` : '— ₪ למ"ר'
+          }, עסקה אחרונה ${r.lastDate ? heDate(r.lastDate) : '—'}`,
+        );
+      }
+    }
+    lines.push('');
+  }
 
   for (const c of report.categories) {
     const facts = c.facts.filter((f) => tierAllows(report.tier, f.tier));
