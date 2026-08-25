@@ -5847,3 +5847,123 @@ to that constraint: they import only dependency-free modules (`hosts.js`,
   `claude/what-do-you-see-gxo5tc`, same reasoning as every entry above:
   feature branch only, no live host here to validate against before
   production.
+
+- **[25/08/2026, Loop A] Configurable exit-gesture settings — KIOSK_BUILD.md
+  §4's own "מחוֹת יציאה מדורגות... **הכל ניתן להגדרה בלוח (כמה הקשות, איזו
+  פינה, אורך החזקה, קודים)**", on `zol` not this tree.** Only the "קודים"
+  (codes) half of that sentence was ever configurable (`exitcode.js`) — tap
+  count, which corner, and hold-duration were hardcoded constants in
+  `KioskActivity.kt` (`CORNER_TAPS_REQUIRED = 5`, a top-left-only bounding
+  box, no hold requirement at all) with no device column and no console
+  control. An owner mounting a kiosk with one corner against a wall/stand,
+  or wanting the spec's own "5 taps **+ a hold**" step, had no way to ask
+  for either.
+
+  New `src/gesturesettings.js` (dependency-free, unit-tested — same
+  "generate now, verify by inspection" shape as `orientation.js`/
+  `payment.js`): `clampGestureTaps` (3–10, default 5), `validateGestureCorner`
+  (`tl`/`tr`/`bl`/`br`, default `tl`), `clampGestureHoldMs` (0–5000ms,
+  default 0) — every default matches exactly what every device already does
+  today, so this migration changes no device's actual behavior on its own.
+  Wired through every layer `display_orientation` already uses: `db.js`
+  (`devices`/`templates`/`policy_snapshots` columns), `policy.js`
+  (`applyDevicePolicy` + `pushConfigUpdate` — rides `update_config` like
+  zoom/orientation, since it *does* change what the Android agent enforces,
+  unlike `payment_mode`/`access_code`), `devicepayload.js`,
+  `templatepolicy.js`/`snapshots.js` (fleet templates + backup/restore),
+  `routes/devices.js`'s `publicDevice`, `routes/templates.js`'s
+  `publicTemplate` (a real gap found mid-round: `templateColumns()` covered
+  the DB write path automatically, but the REST response mapper is a
+  hand-written object literal with no such automatic coverage — would have
+  silently dropped the fields from every `GET /templates` response even
+  though creating/applying a template with them already worked), `
+  routes/agent.js`'s enroll + heartbeat responses, and `usbpackage.js`'s
+  offline Route D envelope (`buildOfflineEnrollPayload`/
+  `buildUsbOfflineScript`).
+
+  Android: `Prefs` gets three new keys. `AgentClient.kt` persists them on
+  both config paths (heartbeat fallback + WS `update_config`) the same
+  silent-persist shape `maintenanceEnabled`/`signageUrls` already use — read
+  fresh from `Prefs` at gesture-check time, not cached via a new
+  `CommandHandler` parameter, so a value pushed mid-session lands on the
+  very next tap rather than waiting for an unrelated field to also change.
+  `KioskActivity.kt`: `isInGestureCorner()` generalizes the original
+  literal `x <= 120 && y <= 120` check (implicitly top-left-only, from the
+  screen origin) to all four corners via the touched view's own
+  width/height; `handleCornerTap()` keeps the exact original behavior when
+  `holdMs == 0` (reaching the tap count opens the selection dialog
+  immediately) and otherwise schedules the dialog after the *same* final
+  touch stays pressed for `holdMs`, cancelled on `ACTION_UP`/`ACTION_CANCEL`
+  (an early release fails the hold — the customer must redo the whole tap
+  sequence, same "reset on any anomaly" philosophy the existing 3s
+  tap-reset window already uses). `EnrollActivity`'s shared
+  `applyEnrollResult()` covers both the network and offline-USB enrollment
+  paths for free, same as every other per-device field already routed
+  through it.
+
+  Console (`app.js`): a new "מחוות יציאה" field group in the device-edit
+  modal (taps/corner/hold, right below the existing exit-code field, whose
+  own label no longer hardcodes "5 taps"), a matching opt-in group in the
+  template builder (`tpl-gest-on`/`tpl-gest-taps`/`tpl-gest-corner`/
+  `tpl-gest-hold`), a device-card pill when a device's gesture settings
+  deviate from the default, and `templateSummary()` coverage.
+
+  `node --check`-equivalent (`node --test`) clean. **This round had
+  `better-sqlite3`/`express`/etc. actually installed** (`npm install`
+  completed in ~2s, unlike every prior "no dependencies in this sandbox"
+  entry above) — so unlike most of this log, this was verified with the
+  **real** `node --test` suite, not just the dependency-free subset:
+  **230/231 pass** (211 baseline + 20 new — 14 `gesturesettings.test.mjs` +
+  6 assertions across `devicepayload`/`templatepolicy`/`snapshots`/
+  `usbpackage` tests), the 1 failure being the same pre-existing
+  `seedadmin.test.mjs`/`node:sqlite`-needs-Node-22+ gap every prior entry
+  has hit (this sandbox has Node 20).
+
+  **Live-server verified, not source-review-only**: booted the real HTTP
+  server against a throwaway SQLite db (killed a stale leftover process
+  from an earlier round still bound to the test port first), logged in as
+  the seeded admin, enrolled a real device, confirmed the enroll response
+  carries the 5/`tl`/0 defaults, `PATCH`ed custom values and confirmed they
+  round-trip through `GET /devices/:id` **and** a real
+  `POST /agent/heartbeat`, confirmed the clamp (999 taps → 10, -50ms hold →
+  0) and the corner-enum rejection (`400` on `"center"`), created a
+  template with custom gesture values and applied it to a second real
+  device, confirmed the automatic pre-apply snapshot restores the
+  originals on `POST .../restore`, and confirmed a real
+  `POST /enrollments/:id/usb-package` embeds the fields in the offline JSON
+  envelope. Stopped the test server and removed the throwaway db/log
+  afterward.
+
+  **Not verified beyond that**: no Android SDK/`kotlinc`/real device in
+  this sandbox (same gap every prior Kotlin-touching entry in this log has
+  hit) — `KioskActivity.kt`/`AgentClient.kt`/`EnrollActivity.kt`/`Prefs.kt`
+  reviewed by hand, brace/paren balance checked across every touched file
+  (all balanced), not compiled or run; no real device to click through the
+  new hold-to-confirm gesture end to end.
+
+  Committed on a **new branch**, `feat/kiosk-exit-gesture-config-0825`
+  (branched from `feat/kiosk-install-checklist-wizard-0825`, so it carries
+  every prior unmerged slice — A+B+C+D routes, launcher access-code,
+  app-OTA, install-checklist wizard — as an ancestor, same reasoning as
+  every branch note above), pushed to `l023131500-ops/zol` (`9c59819`) —
+  **deliberately not** merged into `claude/what-do-you-see-gxo5tc`, same
+  reasoning as every entry above: feature branch only, no live host here to
+  validate against production, and this fleet's own owner note calls §4
+  mandatory/"גובר על כל השאר" but a corner-tap/hold change is exactly the
+  kind of thing that wants a real device in hand before it reaches a
+  customer-facing kiosk.
+
+  **Housekeeping note for the next round**: the unmerged branch chain onto
+  `claude/what-do-you-see-gxo5tc` (the branch Railway actually deploys) is
+  now 9 commits deep — Windows package, USB offline, access-code launcher,
+  payment-mode, orientation-lock, Route A QR provisioning, app-OTA update,
+  install-checklist wizard, and this round's exit-gesture config — spanning
+  many rounds of real, individually-tested work that has never reached the
+  live product. Every entry in this log (including this one) has
+  deliberately chosen not to merge for the same reason: no live device in
+  this sandbox to validate a lockdown/payment-adjacent change against
+  before it reaches real hardware in the field. That reasoning is sound
+  per-round, but 9 rounds in it is worth a human decision: either schedule
+  a real-device validation pass and merge the chain, or explicitly accept
+  the risk and merge anyway. This is not something a future round should
+  resolve unilaterally.
