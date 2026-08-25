@@ -1163,6 +1163,29 @@ NOT EXISTS` בודד לכל אחת מ-26 העמודות (btree רגיל על ע�
 `fix/32-36-nadlan-unindexed-foreign-keys-0825`. System 35 KioskFleet לא נגע,
 לפי ה-HARD STEERING.
 
+## עדכון — 25/08/2026 (Loop A, function_search_path_mutable ב-36 nadlan-pro)
+`get_advisors` (security) סימן שתי אזהרות `function_search_path_mutable`:
+`nadlan_pro.touch_updated_at()` (0009, טריגר ה-before-update על
+offices/contacts/properties/deals) ו-`nadlan_pro.allocation_threshold()`
+(0011, בדיקת סף מספר-הקצאה לחשבוניות) — שתיהן הוגדרו בלי `set search_path`,
+בשונה משאר פונקציות `nadlan_pro` (`can_touch`/`manages_office`/
+`my_office_ids` וכו' כבר קובעות אותו). search_path משתנה מאפשר לקורא
+שיכול ליצור אובייקטים מוקדם יותר ב-search_path של הסשן שלו להצל הפניה לא
+מוסמכת — לא ניצל בפועל כאן כי אף אחת מהפונקציות לא מפנה לאובייקט לא
+מוסמך (touch_updated_at נוגעת רק ב-NEW.updated_at; allocation_threshold
+משווה רק קבועים), אבל זו הפער שהלינטר מסמן והתיקון עולה שורה אחת.
+
+מיגרציה `0144_nadlan_pro_function_search_path_fix.sql` מצמידה `set
+search_path = nadlan_pro, public, pg_temp` דרך `ALTER FUNCTION` — קובע
+פרמטר קונפיגורציה בלבד, לא מגדיר מחדש את גוף הפונקציה. אומת חי ב-MCP
+בתוך `BEGIN/ROLLBACK`: `allocation_threshold` עדיין מחזירה את הערך הנכון
+ל-2026-07-01/2025-06-01/2023-01-01 (5000/20000/null) אחרי התיקון, ו-UPDATE
+על שורת משרד אמיתית עדיין הזיזה את `updated_at` דרך הטריגר. הוחל בפועל
+דרך `apply_migration`; `get_advisors` אחרי — שתי האזהרות נעלמו, אין
+אזהרות חדשות. אפס רגרסיה, אפס שינוי התנהגות. נדחה לענף
+`fix/36-nadlan-pro-function-search-path-0825`. System 35 KioskFleet לא
+נגע, לפי ה-HARD STEERING.
+
 ## איך ממשיכים בין סשנים (חשוב!)
 - עבוד ב-Claude Code **מקומי** (לא Remote) על התיקייה הזו — הכל נשמר על הדיסק.
 - להמשך שיחה אחרונה: `claude --continue`   ·   לבחירת סשן קודם: `claude --resume`
