@@ -3127,10 +3127,26 @@ async function renderSettings() {
     'ליד חדש מופיע ללא בעלים, כך שכל חברי הצוות רואים ויכולים לקחת אותו.</p>' +
     '<div id="stLeadIntakeBox"></div>';
 
+  // Owner-only danger zone: np_office_delete (migration 0130) has existed live
+  // since 25/08 with a strict owner-only + cascading-delete guard, but no UI
+  // ever called it — a departing/dissolving office had no way to remove itself
+  // from the product. Gated to OFFICE.role==='owner' client-side, mirroring the
+  // exact server-side check inside the RPC itself (not a new permission).
+  if (OFFICE.role === 'owner') {
+    html += '<h2 class="sec">אזור מסוכן</h2>' +
+      '<p class="sub" style="margin:0 0 10px">מחיקת המשרד היא סופית ובלתי הפיכה — כל הנכסים, העסקאות, ' +
+      'אנשי הקשר, החוזים/שכירויות, המשימות והמסמכים של המשרד הזה יימחקו לצמיתות. חברי הצוות יאבדו גישה מיידית. ' +
+      'הקלד/י את שם המשרד המדויק לאישור.</p>' +
+      '<div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">' +
+        '<input id="stDeleteConfirm" placeholder="' + esc(s.name || '') + '" style="flex:1;min-width:220px" />' +
+        '<button class="btn btn-danger btn-sm" id="stDeleteOffice">מחיקת המשרד לצמיתות</button>' +
+      '</div>';
+  }
+
   body.innerHTML = html;
   renderPublishBox(s, canManage);
   renderLeadIntakeBox(s, canManage);
-  wireSettingsBody(canManage);
+  wireSettingsBody(canManage, s);
 }
 
 function leadIntakeEndpoint() { return SUPABASE_URL + '/rest/v1/rpc/np_lead_intake'; }
@@ -3177,7 +3193,7 @@ function renderPublishBox(s, canManage) {
   }
 }
 
-function wireSettingsBody(canManage) {
+function wireSettingsBody(canManage, s) {
   const body = $('settingsBody');
   for (const b of body.querySelectorAll('[data-copybtn]')) {
     b.addEventListener('click', async () => {
@@ -3218,7 +3234,7 @@ function wireSettingsBody(canManage) {
       const r = await rpc('np_office_settings_save', { p: { office_id: OFFICE.id, public_enabled: next } });
       toast(next ? 'האתר הופעל' : 'הפרסום בוטל');
       renderPublishBox(r, canManage);
-      wireSettingsBody(canManage);
+      wireSettingsBody(canManage, s);
     } catch (e) { toast('הפעולה נכשלה: ' + e.message, true); toggle.disabled = false; }
   });
 
@@ -3230,7 +3246,7 @@ function wireSettingsBody(canManage) {
       const r = await rpc('np_office_public_token_regenerate', { p_office: OFFICE.id });
       toast('נוצר קישור חדש');
       renderPublishBox({ public_enabled: true, public_token: r.public_token }, canManage);
-      wireSettingsBody(canManage);
+      wireSettingsBody(canManage, s);
     } catch (e) { toast('הפעולה נכשלה: ' + e.message, true); regen.disabled = false; }
   });
 
@@ -3242,7 +3258,7 @@ function wireSettingsBody(canManage) {
       const r = await rpc('np_office_settings_save', { p: { office_id: OFFICE.id, lead_intake_enabled: next } });
       toast(next ? 'קליטת הלידים הופעלה' : 'קליטת הלידים בוטלה');
       renderLeadIntakeBox(r, canManage);
-      wireSettingsBody(canManage);
+      wireSettingsBody(canManage, s);
     } catch (e) { toast('הפעולה נכשלה: ' + e.message, true); liToggle.disabled = false; }
   });
 
@@ -3254,8 +3270,22 @@ function wireSettingsBody(canManage) {
       const r = await rpc('np_lead_intake_token_regenerate', { p_office: OFFICE.id });
       toast('נוצר טוקן חדש');
       renderLeadIntakeBox({ lead_intake_enabled: true, lead_intake_token: r.lead_intake_token }, canManage);
-      wireSettingsBody(canManage);
+      wireSettingsBody(canManage, s);
     } catch (e) { toast('הפעולה נכשלה: ' + e.message, true); liRegen.disabled = false; }
+  });
+
+  const delBtn = $('stDeleteOffice');
+  if (delBtn) delBtn.addEventListener('click', async () => {
+    const typed = ($('stDeleteConfirm').value || '').trim();
+    if (!s || typed !== (s.name || '')) { toast('שם המשרד שהוקלד אינו תואם', true); return; }
+    if (!confirm('פעולה זו תמחק את המשרד "' + s.name + '" וכל תוכנו לצמיתות. אין דרך לשחזר. להמשיך?')) return;
+    delBtn.disabled = true;
+    try {
+      await rpc('np_office_delete', { p_office: OFFICE.id });
+      toast('המשרד נמחק');
+      try { localStorage.removeItem('np-office'); } catch (e) {}
+      location.reload();
+    } catch (e) { toast('המחיקה נכשלה: ' + e.message, true); delBtn.disabled = false; }
   });
 }
 
