@@ -1288,9 +1288,21 @@ function truthHtml(p) {
     ['גוש/חלקה', gush ? gush + '/' + (helka || '') : null],
     ['עסקאות שנמצאו באזור', dealsCount],
   ];
+  // P2 ACCURACY SPEC v2 §3 (core.projects #33): system 32 flags when the
+  // building was matched by gush/helka rather than by street name, and the
+  // street registered on its deals doesn't match any known name/alias of the
+  // street the broker searched (renamed/misspelled street). That flag
+  // (r.building.streetNameMismatch) already reaches this tier=basic response
+  // (buildreport.ts computes it unconditionally) but nothing here ever
+  // rendered it — a broker had no way to know the comparables below might be
+  // on a differently-named street.
+  const mismatchHtml = (r.building && r.building.streetNameMismatch)
+    ? '<div class="note"><b>שים לב:</b> ' + esc(r.building.note) + '</div>'
+    : '';
   return '<div class="table-scroll"><table><tbody>' +
     rows.map(([k, val]) => '<tr><th>' + k + '</th><td>' + v(val) + '</td></tr>').join('') +
     '</tbody></table></div>' +
+    mismatchHtml +
     valuationHtml(r.valuation, p.price) +
     '<p class="sub" style="font-size:12px;margin-top:8px">נמשך: ' + dtm(p.truth_report_at) +
     ' · מקור: מערכת 32, "נדל״ן ברגע".</p>';
@@ -1335,7 +1347,37 @@ function valuationHtml(val, askPrice) {
           diffPct > 10 ? 'warn' : diffPct < -10 ? 'good' : '') : '') +
     '</div>' +
     '<p class="sub" style="font-size:12px;margin-top:8px">' + esc(val.explanation) + '</p>' +
-    (val.wideSpread ? '<p class="note">' + esc(val.wideSpread) + '</p>' : '');
+    (val.wideSpread ? '<p class="note">' + esc(val.wideSpread) + '</p>' : '') +
+    comparablesHtml(val.comparables);
+}
+
+// P2 ACCURACY SPEC §E (core.projects #33): "a comparable-deals table
+// (comparison of transactions) with adjustments" — required on system 36 too
+// ("real-estate 32 + 36"), same as the consumer report's ValuationPanel.tsx.
+// val.comparables already reaches this tier=basic response unfiltered
+// (lib/valuation.ts's valuate() runs unconditionally in buildReport, and the
+// API route spreads the whole report) — this only renders what a broker's
+// own drawer already receives on every "משוך דוח אמת" click, no new call.
+function comparablesHtml(comparables) {
+  if (!Array.isArray(comparables) || !comparables.length) return '';
+  return '<h4 class="sec" style="font-size:13px;margin-top:14px">' +
+      comparables.length + ' העסקאות שההערכה נשענת עליהן</h4>' +
+    '<div class="table-scroll"><table><thead><tr>' +
+      '<th>תאריך</th><th>כתובת</th><th>גוש/חלקה</th><th>קומה</th>' +
+      '<th>שטח</th><th>חדרים</th><th>קרבה לנכס</th><th>מחיר</th><th>₪ למ״ר</th>' +
+    '</tr></thead><tbody>' +
+    comparables.map((d) =>
+      '<tr><td>' + dt(d.date) + '</td>' +
+      '<td>' + v(d.address) + '</td>' +
+      '<td>' + v(d.parcelLabel) + '</td>' +
+      '<td>' + v(d.floor) + '</td>' +
+      '<td>' + v(d.areaSqm) + '</td>' +
+      '<td>' + v(d.rooms) + '</td>' +
+      '<td>' + v(d.proximityLabel) + '</td>' +
+      '<td>' + money(d.price) + '</td>' +
+      '<td>' + money(d.pricePerSqm) + '</td></tr>'
+    ).join('') +
+    '</tbody></table></div>';
 }
 
 // P2 FEATURE (core.projects #33, owner 25/08/2026): interactive 360° street

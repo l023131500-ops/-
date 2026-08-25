@@ -34,6 +34,37 @@ Next.js 14 (App Router) + TypeScript + Tailwind RTL + Supabase. מפתח אחי�
    לאישורים שגרתיים; עצור רק לפני פעולה הרסנית (מחיקת DB/repo, force-push) או
    כשחסר מידע קריטי שלא קיים באף מקום.
 
+## עדכון — 25/08/2026 (Loop A, טבלת השוואה + אזהרת שינוי-שם רחוב על system 36 nadlan-pro)
+בדיקה עצמאית אישרה ששלושת שיפורי הדיוק שנבנו על 32 בסבבים הקודמים (טבלת
+ההשוואה עם קומה/גוש-חלקה/קרבה, סינון מחירי-מודעה בלתי-סבירים,
+`streetNameMismatch`) כולם מגיעים ל-JSON של `/api/report` גם ב-`tier=basic`
+בלי חסימה — `valuate()`/`plausibleAgainstMarket()`/דגל שינוי-הרחוב כולם
+רצים ללא תלות ברמה בתוך `buildReport`, וה-route מחזיר את האובייקט המלא.
+`sites/36-nadlan-pro/tivuch/app.html` (`truthHtml`/`fetchTruth`) כבר קורא
+לאותו endpoint בדיוק (בלי `tier=vip`, ראו הרשומה למטה על הפנורמה) — אז
+הנתונים כבר היו מגיעים למתווך על כל לחיצת "משוך דוח אמת", בחינם, בלי
+קריאה נוספת. הפער היה רק בתצוגה: `truthHtml`/`valuationHtml` הציגו כתובת+
+גוש/חלקה+מספר עסקאות+תמצית ההערכה, אבל לא את טבלת ההשוואה עצמה ולא את
+אזהרת שינוי-הרחוב — בדיוק מה ש-P2 ACCURACY SPEC §E דורש במפורש גם על 36
+("real-estate 32 + 36" בכל סעיף).
+
+נוסף ל-`app.html`: (1) `comparablesHtml(val.comparables)` — אותה טבלה
+בדיוק כמו `ValuationPanel.tsx` (תאריך/כתובת/גוש-חלקה/קומה/שטח/חדרים/קרבה/
+מחיר/₪-למ"ר), קרויה מתוך `valuationHtml` אחרי כרטיסי ההערכה, תמיד פתוחה
+(אין `<details>`/state-toggle בקובץ הזה בשום מקום אחר — נשמר אותו דפוס
+בדיוק כמו שאר הטבלאות בקובץ). (2) קופסת אזהרה ב-`truthHtml`, מוצגת רק
+כש-`r.building.streetNameMismatch===true`, עם `r.building.note` המלא (כולל
+שם הרחוב הרשום בפועל) — משתמשת במחלקת ה-CSS `.note` הקיימת כבר בקובץ.
+
+אומת: `node --check` על ה-`<script type="module">` המחולץ עבר נקי
+(126,213 תווים, גדל מ-123,976 לפני התוספת). כל שדה חדש הושווה מילה-במילה
+מול `ComparableDeal`/`BuildingIdentity` ב-32 (`lib/valuation.ts`,
+`lib/buildreport.ts`) וגם מול פלט `/api/report` בפועל (route.ts מחזיר
+`{ ...report, permalink }` בלי סינון). `dt`/`v`/`money`/`esc` הקיימים
+בקובץ נעשה בהם שימוש חוזר בדיוק כמו בכל טבלה אחרת שם (נבדק: `dt` בשימוש
+זהה ב-9 מקומות אחרים). אפס רגרסיה: שתי תוספות תצוגה בלבד (פונקציה חדשה +
+משתנה מותנה אחד), שום handler/טאב/RPC/שדה קיימים לא נגעו.
+
 ## עדכון — 25/08/2026 (Loop A, אזהרת שינוי-שם רחוב בזיהוי הבניין)
 P2 ACCURACY SPEC v2 §3 (core.projects #33) מבקש: "match by gush/helka +
 coordinates, not by street name alone; note when a street was renamed so
