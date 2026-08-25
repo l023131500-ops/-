@@ -6,6 +6,7 @@ import type { AssetType } from '@/lib/assettype';
 import { distanceText, walkText } from '@/lib/report';
 import { apiUrl } from '@/lib/basepath';
 import { MARKER_LABELS } from '@/lib/googlemaps';
+import { hasValuation } from '@/lib/valuation';
 
 /**
  * מצגת חיה להצגה מול לקוח — מסך מלא, ניווט בחצים.
@@ -273,6 +274,30 @@ function buildSlides(d: PropertyReport): Slide[] {
         label: `${x.address ?? ''} · ${x.date ? new Date(x.date).toLocaleDateString('he-IL') : ''}`,
         value: ils(x.price),
         note: x.pricePerSqm ? `${new Intl.NumberFormat('he-IL').format(x.pricePerSqm)} ₪ למ"ר` : undefined,
+      })),
+    });
+  }
+
+  // P2 ACCURACY SPEC §E (core.projects #33) requires the comparable-deals
+  // table on the client-facing deliverable — already true for the on-screen
+  // report and the PDF export (ValuationPanel.tsx), but the deck never had a
+  // slide for it at all.
+  if (hasValuation(d.valuation)) {
+    const v = d.valuation;
+    s.push({
+      kicker: 'הערכת שווי',
+      title: `טווח שווי מוערך: ${ils(v.low)} – ${ils(v.high)}`,
+      subtitle:
+        v.explanation +
+        (d.building.streetNameMismatch && d.building.registeredStreetName
+          ? ` העסקאות רשומות תחת השם "${d.building.registeredStreetName}" — הזיהוי מבוסס גוש/חלקה, לא שם רחוב, כך שההשוואה נשארת נכונה.`
+          : ''),
+      rows: v.comparables.slice(0, 4).map((c) => ({
+        label: `${c.address ?? ''} · ${c.date ? new Date(c.date).toLocaleDateString('he-IL') : ''}`,
+        value: ils(c.price),
+        note: c.pricePerSqm
+          ? `${new Intl.NumberFormat('he-IL').format(c.pricePerSqm)} ₪ למ"ר · ${c.proximityLabel}`
+          : c.proximityLabel,
       })),
     });
   }
