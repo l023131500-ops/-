@@ -3484,7 +3484,7 @@ async function openForumPost(id) {
     if (toggleBtn) toggleBtn.addEventListener('click', async () => {
       toggleBtn.disabled = true;
       try {
-        await rpc('np_forum_post_save', { id: p.id, status: p.status === 'closed' ? 'open' : 'closed' });
+        await rpc('np_forum_post_save', { p: { id: p.id, status: p.status === 'closed' ? 'open' : 'closed' } });
         close(); openForumPost(id);
         if (VIEW === 'forum') renderForum();
       } catch (e) { toggleBtn.disabled = false; toast('העדכון נכשל: ' + e.message, true); }
@@ -3532,7 +3532,7 @@ function forumPostForm(existing) {
       if (p.id) payload.id = p.id; else payload.office_id = OFFICE.id;
       $('fpSave').disabled = true;
       try {
-        await rpc('np_forum_post_save', payload);
+        await rpc('np_forum_post_save', { p: payload });
         toast(p.id ? 'הפוסט עודכן' : 'הפוסט פורסם');
         close();
         if (VIEW === 'forum') renderForum();
