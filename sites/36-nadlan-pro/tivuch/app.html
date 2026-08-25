@@ -1755,7 +1755,7 @@ function watchHtml(p) {
   if (!criteria) {
     return '<p class="na">הוסיפו לנכס גוש/חלקה או כתובת כדי לעקוב אחר האזור שלו.</p>';
   }
-  return '<p class="sub" style="font-size:13px;margin:0 0 10px">קבלו התראה במייל כשעסקה חדשה נרשמת ב־' +
+  return '<p class="sub" style="font-size:13px;margin:0 0 10px">קבלו התראה במייל כשעסקה חדשה נרשמת או תוכנית בנייה/תב״ע חדשה מתפרסמת ב־' +
       esc(criteria) + ' — אותו מנוע ששולח את התראות האזור בנדל״ן ברגע.</p>' +
     '<div class="form-grid"><label class="f span2">דוא״ל להתראות' +
       '<input id="watchEmail" type="email" value="' + esc((ME && ME.email) || '') + '" /></label></div>' +
@@ -1784,7 +1784,7 @@ function wireWatch(p) {
       });
       const out = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(out.error || ('שגיאה ' + res.status));
-      $('watchBox').innerHTML = '<p class="na">✓ ' + esc(email) + ' יקבל התראה כשעסקה חדשה תירשם באזור.</p>';
+      $('watchBox').innerHTML = '<p class="na">✓ ' + esc(email) + ' יקבל התראה כשעסקה חדשה או תוכנית בנייה חדשה תופיע באזור.</p>';
       toast('נרשם למעקב אזור');
     } catch (e) {
       toast('ההרשמה נכשלה: ' + (e.message || e), true);

@@ -37,13 +37,23 @@ export default function AreaAlertsBoard({ token }: { token: string }) {
     void load();
   }, [load]);
 
-  function describe(r: { emailed: boolean; newDealsCount: number; error: string | null }): {
+  function describe(r: {
+    emailed: boolean;
+    newDealsCount: number;
+    newPlansCount: number;
+    error: string | null;
+  }): {
     text: string;
     ok: boolean;
   } {
     if (r.error) return { text: r.error, ok: false };
-    if (r.emailed) return { text: `נמצאו ${r.newDealsCount} עסקאות חדשות — נשלח מייל`, ok: true };
-    return { text: 'נבדק — אין עסקה חדשה', ok: true };
+    if (r.emailed) {
+      const parts: string[] = [];
+      if (r.newDealsCount) parts.push(`${r.newDealsCount} עסקאות חדשות`);
+      if (r.newPlansCount) parts.push(`${r.newPlansCount} תוכניות בנייה חדשות`);
+      return { text: `נמצאו ${parts.join(' + ')} — נשלח מייל`, ok: true };
+    }
+    return { text: 'נבדק — אין עדכון חדש', ok: true };
   }
 
   async function checkOne(id: number) {
