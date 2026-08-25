@@ -24,7 +24,7 @@ const PrayerTimes = () => {
   useEffect(() => { if (user) fetchData(); }, [user]);
 
   const fetchData = async () => {
-    const { data: profile } = await supabase.from("profiles").select("id").eq("user_id", user!.id).single();
+    const { data: profile } = await supabase.from("profiles").select("id").eq("id", user!.id).maybeSingle();
     if (!profile) return;
     setProfileId(profile.id);
     const { data: syns } = await supabase.from("synagogues").select("*").eq("teacher_id", profile.id);
