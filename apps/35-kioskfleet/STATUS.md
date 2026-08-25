@@ -5967,3 +5967,54 @@ to that constraint: they import only dependency-free modules (`hosts.js`,
   a real-device validation pass and merge the chain, or explicitly accept
   the risk and merge anyway. This is not something a future round should
   resolve unilaterally.
+
+- **[25/08/2026, Loop A] Maintenance-overlay padding — raw px instead of
+  density-scaled dp, on `zol` not this tree.** KIOSK_BUILD.md §5 requires
+  "פריסה ב-dp... תמיכה בצפיפויות" (same physical layout on every device) —
+  audited every `setPadding(`/`LayoutParams(` call across the four native
+  UI files (`KioskActivity.kt`, `EnrollActivity.kt`, `BootReceiver.kt`,
+  `Watchdog.kt`) looking for the one sub-item of §5 no prior round's log
+  entry mentions (zero hits for "density"/"פרופיל"/"ConstraintLayout" across
+  this whole file). Found one real instance: `applyMaintenanceState()`'s
+  overlay built `setPadding(48, 48, 48, 48)` in raw pixels, the sole
+  padding value in the entire app that skips `resources.displayMetrics.
+  density` — every other screen (`EnrollActivity`'s enrollment/manual-entry
+  forms) already computes a local `pad = (24 * density).toInt()` and scales
+  through it. A raw-px value renders as a different physical size on every
+  screen density (larger on low-density panels, cramped on high-density
+  ones) — exactly the gap the spec line calls out. `EnrollActivity.kt:111`
+  has one other raw literal (`setPadding(0, pad/2, 0, 4)`, a 4px bottom gap)
+  but that one is visually negligible at any density and already lives
+  inside an otherwise-correct density-scaled block; left alone rather than
+  touching code outside the actual bug for cosmetic-only, unverifiable-
+  without-a-device symmetry.
+
+  Fix: same `val pad = (24 * resources.displayMetrics.density).toInt()`
+  idiom, reusing `EnrollActivity`'s own 24dp constant for consistency
+  (also numerically the closest match to the old raw-48px value on a
+  typical ~2.0-density panel, so this changes nothing visually on the
+  device class most already-purchased kiosk hardware falls into — only
+  fixes the sizing on everything else).
+
+  No kotlinc/gradle in this sandbox (same constraint every prior
+  Kotlin-touching round has hit) — verified by brace/paren balance across
+  the full file (116/116, 427/427, both unchanged in count from before the
+  edit except the added block) rather than compiled. Re-ran the full server
+  test suite on the same branch afterward (unaffected by an Android-only
+  change, but confirms no cross-branch contamination from working across
+  three separate local `zol` checkouts in this sandbox): 122/123 pass, the
+  1 failure being the same pre-existing `seedadmin.test.mjs`/`node:sqlite`-
+  needs-Node-22+ gap every prior entry in this log has hit.
+
+  **Deliberately *not* stacked onto the 9-deep unmerged branch chain** the
+  previous entry's housekeeping note flagged — that chain is explicitly
+  parked pending a human real-device-validation decision, and adding an
+  unrelated fix to it would only make that decision harder to reason about.
+  Instead branched straight from `origin/claude/what-do-you-see-gxo5tc`
+  (the branch Railway actually deploys) as its own independent
+  `fix/kiosk-maintenance-overlay-dp-padding-0825` (`e358091`), pushed to
+  `l023131500-ops/zol` — same "non-lockdown, non-payment, display-only"
+  category the zoom-slider round (`021bb2c`) merged straight to that branch
+  for, so this one is safe for a human to fast-track independently of the
+  lockdown-chain decision, or a future round to merge directly once
+  reviewed.
