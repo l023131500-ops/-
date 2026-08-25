@@ -308,6 +308,11 @@ td.num{font-variant-numeric:tabular-nums;white-space:nowrap}
             <option value="under_offer">בהצעה</option><option value="sold">נמכר</option>
             <option value="frozen">הוקפא</option>
           </select></label>
+        <label class="f">מטרה
+          <select id="pPurpose">
+            <option value="">הכל</option><option value="sale">מכירה</option>
+            <option value="rent">השכרה</option>
+          </select></label>
         <span class="spacer"></span>
         <button class="btn" id="newProperty">+ נכס</button>
       </div>
@@ -487,6 +492,7 @@ const SOURCE_HE = {
   import: 'ייבוא', referral: 'הפניה', portal: 'פורטל', other: 'אחר',
 };
 const PSTATUS_HE = { active: 'פעיל', under_offer: 'בהצעה', sold: 'נמכר', frozen: 'הוקפא' };
+const PURPOSE_HE = { sale: 'מכירה', rent: 'השכרה' };
 const ASSET_HE = {
   apartment: 'דירה', house: 'בית', penthouse: 'פנטהאוז', garden_apartment: 'דירת גן',
   duplex: 'דופלקס', land: 'קרקע', commercial: 'מסחרי', office: 'משרד', other: 'אחר',
@@ -904,19 +910,21 @@ async function renderProperties() {
       p_q: $('pQ').value.trim() || null,
       p_status: $('pStatus').value || null,
       p_limit: 300,
+      p_purpose: $('pPurpose').value || null,
     });
   } catch (e) { body.innerHTML = '<div class="err">' + esc(e.message) + '</div>'; return; }
 
   rows = rows || [];
   if (!rows.length) {
     body.innerHTML = '<div class="empty"><b>אין נכסים להצגה</b>' +
-      ($('pQ').value || $('pStatus').value ? 'נסה לנקות את המסננים.' : 'הוסף נכס ראשון למלאי.') + '</div>';
+      ($('pQ').value || $('pStatus').value || $('pPurpose').value
+        ? 'נסה לנקות את המסננים.' : 'הוסף נכס ראשון למלאי.') + '</div>';
     return;
   }
 
   const today = new Date().toISOString().slice(0, 10);
   body.innerHTML = '<div class="table-scroll"><table><thead><tr>' +
-    '<th>נכס</th><th>עיר</th><th>חדרים</th><th>מ״ר</th><th>מחיר</th>' +
+    '<th>נכס</th><th>עיר</th><th>חדרים</th><th>מ״ר</th><th>מטרה</th><th>מחיר</th>' +
     '<th>סטטוס</th><th>בלעדיות</th><th>דוח אמת</th></tr></thead><tbody>' +
     rows.map((p) => {
       // An exclusivity that has run out is not an exclusivity. Showing the flag
@@ -928,10 +936,15 @@ async function renderProperties() {
           ? '<span class="pill off">פגה ' + dt(p.exclusivity_until) + '</span>'
           : '<span class="pill on">עד ' + (p.exclusivity_until ? dt(p.exclusivity_until) : 'ללא תאריך') + '</span>';
       }
+      // Sale and rent prices must never read the same — a monthly rent figure
+      // sitting in the same column as a purchase price is exactly the mixing
+      // the P2 accuracy spec forbids.
+      const isRent = p.listing_purpose === 'rent';
       return '<tr class="row" data-id="' + p.id + '">' +
         '<td>' + v(p.title || p.address) + '</td><td>' + v(p.city) + '</td>' +
         '<td class="num">' + v(p.rooms) + '</td><td class="num">' + v(p.area_sqm) + '</td>' +
-        '<td class="num">' + money(p.price) + '</td>' +
+        '<td><span class="pill' + (isRent ? ' on' : '') + '">' + esc(PURPOSE_HE[p.listing_purpose] || 'מכירה') + '</span></td>' +
+        '<td class="num">' + money(p.price) + (isRent && p.price != null ? ' לחודש' : '') + '</td>' +
         '<td><span class="pill">' + esc(PSTATUS_HE[p.status] || p.status) + '</span></td>' +
         '<td>' + excl + '</td>' +
         '<td>' + (p.has_truth_report ? '<span class="pill on">נטען</span>' : '<span class="pill off">טרם</span>') + '</td>' +
@@ -957,7 +970,9 @@ async function openProperty(id) {
       '<div><p class="k">חדרים</p><p class="v">' + v(p.rooms) + '</p></div>' +
       '<div><p class="k">שטח</p><p class="v">' + (p.area_sqm ? p.area_sqm + ' מ״ר' : NA) + '</p></div>' +
       '<div><p class="k">קומה</p><p class="v">' + v(p.floor) + '</p></div>' +
-      '<div><p class="k">מחיר</p><p class="v">' + money(p.price) + '</p></div>' +
+      '<div><p class="k">מטרה</p><p class="v">' + esc(PURPOSE_HE[p.listing_purpose] || 'מכירה') + '</p></div>' +
+      '<div><p class="k">' + (p.listing_purpose === 'rent' ? 'דמי שכירות חודשיים' : 'מחיר מכירה מבוקש') + '</p><p class="v">' +
+        money(p.price) + (p.listing_purpose === 'rent' && p.price != null ? ' לחודש' : '') + '</p></div>' +
       '<div><p class="k">גוש/חלקה</p><p class="v">' +
         (p.gush && p.helka ? esc(p.gush) + '/' + esc(p.helka) : NA) + '</p></div>' +
     '</div>' +
@@ -1069,6 +1084,16 @@ function calcMortgageJs(price, down, ratePct, years) {
 }
 
 function feasibilityHtml(p) {
+  // This panel's math (yield vs. a monthly rent estimate, mortgage LTV,
+  // purchase tax) is only meaningful when p.price is a purchase price. For a
+  // rent-purpose listing p.price IS the monthly rent already — running it
+  // through calcPurchaseTaxJs/calcMortgageJs would be exactly the sale/rent
+  // price mixing the P2 accuracy spec forbids, not an estimate error.
+  if (p.listing_purpose === 'rent') {
+    return '<p class="na">ניתוח כדאיות רכישה זמין לנכסים המיועדים למכירה בלבד. ' +
+      'נכס זה מיועד להשכרה — דמי השכירות המבוקשים: ' +
+      (p.price != null ? money(p.price) + ' לחודש' : NA) + '.</p>';
+  }
   if (!p.price) {
     return '<p class="na">נדרש מחיר לנכס כדי לחשב תשואה/משכנתא/מס — הוסף מחיר בעריכת הנכס.</p>';
   }
@@ -1128,7 +1153,7 @@ function recomputeFeasibility(p) {
 }
 
 function wireFeasibility(p) {
-  if (!p.price) return;
+  if (!p.price || p.listing_purpose === 'rent') return;
   const ids = ['fs_rent', 'fs_down', 'fs_rate', 'fs_years', 'fs_exp', 'fs_buyer'];
   for (const id of ids) {
     const el = $(id);
@@ -1303,7 +1328,10 @@ function truthHtml(p) {
     rows.map(([k, val]) => '<tr><th>' + k + '</th><td>' + v(val) + '</td></tr>').join('') +
     '</tbody></table></div>' +
     mismatchHtml +
-    valuationHtml(r.valuation, p.price) +
+    // val.mid is a SALE-value estimate — diffing it against a monthly rent
+    // figure (listing_purpose='rent') would silently mix the two prices the
+    // P2 spec forbids, and would look like a huge, wrong under-pricing flag.
+    valuationHtml(r.valuation, p.listing_purpose === 'rent' ? null : p.price) +
     '<p class="sub" style="font-size:12px;margin-top:8px">נמשך: ' + dtm(p.truth_report_at) +
     ' · מקור: מערכת 32, "נדל״ן ברגע".</p>';
 }
@@ -1542,7 +1570,10 @@ function propertyForm(existing) {
       '<label class="f">שטח (מ״ר)<input id="g_area_sqm" type="number" value="' + esc(p.area_sqm || '') + '" /></label>' +
       '<label class="f">קומה<input id="g_floor" type="number" value="' + esc(p.floor || '') + '" /></label>' +
       '<label class="f">סה״כ קומות<input id="g_total_floors" type="number" value="' + esc(p.total_floors || '') + '" /></label>' +
-      '<label class="f">מחיר<input id="g_price" type="number" value="' + esc(p.price || '') + '" /></label>' +
+      '<label class="f">מטרה<select id="g_listing_purpose">' + opt(PURPOSE_HE, p.listing_purpose || 'sale') + '</select></label>' +
+      '<label class="f"><span id="g_price_label">' +
+        (p.listing_purpose === 'rent' ? 'דמי שכירות חודשיים מבוקשים' : 'מחיר מכירה מבוקש') +
+        '</span><input id="g_price" type="number" value="' + esc(p.price || '') + '" /></label>' +
       '<label class="f">סטטוס<select id="g_status">' + opt(PSTATUS_HE, p.status || 'active') + '</select></label>' +
       '<label class="f">בלעדיות עד<input id="g_exclusivity_until" type="date" value="' + esc(p.exclusivity_until || '') + '" /></label>' +
       '<label class="f span2" style="flex-direction:row;align-items:center;gap:9px">' +
@@ -1567,6 +1598,11 @@ function propertyForm(existing) {
     // the office segment, so the folder itself just needs to be a stable uuid
     // for this drawer session (the property's own id once it has one, else a
     // fresh one) so every photo uploaded in one edit lands in one place.
+    $('g_listing_purpose').addEventListener('change', (e) => {
+      $('g_price_label').textContent =
+        e.target.value === 'rent' ? 'דמי שכירות חודשיים מבוקשים' : 'מחיר מכירה מבוקש';
+    });
+
     const mediaFolder = p.id || crypto.randomUUID();
     const fileInput = $('g_images_file');
     if (fileInput) {
@@ -1609,7 +1645,7 @@ function propertyForm(existing) {
       const body = { office_id: OFFICE.id };
       if (p.id) body.id = p.id;
       for (const k of ['title', 'address', 'city', 'gush', 'helka', 'tat_helka', 'asset_type',
-                       'rooms', 'area_sqm', 'floor', 'total_floors', 'price', 'status',
+                       'rooms', 'area_sqm', 'floor', 'total_floors', 'price', 'listing_purpose', 'status',
                        'exclusivity_until', 'description', 'video_url']) {
         body[k] = $('g_' + k).value.trim();
       }
@@ -3013,6 +3049,7 @@ $('cQ').addEventListener('input', () => { clearTimeout(cTimer); cTimer = setTime
 for (const id of ['cKind', 'cSource']) $(id).addEventListener('change', renderContacts);
 $('pQ').addEventListener('input', () => { clearTimeout(cTimer); cTimer = setTimeout(renderProperties, 250); });
 $('pStatus').addEventListener('change', renderProperties);
+$('pPurpose').addEventListener('change', renderProperties);
 $('newLease').addEventListener('click', () => leaseForm(null));
 $('lStatus').addEventListener('change', renderRentals);
 $('tFilter').addEventListener('change', renderTasks);

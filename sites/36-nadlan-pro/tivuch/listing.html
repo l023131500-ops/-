@@ -190,10 +190,17 @@ async function boot() {
 
   $('loading').hidden = true;
   $('main').hidden = false;
-  $('title').textContent = d.title || d.address || 'נכס למכירה';
+  const isRent = d.listing_purpose === 'rent';
+  $('title').textContent = d.title || d.address || (isRent ? 'נכס להשכרה' : 'נכס למכירה');
   $('sub').textContent = [d.address, d.city].filter(Boolean).join(' · ') || '—';
 
-  if (d.price != null) { $('price').hidden = false; $('price').textContent = money(d.price); }
+  // A monthly rent figure and a sale asking price must never look the same —
+  // P2 accuracy spec (core.projects #33): "ALWAYS separate SALE price vs
+  // RENT price — never mix them."
+  if (d.price != null) {
+    $('price').hidden = false;
+    $('price').textContent = money(d.price) + (isRent ? ' לחודש' : '');
+  }
 
   if ((d.images || []).length) {
     $('gallery').hidden = false;

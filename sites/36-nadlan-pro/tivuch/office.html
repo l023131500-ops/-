@@ -146,7 +146,10 @@ function listingCard(l) {
     (img ? '<img src="' + esc(img) + '" alt="" loading="lazy" />' : '') +
     '<div class="cbody"><p class="ct">' + esc(l.title || sub) + '</p>' +
     '<p class="cs">' + esc(sub) + (facts ? ' · ' + esc(facts) : '') + '</p>' +
-    (l.price != null ? '<p class="cp">' + esc(money(l.price)) + '</p>' : '') +
+    // Never render a monthly rent figure looking like a sale price (P2
+    // accuracy spec, core.projects #33) — flag it inline on the card.
+    (l.price != null ? '<p class="cp">' + esc(money(l.price)) +
+      (l.listing_purpose === 'rent' ? ' לחודש' : '') + '</p>' : '') +
     '</div></a>';
 }
 

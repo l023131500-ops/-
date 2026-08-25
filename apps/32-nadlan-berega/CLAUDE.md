@@ -34,6 +34,43 @@ Next.js 14 (App Router) + TypeScript + Tailwind RTL + Supabase. מפתח אחי�
    לאישורים שגרתיים; עצור רק לפני פעולה הרסנית (מחיקת DB/repo, force-push) או
    כשחסר מידע קריטי שלא קיים באף מקום.
 
+## עדכון — 25/08/2026 (Loop A, system 36 nadlan-pro — הפרדת מחיר מכירה/שכירות)
+P2 ACCURACY SPEC סעיף D (core.projects #33, owner 2026-08-25): "ALWAYS separate
+SALE price vs RENT price — never mix them. Record per listing: what the client
+demands (asking price), the purpose (buy/sell/rent/invest), and the exact
+figure." system 32 כבר מפריד לפי `ListingDealType` ('buy'|'rent'|'commercial')
+בכל מקורות המודעות שלו — אבל **system 36 (nadlan-pro) בכלל לא הכיר את ההבחנה**:
+`nadlan_pro.properties` נשא עמודת `price` בודדת ודו-משמעית ללא כל אינדיקציה אם
+זה מחיר מבוקש למכירה או דמי שכירות חודשיים, וכל צרכן (רשימת נכסים, מגירת נכס,
+עמוד ציבורי `listing.html`/`office.html`, ובמיוחד לוח "ניתוח כדאיות והשקעה"
+במגירת הנכס) התייחס אליו כאילו הוא תמיד מחיר רכישה — לוח הכדאיות אפילו הריץ
+`calcPurchaseTaxJs`/`calcMortgageJs` עליו, ו-`valuationHtml` השווה אותו מול
+הערכת-שווי-למכירה של מנוע האמת (`val.mid`). נכס להשכרה עם `price=5500` היה
+מייצר "מס רכישה" והשוואת-שווי הזויים על סכום ₪5,500 כאילו הוא מחיר דירה.
+
+נוסף `nadlan_pro.listing_purpose` ('sale'/'rent', ברירת מחדל 'sale' — משמר
+בדיוק את ההתנהגות הקיימת לכל שורה קיימת) + עודכנו שלוש RPCs (`np_property_save`
+לשמירה, `np_properties` להצגה+סינון `p_purpose` חדש, `np_property_public` +
+`np_office_public` לעמודים הציבוריים). ב-`app.html`: שדה "מטרה" בטופס עריכת
+נכס (עם תווית מחיר דינמית "מחיר מכירה מבוקש"/"דמי שכירות חודשיים מבוקשים"),
+עמודת "מטרה" + סיומת "לחודש" בטבלת הנכסים, מסנן מטרה חדש, ותיוג בעובדות הנכס
+במגירה. לוח הכדאיות (מודול 7) מדלג לגמרי על חישובי מס-רכישה/משכנתא לנכס
+המיועד להשכרה ומציג הודעה מתאימה במקום; `valuationHtml` מקבל `askPrice=null`
+לנכס להשכרה כדי לא להשוות דמי-שכירות מול הערכת-שווי-למכירה. `listing.html`/
+`office.html` מתייגים "לחודש" על מחיר של נכס להשכרה.
+
+אומת חי ב-MCP בתוך BEGIN/ROLLBACK על המשרד האמיתי "משרד בדיקה QA 18/08": יצירת
+נכס עם `listing_purpose=rent` נשמרת נכון, `np_properties` עם `p_purpose=rent`/
+`sale`/ריק מסנן נכון, עדכון חלקי (שינוי כותרת בלבד, בלי `listing_purpose`)
+משמר את הערך הקיים ולא מאפס אותו ל-'sale' (תבנית coalesce זהה לשאר השדות),
+שינוי מפורש ל-`listing_purpose` עובד, ברירת מחדל ליצירה בלי השדה בכלל = 'sale',
+ו-`np_property_public` מחזיר `listing_purpose` נכון בעמוד הציבורי. `get_advisors`
+נקי (רק שתי הערות SECURITY DEFINER קיימות-מראש, לא קשורות לשינוי). node --check
+נקי על שלושת קבצי ה-`<script>` המחולצים (app.html/listing.html/office.html);
+אין דפדפן חי בסנדבוקס הזה לקליק-דרך, אותה מגבלה כמו כל סבב app.html-only קודם.
+אפס רגרסיה: עמודה חדשה עם ברירת-מחדל בטוחה + הרחבת RPC אדיטיבית בלבד (פרמטר
+חדש עם ברירת מחדל), שום שדה/פונקציה/דף קיים לא נהרס.
+
 ## עדכון — 25/08/2026 (Loop A, טבלת השוואה + אזהרת שינוי-שם רחוב על system 36 nadlan-pro)
 בדיקה עצמאית אישרה ששלושת שיפורי הדיוק שנבנו על 32 בסבבים הקודמים (טבלת
 ההשוואה עם קומה/גוש-חלקה/קרבה, סינון מחירי-מודעה בלתי-סבירים,
