@@ -6493,3 +6493,78 @@ to that constraint: they import only dependency-free modules (`hosts.js`,
   but keeps blocking a clean single source of truth for future rounds.
   Threw away the verification SQLite db/server afterward; touched no
   production branch, no `zol` push, no `more30` code — only this file.
+
+- **[25/08/2026, Loop A] The USB (Route D) and Windows (Route C) offline
+  package generators had their own unfixed copy of the `javascript:`/
+  `data:`-into-a-device home_url gap — 8th and 9th door, on `zol` not this
+  tree, on the still-parked 9-deep Android chain.** Per GLOBAL PRIORITY
+  ORDER, P1 = 35 KioskFleet. This round's earlier-in-the-day "combined
+  regression pass" entry above explicitly said it "did not touch the still
+  parked 9-deep lockdown/payment/provisioning chain" — that chain's own
+  server-side code (built across several rounds before today's home_url door
+  hunt started) had never itself been swept for the same bug class its
+  siblings on the live branch were fixed for. Checked out the chain's tip
+  (`feat/kiosk-exit-gesture-config-0825`, zol) and grepped every
+  `new URL(` call site across `kiosk/server/src` for the same weak
+  `try { new URL(x) } catch` shape that let `javascript://x` through on the
+  7 doors already fixed live: `usbpackage.js`'s `buildUsbOfflineScript`
+  (§3 Route D) and `windowspackage.js`'s `buildWindowsKioskScript` (§3
+  Route C) both still had it — both embed a device's `homeUrl` into an
+  offline install envelope / Windows Edge `--kiosk` start-page argument,
+  the same device-reachable shape as every other door. (`templatepolicy.js`
+  and the route files on this branch turned out to already be clean after
+  the merge below — see next paragraph.)
+
+  First merged `origin/claude/what-do-you-see-gxo5tc` (today's live tip,
+  carrying the 7-door home_url fix plus the heartbeat-replay and
+  maintenance-padding fixes) into the parked branch — one real conflict, in
+  `policy.js`, where the parked branch's new payment-mode/orientation/
+  exit-gesture validation blocks sat right next to the live branch's updated
+  comment on the `linkId` home_url check; both sides were purely additive,
+  resolved by keeping both. This auto-fixed `templatepolicy.js` and the
+  parked branch's own copies of `routes/devices.js`/`routes/links.js`/
+  `routes/clients.js`, which had been silently missing all 7 live door
+  fixes since before this chain branched. Full suite after the merge:
+  **235/236** (same pre-existing Node-22 `node:sqlite` gap every entry
+  hits) — no regressions from the merge itself.
+
+  Then fixed the remaining two doors the merge didn't touch (new files, not
+  shared with the live branch): routed both `buildUsbOfflineScript` and
+  `buildWindowsKioskScript` through the existing `normalizeHomeUrl()`
+  (`hosts.js`), matching the exact pattern and comment style every other
+  door already uses. `routes/devices.js` only ever calls these two with an
+  already-validated `device.home_url` today, so this was not live-reachable
+  through that path — but both modules' own header comments already said
+  they are "defensive on its own input rather than trusting every caller
+  went through that path" (the same reasoning `windowspackage.js` uses for
+  folding the home URL's host into the allow-list a few lines below), so
+  this closes the gap between that stated intent and the actual weak check,
+  before any future caller relies on it. Added one rejection test to each
+  suite (`javascript:` and `data:` cases), plus a manual round-trip: both
+  functions reject the malicious URLs with the same `homeUrl must be a
+  valid URL` message every other door gives, and both still accept and
+  correctly embed a legitimate `https://` URL. Full suite: **237/238**
+  (same pre-existing gap, +1 net test file delta cancels out — 2 tests
+  added, one pre-existing skip unaffected).
+
+  **Pure server-side validation + a same-branch merge, zero Android/Kotlin
+  touched beyond the merge's own automatic (non-conflicting) resolution.**
+  Committed on `zol` directly to the parked branch itself
+  (`feat/kiosk-exit-gesture-config-0825`, merge commit `af4222d` + fix
+  commit `5435d64`), pushed to `origin/feat/kiosk-exit-gesture-config-0825`
+  — **not** to `claude/what-do-you-see-gxo5tc`, so nothing in this round
+  reaches production; the chain remains exactly as parked as before,
+  pending a human at a real device, just no longer missing today's security
+  fixes underneath it and with its own equivalent gap closed. Did not
+  rebase or force-push anything, and did not touch the other, non-tip
+  parked branches in the chain (`feat/kiosk-schedule-offline-persist-0825`,
+  `feat/usb-offline-kiosk-package-0824`, `feat/windows-kiosk-package-0824`,
+  `feat/kiosk-launcher-access-code-0825`, `feat/kiosk-route-a-qr-
+  provisioning-0825`, `feat/kiosk-install-checklist-wizard-0825`,
+  `feat/kiosk-app-ota-update-0825`) — only the tip, which already contains
+  all of their work per an earlier round's own accounting.
+
+  **Not verified beyond that**: no Windows/Android hardware in this sandbox
+  to run either generated script end-to-end (unchanged limitation, same as
+  every prior entry on this chain); `core.issues #215` (this monorepo tree
+  vs. the live `zol` tree) remains open and unaffected by this round.
