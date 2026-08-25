@@ -1560,9 +1560,14 @@ function walkFrameHtml(state) {
   // always within aimQuality's <4m "too close" rejection, silently failing the
   // frame. Passing the real building heading (from lookupStreetWalk) keeps
   // every frame aimed at the actual property. See lib/panoramalookup.ts.
+  // `c.heading` is per-point (recomputed for each walk point's own position),
+  // NOT a single constant for the whole walk -- a fixed anchor-only heading
+  // aims correctly only at the anchor frame itself and drifts further off the
+  // building at every other point as the walk distance grows relative to how
+  // close the street runs to the building.
   return '<div style="position:relative">' +
       '<img id="walkImg" src="/nadlan/api/image?kind=street&lat=' + encodeURIComponent(c.lat) +
-        '&lng=' + encodeURIComponent(c.lng) + '&heading=' + encodeURIComponent(state.heading) + '&w=900&h=500" ' +
+        '&lng=' + encodeURIComponent(c.lng) + '&heading=' + encodeURIComponent(c.heading) + '&w=900&h=500" ' +
         'alt="סיור רחוב — מסגרת ' + (state.idx + 1) + ' מתוך ' + state.points.length + '" ' +
         'style="width:100%;border-radius:8px;display:block" loading="eager" />' +
       '<div style="position:absolute;inset-inline:0;bottom:0;display:flex;align-items:center;justify-content:space-between;' +
@@ -1644,7 +1649,7 @@ function wireStreetWalk(p) {
         box.innerHTML = '<p class="na">אין כיסוי לאורך הרחוב בנקודה הזו.</p>';
         return;
       }
-      walkState = { points: out.points, date: out.date || null, heading: out.heading, idx: 0, failed: new Set(), playing: true };
+      walkState = { points: out.points, date: out.date || null, idx: 0, failed: new Set(), playing: true };
       renderWalk(box);
       startWalkTimer(box);
     } catch (e) {

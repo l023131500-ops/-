@@ -12,6 +12,7 @@ import {
   streetViewMeta,
   aimQuality,
   destinationPoint,
+  bearingDeg,
   mergePlaces,
   primaryNearest,
   isPreschoolName,
@@ -191,7 +192,7 @@ export interface PropertyReport {
    * `null` כשאין עוגן אמין לרחוב (בלי `streetView.precise`) או פחות משלוש
    * נקודות עם כיסוי אמיתי.
    */
-  streetWalk: { points: { lat: number; lng: number }[]; date: string | null; heading: number } | null;
+  streetWalk: { points: { lat: number; lng: number; heading: number }[]; date: string | null } | null;
   /** דירה בבניין או בית שהנכס הוא כולו — משנה את מה שהדוח מתאר. */
   propertyKind: PropertyKindResult;
   /** איך הבניין זוהה, ומה נמצא בו. שקיפות מלאה — כולל אי-התאמות. */
@@ -1169,7 +1170,7 @@ export async function buildReport(
     const metas = await Promise.all(
       candidates.map((c) => streetViewMeta(c.lat, c.lng).catch(() => null)),
     );
-    const points: { lat: number; lng: number }[] = [];
+    const points: { lat: number; lng: number; heading: number }[] = [];
     let lastPanoKey: string | null = null;
     for (let i = 0; i < candidates.length; i++) {
       const m = metas[i];
@@ -1177,21 +1178,19 @@ export async function buildReport(
       const panoKey = `${m.lat.toFixed(6)},${m.lng.toFixed(6)}`;
       if (panoKey === lastPanoKey) continue;
       lastPanoKey = panoKey;
-      points.push(candidates[i]);
+      // Heading is recomputed PER POINT, not reused from `svAim.heading` (the
+      // anchor-only azimuth) — see the CLAUDE.md entry on why a constant
+      // heading aims wrong at every point except the anchor itself. Each walk
+      // point sits at a different position along the street while the
+      // building stays fixed, so the true bearing to the building changes
+      // with the walk distance; using `candidates[i]` (the point itself, on
+      // the road, same approximation `aimQuality` already relies on for the
+      // matched pano's own position) keeps every frame aimed at the real
+      // building.
+      points.push({ ...candidates[i], heading: bearingDeg(candidates[i].lat, candidates[i].lng, lat, lng) });
     }
     if (points.length >= 3) {
-      // `heading` is the pano-to-building azimuth (svAim.heading), reused as-is
-      // for every frame — NOT recomputed per point. `/api/image?kind=street`
-      // without an explicit heading calls `streetViewShot(lat, lng)`, which
-      // treats the given (lat,lng) as the BUILDING to aim at and looks up its
-      // OWN nearest pano — correct for a single building photo, but each walk
-      // point here already sits on the road (by construction, `destinationPoint`
-      // from `anchorLat/anchorLng`), so that self-lookup almost always resolves
-      // to a pano within a few meters of itself and `aimQuality` rejects it as
-      // "too close to aim" (<4m), silently failing most frames. Passing the
-      // real building heading explicitly makes every frame in the sequence
-      // look at the same property as it's approached along the street.
-      streetWalk = { points, date: streetViewMetaRes.date, heading: svAim.heading };
+      streetWalk = { points, date: streetViewMetaRes.date };
     }
   }
 

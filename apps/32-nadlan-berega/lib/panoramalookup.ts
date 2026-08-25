@@ -19,7 +19,7 @@ import { parcelByGushHelka } from './cadastre';
 import { itmToWgs84 } from './itm';
 import { resolveStreet } from './placenames';
 import { parseQuery } from './buildreport';
-import { aimQuality, destinationPoint } from './aim';
+import { aimQuality, destinationPoint, bearingDeg } from './aim';
 
 export interface PanoramaLookupResult {
   available: boolean;
@@ -96,9 +96,8 @@ export async function lookupPanorama(q: string): Promise<PanoramaLookupResult> {
 }
 
 export interface StreetWalkLookupResult {
-  points: { lat: number; lng: number }[];
+  points: { lat: number; lng: number; heading: number }[];
   date: string | null;
-  heading: number;
 }
 
 /**
@@ -127,7 +126,7 @@ export async function lookupStreetWalk(q: string): Promise<StreetWalkLookupResul
   const candidates = offsetsM.map((o) => destinationPoint(anchorLat, anchorLng, alongStreet, o));
   const metas = await Promise.all(candidates.map((c) => streetViewMeta(c.lat, c.lng).catch(() => null)));
 
-  const points: { lat: number; lng: number }[] = [];
+  const points: { lat: number; lng: number; heading: number }[] = [];
   let lastPanoKey: string | null = null;
   for (let i = 0; i < candidates.length; i++) {
     const m = metas[i];
@@ -135,13 +134,12 @@ export async function lookupStreetWalk(q: string): Promise<StreetWalkLookupResul
     const panoKey = `${m.lat.toFixed(6)},${m.lng.toFixed(6)}`;
     if (panoKey === lastPanoKey) continue;
     lastPanoKey = panoKey;
-    points.push(candidates[i]);
+    // Heading recomputed per point, not `aim.heading` (the anchor-only
+    // azimuth) — see buildreport.ts's streetWalk for why a constant heading
+    // aims wrong everywhere except the anchor itself.
+    points.push({ ...candidates[i], heading: bearingDeg(candidates[i].lat, candidates[i].lng, lat, lng) });
   }
 
   if (points.length < 3) return null;
-  // `aim.heading` (pano-to-building) is reused for every frame, same reason as
-  // buildreport.ts's streetWalk: each candidate point already sits on the road,
-  // so letting `/api/image` self-aim from that point's own nearest pano almost
-  // always trips the <4m "too close to aim" rejection in `aimQuality`.
-  return { points, date: meta.date, heading: aim.heading };
+  return { points, date: meta.date };
 }

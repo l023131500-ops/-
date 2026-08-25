@@ -77,7 +77,7 @@ export default function StreetWalkPanel({ report }: { report: PropertyReport }) 
             <img
               key={idx}
               src={apiUrl(
-                `/api/image?kind=street&lat=${current.lat}&lng=${current.lng}&heading=${streetWalk.heading}&w=900&h=500`,
+                `/api/image?kind=street&lat=${current.lat}&lng=${current.lng}&heading=${current.heading}&w=900&h=500`,
               )}
               alt={`סיור רחוב — מסגרת ${idx + 1} מתוך ${points.length}`}
               className="w-full object-cover"
