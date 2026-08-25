@@ -210,6 +210,7 @@ td.num{font-variant-numeric:tabular-nums;white-space:nowrap}
       <button class="tab" data-view="board">צינור עסקאות</button>
       <button class="tab" data-view="contacts">אנשי קשר</button>
       <button class="tab" data-view="properties">נכסים</button>
+      <button class="tab" data-view="rentals">שכירויות</button>
       <button class="tab" data-view="documents">מסמכים</button>
       <button class="tab" data-view="tasks">משימות</button>
       <button class="tab" data-view="team">צוות</button>
@@ -309,6 +310,23 @@ td.num{font-variant-numeric:tabular-nums;white-space:nowrap}
         <button class="btn" id="newProperty">+ נכס</button>
       </div>
       <div id="propertiesBody"></div>
+    </div>
+  </section>
+
+  <section class="panel" id="viewRentals" hidden>
+    <div class="wrap">
+      <h1 class="page display">שכירויות</h1>
+      <p class="sub">חוזי שכירות לנכסים מושכרים — שוכר, משכיר, שכר דירה, לוח תשלומים ותזכורת חידוש.</p>
+      <div class="controls">
+        <label class="f">סטטוס
+          <select id="lStatus">
+            <option value="">הכל</option><option value="active">פעיל</option>
+            <option value="ended">הסתיים</option><option value="cancelled">בוטל</option>
+          </select></label>
+        <span class="spacer"></span>
+        <button class="btn" id="newLease">+ חוזה שכירות</button>
+      </div>
+      <div id="rentalsBody"></div>
     </div>
   </section>
 
@@ -448,6 +466,8 @@ const PDOCCAT_HE = {
   contract_draft: 'טיוטת חוזה', other: 'אחר',
 };
 const ROLE_HE = { owner: 'בעלים', manager: 'מנהל', agent: 'מתווך' };
+const LSTATUS_HE = { active: 'פעיל', ended: 'הסתיים', cancelled: 'בוטל' };
+const RSTATUS_HE = { due: 'ממתין', paid: 'שולם', waived: 'ויתור' };
 
 let ME = null;        // np_me()
 let OFFICE = null;    // the selected office row
@@ -476,7 +496,7 @@ function fail(msg) {
 
 function show(id) {
   for (const s of ['booting', 'viewSetup', 'viewDash', 'viewBoard', 'viewContacts',
-                   'viewProperties', 'viewDocuments', 'viewTasks', 'viewTeam', 'viewError']) {
+                   'viewProperties', 'viewRentals', 'viewDocuments', 'viewTasks', 'viewTeam', 'viewError']) {
     $(s).hidden = s !== id;
   }
 }
@@ -489,8 +509,8 @@ function setView(name) {
   }
   history.replaceState(null, '', '?v=' + name);
   const map = { dash: renderDash, board: renderBoard, contacts: renderContacts,
-                properties: renderProperties, documents: renderDocuments, tasks: renderTasks,
-                team: renderTeam };
+                properties: renderProperties, rentals: renderRentals, documents: renderDocuments,
+                tasks: renderTasks, team: renderTeam };
   show('view' + name[0].toUpperCase() + name.slice(1));
   map[name]();
 }
@@ -1478,6 +1498,180 @@ function propertyForm(existing) {
   });
 }
 
+/* ── rentals: leases + rent payment schedule ────────────────────────────── */
+async function renderRentals() {
+  const body = $('rentalsBody');
+  body.innerHTML = '<p class="loading"><span class="spinner"></span>טוען…</p>';
+
+  let rows;
+  try {
+    rows = await rpc('np_leases', { p_office: OFFICE.id, p_status: $('lStatus').value || null, p_limit: 300 });
+  } catch (e) { body.innerHTML = '<div class="err">' + esc(e.message) + '</div>'; return; }
+
+  rows = rows || [];
+  if (!rows.length) {
+    body.innerHTML = '<div class="empty"><b>אין עדיין חוזי שכירות</b>לחצו על "+ חוזה שכירות" כדי להתחיל.</div>';
+    return;
+  }
+
+  body.innerHTML = '<div class="table-scroll"><table><thead><tr>' +
+    '<th>נכס</th><th>שוכר</th><th>משכיר</th><th>שכ״ד חודשי</th><th>תקופה</th><th>סטטוס</th><th>תשלום הבא</th>' +
+    '</tr></thead><tbody>' +
+    rows.map((l) => {
+      const statusPill = l.is_overdue
+        ? '<span class="pill hot">חלף תוקף</span>'
+        : l.is_ending_soon
+          ? '<span class="pill hot">מתקרב לסיום</span>'
+          : '<span class="pill' + (l.status === 'active' ? ' on' : '') + '">' + esc(LSTATUS_HE[l.status] || l.status) + '</span>';
+      return '<tr data-id="' + l.id + '"><td>' + v(l.property_address || l.property_title) + '</td>' +
+        '<td>' + v(l.tenant_name) + '</td><td>' + v(l.landlord_name) + '</td>' +
+        '<td>' + money(l.monthly_rent) + '</td>' +
+        '<td>' + dt(l.start_date) + ' — ' + dt(l.end_date) + '</td>' +
+        '<td>' + statusPill + '</td>' +
+        '<td>' + (l.next_due_date ? dt(l.next_due_date) : NA) + '</td></tr>';
+    }).join('') + '</tbody></table></div>';
+
+  for (const tr of body.querySelectorAll('tr[data-id]')) {
+    tr.addEventListener('click', () => openLease(tr.dataset.id));
+  }
+}
+
+async function openLease(id) {
+  let d;
+  try { d = await rpc('np_lease_get', { p_id: id }); }
+  catch (e) { return toast('טעינה נכשלה: ' + e.message, true); }
+  if (!d || !d.lease) return toast('החוזה לא נמצא', true);
+
+  const l = d.lease;
+  let html = '<div class="table-scroll"><table><tbody>' +
+    '<tr><th>נכס</th><td>' + (d.property ? esc(d.property.address || d.property.title || '—') : NA) + '</td></tr>' +
+    '<tr><th>שוכר</th><td>' + (d.tenant ? esc(d.tenant.full_name) : NA) + '</td></tr>' +
+    '<tr><th>משכיר</th><td>' + (d.landlord ? esc(d.landlord.full_name) : NA) + '</td></tr>' +
+    '<tr><th>שכ״ד חודשי</th><td>' + money(l.monthly_rent) + '</td></tr>' +
+    '<tr><th>פיקדון</th><td>' + money(l.deposit_amount) + '</td></tr>' +
+    '<tr><th>תקופה</th><td>' + dt(l.start_date) + ' — ' + dt(l.end_date) + '</td></tr>' +
+    '<tr><th>התראת חידוש</th><td>' + esc(l.renewal_notice_days) + ' יום לפני הסיום</td></tr>' +
+    '<tr><th>סטטוס</th><td><span class="pill' + (l.status === 'active' ? ' on' : '') + '">' +
+      esc(LSTATUS_HE[l.status] || l.status) + '</span></td></tr>' +
+    (l.notes ? '<tr><th>הערות</th><td>' + esc(l.notes) + '</td></tr>' : '') +
+    '</tbody></table></div>';
+
+  html += '<h2 class="sec">לוח תשלומים</h2>';
+  const payments = d.payments || [];
+  if (!payments.length) {
+    html += '<p class="na">עדיין לא הופק לוח תשלומים.</p>' +
+      '<p><button class="btn" id="lGenSchedule">הפקת לוח תשלומים חודשי</button></p>';
+  } else {
+    html += '<div class="table-scroll"><table><thead><tr><th>תאריך יעד</th><th>סכום</th><th>סטטוס</th><th></th></tr></thead><tbody>' +
+      payments.map((p) => {
+        const overdue = p.status === 'due' && new Date(p.due_date).getTime() < Date.now();
+        return '<tr><td>' + dt(p.due_date) + '</td><td>' + money(p.amount) + '</td>' +
+          '<td>' + (overdue
+            ? '<span class="pill hot">איחור</span>'
+            : '<span class="pill' + (p.status === 'paid' ? ' on' : '') + '">' + esc(RSTATUS_HE[p.status] || p.status) + '</span>') + '</td>' +
+          '<td>' + (p.status === 'due'
+            ? '<button class="btn btn-sm" data-pay="' + p.id + '">סימון כשולם</button>' : '') + '</td></tr>';
+      }).join('') + '</tbody></table></div>';
+  }
+
+  html += '<p style="margin-top:18px"><button class="btn" id="lEdit">עריכה</button> ' +
+    '<button class="btn" id="lRemind">+ תזכורת חידוש</button></p>';
+
+  drawer(l.notes || (d.property ? (d.property.address || d.property.title) : 'חוזה שכירות'),
+         'חוזה שכירות · נפתח ' + dt(l.created_at), html, (close) => {
+    const gen = $('lGenSchedule');
+    if (gen) gen.addEventListener('click', async () => {
+      gen.disabled = true;
+      try {
+        const created = await rpc('np_lease_generate_schedule', { p_lease: l.id });
+        toast('נוצרו ' + created + ' תשלומים');
+        close(); openLease(l.id);
+      } catch (e) { toast('הפקת הלוח נכשלה: ' + e.message, true); gen.disabled = false; }
+    });
+    for (const btn of document.querySelectorAll('[data-pay]')) {
+      btn.addEventListener('click', async () => {
+        btn.disabled = true;
+        try {
+          await rpc('np_rent_payment_mark_paid', { p_id: btn.dataset.pay });
+          toast('סומן כשולם');
+          close(); openLease(l.id);
+          if (VIEW === 'rentals') renderRentals();
+        } catch (e) { toast('העדכון נכשל: ' + e.message, true); btn.disabled = false; }
+      });
+    }
+    $('lEdit').addEventListener('click', () => { close(); leaseForm(l); });
+    $('lRemind').addEventListener('click', () => {
+      close();
+      const due = new Date(l.end_date);
+      due.setDate(due.getDate() - l.renewal_notice_days);
+      taskForm({
+        property_id: l.property_id,
+        title: 'תזכורת חידוש שכירות — ' + (d.property ? (d.property.address || d.property.title || '') : ''),
+        due_at: due.toISOString().slice(0, 16),
+      });
+    });
+  });
+}
+
+async function leaseForm(existing) {
+  const l = existing || {};
+  let contacts = [], props = [];
+  try {
+    [contacts, props] = await Promise.all([
+      rpc('np_contacts', { p_office: OFFICE.id, p_limit: 400 }),
+      rpc('np_properties', { p_office: OFFICE.id, p_limit: 400 }),
+    ]);
+  } catch (e) { return toast('טעינת הרשימות נכשלה: ' + e.message, true); }
+
+  const cOpts = (sel) => '<option value="">—</option>' +
+    (contacts || []).map((c) => '<option value="' + c.id + '"' + (sel === c.id ? ' selected' : '') + '>' +
+      esc(c.full_name) + ' (' + esc(KIND_HE[c.kind] || c.kind) + ')</option>').join('');
+  const pOpts = '<option value="">—</option>' +
+    (props || []).map((p) => '<option value="' + p.id + '"' + (l.property_id === p.id ? ' selected' : '') + '>' +
+      esc(p.title || p.address || 'נכס') + '</option>').join('');
+  const sOpts = Object.entries(LSTATUS_HE).map(([k, lbl]) =>
+    '<option value="' + k + '"' + ((l.status || 'active') === k ? ' selected' : '') + '>' + lbl + '</option>').join('');
+
+  const html =
+    '<div id="lfErr"></div><div class="form-grid">' +
+      '<label class="f span2">נכס *<select id="l_property_id">' + pOpts + '</select></label>' +
+      '<label class="f">שוכר<select id="l_tenant_contact_id">' + cOpts(l.tenant_contact_id) + '</select></label>' +
+      '<label class="f">משכיר<select id="l_landlord_contact_id">' + cOpts(l.landlord_contact_id) + '</select></label>' +
+      '<label class="f">שכ״ד חודשי<input id="l_monthly_rent" type="number" value="' + esc(l.monthly_rent || '') + '" /></label>' +
+      '<label class="f">פיקדון<input id="l_deposit_amount" type="number" value="' + esc(l.deposit_amount || '') + '" /></label>' +
+      '<label class="f">תחילת תקופה *<input id="l_start_date" type="date" value="' + esc(l.start_date || '') + '" /></label>' +
+      '<label class="f">סיום תקופה *<input id="l_end_date" type="date" value="' + esc(l.end_date || '') + '" /></label>' +
+      '<label class="f">התראת חידוש (ימים)<input id="l_renewal_notice_days" type="number" value="' + esc(l.renewal_notice_days || 60) + '" /></label>' +
+      '<label class="f">סטטוס<select id="l_status">' + sOpts + '</select></label>' +
+      '<label class="f span2">הערות<textarea id="l_notes">' + esc(l.notes || '') + '</textarea></label>' +
+    '</div>' +
+    '<p style="margin-top:16px"><button class="btn" id="lfSave">שמירה</button></p>';
+
+  drawer(l.id ? 'עריכת חוזה שכירות' : 'חוזה שכירות חדש', '', html, (close) => {
+    $('lfSave').addEventListener('click', async () => {
+      const p = { office_id: OFFICE.id };
+      if (l.id) p.id = l.id;
+      for (const k of ['property_id', 'tenant_contact_id', 'landlord_contact_id', 'monthly_rent',
+                       'deposit_amount', 'start_date', 'end_date', 'renewal_notice_days', 'status', 'notes']) {
+        p[k] = $('l_' + k).value.trim();
+      }
+      if (!p.property_id || !p.start_date || !p.end_date) {
+        $('lfErr').innerHTML = '<div class="err">נכס, תחילת תקופה וסיום תקופה הם שדות חובה.</div>';
+        return;
+      }
+      $('lfSave').disabled = true;
+      try {
+        await rpc('np_lease_save', { p });
+        close(); toast('נשמר');
+        if (VIEW === 'rentals') renderRentals();
+      } catch (e) {
+        $('lfErr').innerHTML = '<div class="err">' + esc(e.message) + '</div>';
+        $('lfSave').disabled = false;
+      }
+    });
+  });
+}
+
 /* ── deals ───────────────────────────────────────────────────────────────── */
 async function openDeal(id) {
   let d;
@@ -2080,8 +2274,8 @@ function taskForm(ctx) {
   const html =
     '<div id="tfErr"></div><div class="form-grid">' +
       '<label class="f">סוג<select id="t_kind">' + opts + '</select></label>' +
-      '<label class="f">תאריך יעד<input id="t_due_at" type="datetime-local" /></label>' +
-      '<label class="f span2">נושא *<input id="t_title" /></label>' +
+      '<label class="f">תאריך יעד<input id="t_due_at" type="datetime-local" value="' + esc(c.due_at || '') + '" /></label>' +
+      '<label class="f span2">נושא *<input id="t_title" value="' + esc(c.title || '') + '" /></label>' +
       '<label class="f span2">פירוט<textarea id="t_body"></textarea></label>' +
     '</div><p style="margin-top:18px"><button class="btn" id="tfSave">שמירה</button></p>';
 
@@ -2304,7 +2498,7 @@ async function boot() {
   pickOffice(saved && ME.offices.some((o) => o.id === saved) ? saved : ME.offices[0].id);
 
   const want = new URLSearchParams(location.search).get('v');
-  setView(['dash', 'board', 'contacts', 'properties', 'documents', 'tasks', 'team'].includes(want) ? want : 'dash');
+  setView(['dash', 'board', 'contacts', 'properties', 'rentals', 'documents', 'tasks', 'team'].includes(want) ? want : 'dash');
 }
 
 $('officePick').addEventListener('change', (e) => { pickOffice(e.target.value); setView(VIEW); });
@@ -2337,6 +2531,8 @@ $('cQ').addEventListener('input', () => { clearTimeout(cTimer); cTimer = setTime
 for (const id of ['cKind', 'cSource']) $(id).addEventListener('change', renderContacts);
 $('pQ').addEventListener('input', () => { clearTimeout(cTimer); cTimer = setTimeout(renderProperties, 250); });
 $('pStatus').addEventListener('change', renderProperties);
+$('newLease').addEventListener('click', () => leaseForm(null));
+$('lStatus').addEventListener('change', renderRentals);
 $('tFilter').addEventListener('change', renderTasks);
 
 boot();
