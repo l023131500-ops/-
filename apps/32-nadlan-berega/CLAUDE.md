@@ -34,6 +34,41 @@ Next.js 14 (App Router) + TypeScript + Tailwind RTL + Supabase. מפתח אחי�
    לאישורים שגרתיים; עצור רק לפני פעולה הרסנית (מחיקת DB/repo, force-push) או
    כשחסר מידע קריטי שלא קיים באף מקום.
 
+## עדכון — 25/08/2026 (Loop A, session 4 — core.build_tasks reconciliation + implausible-price warning על system 36)
+הסבב הזה קרא לראשונה את `core.build_tasks` (טבלה חדשה שנוצרה היום ב-21:22:58,
+מקור-האמת החדש ל-PROGRESS CONTRACT לפי הנחיית הבעלים ב-core.projects #33).
+שתי שורות בעדיפות 10 (32+36, "360 panorama at property exact coords") נמצאו
+כבר בנויות ומאומתות במלואן מסבבים קודמים היום (`PanoramaPanel.tsx` + `lib/
+panoramalookup.ts`/`lib/mapillary.ts`/`lib/googlemaps.ts` ל-32,
+`loadPanorama`/`panoramaHtml` ב-`app.html` ל-36 — שתיהן עם Google Street
+View + נפילת-Mapillary + תאריך-צילום מוצג) — סומנו `done` בטבלה כדי שהיא
+תשקף את המצב האמיתי, בלי לבזבז סבב על בנייה חוזרת.
+
+שורת עדיפות 30 ("exact price per sqm... advertised shown separately;
+implausible-ratio warning e.g. 1 NIS") נמצאה בנויה במלואה ב-32
+(`plausibleAgainstMarket` ב-`lib/buildreport.ts`, סף 0.2x–5x מול חציון
+העסקאות הרשומות — מילולית "1 ₪" כדוגמה בהערת הקוד המקורית) אבל **חלקית**
+ב-36: `valuationHtml()` ב-`app.html` כבר מפריד נכון בין מחיר-מבוקש
+(`p.price`, שדה הנכס של המתווך) לבין הערכת-שווי-רשומה (`val.mid`, מ-
+`valuation.comparables` הרשום) — אבל יחס קיצוני (למשל מתווך שהקליד "1" ₪
+בטעות) סווג `diffPct < -10 → 'good'` (ירוק, "מציאה!"), ולא כאזהרת-קלט
+חשודה. תוקן: נוסף `implausible` (אותו סף 0.2x–5x בדיוק כמו 32) — כשחורג,
+הטייל מוצג `warn` (לא `good`) וקופסת-`.note` מסבירה שהיחס מעיד כמעט תמיד על
+טעות הקלדה ("בדוק את השדה מחיר בכרטיס הנכס"), במקום לתייג בטעות "מציאה".
+טווח סביר (±15%) ממשיך להתנהג בדיוק כמו לפני — אפס רגרסיה.
+
+אומת: `node --check` על ה-`<script type="module">` המחולץ עבר נקי (160,668
+תווים); בדיקת איזון-סוגריים על הקובץ המלא תקינה (791/791/2787/2787/207/207).
+שוכפלה עצמאית ב-Node טהור לוגיקת ה-classify מול 8 תרחישים (טעות-1-₪,
+ספרה-חסרה, מציאה-לגיטימית -15%, יקר-לגיטימי +15%, בטווח רגיל, יקר-קיצוני
+פי-6, בלי askPrice/שכירות, בלי val.mid) — כל 8 תואמים את ההתנהגות הצפויה,
+כולל ששני התרחישים הלגיטימיים (±15%) לא השתנו. אין דפדפן/`node_modules`
+בסנדבוקס הזה לקליק-דרך, אותה מגבלה כמו כל סבב `app.html`-בלבד קודם. אפס
+רגרסיה: שורה אחת שונתה (מיפוי-קלאס), שתי שורות נוספו (`implausible` + קופסת
+אזהרה) — שום handler/RPC/שדה קיימים אחרים לא נגעו. נדחה+נדחף לענף
+`fix/36-nadlan-pro-implausible-price-warning-0825`. System 35 KioskFleet לא
+נגע, לפי ה-HARD STEERING.
+
 ## עדכון — 25/08/2026 (Loop A, system 36 nadlan-pro — תבניות חוזה משרדיות: אין נתיב כתיבה)
 נבדק ונדחה בסבב הקודם (contract-parcel-details) ותועד כפער אמיתי שנשאר פתוח
 בכוונה: `nadlan_pro.contract_templates` (`0012_nadlan_pro_contracts.sql`) כבר

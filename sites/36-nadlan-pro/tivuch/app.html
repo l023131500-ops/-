@@ -1424,6 +1424,14 @@ function valuationHtml(val, askPrice) {
   const diffPct = askPrice && val.mid
     ? Math.round(((askPrice - val.mid) / val.mid) * 1000) / 10
     : null;
+  // P2 ACCURACY SPEC v2 §1 (core.projects #33): "implausible-ratio warning
+  // (e.g. 1 NIS)" — same 0.2x–5x band as lib/buildreport.ts's
+  // plausibleAgainstMarket (32), applied here to the office's own entered
+  // price vs the registered-deals estimate. A typo (missing digits, stray
+  // "1") produces a diffPct so extreme that the old code below colored it
+  // "good" (looks like a bargain) instead of flagging a likely data-entry
+  // error — a ratio this far off is never a real negotiation outcome.
+  const implausible = !!(askPrice && val.mid && (askPrice < val.mid * 0.2 || askPrice > val.mid * 5));
   return '<h3 class="sec" style="font-size:14px;margin-top:18px">הערכת שווי (מודול 2) ' +
       '<span class="pill' + (val.certainty === 'verified' ? ' on' : '') + '">' +
       (val.certainty === 'verified' ? 'מאומת — עסקה על הנכס עצמו' : 'הערכה — ' + esc(val.basis.label)) +
@@ -1433,9 +1441,12 @@ function valuationHtml(val, askPrice) {
       tile('אומדן מרכזי', money(val.mid)) +
       tile('מחיר למ״ר', money(val.medianPerSqm)) +
       (diffPct != null ? tile('מבוקש מול האומדן', (diffPct > 0 ? '+' : '') + diffPct + '%',
-          diffPct > 10 ? 'warn' : diffPct < -10 ? 'good' : '') : '') +
+          implausible ? 'warn' : diffPct > 10 ? 'warn' : diffPct < -10 ? 'good' : '') : '') +
     '</div>' +
     '<p class="sub" style="font-size:12px;margin-top:8px">' + esc(val.explanation) + '</p>' +
+    (implausible ? '<p class="note"><b>שים לב:</b> המחיר שהוזן לנכס (' + money(askPrice) +
+        ') רחוק באופן קיצוני מהאומדן — יחס כזה כמעט תמיד מעיד על טעות הקלדה (למשל ספרה חסרה) ' +
+        'ולא על מחיר עסקה אמיתי. כדאי לבדוק את השדה "מחיר" בכרטיס הנכס.</p>' : '') +
     (val.wideSpread ? '<p class="note">' + esc(val.wideSpread) + '</p>' : '') +
     comparablesHtml(val.comparables) +
     comparablesTrendHtml(val.comparables);
