@@ -511,6 +511,8 @@ const ROLE_HE = { owner: 'בעלים', manager: 'מנהל', agent: 'מתווך' 
 const LSTATUS_HE = { active: 'פעיל', ended: 'הסתיים', cancelled: 'בוטל' };
 const RSTATUS_HE = { due: 'ממתין', paid: 'שולם', waived: 'ויתור' };
 const FKIND_HE = { has_buyer: 'יש לי קונה', has_property: 'יש לי נכס', question: 'שאלה' };
+const COMM_PAYER_HE = { buyer: 'קונה', seller: 'מוכר', both: 'שני הצדדים' };
+const COMM_STATUS_HE = { pending: 'ממתין', invoiced: 'הופקה חשבונית', collected: 'נגבתה', written_off: 'נמחקה כאבודה' };
 
 let ME = null;        // np_me()
 let OFFICE = null;    // the selected office row
@@ -2193,12 +2195,19 @@ async function leaseForm(existing) {
 
 /* ── deals ───────────────────────────────────────────────────────────────── */
 async function openDeal(id) {
-  let d;
-  try { d = await rpc('np_deal_get', { p_id: id }); }
-  catch (e) { return toast('טעינה נכשלה: ' + e.message, true); }
+  let d, members;
+  try {
+    [d, members] = await Promise.all([
+      rpc('np_deal_get', { p_id: id }),
+      rpc('np_office_members', { p_office: OFFICE.id }).catch(() => []),
+    ]);
+  } catch (e) { return toast('טעינה נכשלה: ' + e.message, true); }
   if (!d || !d.deal) return toast('העסקה לא נמצאה', true);
 
   const dl = d.deal;
+  const canManageComm = OFFICE.role === 'owner' || OFFICE.role === 'manager';
+  members = (members || []).filter((m) => m.is_active);
+  const commAgentName = (uid) => { const m = members.find((x) => x.user_id === uid); return m ? m.full_name : null; };
   const stageOpts = STAGES.map((s) =>
     '<option value="' + s.key + '"' + (dl.stage === s.key ? ' selected' : '') + '>' + s.label + '</option>').join('');
 
@@ -2241,6 +2250,29 @@ async function openDeal(id) {
       '<b>' + esc((STAGES.find((s) => s.key === e.to) || {}).label || e.to) + '</b>' +
       '<span class="w"> · ' + dtm(e.at) + '</span></li>').join('') + '</ul>';
 
+  const commissions = d.commissions || [];
+  html += '<h2 class="sec">עמלות — חלוקה בין סוכנים</h2>';
+  html += commissions.length
+    ? '<div class="table-scroll"><table><thead><tr>' +
+        '<th>סוכן</th><th>צד משלם</th><th>אחוז</th><th>סכום</th><th>סטטוס</th><th>נגבתה</th></tr></thead><tbody>' +
+        commissions.map((cm) =>
+          '<tr>' +
+            '<td>' + v(commAgentName(cm.member_id)) + '</td>' +
+            '<td>' + esc(COMM_PAYER_HE[cm.payer] || cm.payer) + '</td>' +
+            '<td class="num">' + (cm.pct != null ? cm.pct + '%' : NA) + '</td>' +
+            '<td class="num">' + money(cm.amount) + '</td>' +
+            '<td><select class="comm-status" data-id="' + cm.id + '">' +
+              Object.entries(COMM_STATUS_HE).map(([k, l]) =>
+                '<option value="' + k + '"' + (cm.status === k ? ' selected' : '') + '>' + l + '</option>').join('') +
+              '</select></td>' +
+            '<td>' + (cm.collected_at ? dt(cm.collected_at) : NA) + '</td>' +
+          '</tr>').join('') +
+        '</tbody></table></div>'
+    : '<p class="na">עדיין לא שויכה עמלה לסוכן. הסכום שהוגדר בעסקה (' + money(dl.commission_amount) +
+      ') לא ייספר בדשבורד תחת ״עמלה שנגבתה/בהמתנה״ עד שישויך לסוכן כאן.</p>';
+  html += '<p style="margin-top:10px"><button class="btn btn-quiet btn-sm" id="commAdd">+ שיוך עמלה לסוכן</button></p>' +
+    '<div id="commAddBox"></div>';
+
   html += '<h2 class="sec">חשבונית ועמלה</h2><div id="invBox"></div>';
 
   html += '<h2 class="sec">תיעוד</h2>';
@@ -2275,6 +2307,53 @@ async function openDeal(id) {
     }
     $('dEdit').addEventListener('click', () => { close(); dealForm(dl); });
     $('dTask').addEventListener('click', () => { close(); taskForm({ deal_id: dl.id }); });
+    for (const sel of document.querySelectorAll('.comm-status')) {
+      const prev = sel.value;
+      sel.addEventListener('change', async () => {
+        sel.disabled = true;
+        try {
+          await rpc('np_commission_save', { p: { id: sel.dataset.id, status: sel.value } });
+          toast('סטטוס העמלה עודכן');
+        } catch (err) {
+          sel.value = prev;
+          toast('עדכון נכשל: ' + err.message, true);
+        } finally { sel.disabled = false; }
+      });
+    }
+    const commAddBtn = $('commAdd');
+    if (commAddBtn) commAddBtn.addEventListener('click', () => {
+      commAddBtn.style.display = 'none';
+      const agentOpts = canManageComm
+        ? members.map((m) => '<option value="' + m.user_id + '"' + (m.user_id === ME.user_id ? ' selected' : '') + '>' +
+            esc(m.full_name) + '</option>').join('')
+        : '<option value="' + ME.user_id + '" selected>' + esc(commAgentName(ME.user_id) || 'אני') + '</option>';
+      $('commAddBox').innerHTML =
+        '<div id="cmErr"></div><div class="controls">' +
+          '<label class="f">סוכן<select id="cm_member">' + agentOpts + '</select></label>' +
+          '<label class="f">צד משלם<select id="cm_payer">' +
+            Object.entries(COMM_PAYER_HE).map(([k, l]) => '<option value="' + k + '">' + l + '</option>').join('') +
+          '</select></label>' +
+          '<label class="f">אחוז<input id="cm_pct" type="number" step="0.1" /></label>' +
+          '<label class="f">סכום<input id="cm_amount" type="number" /></label>' +
+          '<span class="spacer"></span><button class="btn btn-sm" id="cmSave">שמירה</button>' +
+        '</div>';
+      $('cmSave').addEventListener('click', async () => {
+        $('cmSave').disabled = true;
+        try {
+          await rpc('np_commission_save', { p: {
+            office_id: OFFICE.id, deal_id: dl.id,
+            member_id: $('cm_member').value,
+            payer: $('cm_payer').value,
+            pct: $('cm_pct').value.trim(),
+            amount: $('cm_amount').value.trim(),
+          } });
+          close(); toast('העמלה נשמרה'); openDeal(dl.id);
+        } catch (err) {
+          $('cmErr').innerHTML = '<div class="err">' + esc(err.message) + '</div>';
+          $('cmSave').disabled = false;
+        }
+      });
+    });
     invoicePanel(dl.id, 'invBox');
   });
 }
