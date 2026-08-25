@@ -515,6 +515,7 @@ const COMM_PAYER_HE = { buyer: 'קונה', seller: 'מוכר', both: 'שני ה�
 const COMM_STATUS_HE = { pending: 'ממתין', invoiced: 'הופקה חשבונית', collected: 'נגבתה', written_off: 'נמחקה כאבודה' };
 const TABU_STATUS_HE = { pending: 'ממתין להזמנה', sent: 'הוזמן מרשם המקרקעין', fulfilled: 'הושלם' };
 const TABU_GRADE_HE = { normal: 'רגילה', urgent: 'דחופה' };
+const TIKMEIDA_STATUS_HE = { pending: 'ממתין להגשה', sent: 'הוגשה לוועדה המקומית', fulfilled: 'הושלם' };
 
 let ME = null;        // np_me()
 let OFFICE = null;    // the selected office row
@@ -1019,6 +1020,9 @@ async function openProperty(id) {
   if (p.gush && p.helka) {
     html += '<h2 class="sec">בקשות נסח טאבו</h2><div id="tabuBox">' +
       tabuHtml(p, d.tabu_requests || [], d.documents || []) + '</div>';
+
+    html += '<h2 class="sec">בקשות מידע להיתר (תיק מידע)</h2><div id="tikMeidaBox">' +
+      tikMeidaHtml(p, d.tik_meida_requests || [], d.documents || []) + '</div>';
   }
 
   html += '<h2 class="sec">ניתוח כדאיות והשקעה</h2><div id="feasBox">' + feasibilityHtml(p) + '</div>';
@@ -1032,7 +1036,10 @@ async function openProperty(id) {
     wireWatch(p);
     wireShareBox(p);
     wirePropDocs(p, d.documents || []);
-    if (p.gush && p.helka) wireTabu(p, d.tabu_requests || [], d.documents || []);
+    if (p.gush && p.helka) {
+      wireTabu(p, d.tabu_requests || [], d.documents || []);
+      wireTikMeida(p, d.tik_meida_requests || [], d.documents || []);
+    }
     wireFeasibility(p);
   });
 }
@@ -1464,6 +1471,143 @@ function wireTabu(p, requests, docs) {
       } catch (e) {
         $('tabuErr').innerHTML = '<div class="err">' + esc(e.message) + '</div>';
         $('tabuSave').disabled = false;
+      }
+    });
+  });
+}
+
+// tik-meida-le-heter workflow (core.build_tasks id=12, part 2): request ->
+// mgmt (office owner/manager, same "mgmt" as the TABU workflow above) ->
+// issue (upload) -> view/download + attach to client. No AI-analysis step
+// here, unlike TABU: system 32's own tik-meida workflow (0152) has none
+// either, because a tik meida is an official committee document, not a raw
+// extract needing parsing -- upload IS the final "issue" step, so a request
+// auto-fulfils the moment the file lands (np_tikmeida_document_upload,
+// migration 0155). The issued file is a property document, category='permit'
+// (0105 already reserves this exact category for planning-info files).
+function tikMeidaHtml(p, requests, docs) {
+  const canManage = OFFICE.role === 'owner' || OFFICE.role === 'manager';
+  const docById = (id) => docs.find((d) => d.id === id);
+  const rows = (requests || []).map((r) => {
+    const doc = r.document_id ? docById(r.document_id) : null;
+    const badge = '<span class="pill">' + esc(TIKMEIDA_STATUS_HE[r.status] || r.status) + '</span>' +
+      (r.grade === 'urgent' ? ' <span class="pill" style="color:#b42318">דחוף</span>' : '');
+    let actions = '';
+    if (r.status === 'pending' && canManage) {
+      actions = '<button class="btn btn-quiet btn-sm" data-tikmeidasent="' + r.id + '">סומן כהוגש — הוגש לוועדה המקומית</button>';
+    } else if (r.status === 'sent' && canManage) {
+      actions =
+        '<label class="f">קובץ תיק המידע (PDF/תמונה)<input type="file" data-tikmeidafile="' + r.id +
+          '" accept="application/pdf,image/jpeg,image/png,image/webp" /></label>' +
+        '<button class="btn btn-sm" data-tikmeidaupload="' + r.id + '" style="margin-inline-start:8px">העלאה</button>';
+    } else if (r.status === 'fulfilled' && doc) {
+      actions =
+        '<button class="btn btn-quiet btn-sm" data-tikmeidaopen="' + doc.id + '">פתיחת תיק המידע</button>' +
+        ' <button class="btn btn-quiet btn-sm" data-tikmeidashare="' + doc.id + '" style="margin-inline-start:6px">🔗 העתקת קישור ללקוח</button>';
+    }
+    return '<li>' + badge + ' · עדיפות ' + esc(TABU_GRADE_HE[r.grade] || r.grade) +
+      (r.notes ? '<br/><span class="na" style="font-size:12px">' + esc(r.notes) + '</span>' : '') +
+      '<span class="w"> · ' + dtm(r.created_at) + '</span>' +
+      (actions ? '<div class="controls" style="margin-top:8px">' + actions + '</div>' : '') + '</li>';
+  }).join('');
+
+  return (rows ? '<ul class="timeline">' + rows + '</ul>' : '<p class="na">אין עדיין בקשות מידע להיתר לנכס הזה.</p>') +
+    '<p style="margin-top:10px"><button class="btn btn-quiet btn-sm" id="tikMeidaAddBtn">+ בקשת מידע להיתר (תיק מידע)</button></p>' +
+    '<div id="tikMeidaAddBox"></div>';
+}
+
+function wireTikMeida(p, requests, docs) {
+  const box = $('tikMeidaBox');
+  if (!box) return;
+
+  for (const b of box.querySelectorAll('[data-tikmeidasent]')) {
+    b.addEventListener('click', async () => {
+      b.disabled = true;
+      try {
+        await rpc('np_tikmeida_request_mark_sent', { p_id: b.dataset.tikmeidasent });
+        toast('סומן כהוגש — אפשר להעלות את תיק המידע כשהוא יתקבל');
+        openProperty(p.id);
+      } catch (e) { toast('העדכון נכשל: ' + e.message, true); b.disabled = false; }
+    });
+  }
+
+  for (const b of box.querySelectorAll('[data-tikmeidaupload]')) {
+    b.addEventListener('click', async () => {
+      const reqId = b.dataset.tikmeidaupload;
+      const fileInput = box.querySelector('[data-tikmeidafile="' + reqId + '"]');
+      const file = fileInput && fileInput.files[0];
+      if (!file) return toast('יש לבחור קובץ תיק מידע', true);
+      b.disabled = true;
+      try {
+        const clean = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
+        const storagePath = OFFICE.id + '/' + p.id + '/tikmeida/' + reqId + '/' + Date.now() + '-' + clean;
+        const { error } = await sb.storage.from('nadlan-pro-docs').upload(storagePath, file, {
+          cacheControl: '3600', upsert: false, contentType: file.type || undefined,
+        });
+        if (error) throw error;
+        await rpc('np_tikmeida_document_upload', { p: {
+          request_id: reqId, storage_path: storagePath, mime_type: file.type || null,
+          name: 'תיק מידע להיתר — גוש ' + (p.gush || '') + ' חלקה ' + (p.helka || ''),
+        } });
+        toast('תיק המידע הועלה');
+        openProperty(p.id);
+      } catch (e) { toast('ההעלאה נכשלה: ' + e.message, true); b.disabled = false; }
+    });
+  }
+
+  for (const b of box.querySelectorAll('[data-tikmeidaopen]')) {
+    b.addEventListener('click', async () => {
+      const doc = docs.find((d) => d.id === b.dataset.tikmeidaopen);
+      if (!doc || !doc.storage_path) return;
+      const w = window.open('', '_blank');
+      b.disabled = true;
+      try {
+        const { data, error } = await sb.storage.from('nadlan-pro-docs').createSignedUrl(doc.storage_path, 3600);
+        if (error) throw error;
+        if (w) w.location = data.signedUrl; else window.open(data.signedUrl, '_blank');
+      } catch (e) {
+        if (w) w.close();
+        toast('פתיחת הקובץ נכשלה: ' + e.message, true);
+      } finally { b.disabled = false; }
+    });
+  }
+
+  for (const b of box.querySelectorAll('[data-tikmeidashare]')) {
+    b.addEventListener('click', async () => {
+      const doc = docs.find((d) => d.id === b.dataset.tikmeidashare);
+      if (!doc || !doc.storage_path) return;
+      b.disabled = true;
+      try {
+        const { data, error } = await sb.storage.from('nadlan-pro-docs').createSignedUrl(doc.storage_path, 3600 * 24 * 3);
+        if (error) throw error;
+        await navigator.clipboard.writeText(data.signedUrl);
+        toast('הקישור הועתק — תקף ל-72 שעות, אפשר לשלוח ללקוח');
+      } catch (e) { toast('יצירת הקישור נכשלה: ' + e.message, true); } finally { b.disabled = false; }
+    });
+  }
+
+  const addBtn = $('tikMeidaAddBtn');
+  if (addBtn) addBtn.addEventListener('click', () => {
+    addBtn.style.display = 'none';
+    $('tikMeidaAddBox').innerHTML =
+      '<div id="tikMeidaErr"></div><div class="controls">' +
+        '<label class="f">עדיפות<select id="tikmeida_grade">' +
+          Object.entries(TABU_GRADE_HE).map(([k, l]) => '<option value="' + k + '">' + l + '</option>').join('') +
+        '</select></label>' +
+        '<label class="f" style="min-width:220px">הערה<input id="tikmeida_notes" /></label>' +
+        '<button class="btn btn-sm" id="tikMeidaSave">שליחת בקשה</button>' +
+      '</div>';
+    $('tikMeidaSave').addEventListener('click', async () => {
+      $('tikMeidaSave').disabled = true;
+      try {
+        await rpc('np_tikmeida_request_create', { p: {
+          property_id: p.id, grade: $('tikmeida_grade').value, notes: $('tikmeida_notes').value.trim(),
+        } });
+        toast('הבקשה נשלחה');
+        openProperty(p.id);
+      } catch (e) {
+        $('tikMeidaErr').innerHTML = '<div class="err">' + esc(e.message) + '</div>';
+        $('tikMeidaSave').disabled = false;
       }
     });
   });

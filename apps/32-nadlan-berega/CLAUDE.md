@@ -1,5 +1,48 @@
 # CLAUDE.md — נדל"ן ברגע (קרא אותי בתחילת כל סשן)
 
+## עדכון — 25/08/2026 (Loop A, system 36 nadlan-pro — תיק מידע להיתר, build_tasks id=12 חלק 2 נסגר)
+`core.build_tasks` id=12 (system 36, priority 50): "Planning info auto-pull
+shown immediately; tik-meida-le-heter as official request workflow
+(request->mgmt->issue->attach)". חלק 1 (מידע תכנוני מוצג מיידית, בלי בקשה)
+כבר היה בנוי ואומת: `potentialHtml()` ב-`tivuch/app.html` מרנדר את עובדות
+ה-XPLAN/התחדשות-עירונית החינמיות של מערכת 32 ללא תנאי בכל משיכת "דוח אמת"
+(נוסף בסבב `96ed76d8`). חלק 2 — תיק מידע להיתר כתהליך-בקשה רשמי — היה חסר
+לגמרי במסלול הזה.
+
+מיגרציה `0155`: `nadlan_pro.tik_meida_requests` (אותה צורה בדיוק כמו
+`tabu_requests` מ-`0153` — request/grade/status, RLS: כל חבר משרד שיכול
+לגעת בנכס יכול לבקש, רק owner/manager יכול לשנות סטטוס) +
+`np_tikmeida_request_create`/`np_tikmeida_request_mark_sent`/
+`np_tikmeida_document_upload`. הבדל מכוון אחד מ-TABU: **אין שלב ניתוח-AI**
+— בדיוק כמו ש-32's tik-meida workflow (`0152`) גם הוא ללא ניתוח-AI, כי תיק
+מידע הוא מסמך רשמי של ועדה, לא נסח גולמי שצריך לפרסר. לכן העלאת הקובץ *היא*
+שלב ה"הפקה" וממלאת את הבקשה (status → `fulfilled`) באופן מיידי, בלי
+Edge Function נוסף. הקובץ המופק הוא שורת `property_documents` קיימת
+(קטגוריה `permit` — "מידע להיתר" הוא פשוטו כמשמעו מידע תכנוני עבור היתר),
+לא טבלה מקבילה, ומשתמש באותו bucket פרטי `nadlan-pro-docs`. "צירוף ללקוח"
+ממחזר את דפוס העתק-קישור הקיים, כמו ב-TABU.
+
+נוספה סקציית "בקשות מידע להיתר (תיק מידע)" בדרואר הנכס (`tikMeidaHtml`/
+`wireTikMeida`), מוצגת רק כשיש גוש/חלקה, ישר אחרי סקציית נסח הטאבו הקיימת.
+`np_property_get` מחזיר עכשיו גם `tik_meida_requests` לצד `tabu_requests`
+הקיים, באותה קריאה אחת לדרואר.
+
+אומת חי דרך MCP בטרנזקציות מגולגלות-לאחור מול משרד QA אמיתי (owner אמיתי +
+agent אמיתי שנוסף זמנית כחבר משרד): agent יוצר בקשה (הצליח) · agent מנסה
+לסמן כהוגש (נחסם ע"י RLS — לא מנהל) · owner מסמן כהוגש (הצליח) · agent מנסה
+להעלות (נחסם — לא מנהל) · ניסיון העלאה על בקשה שעדיין `pending` (לא `sent`)
+נחסם ע"י הפונקציה עצמה · owner מעלה על הבקשה שהוגשה (הצליח, מילא אוטומטית
+— `status=fulfilled`, `document_id` מוגדר, `property_documents` קיבל שורה
+עם `category='permit'`) · `np_property_get` בדיקת-צורה נפרדת אישרה שהמפתח
+`tik_meida_requests` מוחזר עם כל השדות. אפס שאריות בשתי הבדיקות (אין
+`COMMIT` בשום קריאת MCP, כל שינוי התבטל אוטומטית בסגירת הסשן). `get_advisors`
+(security) לאחר ההחלה — אין אזהרות חדשות על `nadlan_pro.tik_meida_requests`
+או על הפונקציות החדשות. `node --check` נקי על ה-`<script>` שחולץ; בדיקת
+איזון-סוגריים על הקובץ המלא עברה (900/900 סוגריים מסולסלים, 3178/3178
+עגולים, 239/239מרובעים). תוספת טהורה — מיגרציה חדשה + סקציית UI חדשה, אף
+שורה קיימת (כולל TABU) לא נגעה. System 35 KioskFleet לא נגע, לפי
+ה-HARD STEERING.
+
 ## עדכון — 25/08/2026 (Loop A, system 36 nadlan-pro — TABU workflow, build_tasks id=11 נסגר)
 `core.build_tasks` id=11 ("TABU workflow" על system 36) נשאר `todo` מסבב
 session 5 (ראה למטה) בכוונה: "36 הוא כלי-פנים למתווכים... נדרשת בדיקת-scope
