@@ -34,6 +34,31 @@ Next.js 14 (App Router) + TypeScript + Tailwind RTL + Supabase. מפתח אחי�
    לאישורים שגרתיים; עצור רק לפני פעולה הרסנית (מחיקת DB/repo, force-push) או
    כשחסר מידע קריטי שלא קיים באף מקום.
 
+## עדכון — 25/08/2026 (Loop A, תיקון initplan נוסף — nadlan.subscribers)
+`get_advisors` (performance) סימן עוד טבלה עם `auth_rls_initplan` מלבד שתי
+טבלאות הפורום של 36 שתוקנו קודם היום (ראה למטה): `nadlan.subscribers`
+(מנוי/מסלול-תשלום ברמת-משתמש, לא קשור ל-`nadlan_pro`) — מדיניות
+`own_subscription` שקוראת ל-`auth.uid()` ישירות ב-`USING`, נבדקת מחדש לכל
+שורה במקום פעם אחת לכל שאילתה.
+
+תוקן באותו דפוס בדיוק כמו התיקון הקודם (מיגרציה 0139): מיגרציה חדשה 0140
+עוטפת את `auth.uid()` ב-`(select auth.uid())` דרך `ALTER POLICY` — שכתוב
+ביטוי טהור, אותם תפקידים, אותה תוצאה בוליאנית לכל שורה. אין קובץ מיגרציה
+מקומי קיים לטבלה הזו מלכתחילה (נוצרה חי לפני שהריפו הזה התחיל לעקוב אחרי
+`nadlan`/`subscribers` — אותה מגבלת "מיגרציה חיה בלבד" כמו כמה טבלאות
+אחרות בסבבים קודמים), אז 0140 הוא הראשון שמתעד את המדיניות הזו בריפו.
+
+אומת חי ב-MCP בתוך `begin;...rollback;` עם שני משתמשי `auth.users` אמיתיים
+(לא UUID מומצא — `subscribers.user_id` הוא FK אמיתי ל-`auth.users`, ו-
+`tier`/`status` כפופים ל-CHECK constraints קיימים): `set local role
+authenticated` + `request.jwt.claims` הדמו כל משתמש בתורו מול שתי השורות —
+כל אחד רואה בדיוק שורה אחת (את שלו), לא שתיים — בדיוק כמו לפני התיקון.
+`rollback` בסוף אימת אפס שיוריות. `get_advisors` (performance) הורץ מחדש
+אחרי החלת המיגרציה — האזהרה על `nadlan.subscribers` נעלמה, לא נוספה אזהרה
+חדשה. אפס רגרסיה: שכתוב-ביטוי טהור על מדיניות בודדת, שום טבלה/RPC/UI אחר
+לא נגע. נדחה+נדחף לענף `fix/32-nadlan-berega-subscribers-rls-initplan-0825`
+— לא מוזג. system 35 KioskFleet לא נגע, לפי ה-HARD STEERING.
+
 ## עדכון — 25/08/2026 (Loop A, system 36 nadlan-pro — מחיקת משרד: RPC חי בלי שום דרך להגיע אליו)
 בדיקה שיטתית (השוואת כל RPC בשם `np_*` שמוגדר ב-`supabase/migrations/*.sql`
 מול כל אתר-קריאה ב-`sites/36-nadlan-pro/tivuch/*.html`, אותה שיטה בדיוק
