@@ -19,6 +19,7 @@ import { parcelByGushHelka } from './cadastre';
 import { itmToWgs84 } from './itm';
 import { resolveStreet } from './placenames';
 import { parseQuery } from './buildreport';
+import { aimQuality, destinationPoint } from './aim';
 
 export interface PanoramaLookupResult {
   available: boolean;
@@ -92,4 +93,50 @@ export async function lookupPanorama(q: string): Promise<PanoramaLookupResult> {
   }
 
   return { available: false, lat, lng, reason: 'no-coverage' };
+}
+
+export interface StreetWalkLookupResult {
+  points: { lat: number; lng: number }[];
+  date: string | null;
+}
+
+/**
+ * "סיור רחוב" חינמי-לאיתור לפי כתובת/גוש-חלקה — אותו שער "מסלול נפרד וזול"
+ * כמו `lookupPanorama` למעלה, בשביל system 36 (nadlan-pro): הגרסה שנבנתה
+ * ב-`buildreport.ts` (`streetWalk`) זמינה VIP בלבד כי היא רצה בתוך דוח מלא;
+ * כאן זו נקודת-כניסה עצמאית שמשכפלת בדיוק את אותה גיאומטריה/סף (ראה שם),
+ * בלי דוח VIP ובלי תלות ברמה. כל קריאה כאן היא `streetViewMeta` — בדיקת
+ * מטא-דאטה חינמית אצל גוגל (ראה `lookupPanorama` למעלה); התמונות עצמן
+ * (בתשלום) נטענות רק אח"כ, ביוזמת המשתמש, דרך `/api/image` הקיים —
+ * בדיוק כמו שכל תמונה אחרת במערכת הזאת כבר עובדת.
+ */
+export async function lookupStreetWalk(q: string): Promise<StreetWalkLookupResult | null> {
+  const point = await resolveFreeLocation(q);
+  if (!point || !googleConfigured()) return null;
+  const { lat, lng } = point;
+
+  const meta = await streetViewMeta(lat, lng);
+  const aim = meta.available ? aimQuality(meta, lat, lng) : null;
+  if (!aim?.ok || aim.heading == null || meta.lat == null || meta.lng == null) return null;
+  const anchorLat = meta.lat;
+  const anchorLng = meta.lng;
+
+  const alongStreet = (aim.heading + 90) % 360;
+  const offsetsM = [-40, -20, 0, 20, 40];
+  const candidates = offsetsM.map((o) => destinationPoint(anchorLat, anchorLng, alongStreet, o));
+  const metas = await Promise.all(candidates.map((c) => streetViewMeta(c.lat, c.lng).catch(() => null)));
+
+  const points: { lat: number; lng: number }[] = [];
+  let lastPanoKey: string | null = null;
+  for (let i = 0; i < candidates.length; i++) {
+    const m = metas[i];
+    if (!m?.available || m.lat == null || m.lng == null) continue;
+    const panoKey = `${m.lat.toFixed(6)},${m.lng.toFixed(6)}`;
+    if (panoKey === lastPanoKey) continue;
+    lastPanoKey = panoKey;
+    points.push(candidates[i]);
+  }
+
+  if (points.length < 3) return null;
+  return { points, date: meta.date };
 }

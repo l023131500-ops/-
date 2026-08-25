@@ -994,6 +994,8 @@ async function openProperty(id) {
 
   html += '<h2 class="sec">פנורמה אינטראקטיבית 360°</h2><div id="panoBox">' + panoLoadingHtml() + '</div>';
 
+  html += '<h2 class="sec">סיור רחוב</h2><div id="walkBox">' + streetWalkHtml() + '</div>';
+
   html += '<h2 class="sec">דוח האמת — נדל״ן ברגע</h2><div id="truthBox">' + truthHtml(p) + '</div>';
 
   html += '<h2 class="sec">מעקב אזור — התראה על עסקה חדשה</h2><div id="watchBox">' + watchHtml(p) + '</div>';
@@ -1017,6 +1019,7 @@ async function openProperty(id) {
     $('pEdit').addEventListener('click', () => { close(); propertyForm(p); });
     $('pTruth').addEventListener('click', () => fetchTruth(p, $('pTruth')));
     loadPanorama(p);
+    wireStreetWalk(p);
     wireWatch(p);
     wireShareBox(p);
     wirePropDocs(p, d.documents || []);
@@ -1508,6 +1511,140 @@ async function loadPanorama(p) {
   } catch (e) {
     box.innerHTML = '<p class="na">הפנורמה לא נטענה: ' + esc(e.message || String(e)) + '</p>';
   }
+}
+
+// P2 FEATURE item 2 (core.projects #33, 25/08/2026) asked for an auto-generated
+// street video; ffmpeg/node_modules are still unavailable to build that here
+// (see apps/32-nadlan-berega/CLAUDE.md). System 32 already shipped the same
+// honest interim on its own consumer report — streetWalk in buildreport.ts +
+// StreetWalkPanel.tsx: a carousel of real, dated Street View frames along the
+// street, labeled as a sequence, not a video. This mirrors it here via the
+// same free "lookup" pattern as the panorama panel above
+// (/api/streetwalk-lookup, lib/panoramalookup.ts lookupStreetWalk finds the
+// points using only free Street View metadata checks). Unlike the panorama
+// embed (unbilled), each displayed frame is an actual Static Street View
+// image fetched through the existing /api/image proxy, which IS billed per
+// call — so this stays behind a manual "הצג סיור רחוב" button (same
+// cost-conscious pattern as "משוך דוח אמת") instead of auto-loading like the
+// free panorama panel does.
+function streetWalkHtml() {
+  return '<p style="margin:0"><button class="btn btn-sm" id="walkLoad">הצג סיור רחוב</button></p>';
+}
+
+let walkState = null;
+let walkTimer = null;
+
+function stopWalkTimer() {
+  if (walkTimer) { clearInterval(walkTimer); walkTimer = null; }
+}
+
+function nextAvailableWalkIdx(state, from, dir) {
+  const n = state.points.length;
+  let next = (from + dir + n) % n;
+  let guard = 0;
+  while (state.failed.has(next) && guard < n) {
+    next = (next + dir + n) % n;
+    guard += 1;
+  }
+  return next;
+}
+
+function walkFrameHtml(state) {
+  if (state.failed.size >= state.points.length) {
+    return '<p class="na">אין כיסוי לאורך הרחוב.</p>';
+  }
+  const c = state.points[state.idx];
+  return '<div style="position:relative">' +
+      '<img id="walkImg" src="/nadlan/api/image?kind=street&lat=' + encodeURIComponent(c.lat) +
+        '&lng=' + encodeURIComponent(c.lng) + '&w=900&h=500" ' +
+        'alt="סיור רחוב — מסגרת ' + (state.idx + 1) + ' מתוך ' + state.points.length + '" ' +
+        'style="width:100%;border-radius:8px;display:block" loading="eager" />' +
+      '<div style="position:absolute;inset-inline:0;bottom:0;display:flex;align-items:center;justify-content:space-between;' +
+        'gap:8px;background:linear-gradient(to top,rgba(0,0,0,.6),transparent);padding:8px 12px">' +
+        '<button type="button" class="btn btn-sm" id="walkPrev">‹</button>' +
+        '<span style="color:#fff;font-size:12px;font-weight:700">' + (state.idx + 1) + ' / ' + state.points.length + '</span>' +
+        '<div style="display:flex;gap:6px">' +
+          '<button type="button" class="btn btn-sm" id="walkPlay">' + (state.playing ? 'עצור' : 'נגן') + '</button>' +
+          '<button type="button" class="btn btn-sm" id="walkNext">›</button>' +
+        '</div>' +
+      '</div>' +
+    '</div>' +
+    '<p class="sub" style="font-size:11px;margin-top:6px">' + (state.date ? 'צולם ' + esc(state.date) + '. ' : '') +
+      'רצף תמונות Street View אמיתיות לאורך הרחוב — לא וידאו.</p>';
+}
+
+function renderWalk(box) {
+  box.innerHTML = walkFrameHtml(walkState);
+  const img = $('walkImg');
+  if (img) {
+    img.addEventListener('error', () => {
+      walkState.failed.add(walkState.idx);
+      if (walkState.failed.size < walkState.points.length) {
+        walkState.idx = nextAvailableWalkIdx(walkState, walkState.idx, 1);
+      }
+      renderWalk(box);
+    });
+  }
+  const prev = $('walkPrev'), next = $('walkNext'), play = $('walkPlay');
+  if (prev) prev.addEventListener('click', () => {
+    walkState.playing = false;
+    stopWalkTimer();
+    walkState.idx = nextAvailableWalkIdx(walkState, walkState.idx, -1);
+    renderWalk(box);
+  });
+  if (next) next.addEventListener('click', () => {
+    walkState.playing = false;
+    stopWalkTimer();
+    walkState.idx = nextAvailableWalkIdx(walkState, walkState.idx, 1);
+    renderWalk(box);
+  });
+  if (play) play.addEventListener('click', () => {
+    walkState.playing = !walkState.playing;
+    if (walkState.playing) startWalkTimer(box); else stopWalkTimer();
+    renderWalk(box);
+  });
+}
+
+function startWalkTimer(box) {
+  stopWalkTimer();
+  if (walkState.points.length - walkState.failed.size < 2) return;
+  walkTimer = setInterval(() => {
+    // The drawer can be closed (host.innerHTML replaced) without ever
+    // clicking "עצור" — guard against ticking on a detached node forever.
+    if (!box.isConnected) { stopWalkTimer(); return; }
+    walkState.idx = nextAvailableWalkIdx(walkState, walkState.idx, 1);
+    renderWalk(box);
+  }, 1400);
+}
+
+function wireStreetWalk(p) {
+  const btn = $('walkLoad');
+  if (!btn) return;
+  btn.addEventListener('click', async () => {
+    const q = [p.address, p.city].filter(Boolean).join(' ') ||
+              (p.gush && p.helka ? 'גוש ' + p.gush + ' חלקה ' + p.helka : '');
+    const box = $('walkBox');
+    if (!q) { box.innerHTML = '<p class="na">אין כתובת או גוש/חלקה לסיור רחוב.</p>'; return; }
+    // `btn` is itself a child of `box` (see streetWalkHtml()), so the
+    // innerHTML write right below replaces the button along with everything
+    // else — no separate disable/re-enable of `btn` needed either way.
+    box.innerHTML = '<p class="loading"><span class="spinner"></span>מאתר נקודות לאורך הרחוב…</p>';
+    try {
+      // Same origin as /nadlan/api/report above, so a plain fetch with no key.
+      const res = await fetch('/nadlan/api/streetwalk-lookup?q=' + encodeURIComponent(q));
+      const out = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(out.error || ('שגיאה ' + res.status));
+      if (!out.available || !(out.points || []).length) {
+        box.innerHTML = '<p class="na">אין כיסוי לאורך הרחוב בנקודה הזו.</p>';
+        return;
+      }
+      walkState = { points: out.points, date: out.date || null, idx: 0, failed: new Set(), playing: true };
+      renderWalk(box);
+      startWalkTimer(box);
+    } catch (e) {
+      box.innerHTML = '<p class="na">סיור הרחוב לא נטען: ' + esc(e.message || String(e)) + '</p>';
+    }
+  });
 }
 
 // NADLAN_PRO_מחקר_ואפיון.md module 3, "מעקב נדל״ן בזמן אמת + התראות": the
