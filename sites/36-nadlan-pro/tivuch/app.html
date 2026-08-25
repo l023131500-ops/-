@@ -1623,6 +1623,127 @@ function streetWalkHtml() {
   return '<p style="margin:0"><button class="btn btn-sm" id="walkLoad">הצג סיור רחוב</button></p>';
 }
 
+// build_tasks id=9 (core.projects #33, system 36 priority 20 — the "port to
+// 36" half of id=2, which shipped the recording+cache on system 32 first;
+// see 32's CLAUDE.md "מטמון סיור רחוב"). system 32's /api/street-video is a
+// public, unauthenticated cache keyed by its own saved-report `slug` — the
+// exact same public origin already used above for report/streetwalk-lookup/
+// image, so this needs no new server route, schema, or bucket: it reuses
+// 32's cache as-is. `permalink` (the slug) only exists after "משוך דוח אמת"
+// has actually saved a report for this property (see fetchTruth mutating
+// `p.truth_report` in place) — without it the record button stays hidden,
+// same gate as StreetWalkPanel.tsx.
+const WALK_CAN_GENERATE = typeof MediaRecorder !== 'undefined' && !!MediaRecorder.isTypeSupported &&
+  typeof HTMLCanvasElement !== 'undefined' && 'captureStream' in HTMLCanvasElement.prototype;
+
+function pickWalkRecorderMimeType() {
+  if (!WALK_CAN_GENERATE) return null;
+  const candidates = ['video/mp4;codecs=avc1', 'video/mp4', 'video/webm;codecs=vp9', 'video/webm'];
+  return candidates.find((t) => MediaRecorder.isTypeSupported(t)) || null;
+}
+
+function loadWalkImage(src) {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onload = () => resolve(img);
+    img.onerror = () => reject(new Error('load-failed'));
+    img.src = src;
+  });
+}
+
+const walkSleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+function walkVideoHtml(state) {
+  return '<video id="walkVideo" src="' + esc(state.video.url) + '" controls muted loop playsinline ' +
+      'style="width:100%;display:block;background:#000;border-radius:8px"></video>' +
+    '<p class="sub" style="font-size:11px;margin-top:6px">' + (state.date ? 'צולם ' + esc(state.date) + '. ' : '') +
+      'סרטון קצר מדגימת תמונות Street View אמיתיות לאורך הרחוב.</p>';
+}
+
+function walkGenButtonHtml(state) {
+  if (!WALK_CAN_GENERATE || !state.permalink) return '';
+  return '<div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px;' +
+      'border-top:1px solid var(--line-2);padding:8px 0 0;margin-top:8px">' +
+    '<button type="button" class="btn btn-sm" id="walkGen"' + (state.generating ? ' disabled' : '') + '>' +
+      (state.generating ? 'מקליט סרטון…' : '🎬 צור סרטון רחוב (מהדפדפן)') + '</button>' +
+    (state.genError ? '<span style="font-size:11px;color:#dc2626">' + esc(state.genError) + '</span>' : '') +
+    '</div>';
+}
+
+/** מקליטה אמיתית מהדפדפן (canvas.captureStream+MediaRecorder) על אותן מסגרות
+ *  בדיוק כמו הקרוסלה, ומעלה למטמון של 32 — ראה StreetWalkPanel.tsx (32). */
+async function generateWalkVideo(box) {
+  if (!walkState || walkState.generating || !walkState.permalink || walkState.points.length < 2) return;
+  walkState.genError = null;
+  walkState.generating = true;
+  renderWalk(box);
+  try {
+    const mimeType = pickWalkRecorderMimeType();
+    if (!mimeType) throw new Error('הדפדפן הזה אינו תומך בהקלטת סרטון.');
+    const w = 900, h = 500;
+    const canvas = document.createElement('canvas');
+    canvas.width = w;
+    canvas.height = h;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) throw new Error('שגיאה פנימית בציור המסגרות.');
+    const stream = canvas.captureStream(8);
+    const chunks = [];
+    const recorder = new MediaRecorder(stream, { mimeType });
+    recorder.ondataavailable = (e) => { if (e.data.size > 0) chunks.push(e.data); };
+    const stopped = new Promise((resolve) => { recorder.onstop = () => resolve(); });
+    recorder.start();
+
+    let drawn = 0;
+    for (const p of walkState.points) {
+      try {
+        const img = await loadWalkImage('/nadlan/api/image?kind=street&lat=' + encodeURIComponent(p.lat) +
+          '&lng=' + encodeURIComponent(p.lng) + '&heading=' + encodeURIComponent(p.heading) + '&w=' + w + '&h=' + h);
+        ctx.drawImage(img, 0, 0, w, h);
+        drawn += 1;
+        await walkSleep(900);
+      } catch (_) {
+        // מסגרת שנכשלה נדלגת — אותו עיקרון בדיוק כמו הקרוסלה למעלה.
+      }
+    }
+    recorder.stop();
+    await stopped;
+
+    if (drawn < 2) throw new Error('אין מספיק מסגרות זמינות ליצירת סרטון.');
+
+    const blob = new Blob(chunks, { type: mimeType });
+    const fd = new FormData();
+    fd.append('slug', walkState.permalink);
+    fd.append('frameCount', String(drawn));
+    fd.append('file', blob, 'street.' + (mimeType.includes('mp4') ? 'mp4' : 'webm'));
+
+    const res = await fetch('/nadlan/api/street-video', { method: 'POST', body: fd });
+    const json = await res.json().catch(() => null);
+    if (!res.ok || !json || !json.url) throw new Error((json && json.error) || 'שמירת הסרטון נכשלה.');
+    walkState.video = { url: json.url, mimeType: json.mimeType || mimeType };
+    walkState.videoFailed = false;
+  } catch (e) {
+    walkState.genError = e.message || String(e);
+  } finally {
+    walkState.generating = false;
+    if (box.isConnected) renderWalk(box);
+  }
+}
+
+/** בדיקת-מטמון best-effort — קליפ שכבר הועלה ע"י צופה קודם לאותו נכס. */
+async function checkWalkVideoCache(box, permalink) {
+  try {
+    const res = await fetch('/nadlan/api/street-video?slug=' + encodeURIComponent(permalink));
+    const out = await res.json().catch(() => ({}));
+    if (!walkState || walkState.permalink !== permalink || !box.isConnected) return;
+    if (out && out.available && out.url) {
+      walkState.video = { url: out.url, mimeType: out.mimeType };
+      renderWalk(box);
+    }
+  } catch (_) {
+    // אופציונלי — הקרוסלה כבר מוצגת בינתיים.
+  }
+}
+
 let walkState = null;
 let walkTimer = null;
 
@@ -1677,7 +1798,15 @@ function walkFrameHtml(state) {
 }
 
 function renderWalk(box) {
-  box.innerHTML = walkFrameHtml(walkState);
+  if (walkState.video && !walkState.videoFailed) {
+    stopWalkTimer();
+    box.innerHTML = walkVideoHtml(walkState);
+    const vid = $('walkVideo');
+    if (vid) vid.addEventListener('error', () => { walkState.videoFailed = true; renderWalk(box); });
+    return;
+  }
+  const allFailed = walkState.failed.size >= walkState.points.length;
+  box.innerHTML = walkFrameHtml(walkState) + (allFailed ? '' : walkGenButtonHtml(walkState));
   const img = $('walkImg');
   if (img) {
     img.addEventListener('error', () => {
@@ -1688,7 +1817,7 @@ function renderWalk(box) {
       renderWalk(box);
     });
   }
-  const prev = $('walkPrev'), next = $('walkNext'), play = $('walkPlay');
+  const prev = $('walkPrev'), next = $('walkNext'), play = $('walkPlay'), gen = $('walkGen');
   if (prev) prev.addEventListener('click', () => {
     walkState.playing = false;
     stopWalkTimer();
@@ -1706,6 +1835,7 @@ function renderWalk(box) {
     if (walkState.playing) startWalkTimer(box); else stopWalkTimer();
     renderWalk(box);
   });
+  if (gen) gen.addEventListener('click', () => generateWalkVideo(box));
 }
 
 function startWalkTimer(box) {
@@ -1741,9 +1871,12 @@ function wireStreetWalk(p) {
         box.innerHTML = '<p class="na">אין כיסוי לאורך הרחוב בנקודה הזו.</p>';
         return;
       }
-      walkState = { points: out.points, date: out.date || null, idx: 0, failed: new Set(), playing: true };
+      const permalink = (p.truth_report && p.truth_report.permalink) || null;
+      walkState = { points: out.points, date: out.date || null, idx: 0, failed: new Set(), playing: true,
+                    permalink, video: null, videoFailed: false, generating: false, genError: null };
       renderWalk(box);
       startWalkTimer(box);
+      if (permalink) checkWalkVideoCache(box, permalink);
     } catch (e) {
       box.innerHTML = '<p class="na">סיור הרחוב לא נטען: ' + esc(e.message || String(e)) + '</p>';
     }
@@ -1823,7 +1956,13 @@ async function fetchTruth(p, btn) {
     if (!res.ok) throw new Error('מנוע האמת החזיר ' + res.status);
     const report = await res.json();
     await rpc('np_property_truth_set', { p_id: p.id, p_report: report, p_error: null });
-    box.innerHTML = truthHtml({ ...p, truth_report: report, truth_report_at: new Date().toISOString() });
+    // Mutated in place (not just the local display copy below): `p` is the
+    // same object reference `wireStreetWalk(p)` closed over when the drawer
+    // opened, and the street-video cache check needs `p.truth_report.permalink`
+    // (system 32's saved-report slug) to exist without re-fetching a paid report.
+    p.truth_report = report;
+    p.truth_report_at = new Date().toISOString();
+    box.innerHTML = truthHtml(p);
     toast('הדוח נשמר על הנכס');
   } catch (e) {
     // The failure is recorded, not swallowed: the card must be able to say why

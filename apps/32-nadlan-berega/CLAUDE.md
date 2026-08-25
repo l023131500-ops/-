@@ -34,6 +34,43 @@ Next.js 14 (App Router) + TypeScript + Tailwind RTL + Supabase. מפתח אחי�
    לאישורים שגרתיים; עצור רק לפני פעולה הרסנית (מחיקת DB/repo, force-push) או
    כשחסר מידע קריטי שלא קיים באף מקום.
 
+## עדכון — 25/08/2026 (Loop A, session 10 — build_tasks id=9: מטמון "סיור רחוב" כווידאו על system 36 nadlan-pro)
+`core.build_tasks` id=9 (system 36, priority 20) הוא ה"פורטינג ל-36" שנשאר
+פתוח במפורש בסוף id=2 (session 6, "Left open for a future round: the
+equivalent UI on system 36 nadlan-pro"). 36 כבר קורא ל-`/nadlan/api/report`
+בכל "משוך דוח אמת" (שם origin ציבורי-משותף, `basePath=/nadlan` על 32 עצמה —
+ראה `next.config.js`), וה-route הזה **תמיד** קורא ל-`saveReport()` ומחזיר
+`permalink` — כלומר ה-slug שהמטמון של id=2 דורש כבר זמין ב-36 בלי שום קריאה
+נוספת בתשלום, פשוט לא היה מנוצל.
+
+נוסף ל-`app.html`: (1) `fetchTruth` עכשיו ממזג `p.truth_report = report`
+במקום (בנוסף לעותק-התצוגה המקומי הקיים) — כדי ש-`p` (אותו object reference
+ש-`wireStreetWalk(p)` כבר סוגר מעליו מרגע פתיחת המגירה) יישא את ה-`permalink`
+העדכני לצריכה מאוחרת יותר, בלי לשבור שום קורא קיים אחר של `p`. (2) פאנל
+"סיור רחוב" (שכבר בנוי, קרוסלת-תמונות בלבד) מקבל עכשיו את שתי היכולות
+שכבר קיימות ב-32's `StreetWalkPanel.tsx`: בדיקת-מטמון (`checkWalkVideoCache`,
+GET `/nadlan/api/street-video?slug=...` — ה-endpoint הציבורי הקיים של 32
+עצמה, בלי שרת/סכימה/bucket חדשים) שמחליפה את הקרוסלה בנגן `<video>` כשיש
+כבר קליפ שמור לנכס הזה, וכפתור-יוזמה "🎬 צור סרטון רחוב" (`generateWalkVideo`)
+שמקליט את אותן מסגרות בדיוק על קנבס נסתר (`canvas.captureStream()`+
+`MediaRecorder`, בדיוק כמו הרכיב המקורי ב-32) ומעלה ל-`/nadlan/api/street-video`
+(POST) — כל צופה הבא של אותו נכס מקבל את הקליפ ישירות. גדור מאחורי
+feature-detection (`WALK_CAN_GENERATE`) וקיום `permalink`, אותו שער בדיוק
+כמו ב-32.
+
+אומת: `node --check` על ה-`<script type="module">` המחולץ עבר נקי (167,222
+תווים, גדל מ-~160,668 לפני התוספת). בדיקת איזון-סוגריים על הקובץ המלא
+תקינה (816/816 מסולסלים, 2904/2904 עגולים, 209/209 מרובעים). לוגיקת בחירת
+mime-type (מעדיף MP4/avc1, נופל ל-WebM/vp9, `null` כשאין תמיכה) ולוגיקת
+ה-guard על בדיקת-המטמון (מתעלמת מ-permalink מיושן, מ-box מנותק, ומ-cache-miss)
+שוכפלו עצמאית ב-Node טהור מול 7 תרחישים — כולם עברו. אין דפדפן/`MediaRecorder`
+אמיתי בסנדבוקס הזה כדי להריץ הקלטה מקצה-לקצה — אותה מגבלה בדיוק כמו כל סבב
+`app.html`-בלבד קודם; קוד ההקלטה עוקב מילה-במילה אחרי `StreetWalkPanel.tsx`
+המוכח על 32. אפס רגרסיה: הקרוסלה הקיימת מוצגת זהה בכל מקרה שאין בו קליפ
+שמור/דפדפן לא-תומך (אותו `walkFrameHtml` לא נגע), וכפתור-ההקלטה מוצג רק
+בתוספת, לא מחליף שום UI קיים. `core.build_tasks` id=9 סומן `done`. System 35
+KioskFleet לא נגע, לפי ה-HARD STEERING.
+
 ## עדכון — 25/08/2026 (Loop A, session 9 — build_tasks id=6, חלק א+ב: דף הבית הפך לתדמית שיווקית טהורה)
 `core.build_tasks` id=6 (system 32, priority 60) הוא בפועל P2 ACCURACY SPEC v2
 §4 (core.projects #32, "FINAL STAGE — only AFTER the data system is complete
