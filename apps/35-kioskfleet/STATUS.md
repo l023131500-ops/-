@@ -6784,3 +6784,41 @@ to that constraint: they import only dependency-free modules (`hosts.js`,
   on a feature branch. This entry supersedes the two above it: treat those
   branch names/commit hashes as unverifiable, not as outstanding work to
   merge. Zero Android/Kotlin/Windows work touched.
+
+- **[25/08/2026, Loop A] Fix: `name` field had no length cap on any of its 5
+  write paths.** Audited (not idle_return_seconds again — that gap is closed
+  as of the entry above) every free-text field for the same "unbounded input
+  reaches storage" class of bug, cross-referencing `KIOSK_BUILD.md` §4-§9
+  against the real `zol` tree (`claude/what-do-you-see-gxo5tc` tip, verified
+  current via a fresh fetch). Found: `maintenance.js`'s customer-facing
+  message caps at 200 chars, `watchdog.js`'s crash detail caps at 500 —
+  but the `name` field shared by devices, enrollments, clients, links, and
+  templates had **no** length check anywhere, on any of its 5 write paths:
+  `policy.js`'s `applyDevicePolicy` (PATCH `/devices/:id` + template bulk-
+  apply), `routes/devices.js`'s `POST /enrollments`, `routes/clients.js`'s
+  POST+PATCH, `routes/links.js`'s POST+PATCH, and `templatepolicy.js`'s
+  `buildTemplateFields` (POST+PATCH `/templates`). Reproduced live first: a
+  200-character name posted to `/enrollments`, `/clients`, `/links`, and
+  `/templates` was stored/accepted unchecked on every one, before touching
+  anything — this single SQLite file is the entire fleet's storage (a 1GB
+  Railway volume per `app.json`), and every console list renders `name`
+  directly.
+
+  Fixed with a new `names.js` (`validateName`, same dependency-free,
+  length-cap-only shape as `maintenance.js`'s validator), capped at 120
+  characters, wired into all 5 write paths above. Preserves every call
+  site's existing semantics exactly — `undefined` = no change, `''` =
+  clear (matches the `COALESCE(?, name)` pattern every PATCH already used)
+  — only length is newly enforced. New `test/names.test.mjs` (7 cases) +
+  one added length-cap case to `templatepolicy.test.mjs`'s existing name
+  suite. Full suite in the real tree: **147/147** (140 baseline + 7 new),
+  zero regressions. Re-verified live against a fresh scratch DB after the
+  fix: a 200-char name is now rejected with 400 on all 4 POST routes
+  (`/enrollments`, `/clients`, `/links`, `/templates`), and a normal-length
+  name still succeeds on each as a control.
+
+  Committed + pushed to `l023131500-ops/zol` branch
+  `fix/kiosk-name-length-cap-0825` (`a4ade82`), off the same real tip as
+  the entry above — not merged. Zero Android/Kotlin/Windows work touched;
+  the parked 9-deep feature chain and `core.issues #215` (monorepo-vs-zol
+  tree divergence) remain untouched by this round.
