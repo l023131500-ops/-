@@ -6018,3 +6018,39 @@ to that constraint: they import only dependency-free modules (`hosts.js`,
   for, so this one is safe for a human to fast-track independently of the
   lockdown-chain decision, or a future round to merge directly once
   reviewed.
+
+- **[25/08/2026, Loop A] Shipped the parked maintenance-overlay dp-padding
+  fix to production — the previous entry's own invitation to "merge
+  directly once reviewed."** Re-reviewed `fix/kiosk-maintenance-overlay-dp-padding-0825`
+  (`e358091`) from scratch rather than trusting the prior round's summary:
+  confirmed via `git diff origin/claude/what-do-you-see-gxo5tc..e358091` that
+  the entire change is the single `KioskActivity.kt` padding-density hunk
+  described — no lockdown, payment, or provisioning code anywhere in the
+  diff — and confirmed it is a clean, non-stacked, single-commit branch off
+  the exact commit currently live (`06fec9f`), so a fast-forward merge
+  carries nothing else along with it.
+
+  Fast-forwarded `claude/what-do-you-see-gxo5tc` (local) onto `e358091`,
+  re-ran the full server test suite on the merged branch first (this
+  sandbox actually has `better-sqlite3`/`express` installed this round):
+  **122/123 pass**, the 1 failure being the same pre-existing
+  `seedadmin.test.mjs`/`node:sqlite`-needs-Node-22+ gap every prior entry
+  in this log has hit (irrelevant here anyway — the change is Android-only
+  and touches no server code). Pushed the fast-forward to
+  `origin/claude/what-do-you-see-gxo5tc` on `l023131500-ops/zol`
+  (`06fec9f..e358091`) — this **is** the branch Railway deploys, so this
+  lands in production on the next deploy.
+
+  Deliberately did **not** touch the 9-deep unmerged lockdown/payment/
+  provisioning chain (Windows package, USB offline, access-code launcher,
+  payment-mode, orientation-lock, Route A QR provisioning, app-OTA update,
+  install-checklist wizard, exit-gesture config) — that chain still needs a
+  human real-device-validation decision per the housekeeping note two
+  entries up, and nothing this round changes that. This round's scope was
+  narrowly "ship the one already-reviewed, already-isolated, zero-risk fix
+  that was explicitly left parked for exactly this," not resolve the larger
+  chain.
+
+  **Not verified beyond that**: no live device to see the corrected padding
+  render, no Railway deploy log visible from this sandbox to confirm the
+  push actually triggered/completed a redeploy.
