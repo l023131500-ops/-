@@ -6568,3 +6568,42 @@ to that constraint: they import only dependency-free modules (`hosts.js`,
   to run either generated script end-to-end (unchanged limitation, same as
   every prior entry on this chain); `core.issues #215` (this monorepo tree
   vs. the live `zol` tree) remains open and unaffected by this round.
+
+- **[25/08/2026, Loop A] The production tip (`claude/what-do-you-see-gxo5tc`,
+  the branch Railway deploys) has been silently failing 1/128 server tests
+  on this sandbox's Node 20.20.2 for every round to date — every prior entry
+  noted the `seedadmin.test.mjs`/`node:sqlite` gap in passing but none had
+  actually closed it on the branch that matters, on `zol` not this tree.**
+  Per GLOBAL PRIORITY ORDER, P1 = 35 KioskFleet. A same-fix commit
+  (`305376d`) already existed on the parked `fix/kiosk-seedadmin-test-node-
+  sqlite-0825` branch, itself stacked on top of the still-parked 9-deep
+  Android chain — so it fixed the test on that branch, but the live
+  production tip never got it, and kept crashing before a single
+  `seedadmin.test.mjs` assertion could run
+  (`ERR_UNKNOWN_BUILTIN_MODULE`, since `node:sqlite` needs Node 22.5+ and
+  this sandbox runs Node 20.20.2). Confirmed the gap first by running the
+  full suite straight on `origin/claude/what-do-you-see-gxo5tc`: **127/128**,
+  one hard failure, not a skip.
+
+  Fix itself is a pure test-file change, zero production code touched:
+  swapped `seedadmin.test.mjs`'s `node:sqlite`/`DatabaseSync` stand-in for
+  the same `better-sqlite3`/`Database` driver `src/db.js` already uses in
+  production, matching every other test file's pattern — the stand-in's own
+  header comment said it existed because `better-sqlite3`/`bcryptjs`
+  "cannot be loaded" in this checkout, which is no longer true now that
+  `server/node_modules` is installed. Cherry-picked the existing parked-
+  branch commit (`305376d`) onto a fresh branch off the live tip
+  (`fix/kiosk-seedadmin-node-sqlite-live-0825`) rather than hand-editing a
+  second time — applied with zero conflicts. Full suite after: **134/134**
+  (test count differs from the 128 baseline only because the tip has grown
+  since the last full-suite entry; no tests were removed or skipped).
+
+  Branched fresh off `origin/claude/what-do-you-see-gxo5tc`, fast-forwarded
+  straight into `claude/what-do-you-see-gxo5tc` and pushed
+  (`9f081bc..0f3947d`) — this **is** the branch Railway deploys, so the test
+  suite is green on production as of this round. Did not touch the still-
+  parked 9-deep lockdown/payment/provisioning chain or
+  `feat/kiosk-schedule-offline-persist-0825`; both still need the same
+  human real-device-validation decision flagged by every prior round.
+  `core.issues #215` (this monorepo tree vs. the live `zol` tree) remains
+  open and unaffected by this round.
