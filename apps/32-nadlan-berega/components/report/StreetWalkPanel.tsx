@@ -76,7 +76,9 @@ export default function StreetWalkPanel({ report }: { report: PropertyReport }) 
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               key={idx}
-              src={apiUrl(`/api/image?kind=street&lat=${current.lat}&lng=${current.lng}&w=900&h=500`)}
+              src={apiUrl(
+                `/api/image?kind=street&lat=${current.lat}&lng=${current.lng}&heading=${streetWalk.heading}&w=900&h=500`,
+              )}
               alt={`סיור רחוב — מסגרת ${idx + 1} מתוך ${points.length}`}
               className="w-full object-cover"
               /* טעינה מיידית: כמו שאר תמונות ה-VIP בקובץ הזה (PropertyImagery) —

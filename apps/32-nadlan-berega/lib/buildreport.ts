@@ -191,7 +191,7 @@ export interface PropertyReport {
    * `null` כשאין עוגן אמין לרחוב (בלי `streetView.precise`) או פחות משלוש
    * נקודות עם כיסוי אמיתי.
    */
-  streetWalk: { points: { lat: number; lng: number }[]; date: string | null } | null;
+  streetWalk: { points: { lat: number; lng: number }[]; date: string | null; heading: number } | null;
   /** דירה בבניין או בית שהנכס הוא כולו — משנה את מה שהדוח מתאר. */
   propertyKind: PropertyKindResult;
   /** איך הבניין זוהה, ומה נמצא בו. שקיפות מלאה — כולל אי-התאמות. */
@@ -1180,7 +1180,18 @@ export async function buildReport(
       points.push(candidates[i]);
     }
     if (points.length >= 3) {
-      streetWalk = { points, date: streetViewMetaRes.date };
+      // `heading` is the pano-to-building azimuth (svAim.heading), reused as-is
+      // for every frame — NOT recomputed per point. `/api/image?kind=street`
+      // without an explicit heading calls `streetViewShot(lat, lng)`, which
+      // treats the given (lat,lng) as the BUILDING to aim at and looks up its
+      // OWN nearest pano — correct for a single building photo, but each walk
+      // point here already sits on the road (by construction, `destinationPoint`
+      // from `anchorLat/anchorLng`), so that self-lookup almost always resolves
+      // to a pano within a few meters of itself and `aimQuality` rejects it as
+      // "too close to aim" (<4m), silently failing most frames. Passing the
+      // real building heading explicitly makes every frame in the sequence
+      // look at the same property as it's approached along the street.
+      streetWalk = { points, date: streetViewMetaRes.date, heading: svAim.heading };
     }
   }
 

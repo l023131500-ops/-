@@ -98,6 +98,7 @@ export async function lookupPanorama(q: string): Promise<PanoramaLookupResult> {
 export interface StreetWalkLookupResult {
   points: { lat: number; lng: number }[];
   date: string | null;
+  heading: number;
 }
 
 /**
@@ -138,5 +139,9 @@ export async function lookupStreetWalk(q: string): Promise<StreetWalkLookupResul
   }
 
   if (points.length < 3) return null;
-  return { points, date: meta.date };
+  // `aim.heading` (pano-to-building) is reused for every frame, same reason as
+  // buildreport.ts's streetWalk: each candidate point already sits on the road,
+  // so letting `/api/image` self-aim from that point's own nearest pano almost
+  // always trips the <4m "too close to aim" rejection in `aimQuality`.
+  return { points, date: meta.date, heading: aim.heading };
 }
