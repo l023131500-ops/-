@@ -32,31 +32,36 @@ export default function LessonDetail() {
         <CardHeader>
           <Badge variant="secondary" className="w-fit mb-2">{lesson.audience || "פתוח לכולם"}</Badge>
           <CardTitle className="text-3xl">{lesson.title}</CardTitle>
-          <div className="flex items-center gap-2 text-muted-foreground mt-2">
-            <User className="h-4 w-4" /> {lesson.teacher_name}
-          </div>
+          {lesson.rabbi_name && (
+            <div className="flex items-center gap-2 text-muted-foreground mt-2">
+              <User className="h-4 w-4" /> {lesson.rabbi_name}
+            </div>
+          )}
         </CardHeader>
         <CardContent className="space-y-4">
           {lesson.description && <p className="text-foreground/80">{lesson.description}</p>}
           <div className="grid sm:grid-cols-2 gap-4 text-sm">
-            {lesson.location && (
-              <div className="flex items-center gap-2"><MapPin className="h-4 w-4 text-primary" /> {lesson.location}</div>
+            {(lesson.city || lesson.neighborhood || lesson.address) && (
+              <div className="flex items-center gap-2">
+                <MapPin className="h-4 w-4 text-primary" />
+                {[lesson.city, lesson.neighborhood, lesson.address].filter(Boolean).join(" · ")}
+              </div>
             )}
-            {lesson.time && (
-              <div className="flex items-center gap-2"><Clock className="h-4 w-4 text-primary" /> {lesson.time}</div>
+            {lesson.time_hhmm && (
+              <div className="flex items-center gap-2"><Clock className="h-4 w-4 text-primary" /> {lesson.time_hhmm}</div>
             )}
             {lesson.contact_phone && (
               <div className="flex items-center gap-2"><Phone className="h-4 w-4 text-primary" /> {lesson.contact_phone}</div>
             )}
-            {lesson.lesson_type && (
-              <div className="flex items-center gap-2"><BookOpen className="h-4 w-4 text-primary" /> {lesson.lesson_type}</div>
+            {lesson.style && (
+              <div className="flex items-center gap-2"><BookOpen className="h-4 w-4 text-primary" /> {lesson.style}</div>
             )}
           </div>
-          {Array.isArray(lesson.days_of_week) && lesson.days_of_week.length > 0 && (
+          {typeof lesson.day_of_week === "number" && DAY_NAMES[lesson.day_of_week] && (
             <div>
-              <div className="text-sm font-medium mb-2">ימי השיעור:</div>
+              <div className="text-sm font-medium mb-2">יום השיעור:</div>
               <div className="flex flex-wrap gap-2">
-                {lesson.days_of_week.map((d: number) => <Badge key={d}>{DAY_NAMES[d]}</Badge>)}
+                <Badge>{DAY_NAMES[lesson.day_of_week]}</Badge>
               </div>
             </div>
           )}
