@@ -6739,3 +6739,48 @@ to that constraint: they import only dependency-free modules (`hosts.js`,
   waiting on the other). Zero Android/Kotlin/Windows work touched. Did not
   touch the still-parked 9-deep feature chain or `core.issues #215`, both
   unaffected by this round.
+
+- **[25/08/2026, Loop A] Correction + real fix: the previous two STATUS.md
+  entries above (branches `fix/kiosk-idle-return-seconds-validation-0825`
+  and `fix/kiosk-enrollment-idle-return-seconds-cap-0825`, commits `3519cfb`/
+  `a885577`) do not exist in the real source repo (`l023131500-ops/zol`) —
+  neither locally nor on `origin` after a fresh fetch. This tree's own
+  `apps/35-kioskfleet/server/` (gitignored local mirror, per this repo's
+  `/apps/**` rule — only `app.json`/`STATUS.md` are actually tracked here)
+  is also a stale subset missing `policy.js`/`templatepolicy.js` entirely,
+  so it could not have been the tree those entries described either. The
+  claimed "PATCH /devices/:id 500s on a NaN idleReturnSeconds" bug was also
+  checked directly against `better-sqlite3` in the real `zol` tree: binding
+  `NaN` into `SET idle_return_seconds = COALESCE(?, idle_return_seconds)`
+  binds SQL NULL, which `COALESCE` quietly resolves to the *existing* value
+  — no throw, no crash, confirmed live (PATCH with `idleReturnSeconds:
+  "abc"` returns 200 with the value unchanged, both before and after this
+  round's fix). That specific crash claim does not hold up in this
+  codebase's actual query shape.
+
+  The other half of those entries' claim — no upper bound on
+  `idle_return_seconds`, so an absurd value is stored and cascades to the
+  device — **is real and was reproduced live** in the actual `zol` tree
+  (`claude/what-do-you-see-gxo5tc`, its true current tip) before touching
+  anything: `POST /enrollments` with `idleReturnSeconds: 999999999` stored
+  `999999999` unchanged, and a template's `idleReturnSeconds` had the same
+  gap. Fixed for real this time, in the real repo: new `idletimeout.js`
+  (`clampIdleReturnSeconds`, same silent-clamp pattern as `clampZoomPercent`
+  in `display.js` — 0 stays "off", non-finite/bad input falls back to off,
+  everything else clamps to `[5, 86400]` seconds), wired into all three
+  actual write paths — `policy.js`'s `applyDevicePolicy` (shared by PATCH
+  `/devices/:id` and template bulk-apply), `templatepolicy.js`'s
+  `buildTemplateFields`, and `routes/devices.js`'s `POST /enrollments`.
+  New `test/idletimeout.test.mjs` (7 cases) + one added ceiling case to
+  `templatepolicy.test.mjs`'s existing `idleReturnSeconds` suite. Full
+  suite in the real tree: **140/140** (132 baseline + 8 new), zero
+  regressions. Re-verified live against a scratch DB after the fix, across
+  all three paths: malformed input → off, `999999999` → `86400`, `0` stays
+  `0`.
+
+  Committed + pushed to `l023131500-ops/zol` branch
+  `fix/kiosk-idle-return-seconds-cap-0825` (`0bb7240`), off that repo's real
+  tip — not merged, matches this session's own instruction to always work
+  on a feature branch. This entry supersedes the two above it: treat those
+  branch names/commit hashes as unverifiable, not as outstanding work to
+  merge. Zero Android/Kotlin/Windows work touched.
