@@ -921,6 +921,8 @@ async function openProperty(id) {
 
   html += '<h2 class="sec">דוח האמת — נדל״ן ברגע</h2><div id="truthBox">' + truthHtml(p) + '</div>';
 
+  html += '<h2 class="sec">מעקב אזור — התראה על עסקה חדשה</h2><div id="watchBox">' + watchHtml(p) + '</div>';
+
   html += '<h2 class="sec">קישור צפייה ללקוח (בלי כניסה)</h2><div id="shareBox">' + shareHtml(p) + '</div>';
 
   html += '<h2 class="sec">עסקאות על הנכס</h2>';
@@ -939,6 +941,7 @@ async function openProperty(id) {
          esc(p.address || '') + (p.city ? ' · ' + esc(p.city) : ''), html, (close) => {
     $('pEdit').addEventListener('click', () => { close(); propertyForm(p); });
     $('pTruth').addEventListener('click', () => fetchTruth(p, $('pTruth')));
+    wireWatch(p);
     wireShareBox(p);
     wirePropDocs(p, d.documents || []);
     wireFeasibility(p);
@@ -1273,6 +1276,61 @@ function valuationHtml(val, askPrice) {
     '</div>' +
     '<p class="sub" style="font-size:12px;margin-top:8px">' + esc(val.explanation) + '</p>' +
     (val.wideSpread ? '<p class="note">' + esc(val.wideSpread) + '</p>' : '');
+}
+
+// NADLAN_PRO_מחקר_ואפיון.md module 3, "מעקב נדל״ן בזמן אמת + התראות": the
+// broker watches a gush/helka or address and is emailed when a new deal
+// lands there. System 32 already built and runs exactly this engine
+// (area_alerts table + lib/areaalerts.ts + the Vercel cron that emails
+// matches, app/api/area-alert/route.ts) for its own consumer-facing signup
+// form — this calls the same live, already-tested public endpoint rather
+// than duplicating the detection/email logic here. Nothing is computed or
+// stored in nadlan_pro; the subscription itself lives entirely in system
+// 32's own area_alerts table, same as every truth-report call already
+// treats system 32 as the source of truth.
+function watchHtml(p) {
+  const criteria = p.gush && p.helka ? (p.gush + '/' + p.helka)
+    : [p.address, p.city].filter(Boolean).join(', ');
+  if (!criteria) {
+    return '<p class="na">הוסיפו לנכס גוש/חלקה או כתובת כדי לעקוב אחר האזור שלו.</p>';
+  }
+  return '<p class="sub" style="font-size:13px;margin:0 0 10px">קבלו התראה במייל כשעסקה חדשה נרשמת ב־' +
+      esc(criteria) + ' — אותו מנוע ששולח את התראות האזור בנדל״ן ברגע.</p>' +
+    '<div class="form-grid"><label class="f span2">דוא״ל להתראות' +
+      '<input id="watchEmail" type="email" value="' + esc((ME && ME.email) || '') + '" /></label></div>' +
+    '<p style="margin:10px 0 0"><button class="btn btn-sm" id="watchSub">עקוב אחר האזור</button></p>';
+}
+
+function wireWatch(p) {
+  const btn = $('watchSub');
+  if (!btn) return;
+  btn.addEventListener('click', async () => {
+    const email = ($('watchEmail').value || '').trim();
+    if (!email) return toast('נדרש דוא״ל תקין', true);
+    btn.disabled = true;
+    btn.textContent = 'נרשם…';
+    try {
+      // Same origin as /nadlan/api/report above, so a plain fetch with no
+      // key and no server hop — system 32's own public signup form posts to
+      // this exact route.
+      const res = await fetch('/nadlan/api/area-alert', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({
+          email, address: p.address || null, city: p.city || null,
+          gush: p.gush || null, helka: p.helka || null,
+        }),
+      });
+      const out = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(out.error || ('שגיאה ' + res.status));
+      $('watchBox').innerHTML = '<p class="na">✓ ' + esc(email) + ' יקבל התראה כשעסקה חדשה תירשם באזור.</p>';
+      toast('נרשם למעקב אזור');
+    } catch (e) {
+      toast('ההרשמה נכשלה: ' + (e.message || e), true);
+      btn.disabled = false;
+      btn.textContent = 'עקוב אחר האזור';
+    }
+  });
 }
 
 async function fetchTruth(p, btn) {
