@@ -7080,3 +7080,52 @@ to that constraint: they import only dependency-free modules (`hosts.js`,
   feature chain, the payment code (explicitly out of scope per the project
   note's PCI-DSS constraint), or `core.issues #215`
   (monorepo-vs-zol tree divergence), both unaffected by this round.
+
+- **[25/08/2026, Loop A] Found and fixed a 9th instance of the same
+  unvalidated-write-path class, across three routes at once: `POST
+  /api/enrollments` (`routes/devices.js`), `PATCH /api/clients/:id`
+  (`routes/clients.js`), and `PATCH /api/links/:id` (`routes/links.js`) each
+  bound `name` straight from `req.body` into a `better-sqlite3` `.run()` call
+  (`name || null` / `name ?? null`) with no type check — the same gap already
+  closed for `policy.js`'s `applyDevicePolicy` (device name), `users.js`'s
+  `fullName`, and `agent.js`'s `commandId`. `routes/clients.js`'s and
+  `routes/links.js`'s POST handlers had a milder version of the same gap:
+  `String(name).trim()` never crashes, but silently stores `"[object
+  Object]"` for a non-string value instead of rejecting it.
+
+  Reproduced live first, real server against a scratch DB, seeded admin:
+  `POST /api/enrollments {"name":{"pwn":1},"homeUrl":"https://example.com"}`
+  → 500 `RangeError: Too few parameter values were provided`; a client
+  created then `PATCH`ed with `{"name":{"pwn":1}}` → the same 500; a link
+  created then `PATCH`ed with `{"name":["a","b"]}` → 500 `RangeError: Too
+  many parameter values were provided`. Same raw-stack-trace-to-any-
+  authenticated-owner shape as every prior entry on this chain.
+
+  Fixed with a new shared `names.js` (`validateName(raw, label)`— same
+  `undefined`/`null`/`''` semantics and 120-char cap as `devicename.js`'s
+  `validateDeviceName`, generalized with a caller-supplied Hebrew label so
+  each resource keeps its own wording), wired into all 5 write paths that
+  touch this field: `POST /enrollments`, `POST`+`PATCH /clients`, `POST`+
+  `PATCH /links`. New `test/names.test.mjs` (7 cases: undefined-vs-clear,
+  trimming, object/array/boolean/number type rejection with the caller's own
+  label in the message, length cap, whitespace-only). Full suite: baseline
+  156/156 → **163/163** after, zero regressions.
+
+  Re-verified live after the fix, same scratch DB: all three previously-
+  crashing requests (object/array `name` on enrollments, clients-PATCH,
+  links-PATCH) now return a clean 400 with a resource-specific Hebrew error
+  (`"שם ההרשמה חייב להיות טקסט"` / `"שם הלקוח..."` / `"שם הקישור..."`); a
+  boolean `name` on clients-PATCH and an object `name` on clients-POST also
+  now return the same clean 400 instead of crashing/silently corrupting;
+  every happy path (normal name, name omitted entirely, explicit
+  empty-string clear on links-PATCH) still returns 200 with correct data on
+  all 5 write paths, confirmed as a control.
+
+  Committed + pushed to `l023131500-ops/zol` branch
+  `fix/kiosk-name-crash-validation-0825` (`985ac8e`), off the live tip
+  (`b1bd3cb`, the device-name-validation fix recorded above) — not merged,
+  same human-review convention as every prior fix branch on this chain. Zero
+  Android/Kotlin/Windows work touched. Did not touch the still-parked
+  feature chain, the payment code (explicitly out of scope per the project
+  note's PCI-DSS constraint), or `core.issues #215`
+  (monorepo-vs-zol tree divergence), both unaffected by this round.
