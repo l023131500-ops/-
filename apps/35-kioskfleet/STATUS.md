@@ -5657,3 +5657,126 @@ to that constraint: they import only dependency-free modules (`hosts.js`,
   `claude/what-do-you-see-gxo5tc`, same reasoning as every entry above:
   feature branch only, no live host here to validate against before
   production.
+
+- **[25/08/2026, Loop A, same round] Remote app-OTA update — KIOSK_BUILD.md
+  §8's "עדכון מרחוק (OTA) של מדיניות **ושל האפליקציה**", was entirely
+  unbuilt.** The policy half of that line (`update_config`) already shipped
+  in earlier rounds, pushed on every heartbeat/edit; the app half never
+  did — `commands.js` had no command type at all that told the agent to
+  fetch a newer APK, so an owner who wanted a fleet on a new build had no
+  remote path, only a one-at-a-time manual reinstall.
+
+  `server/src/appupdate.js` (new, dependency-free, unit-tested — same
+  "generate now, verify by inspection" shape as `qrprovision.js`/
+  `usbpackage.js`/`windowspackage.js`): `isUpdateAvailable(deviceVersion,
+  latestVersion)` is a plain string-inequality check (device never
+  reported → not "behind", nothing to compare); `buildUpdateAppPayload(config)`
+  builds `{apkUrl, checksum, version}` from **server config only**, never
+  from the request body — the same choice the `qr-package` route already
+  made for the identical `apkUrl`/`checksum` fields, so an authenticated
+  owner who could pass their own `apkUrl` through this endpoint could push
+  arbitrary code to every Device Owner in their fleet from one click.
+  Deliberately reuses `KIOSK_AGENT_APK_URL`/`_SIGNATURE_CHECKSUM`
+  (qrprovision.js) rather than a second pair of env vars — Route A's QR
+  payload verifies "download this APK and check it came from us" once at
+  first boot, this does the same check again on a running device. One
+  documented-missing-token entry in `NEEDS_USER.md`, not two. New optional
+  config value: `KIOSK_AGENT_LATEST_VERSION` (the release APK's
+  `BuildConfig.VERSION_NAME`).
+
+  `commands.js`: new `'update_app'` command type. `routes/devices.js`: the
+  existing generic `POST /devices/:id/command` route special-cases
+  `update_app` — builds the payload from config (`501` with a clear Hebrew
+  message if `KIOSK_AGENT_APK_URL`/`_SIGNATURE_CHECKSUM`/
+  `_LATEST_VERSION` are not all set, re-wrapped from qrprovision.js's own
+  "מסלול A לא מוגדר" message into an app-update-scoped one — the original
+  text is accurate in the QR route it was written for, misleading here for
+  an owner who never touched Route A), `400` "המכשיר כבר בגרסה העדכנית"
+  unless the device is actually behind or `payload.force` is set. `GET
+  /devices` and `/devices/:id` now also return `latestAppVersion` so the
+  console can decide, per device, whether to offer the button at all.
+
+  Console (`app.js`): new `LATEST_APP_VERSION` global (set from
+  `loadDevices()`'s response), `hasAppUpdateAvailable(d)` helper mirroring
+  `appupdate.js`'s own comparison (the server is still the real enforcement
+  point — the route re-checks and 400s on a stale device; this only decides
+  whether to render the button), an "⬆️ עדכון אפליקציה זמין" pill next to
+  the existing maintenance/payment/orientation pills, an "⬆️ עדכן אפליקציה"
+  button next to "📸 צילום מסך" (through the existing `confirmCmd`
+  confirmation-dialog helper, same as `reboot`), and an `update_app` entry
+  in `COMMAND_LABELS` for the activity log.
+
+  Android (`AgentClient.kt`): a new async branch for `"update_app"` in
+  `execute()`, same shape and same reasoning as the existing `"screenshot"`
+  branch right above it — a multi-second APK download cannot run on the
+  WebSocket callback thread or the heartbeat's own background thread, so it
+  falls through to a dedicated `downloadAndInstallUpdate(commandId,
+  payload)` on its own `Thread`, which acks through the normal path once it
+  has an outcome. That method: downloads the APK from `payload.apkUrl` into
+  `cacheDir`; computes the downloaded file's **signing-certificate**
+  SHA-256 (not a raw file hash — a legitimate rebuild signed with the same
+  key still passes, which is the property that actually matters for
+  trusting the binary) via `apkSigningCertChecksum()` — `GET_SIGNING_
+  CERTIFICATES`/`signingInfo.apkContentsSigners[0]` on API 28+ (added in P),
+  falling back to the deprecated `GET_SIGNATURES`/`signatures[0]` on API
+  26/27 (this project's own `minSdk`, Lock Task Mode's floor); refuses to
+  proceed on any mismatch (this check is not optional — skipping it turns
+  `KIOSK_AGENT_APK_URL` into a remote-code-execution path onto every
+  enrolled device); then installs silently via `PackageInstaller` — a
+  Device Owner app may install/update packages with no user prompt, the
+  same elevated trust `reboot()` right above it already relies on, using
+  `setRequireUserAction(USER_ACTION_NOT_REQUIRED)` on API 31+ (S) where
+  that method exists. `session.commit()` requires a non-null
+  `IntentSender`; rather than adding an `AndroidManifest.xml` receiver this
+  round cannot compile-verify, it targets an explicit, package-scoped
+  broadcast action with **no receiver registered anywhere** — the system
+  fires it into the void, harmlessly, the same as any broadcast nobody
+  subscribes to. This is deliberate, not an oversight: **the ack itself
+  never depends on that broadcast being delivered.** It acks success
+  immediately after a successful `commit()` call, not after the install
+  actually finishes — a process replacing its own running APK can be
+  killed by the OS the moment the install completes, so there is no
+  reliable way for *this* process to ever observe final success from
+  inside itself; the real confirmation an owner should trust is the
+  `appVersion` the next heartbeat reports, exactly the same "cannot confirm
+  from here, the next signal will" honesty `reboot()`'s own ack already
+  implies for the exact same reason (a rebooting device cannot ack its own
+  reboot either).
+
+  `node --check` clean on every touched/added file (`appupdate.js`,
+  `config.js`, `commands.js`, `routes/devices.js`, `app.js`,
+  `appupdate.test.mjs`). Full suite (`node --test test/`): **203/204
+  pass** (198 baseline + 6 new `appupdate.test.mjs` tests) — the 1 failure
+  is the same pre-existing `seedadmin.test.mjs`/`node:sqlite` gap (needs
+  Node 22+) every prior entry in this log has hit.
+
+  Live-server verified, not just source review: booted the server against
+  a throwaway SQLite db, logged in as the seeded admin, created a real
+  enrollment code, enrolled a real device reporting `appVersion: "1.2.0"`
+  through `POST /api/agent/enroll`, confirmed `GET /api/devices?all=1`
+  returns `latestAppVersion: "1.3.0"` alongside it, issued `update_app` and
+  confirmed the returned/persisted command payload is the server-built one
+  (`apkUrl`/`checksum`/`version` from config, no client-supplied fields
+  reaching storage), sent a real heartbeat reporting `appVersion: "1.3.0"`
+  and confirmed a second `update_app` now `400`s "המכשיר כבר בגרסה
+  העדכנית" while `payload.force: true` bypasses that check, restarted the
+  server with none of the three `KIOSK_AGENT_*` values set and confirmed a
+  clean `501` with the app-update-scoped message (not the QR route's
+  "מסלול A" wording), and confirmed `404` on a nonexistent device and `401`
+  with no auth token.
+
+  **Not verified beyond that**: no Android SDK/`kotlinc`/real device in
+  this sandbox (same gap every prior Kotlin-touching entry in this log has
+  hit), so `AgentClient.kt`'s new code is reviewed by hand — brace/paren
+  balance checked across the whole file (108/108, 422/422) — rather than
+  compiled or run; no real second-version APK, no real Device Owner device
+  to actually exercise `PackageInstaller`'s silent-install path end to end.
+
+  Committed on a **new branch**, `feat/kiosk-app-ota-update-0825` (branched
+  from `feat/kiosk-route-a-qr-provisioning-0825`, so it carries every prior
+  unmerged slice of the A+B+C+D decision plus Route A as an ancestor, same
+  reasoning as every branch note above), pushed to `l023131500-ops/zol`
+  (`9516920`) — **deliberately not** merged into
+  `claude/what-do-you-see-gxo5tc`, same reasoning as every entry above:
+  feature branch only, no live host here to validate against before
+  production.
