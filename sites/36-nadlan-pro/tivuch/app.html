@@ -489,7 +489,8 @@ const STAGES = [
 const KIND_HE = { buyer: 'קונה', seller: 'מוכר', renter: 'שוכר', landlord: 'משכיר', other: 'אחר' };
 const SOURCE_HE = {
   website_form: 'טופס באתר', consumer_report: 'דוח נכס', manual: 'ידני',
-  import: 'ייבוא', referral: 'הפניה', portal: 'פורטל', other: 'אחר',
+  import: 'ייבוא', referral: 'הפניה', portal: 'פורטל',
+  whatsapp: 'וואטסאפ', facebook: 'פייסבוק', other: 'אחר',
 };
 const PSTATUS_HE = { active: 'פעיל', under_offer: 'בהצעה', sold: 'נמכר', frozen: 'הוקפא' };
 const PURPOSE_HE = { sale: 'מכירה', rent: 'השכרה' };
@@ -2721,9 +2722,43 @@ async function renderSettings() {
     'הנכסים שכבר הופעל עבורם קישור צפייה בטאב "נכסים" — לא נכסים נוספים.</p>' +
     '<div id="stPublishBox"></div>';
 
+  html += '<h2 class="sec">לידים חיצוניים (וואטסאפ / פייסבוק / כל טופס)</h2>' +
+    '<p class="sub" style="margin:0 0 10px">חבר כל מקור חיצוני — Zapier/Make על טופס לידים בפייסבוק, ' +
+    'שירות העברת הודעות וואטסאפ, או טופס משלך — כדי שכל פנייה תיכנס אוטומטית ל"אנשי קשר" בלי הזנה ידנית. ' +
+    'ליד חדש מופיע ללא בעלים, כך שכל חברי הצוות רואים ויכולים לקחת אותו.</p>' +
+    '<div id="stLeadIntakeBox"></div>';
+
   body.innerHTML = html;
   renderPublishBox(s, canManage);
+  renderLeadIntakeBox(s, canManage);
   wireSettingsBody(canManage);
+}
+
+function leadIntakeEndpoint() { return SUPABASE_URL + '/rest/v1/rpc/np_lead_intake'; }
+
+function renderLeadIntakeBox(s, canManage) {
+  const box = $('stLeadIntakeBox');
+  if (s.lead_intake_enabled) {
+    const sample = '{\n  "p_token": "' + s.lead_intake_token + '",\n  "p_full_name": "ישראל ישראלי",\n' +
+      '  "p_phone": "0501234567",\n  "p_source": "whatsapp"\n}';
+    box.innerHTML = '<p class="sub" style="margin:0 0 10px">קליטה פעילה. הפנה כל אינטגרציה חיצונית ל-' +
+      'כתובת ולטוקן הבאים (POST, JSON):</p>' +
+      '<div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:8px">' +
+        '<input readonly value="' + esc(leadIntakeEndpoint()) + '" data-copy="' + esc(leadIntakeEndpoint()) + '" style="flex:1;min-width:220px" />' +
+        '<button class="btn btn-sm" data-copybtn="' + esc(leadIntakeEndpoint()) + '">העתק כתובת</button>' +
+      '</div>' +
+      '<div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">' +
+        '<input readonly value="' + esc(s.lead_intake_token) + '" data-copy="' + esc(s.lead_intake_token) + '" style="flex:1;min-width:220px" />' +
+        '<button class="btn btn-sm" data-copybtn="' + esc(s.lead_intake_token) + '">העתק טוקן</button>' +
+        (canManage ? '<button class="btn btn-quiet btn-sm" id="stLeadIntakeToggle" data-next="false">בטל קליטה</button>' +
+          '<button class="btn btn-quiet btn-sm" id="stLeadIntakeRegen">טוקן חדש (מבטל את הישן)</button>' : '') +
+      '</div>' +
+      '<pre style="margin-top:10px;padding:10px;background:var(--panel-2,#0002);border-radius:8px;overflow:auto;font-size:12px">' +
+      esc(sample) + '</pre>';
+  } else {
+    box.innerHTML = '<p class="sub" style="margin:0 0 10px">קליטת לידים חיצוניים כבויה כרגע.</p>' +
+      (canManage ? '<button class="btn btn-sm" id="stLeadIntakeToggle" data-next="true">הפעלת קליטת לידים</button>' : '');
+  }
 }
 
 function renderPublishBox(s, canManage) {
@@ -2798,6 +2833,30 @@ function wireSettingsBody(canManage) {
       renderPublishBox({ public_enabled: true, public_token: r.public_token }, canManage);
       wireSettingsBody(canManage);
     } catch (e) { toast('הפעולה נכשלה: ' + e.message, true); regen.disabled = false; }
+  });
+
+  const liToggle = $('stLeadIntakeToggle');
+  if (liToggle) liToggle.addEventListener('click', async () => {
+    const next = liToggle.dataset.next === 'true';
+    liToggle.disabled = true;
+    try {
+      const r = await rpc('np_office_settings_save', { p: { office_id: OFFICE.id, lead_intake_enabled: next } });
+      toast(next ? 'קליטת הלידים הופעלה' : 'קליטת הלידים בוטלה');
+      renderLeadIntakeBox(r, canManage);
+      wireSettingsBody(canManage);
+    } catch (e) { toast('הפעולה נכשלה: ' + e.message, true); liToggle.disabled = false; }
+  });
+
+  const liRegen = $('stLeadIntakeRegen');
+  if (liRegen) liRegen.addEventListener('click', async () => {
+    if (!confirm('הטוקן הישן יפסיק לעבוד מיד — כל אינטגרציה חיצונית תצטרך עדכון. להמשיך?')) return;
+    liRegen.disabled = true;
+    try {
+      const r = await rpc('np_lead_intake_token_regenerate', { p_office: OFFICE.id });
+      toast('נוצר טוקן חדש');
+      renderLeadIntakeBox({ lead_intake_enabled: true, lead_intake_token: r.lead_intake_token }, canManage);
+      wireSettingsBody(canManage);
+    } catch (e) { toast('הפעולה נכשלה: ' + e.message, true); liRegen.disabled = false; }
   });
 }
 
