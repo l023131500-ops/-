@@ -609,6 +609,27 @@ function median(nums: number[]): number | null {
   return Math.round((s[mid - 1] + s[mid]) / 2);
 }
 
+/**
+ * מסנן מחירי-בקשה למ"ר (מודעות יד2/מדלן) שהיחס שלהם מול העסקאות הרשומות
+ * באזור בלתי-סביר בעליל — טעות הקלדה או מודעה שגויה, לא מחיר אמיתי.
+ *
+ * ⚠️ לפי הנחיית הבעלים (P2 ACCURACY SPEC v2, סעיף 1): אין לפסול מספרים
+ * עגולים (מותר לגמרי שמחיר מבוקש יהיה עגול) — רק **יחס** קיצוני מול המחיר
+ * האמיתי הרשום בעסקאות, כמו "1 ₪" או מחיר למ"ר רחוק פי כמה מהעסקאות
+ * שנסגרו בפועל באותו רחוב/אזור. בלי חציון עסקאות אמיתי (marketMedianPerSqm
+ * null) אין קרקע להשוואה — לא ממציאים סף, ולא פוסלים כלום.
+ */
+function plausibleAgainstMarket(
+  values: number[],
+  marketMedianPerSqm: number | null,
+): { plausible: number[]; excluded: number } {
+  if (marketMedianPerSqm == null || marketMedianPerSqm <= 0) return { plausible: values, excluded: 0 };
+  const low = marketMedianPerSqm * 0.2;
+  const high = marketMedianPerSqm * 5;
+  const plausible = values.filter((v) => v >= low && v <= high);
+  return { plausible, excluded: values.length - plausible.length };
+}
+
 /** מזהה עסקה לצורך הצלבה בין חישוב לתצוגה. */
 export function dealIdentity(
   date: string | null | undefined,
@@ -2256,7 +2277,9 @@ export async function buildReport(
       ),
     );
   } else {
-    const prices = listingsResult.listings.map((l) => l.pricePerSqm).filter((v): v is number => !!v);
+    const rawPrices = listingsResult.listings.map((l) => l.pricePerSqm).filter((v): v is number => !!v);
+    const marketRefPpsqm = buildingBand.median ?? streetBand.median ?? areaBand.median;
+    const { plausible: prices, excluded: excludedAskPrices } = plausibleAgainstMarket(rawPrices, marketRefPpsqm);
     const askMedian = median(prices);
     const days = listingsResult.listings.map((l) => l.daysListed).filter((v): v is number => v != null);
     facts.listings.push(
@@ -2273,7 +2296,10 @@ export async function buildReport(
         tier: 'premium',
         sourceKey: 'apify_madlan',
         sourceNote:
-          'זה מה שמוכרים מבקשים, לא מה שנסגר בפועל. בדרך כלל מחיר הסגירה נמוך יותר.',
+          'זה מה שמוכרים מבקשים, לא מה שנסגר בפועל. בדרך כלל מחיר הסגירה נמוך יותר.' +
+          (excludedAskPrices
+            ? ` ${excludedAskPrices} ${excludedAskPrices === 1 ? 'מודעה הוצאה' : 'מודעות הוצאו'} מהחישוב — מחיר למ"ר רחוק באופן קיצוני מהעסקאות שנסגרו בפועל באזור, כנראה טעות הקלדה במודעה ולא מחיר אמיתי.`
+            : ''),
         missingReason: 'אין מספיק מודעות עם מחיר ושטח.',
       }),
       fact('זמן ממוצע של מודעה באוויר', days.length ? Math.round(days.reduce((a, b) => a + b, 0) / days.length) : null, {
