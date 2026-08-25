@@ -215,12 +215,27 @@ export async function readSaved(
  * השדות (ואינה שולחת שום טקסט נוסף באותו מקרה, ראה שם). כל צורה אחרת —
  * כתובת חופשית, שם רחוב — לא ניתנת לזיהוי בלי גיאוקוד, ומחזירה `null` כאן
  * כדי שהנתיב הרגיל (בניית דוח מלאה) ירוץ בלי שינוי, כמו היום.
+ *
+ * ⚠️ קומה/חדרים מפעילים `matchedUnit` ב-`buildReport` (זיהוי דירה ספציפית
+ * בתוך הבניין לפי התאמת עסקה, ולא רק זהות הבניין כולו) — בניגוד לתת-
+ * חלקה/כניסה/דירה, שהם חלק מ-`unitPart` וממילא מבדילים בין דירות. אם
+ * קומה ו/או חדרים סופקו בלי תת-חלקה/כניסה/דירה, מחזירים `null` כדי שהנתיב
+ * הרגיל ירוץ — אחרת שתי פניות לאותו גוש/חלקה בדירות שונות (אחת בקומה 2,
+ * שנייה בקומה 5, בלי תת-חלקה) היו מקבלות זו את הדוח הספציפי-לדירה של זו,
+ * בניגוד לעיקרון "אין נתוני דמה".
  */
 export function fastParcelKey(
   q: string,
   assetTypeRaw: string | null,
-  input: { tatHelka?: string | null; entrance?: string | null; apartment?: string | null },
+  input: {
+    tatHelka?: string | null;
+    entrance?: string | null;
+    apartment?: string | null;
+    floor?: string | null;
+    rooms?: string | null;
+  },
 ): string | null {
+  if (input.floor || input.rooms) return null;
   const m = /^גוש\s+(\S+)\s+חלקה\s+(\S+)$/.exec(q.trim());
   if (!m) return null;
   const assetType = isAssetType(assetTypeRaw) ? assetTypeRaw : 'residential';
