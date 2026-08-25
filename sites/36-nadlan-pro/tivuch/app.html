@@ -1390,6 +1390,7 @@ function truthHtml(p) {
     // figure (listing_purpose='rent') would silently mix the two prices the
     // P2 spec forbids, and would look like a huge, wrong under-pricing flag.
     valuationHtml(r.valuation, p.listing_purpose === 'rent' ? null : p.price) +
+    potentialHtml(r.categories) +
     '<p class="sub" style="font-size:12px;margin-top:8px">נמשך: ' + dtm(p.truth_report_at) +
     ' · מקור: מערכת 32, "נדל״ן ברגע".</p>';
 }
@@ -1510,6 +1511,30 @@ function comparablesTrendHtml(comparables) {
     '<p class="sub" style="font-size:11px;margin-top:2px">' + points.length + ' עסקאות בעלות תאריך ומחיר למ״ר · ' +
       money(minV) + ' – ' + money(maxV) + ' ₪ למ״ר · ' + dt(points[0].t) + ' – ' + dt(points[points.length - 1].t) +
     '</p>';
+}
+
+// NADLAN_PRO_מחקר_ואפיון.md module 7, "ניתוח כדאיות והשקעה" promises
+// "פוטנציאל השבחה (תב״ע/הפשרה)" alongside yield/mortgage — feasibilityHtml()
+// above only covers yield/mortgage/tax, never zoning or urban-renewal upside.
+// System 32's report already computes exactly this, unconditionally, in its
+// 'potential' category (lib/buildreport.ts: checkRenewal + queryPlanningAtPoint
+// run regardless of tier — they're free government sources, not paid ones — so
+// this data is already sitting in every r.categories the tier=basic call above
+// receives; it was just never rendered here). Skips facts with no value, same
+// as comparablesHtml/comparablesTrendHtml above skip empty input.
+function potentialHtml(categories) {
+  const cat = Array.isArray(categories) ? categories.find((c) => c.key === 'potential') : null;
+  const facts = (cat && Array.isArray(cat.facts) ? cat.facts : [])
+    .filter((f) => f.value !== null && f.value !== undefined && f.value !== '');
+  if (!facts.length) return '';
+  return '<h3 class="sec" style="font-size:14px;margin-top:18px">פוטנציאל השבחה (תב״ע / התחדשות עירונית)</h3>' +
+    '<div class="table-scroll"><table><tbody>' +
+    facts.map((f) =>
+      '<tr><th>' + esc(f.label) + '</th><td>' + v(f.value) + (f.unit ? ' ' + esc(f.unit) : '') + '</td></tr>'
+    ).join('') +
+    '</tbody></table></div>' +
+    '<p class="sub" style="font-size:12px;margin-top:6px">מקור: מרשם התכניות (XPLAN) ומפת ההתחדשות העירונית של ' +
+    'משרד הבינוי — אותם מקורות שדוח האמת המלא של מערכת 32 משתמש בהם.</p>';
 }
 
 // P2 FEATURE (core.projects #33, owner 25/08/2026): interactive 360° street
