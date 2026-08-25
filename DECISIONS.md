@@ -5473,3 +5473,46 @@
      `feat/kiosk-install-checklist-wizard-0825` (`3b3aa89`, ענף-אב
      `feat/kiosk-app-ota-update-0825`) — **לא מוזג** לענף הפריסה, כמו כל
      שאר עבודת ה-35 האחרונה.
+
+## 25/08/2026 (LOOP A) — 01-torah-platform: legacy pre-Auth admin login (app_users/admin_sessions) fully locked down, was open to anon
+
+477. **מה נמצא.** `public.app_users`/`public.admin_sessions` — שרידי scaffold
+     מסוג "bkalut template" מלפני שהמערכת עברה ל-Supabase Auth האמיתי
+     (`torah_platform_001_core_tenants`), עם שורת `super_admin` פעילה
+     אמיתית (`username='023131500'`, `password_hash` מוגדר, 143 שורות
+     `admin_sessions` היסטוריות). RLS היה מופעל אך עם מדיניות שיורית
+     יחידה "bkalut backend full access" (`FOR ALL USING true WITH CHECK
+     true`, roles `anon`+`authenticated`) בנוסף ל-GRANT ישיר לשתי
+     הטבלאות — כך שמפתח ה-anon הציבורי (המשותף לכל האפליקציות בפרויקט
+     01/02/03/10/18) יכול היה לקרוא את ה-`password_hash` ישירות דרך
+     `GET /rest/v1/app_users`, או להכניס/לעדכן/למחוק שורת `super_admin`
+     משלו. תשע פונקציות `SECURITY DEFINER` (`verify_super_admin` ללא שום
+     rate limiting, `get_super_admin_dashboard`, `get_admin_tenant`,
+     `check_super_admin_session`, `get_public_teacher`,
+     `get_public_tenant`, `public_directory`, `submit_public_lead`,
+     `tenant_accepts_public_intake`) היו עם `EXECUTE` ל-`anon`/
+     `authenticated` — בדיוק תשעת ה-`anon/authenticated_security_
+     definer_function_executable` שכבר סימן `get_advisors`.
+478. **אימות שאין שום צרכן חי.** חיפוש מלא ב-`src/`+`supabase/functions/`
+     של 01 (וב-02/03/10/18 החולקות אותו פרויקט) — אפס הפניות לשתי
+     הטבלאות או לתשעת הפונקציות. מסלול הכניסה האמיתי היום הוא
+     `supabase.auth.signInWithPassword`/`signInWithOAuth` +
+     `is_super_admin()`/`has_tenant_role()`/`user_roles`, חי מאז
+     `20260519000001_core_tenants.sql` ומאומת ע"י
+     `20260820100000_seed_std_admin_account.sql`.
+479. **התיקון.** מיגרציה `20260825220000_legacy_admin_rpc_lockdown.sql`:
+     `DROP POLICY` על המדיניות השיורית בשתי הטבלאות (RLS נשאר מופעל, אפס
+     מדיניות = חסימה מלאה ל-`anon`/`authenticated`, אותה תבנית כמו
+     `20260825183100_knowledge_chunks_rls_lockdown.sql`), `REVOKE ALL`
+     על שתי הטבלאות, ו-`REVOKE EXECUTE` על תשעת הפונקציות מ-`public`/
+     `anon`/`authenticated`. `service_role`/`postgres` לא נגעו — שום
+     צרכן לגיטימי לא נפגע כי אין כזה היום.
+480. **אימות + אפס רגרסיה.** אומת חי ב-MCP: מדיניות/הרשאות אפס אחרי
+     התיקון (נבדק שוב בסבב הנוכחי — עדיין אפס), ספירת שורות
+     `app_users`/`admin_sessions`/`tenants` ללא שינוי (2/143/5),
+     `get_advisors` נקי מתשעת האזהרות עם אפס אזהרות חדשות. תוספת-חסימה
+     בלבד — שום טבלה/שורה לא נמחקה. נדחף לענף
+     `fix/01-torah-platform-legacy-admin-rpc-lockdown-0825` (`6ebf333c`)
+     — לא מוזג. system 35 KioskFleet לא נגע, per HARD STEERING; מערכות
+     08/09/bkalut-app/bkalot-admin/`zr_*`/webhook NEDARIM3873/`csj`/
+     `csj_src`/`igud` לא נגעו.
