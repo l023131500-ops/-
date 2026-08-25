@@ -1,5 +1,45 @@
 # CLAUDE.md — נדל"ן ברגע (קרא אותי בתחילת כל סשן)
 
+## עדכון — 25/08/2026 (Loop A, system 36 nadlan-pro — TABU workflow, build_tasks id=11 נסגר)
+`core.build_tasks` id=11 ("TABU workflow" על system 36) נשאר `todo` מסבב
+session 5 (ראה למטה) בכוונה: "36 הוא כלי-פנים למתווכים... נדרשת בדיקת-scope
+לפני מימוש, לא רק העתקה". הסבב הזה עשה את בדיקת-ה-scope ובנה בהתאם: 36 הוא
+CRM B2B פרטי בלי דוח-VIP ציבורי ובלי /admin משותף בכלל (בשונה מ-32) — אז
+"checkbox+grade בדוח VIP" ו"צוות ניהול מרכזי" הועתקו-מחדש ל: "משימת ניהול"
+= בעלים/מנהל **של אותו משרד עצמו** (אותו תפקיד שכבר שוער ל-rent-payment-waive/
+templates/office-delete), ונסח טאבו נשמר כשורת `property_documents` קיימת
+(קטגוריה `tabu` כבר שמורה לזה, ראו `PDOCCAT_HE`) ולא בטבלה מקבילה.
+
+נוסף: `nadlan_pro.tabu_requests` (מיגרציה `0153`, RLS: כל חבר יכול לבקש,
+רק owner/manager יכול לשנות סטטוס) + `np_tabu_request_create`/
+`np_tabu_request_mark_sent`/`np_tabu_document_upload` + Edge Function חדש
+`np-tabu-document-analyze` (מוריד את הנסח הפרטי עם מפתח השירות, קורא
+ל-Anthropic דרך המפתח המשותף ב-`core.secrets`, אותו דפוס בדיוק כמו
+`events-ai`/`np-send-signature` הקיימים) — מבנה החילוץ זהה ל-`lib/tabudoc.ts`
+של 32, עם תוספת `perFloorRights` לנסח מרוכז (המענה ל"AI plain-language
+rights-**per-floor**" המפורש שבמפרט). "צירוף ללקוח" ממחזר את דפוס
+העתק-קישור הקיים (הזמנת-צוות, פתיחת-מסמך) כי אין תשתית-מייל בכלל ב-`nadlan_pro`.
+
+**באג אמיתי שנתפס באימות ותוקן (מיגרציה `0154`):** `revoke all ... from
+public` על `np_tabu_document_analysis_save` **לא** הספיק — Supabase מעניק
+`EXECUTE` ל-`authenticated`/`anon` על פונקציה חדשה בסכימת `public` כברירת-מחדל
+(default privileges), ו-`public` הוא pseudo-role נפרד. בדיקה חיה הוכיחה בפועל
+שבעלים-משרד רגיל הצליח לקרוא לפונקציה ולזייף תוצאת-ניתוח — תוקן ע"י
+`revoke execute ... from authenticated, anon` מפורש, ואומת מול
+`information_schema.role_routine_grants` לפני ואחרי.
+
+אומת חי ב-MCP בתוך `BEGIN/ROLLBACK` מול המשרד האמיתי "משרד בדיקה QA 18/08":
+agent יכול לבקש אך לא לסמן-נשלח/להעלות; owner מסמן-נשלח ואז מעלה; העלאה
+לפני `status=sent` נדחית; הרשאת-ניתוח נדחית לסוכן ומאושרת לבעלים;
+`analysis_save` לא נגיש לשום authenticated. `get_advisors` נקי (אחרי תיקון
+המשך על אינדקסים חסרים לעמודות FK החדשות). `node --check` נקי; בדיקת-איזון
+מלאה על הקובץ (861/861, 3062/3062, 224/224); ה-Edge Function תורגם עם
+esbuild; לוגיקה טהורה (parseJson/normalize/UI gating) שוכפלה ב-Node מול 17
+תרחישים. אפס רגרסיה — `propDocsHtml`/העלאת-מסמך גנרית לא נגעו,
+`np_property_get`/`np_property_documents` הורחבו אדיטיבית בלבד. נדחף לענף
+`fix/36-nadlan-pro-tabu-workflow-0825` (16cb745b) — לא מוזג. System 35
+KioskFleet לא נגע, לפי ה-HARD STEERING.
+
 > קובץ זה נטען אוטומטית ע"י Claude Code בכל סשן חדש. הוא זיכרון הפרויקט —
 > קרא אותו קודם, המשך מהמצב הנוכחי, ואל תתחיל מאפס. בסוף כל סשן — עדכן את
 > "מצב נוכחי" ו"הבא בתור" למטה.
