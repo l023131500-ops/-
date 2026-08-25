@@ -5332,3 +5332,48 @@
      `fix/nedarim-admin-wiring-0825` (`1fa05d6`) שם, ולענף
      `fix/01-torah-nedarim-admin-wiring-0825` (`64f05ace`) כאן — שני הענפים
      לא מוזגו ל-`main`.
+467. **[25/08/2026, Loop A] 35 KioskFleet — Route A (QR/zero-touch) נבנה,
+     היה ריק לגמרי.** לפי GLOBAL PRIORITY ORDER, P1 = 35 KioskFleet. נקראו
+     `KIOSK_BUILD.md` ו-`apps/35-kioskfleet/STATUS.md` (5556 שורות) במלואם:
+     Routes B (Device Owner דרך ADB, הבטא המקורית) ו-C/D (Windows/USB,
+     "פרוסה ראשונה" בסבבים קודמים) כבר בנויים; Route A (אנדרואיד+GMS,
+     QR/zero-touch) — §3+§10-A — לא היה לו כיסוי בכלל, בשום סבב, למרות
+     שהמפרט דורש את שניהם ("בנה גם A וגם B... הם משלימים, לא מתחרים",
+     החלטת בעלים נעולה).
+468. **מה נבנה.** `server/src/qrprovision.js` (חדש, ללא תלויות, נבדק ביחידה)
+     מפיק את ה-JSON התקני של Android ל-QR device-owner provisioning —
+     שדות `android.app.extra.PROVISIONING_*` היציבים של DevicePolicyManager,
+     אומתו מול כמה דוגמאות ספקי-EMM שפורסמו (דף התיעוד הרשמי של גוגל
+     ל-QR עצמו החזיר 404 כשנבדק). נושא רק **קוד רישום** בר-שימוש-יחיד
+     בתוך `PROVISIONING_ADMIN_EXTRAS_BUNDLE` — אותו קוד ש-Route B כבר
+     קורא ידנית, כבר rate-limited וחד-פעמי — ולא `deviceToken` חי כמו
+     Route D (הבדל מכוון: קוד QR נסרק/מוצג/מצולם, בניגוד להעברת USB
+     אוויר-פער). ראוט חדש `POST /api/enrollments/:id/qr-package` (owner-
+     scoped, לא צורך את הקוד, לא יוצר שורת מכשיר) + שני ערכי קונפיג
+     חדשים (`KIOSK_AGENT_APK_URL`/`_SIGNATURE_CHECKSUM`, אופציונליים —
+     501 ברור כשחסרים, לא JSON שבור). קוטלין:
+     `KioskDeviceAdminReceiver.onProfileProvisioningComplete` (override חדש)
+     מעביר את ה-extras ל-`EnrollActivity`, שמריצה אוטומטית את אותה פונקציית
+     `enroll()` שהכפתור הידני כבר קורא לה — נופלת חזרה לטופס הידני (עם
+     כתובת שרת ממולאת מראש) אם ההרשמה האוטומטית נכשלת. קונסולה: כפתור
+     "📱 QR (מסלול A)" חדש ליד "📦 USB אופליין" הקיים, כולל אזהרה מפורשת
+     נגד הדבקת ה-JSON במחולל QR חיצוני (הוא נושא את קוד הרישום).
+469. **אימות.** `node --check` נקי על כל קובץ שנגע; חבילת הבדיקות המלאה
+     `node --test test/`: 198/199 עוברות (183 קיימות + 16 חדשות) — הכישלון
+     היחיד הוא אותו פער קיים מראש (`seedadmin.test.mjs`/`node:sqlite`,
+     דורש Node 22+). **אומת חי, לא רק בקריאת קוד:** הועלה שרת אמיתי מול
+     SQLite זמני, נוצר קוד רישום אמיתי, ו-`POST /api/enrollments/:id/
+     qr-package` הופעל מקצה לקצה פעמיים — פעם עם קונפיג מלא (אומתה צורת
+     ה-payload המלאה, כולל Wi-Fi, בלי `deviceToken` בתגובה) ופעם בלי
+     (אומתה הודעת 501 הברורה). אומת שהקוד נשאר `used: 0` אחרי יצירת ה-QR
+     (בניגוד ל-usb-package שכן צורך קוד), ו-404/401 תקינים על בעלות/אימות.
+     לא אומת: אין Android SDK/`kotlinc`/מכשיר אמיתי בסביבה הזו — הקוטלין
+     נבדק בעיון ידני (איזון סוגריים, כל נקודת קריאה ל-`EXTRA_QR_*`) בלבד.
+470. **אפס רגרסיה.** לא נגעתי ב-08/09/bkalut-app/bkalot-admin/`zr_*`/
+     webhook NEDARIM3873/`csj`/`csj_src`/`igud`. שום פיצ'ר קיים לא נמחק
+     או שונה — תוספת בלבד. נדחף ל-`l023131500-ops/zol`, ענף
+     `feat/kiosk-route-a-qr-provisioning-0825` (`c62f875`, ענף-אב
+     `feat/kiosk-launcher-access-code-0825`) — **לא מוזג** לענף הפריסה
+     (`claude/what-do-you-see-gxo5tc`), כמו כל שאר עבודת ה-35 האחרונה.
+     `NEEDS_USER.md` + `apps/35-kioskfleet/STATUS.md` עודכנו (שני ערכי
+     הקונפיג החסרים + חוסר בדיקת מכשיר אמיתי).

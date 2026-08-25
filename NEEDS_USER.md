@@ -4891,3 +4891,31 @@ SET NOT NULL → SET DEFAULT). **מומלץ:** לתקן גם את מיגרציי
 4. אין דפדפן/`node_modules` בסביבה הזו — אימות היה קריאת קוד + איזון-סוגריים
    בלבד. מומלץ אימות ויזואלי (Playwright, פתיחת תיק, הפעלת שיתוף, בדיקת
    העמוד הציבורי) בסבב הבא כשיש גישה ל-DB ולדפדפן, לשתי המערכות (30 ו-31).
+
+## 25/08/2026 (Loop A) — 35 KioskFleet: Route A (QR/zero-touch) בנוי; חסרים שני ערכי קונפיג לפני שאפשר להשתמש בו
+
+**מה נבנה:** KIOSK_BUILD.md §3 Route A (QR/zero-touch, מסלול GMS) — היה ריק
+לגמרי בכל הפרויקט; ראו `apps/35-kioskfleet/STATUS.md` לפרטים המלאים.
+נוצר `POST /api/enrollments/:id/qr-package` שמפיק את ה-JSON התקני של
+Android ל-QR provisioning, מוגן ב-501 ברור כשהקונפיג חסר, ואומת חי (שרת
+מקומי אמיתי, לא רק בדיקות יחידה) בשני המצבים. ה-Kotlin (EnrollActivity/
+KioskDeviceAdminReceiver) נבדק ידנית בלבד — אין Android SDK בסביבה הזו.
+נדחף ל-`l023131500-ops/zol`, ענף `feat/kiosk-route-a-qr-provisioning-0825`
+(`c62f875`) — **לא מוזג** לענף הפריסה, כמו כל שאר עבודת ה-35 האחרונה.
+
+**מה דורש אותך:**
+1. **`KIOSK_AGENT_APK_URL`** — כתובת https:// ציבורית שממנה מכשיר מאופס
+   יכול להוריד את ה-APK של האפליקציה בזמן ה-provisioning (למשל דלי
+   אחסון ציבורי/CDN; לא Google Play — זו לא הרשמה דרך Play).
+2. **`KIOSK_AGENT_APK_SIGNATURE_CHECKSUM`** — SHA-256 של תעודת החתימה של
+   ה-APK (base64url, בלי padding; **לא** hash של קובץ ה-APK עצמו). מופק
+   פעם אחת אחרי חתימת ה-release APK; הפקודה המתועדת:
+   `cat app-release.apk | openssl dgst -binary -sha256 | openssl base64 | tr '+/' '-_' | tr -d '='`
+   (זה מחשב מהקובץ; אם יש גישה נוחה יותר לתעודת החתימה עצמה, זה עדיף).
+3. עד ששני הערכים האלה יוגדרו ב-Railway, מסלול A מחזיר הודעת "לא מוגדר"
+   ברורה במקום QR שבור — שום דבר לא נשבר, אבל אי אפשר להשתמש במסלול.
+4. אין Android SDK/`kotlinc`/מכשיר אמיתי בסביבה הזו — הצד של הקוטלין
+   (קבלת ה-extras אחרי provisioning, auto-enroll) נבדק בעיון ידני בלבד,
+   לא הודר ולא רץ. מומלץ בדיקה אמיתית (device אמיתי, איפוס יצרן, סריקת
+   QR) לפני שיווק המסלול הזה ללקוחות — תואם את דרישת "אפס באגים,
+   retail-grade" של KIOSK_BUILD.md §0/§12.

@@ -5554,3 +5554,106 @@ to that constraint: they import only dependency-free modules (`hosts.js`,
   pass only reaches the server half of the stack. No code changed in `zol`
   this round (verification only, nothing to push); this entry is the only
   change, committed here on `feat/35-kioskfleet-launcher-access-code-0825`.
+
+- **[25/08/2026, Loop A] Route A (Android + GMS, QR/zero-touch provisioning)
+  — KIOSK_BUILD.md §3 + §10-A, was entirely unbuilt anywhere in this
+  project.** Routes B (Device Owner via ADB, the original beta) and C/D
+  (Windows/USB, first slices in prior rounds) all shipped; nothing had ever
+  generated the QR payload §10-A's own install steps describe ("tap the
+  welcome screen 6× → scan QR"). This is the standard Device Owner QR
+  provisioning mechanism Android has shipped since 6.0 — verified against
+  DevicePolicyManager's own stable `android.app.extra.PROVISIONING_*` extra
+  names since developer.android.com's dedicated-devices QR doc page 404'd
+  when checked, cross-referenced against several published EMM-vendor QR
+  payload examples instead of assumed from memory.
+
+  `server/src/qrprovision.js` (new, dependency-free, unit-tested — same
+  "generate now, verify by inspection" shape `windowspackage.js`/
+  `usbpackage.js` already established): builds the QR JSON — component name,
+  signing-cert checksum, APK download location, optional Wi-Fi, skip-
+  encryption/leave-system-apps-enabled. Deliberately carries only a
+  short-lived, single-use **enrollment code** in
+  `PROVISIONING_ADMIN_EXTRAS_BUNDLE` — the same code Route B's manual
+  "type 6 characters" entry already redeems, already rate-limited and
+  single-use/expiring via `routes/agent.js`'s `enrollLimiter` and the code's
+  own `used`/`expires_at` columns — rather than `usbpackage.js`'s raw
+  `deviceToken`. A QR code is something that gets printed, displayed on a
+  screen, or photographed; Route D's air-gapped USB transfer never leaves the
+  technician's hands, so a live unlimited-lifetime token made sense there and
+  does not here.
+
+  New route `POST /api/enrollments/:id/qr-package` (owner-scoped) — unlike
+  `usb-package`, does **not** consume the code or provision a device row:
+  a Route A device reaches the network *during* provisioning to download the
+  DPC APK, so it enrolls for real the normal online way, through the
+  existing `/api/agent/enroll`, once `EnrollActivity` applies the bundle.
+  Two new optional config values, `KIOSK_AGENT_APK_URL` /
+  `KIOSK_AGENT_APK_SIGNATURE_CHECKSUM` — every other route works with
+  neither set, so the route returns a clean `501` "not configured" message
+  instead of a broken payload until both are filled in, the same
+  documented-missing-token shape CONNECTIONS.md already records for
+  `igud-transcribe`'s `OPENAI_API_KEY`. **NEEDS_USER:** these two values
+  (host the signed release APK somewhere public+https, then read its
+  signing-cert checksum) are not yet set anywhere.
+
+  Android: `KioskDeviceAdminReceiver.onProfileProvisioningComplete` (new
+  override) — the one callback DevicePolicyManager fires right after Device
+  Owner is set from a QR scan — reads the `PersistableBundle` extras and
+  forwards `server`/`code` into `EnrollActivity` as plain intent extras.
+  `EnrollActivity.onCreate` checks for them before showing any UI and, when
+  present, auto-submits through the *exact same* `enroll()` function its
+  manual button already calls — refactored the manual form into its own
+  `showManualForm()` method so a failed auto-enroll (bad network, stale
+  code) falls back to it pre-filled with the server address, rather than
+  leaving the installer on a dead progress screen.
+
+  Console: enrollment rows get a new "📱 QR (מסלול A)" button next to the
+  existing "📦 USB אופליין" one (`openQrPackageForm` in `app.js`, same
+  inline-in-the-row shape `openUsbPackageForm` already uses), with optional
+  Wi-Fi SSID/password fields, a copyable JSON textarea, and an explicit
+  warning against pasting the payload into an external online QR
+  generator — it carries the enrollment code, and uploading it to a random
+  third-party service would hand that code away the same as pasting a
+  password. New `.alert-warn` CSS token (`--warn` existed in `:root` already
+  but was unused anywhere) — measured at 6.37:1 contrast, clears the 4.5:1
+  bar this console's own contrast sweeps hold every other alert/chip token
+  to; no dark-mode override, same as `.alert-error`/`.alert-ok` right next
+  to it (neither has one either).
+
+  `node --check` clean on every touched/added file (`qrprovision.js`,
+  `config.js`, `routes/devices.js`, `app.js`, `qrprovision.test.mjs`). Full
+  suite (`node --test test/`): **198/199 pass** (183 baseline + 16 new
+  `qrprovision.test.mjs` tests) — the 1 failure is the same pre-existing
+  `seedadmin.test.mjs`/`node:sqlite` gap (needs Node 22+) every prior entry
+  in this log has hit, unrelated to this change.
+
+  Live-server verified, not just source review: booted the server against a
+  throwaway SQLite db, logged in as the seeded admin, created a real
+  enrollment code, and drove `POST /api/enrollments/:id/qr-package` end to
+  end twice — once with `KIOSK_AGENT_APK_URL`/`_CHECKSUM` set (confirmed the
+  full payload shape, Wi-Fi fields included, admin-extras-bundle carrying
+  exactly `{server, code}`, no `deviceToken` anywhere in the response) and
+  once with them unset (confirmed the clean `501` message). Confirmed the
+  enrollment code stays `used: 0` after generating the QR package (unlike
+  `usb-package`, which does consume one) — a failed/abandoned scan can be
+  regenerated from the same code. Confirmed ownership `404` on another
+  owner's/nonexistent enrollment id and `401` with no auth token.
+
+  **Not verified beyond that**: no Android SDK/`kotlinc` in this sandbox
+  either (same gap every prior Kotlin-touching entry in this log has hit),
+  so `EnrollActivity.kt`/`KioskDeviceAdminReceiver.kt` are reviewed by hand
+  (brace-balance checked, both call sites of the new `EXTRA_QR_*` constants
+  confirmed to match) rather than compiled or run on a device/emulator; no
+  real QR scanner or factory-reset device here to actually scan the
+  generated payload end to end. `openQrPackageForm` is DOM logic mirroring
+  the already-tested `openUsbPackageForm` pattern exactly, with no live
+  browser here to click through it.
+
+  Committed on a **new branch**, `feat/kiosk-route-a-qr-provisioning-0825`
+  (branched from `feat/kiosk-launcher-access-code-0825`, so it carries every
+  prior unmerged slice of the A+B+C+D decision as an ancestor, same
+  reasoning as every branch note above), pushed to `l023131500-ops/zol`
+  (`c62f875`) — **deliberately not** merged into
+  `claude/what-do-you-see-gxo5tc`, same reasoning as every entry above:
+  feature branch only, no live host here to validate against before
+  production.
