@@ -94,13 +94,16 @@ export default function ValuationPanel({ valuation }: { valuation: ValuationResu
 
           {open && (
             <div className="mt-3 overflow-x-auto rounded-xl border border-line bg-surface">
-              <table className="w-full min-w-[520px] text-right text-[13px]">
+              <table className="w-full min-w-[760px] text-right text-[13px]">
                 <thead>
                   <tr className="border-b border-line bg-bgsoft text-[12px] text-muted">
                     <th className="px-3 py-2 font-semibold">תאריך</th>
                     <th className="px-3 py-2 font-semibold">כתובת</th>
+                    <th className="px-3 py-2 font-semibold">גוש/חלקה</th>
+                    <th className="px-3 py-2 font-semibold">קומה</th>
                     <th className="px-3 py-2 font-semibold">שטח</th>
                     <th className="px-3 py-2 font-semibold">חדרים</th>
+                    <th className="px-3 py-2 font-semibold">קרבה לנכס</th>
                     <th className="px-3 py-2 font-semibold">מחיר</th>
                     <th className="px-3 py-2 font-semibold">₪ למ״ר</th>
                   </tr>
@@ -112,8 +115,11 @@ export default function ValuationPanel({ valuation }: { valuation: ValuationResu
                         {new Date(d.date).toLocaleDateString('he-IL')}
                       </td>
                       <td className="px-3 py-2 text-ink">{d.address ?? '—'}</td>
+                      <td className="whitespace-nowrap px-3 py-2 text-muted">{d.parcelLabel ?? '—'}</td>
+                      <td className="px-3 py-2">{d.floor ?? '—'}</td>
                       <td className="px-3 py-2">{d.areaSqm ?? '—'}</td>
                       <td className="px-3 py-2">{d.rooms ?? '—'}</td>
+                      <td className="whitespace-nowrap px-3 py-2 text-muted">{d.proximityLabel}</td>
                       <td className="whitespace-nowrap px-3 py-2">{d.price ? ils(d.price) : '—'}</td>
                       <td className="whitespace-nowrap px-3 py-2 font-bold text-navy">
                         {d.pricePerSqm ? ils(d.pricePerSqm) : '—'}
