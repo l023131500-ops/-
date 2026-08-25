@@ -6649,3 +6649,50 @@ to that constraint: they import only dependency-free modules (`hosts.js`,
   requires — that sign-off, not another rebase, is what is actually blocking
   it from reaching Railway. `core.issues #215` remains open, unaffected by
   this round.
+
+- **[25/08/2026, Loop A] Found and fixed a real live-reachable crash: an
+  authenticated device owner could 500 their own `PATCH /devices/:id` by
+  sending a malformed `idleReturnSeconds`.** With the parked 9-deep chain
+  already current (previous entry) and no real-device work possible in this
+  sandbox, looked for a genuine server-side gap instead of repeating the
+  rebase. `policy.js`'s single-device write path computed `Math.max(0,
+  Number(idleReturnSeconds))` with no NaN guard: `idleReturnSeconds: "abc"`
+  → `Number()` → `NaN` → `Math.max(0, NaN)` → `NaN`, which better-sqlite3
+  binds as `NULL`, which then threw `NOT NULL constraint failed` out of the
+  `UPDATE` (`idle_return_seconds` is `NOT NULL`) instead of the clean 400
+  every other malformed policy field on this same route already returns
+  (`clampZoomPercent`, `validateExitCode`, etc.). Reproduced the exact throw
+  standalone against `better-sqlite3` before touching anything.
+  `templatepolicy.js`'s bulk-template-apply equivalent already guarded
+  against NaN (`Number(...) || 0`) but, like `policy.js`, had **no upper
+  bound at all** — an absurd value (e.g. 999999999) would be stored on a
+  template and pushed to every device it's applied to, on top of also
+  defeating KIOSK_BUILD.md §4's "חזרה אוטומטית" as a safety net.
+
+  Extracted the shared fix into a new `idletimeout.js`
+  (`clampIdleReturnSeconds`: 0 stays "off", everything else clamps to
+  `[5, 86400]` seconds), matching the exact pattern `clampZoomPercent`
+  (`display.js`) and `validateSignageInterval` (`signage.js`) already use in
+  this file, and wired both `policy.js` and `templatepolicy.js` through it
+  instead of each keeping its own inline coercion. New
+  `test/idletimeout.test.mjs` (7 cases) plus one added case to
+  `templatepolicy.test.mjs`'s existing `idleReturnSeconds` suite covering
+  the new ceiling. Full suite: **141/141** (134 baseline + 7 new, zero
+  regressions — existing 0/negative→0 and null/""→"not part of the
+  template" behavior confirmed unchanged). Re-ran the original crash
+  reproduction against the fixed code: no throw, binds `0`. Also booted the
+  server against a scratch sqlite db as a smoke test: seeded its initial
+  admin, served `/` and `/console.html` (200/200).
+
+  Committed on `zol` to a fresh branch off the live tip,
+  `fix/kiosk-idle-return-seconds-validation-0825` (`3519cfb`), pushed to
+  `origin/fix/kiosk-idle-return-seconds-validation-0825` — **not**
+  fast-forwarded into `claude/what-do-you-see-gxo5tc` this round (this
+  session's own instructions say never push to main/deploy branches
+  directly; earlier rounds' direct-to-tip pushes for single-file test/
+  validation hotfixes predate that instruction being explicit here), so a
+  human review-and-merge is the only thing left before this reaches
+  Railway. Zero Android/Kotlin/Windows script generation touched — pure
+  server-side validation, no real-device dependency. Did not touch the
+  still-parked 9-deep chain or `core.issues #215`, both unaffected by this
+  round.
