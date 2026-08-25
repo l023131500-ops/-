@@ -6874,3 +6874,61 @@ to that constraint: they import only dependency-free modules (`hosts.js`,
   not touch the still-parked 9-deep feature chain, the two still-parked
   idle-return-seconds/name-length-cap fix branches, or `core.issues #215`
   (monorepo-vs-zol tree divergence) — all unaffected by this round.
+
+- **[25/08/2026, Loop A] Found and fixed a real live-reachable crash + a real
+  stored XSS: `POST /api/agent/heartbeat`'s `battery` field reached both a
+  raw SQL bind and the console's render completely unvalidated.** Continued
+  the same class-of-bug audit as the entries above, this round scanning every
+  route file for a still-open "device-authored value reaches storage/render
+  unchecked" gap rather than repeating ground already covered (idle-return
+  cap, name length cap, enroll/heartbeat device-info length cap — none of
+  which touch `battery`, a *number* field with no validator anywhere).
+  `routes/agent.js`'s heartbeat handler had `b.battery ?? null` going
+  straight into `db.prepare(...).run(...)`, and `public/js/app.js`'s
+  `deviceCard()` renders it back out as `` `${d.battery != null ? d.battery
+  + '%' : '—'}` `` — the one field in that template with no `esc()` call,
+  unlike `name`/`serial`/`homeUrl`/`model`/`appVersion`/`maintenanceMessage`
+  right next to it, interpolated straight into an `el()`-built node
+  (`t.innerHTML = h; return t.content.firstChild`), i.e. real DOM once
+  `list.appendChild()` inserts it.
+
+  Reproduced both live against a scratch-DB server boot before touching
+  anything: `POST /heartbeat` with `battery: {}` 500'd with a raw stack
+  trace (`RangeError` out of the bare `UPDATE` — better-sqlite3 has no
+  bindable type for a plain object, and nothing catches it); `POST
+  /heartbeat` with `battery: "<img src=x onerror=alert(1)>"` returned 200
+  and stored the string verbatim (SQLite's INTEGER-affinity column falls
+  back to TEXT storage class for a non-numeric string), then `GET /devices`
+  handed it back unchanged — the same value `deviceCard()` puts straight
+  into the DOM unescaped. This is reachable by anything holding a valid
+  `device_token`, which includes a device that has only just run `/enroll`
+  — the one route in this app with no auth at all.
+
+  Fixed with a new `batterylevel.js` (`sanitizeBatteryLevel`: accepts a
+  finite number/numeric-string in `[0, 100]`, rounds it; anything else —
+  wrong type, NaN, `''`, out of range, objects/arrays/booleans — drops to
+  `null` so `COALESCE` leaves the device's last known-good reading in place,
+  matching the still-parked `deviceinfo.js`'s "device telemetry: drop bad
+  input, never reject the whole heartbeat" philosophy, not `display.js`'s
+  clamp-to-a-default shape, since a heartbeat that fails to read its own
+  battery API should not fabricate a fake "0%"). Wired into the heartbeat
+  write path in place of the raw `b.battery ?? null`. New
+  `test/batterylevel.test.mjs` (7 cases, including the exact `{}` and
+  XSS-payload-string cases reproduced above). Full suite: **141/141** (134
+  baseline + 7 new), zero regressions.
+
+  Re-verified live after the fix, same scratch-DB server: `battery: {}` now
+  returns 200 (no crash); the XSS-payload string heartbeat also returns 200
+  but `GET /devices` shows `battery: null` for that device, not the payload
+  (confirmed on a second, isolated device enrolled fresh for this check, so
+  the negative result cannot be masked by a prior valid reading); a normal
+  `battery: 73` heartbeat still stores and round-trips `73` exactly,
+  confirming the happy path is unaffected.
+
+  Committed + pushed to `l023131500-ops/zol` branch
+  `fix/kiosk-heartbeat-battery-validation-0825` (`e206e5e`), off the live tip
+  (`0f3947d`) — not merged, same human-review convention as every prior fix
+  branch on this chain, independent of (does not stack on) the other parked
+  branches. Zero Android/Kotlin/Windows work touched. Did not touch the
+  still-parked 9-deep feature chain or `core.issues #215`
+  (monorepo-vs-zol tree divergence), both unaffected by this round.
