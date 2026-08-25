@@ -8,6 +8,7 @@ import { MARKER_LABELS } from '@/lib/googlemaps';
 import { distanceText, tierMayUseImagery, walkText } from '@/lib/report';
 import type { ReportTier } from '@/lib/report';
 import { apiUrl } from '@/lib/basepath';
+import PanoramaPanel from './PanoramaPanel';
 
 /**
  * הנכס והסביבה: מפה אינטראקטיבית (כל הרמות) · צילום הבניין ומפה אזורית (VIP).
@@ -163,6 +164,11 @@ export default function PropertyImagery({
               )}
             </figure>
           </div>
+
+          {/* פנורמה אינטראקטיבית 360° — בנפרד מהצילום המכוון הקבוע למעלה:
+              כאן המשתמש מסתובב בעצמו, ולכן מוצגת גם כשהצילום המכוון אינו
+              `precise` (למשל מרחק פנורמה גדול שמקשה על חישוב כיוון אמין). */}
+          <PanoramaPanel report={report} />
 
           {/* מפה אזורית מתויגת — נכנסת גם ל-PDF ולמצגת, שם אין מפה אינטראקטיבית. */}
           <figure className="mt-4 overflow-hidden rounded-2xl border border-line bg-surface shadow-card">

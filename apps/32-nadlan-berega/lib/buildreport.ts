@@ -17,6 +17,7 @@ import {
   nearestHospitals,
 } from './googlemaps';
 import type { Place, StreetView, PlaceGroupKey } from './googlemaps';
+import { mapillaryConfigured, mapillaryNearest } from './mapillary';
 import { mikvaotNear, type Mikve } from './mikve';
 import { parcelAtPoint, parcelByGushHelka, parcelValidity } from './cadastre';
 import { stopsWithLinesDetailed, type StopWithLines } from './gtfs';
@@ -167,6 +168,20 @@ export interface PropertyReport {
   categories: ReportCategory[];
   location: { lat: number | null; lng: number | null; itmX: number | null; itmY: number | null };
   streetView: (StreetView & { precise: boolean; aimReason: string | null }) | null;
+  /**
+   * §2 · פנורמה אינטראקטיבית 360° — גוגל כשיש כיסוי בנקודה, Mapillary
+   * כנפילה חזרה כשאין. בשונה מ-`streetView` (תמונה סטטית מכוונת אל הבניין),
+   * זו אינה תלויה ב-`precise`: המשתמש מסתובב בעצמו בתוך התצוגה החיה.
+   */
+  panorama:
+    | {
+        source: 'google' | 'mapillary';
+        date: string | null;
+        lat: number;
+        lng: number;
+        mapillaryImageUrl?: string;
+      }
+    | null;
   /** דירה בבניין או בית שהנכס הוא כולו — משנה את מה שהדוח מתאר. */
   propertyKind: PropertyKindResult;
   /** איך הבניין זוהה, ומה נמצא בו. שקיפות מלאה — כולל אי-התאמות. */
@@ -1062,6 +1077,21 @@ export async function buildReport(
           aimReason: svAim?.ok ? null : svAim?.reason ?? null,
         }
       : null;
+  /**
+   * §2 · הפנורמה האינטראקטיבית משתמשת ב-`streetViewMetaRes` שכבר נמשך למעלה
+   * (בלי קריאה כפולה) — Mapillary נשאל רק כשגוגל אין לו כיסוי בנקודה, וגם אז
+   * רק אם MAPILLARY_ACCESS_TOKEN מוגדר, כדי לא לבזבז ניסיון רשת מיותר.
+   */
+  let panorama: PropertyReport['panorama'] = null;
+  if (lat != null && lng != null && tierMayUseImagery(tier)) {
+    if (streetViewMetaRes?.available) {
+      panorama = { source: 'google', date: streetViewMetaRes.date, lat, lng };
+    } else if (mapillaryConfigured()) {
+      const shot = await mapillaryNearest(lat, lng);
+      if (shot) panorama = { source: 'mapillary', date: shot.date, lat, lng, mapillaryImageUrl: shot.imageUrl };
+    }
+  }
+
   const plans: PlanRecord[] = plansRes.status === 'fulfilled' ? plansRes.value : [];
   const rentIndex = rentRes.status === 'fulfilled' ? rentRes.value : null;
   const ramiPolicy = ramiRes.status === 'fulfilled' ? ramiRes.value : null;
@@ -3279,6 +3309,7 @@ export async function buildReport(
     categories,
     location: { lat, lng, itmX, itmY },
     streetView,
+    panorama,
     propertyKind,
     building,
     parcelIdentity,
