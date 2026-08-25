@@ -34,6 +34,47 @@ Next.js 14 (App Router) + TypeScript + Tailwind RTL + Supabase. מפתח אחי�
    לאישורים שגרתיים; עצור רק לפני פעולה הרסנית (מחיקת DB/repo, force-push) או
    כשחסר מידע קריטי שלא קיים באף מקום.
 
+## עדכון — 25/08/2026 (Loop A, פערי-שרשרת מ-Loop C נסגרו — העלאת מסמכים אמיתית ל-36 + מיגרציית 0135 הושלמה)
+בדיקה עצמאית מצאה שהענף הזה (שרשרת Loop A) וענף Loop C (Fable) התפצלו
+מזמן ומעולם לא התאחדו — כל commit ששיוך `Co-Authored-By: Claude Fable 5`
+נוגע רק ב-`apps/32`/`sites/36-nadlan-pro`/`supabase/migrations` (לא נוגע
+במערכת אחרת מחוץ ל-slice הזה), ולכן ניתן לשלוף commits ספציפיים בלי לסכן
+מערכות אחרות. שלושה נמצאו רלוונטיים: `58011f2e`+`8f331218` (32, דיוק
+זיהוי-בניין — `streetVerified`/`houseVerified`+אינטרפולציית-מרשם, "נסגר"
+לפי ההערה ב-core.projects #32 אבל בפועל **לא** בשרשרת הזאת) ו-`c2325a82`
+(36, העלאת קבצים אמיתית למאגר מסמכי-נכס). הסבב הזה תיקן את `c2325a82`
+בלבד (הקטן והבטוח מביניהם ל-slice הנוכחי) — שני תיקוני 32 (32-geocode
+node_modules-heavy, `buildreport.ts`/`geocode.ts` שהשתנו מאוד משני הצדדים)
+נשארים פתוחים לסבב עתידי עם יכולת מיזוג זהירה יותר.
+
+תוך כדי, נמצא באג אמיתי **בעבודה של הסבב הזה עצמו** (לא של Loop C): גיבוי
+10 המיגרציות (2a6a9fcf, ראה למטה) לכד את `storage_path`/bucket/מדיניות-
+storage של מסמכי-נכס (`0135_nadlan_pro_docs_upload.sql`) אבל **פספס** את
+שלושת פונקציות ה-RPC שבאותה מיגרציה חיה בדיוק (`np_property_document_add`,
+`np_property_documents`, `np_property_get`) — אומת מול `pg_get_functiondef`
+חי: הדאטהבייס האמיתי כבר מכיל אותן (Loop C הריץ את המיגרציה המקורית חי
+ב-24/08), אבל קובץ הריפו לא. סביבה חדשה שהייתה נבנית מהריפו הזה הייתה
+מקבלת bucket+עמודה בלי שום דרך אמיתית לכתוב/לקרוא `storage_path` דרכם
+(`url` גם נשאר NOT NULL בטעות, חוסם כל העלאה בלי קישור מודבק). תוקן:
+שלוש הפונקציות + `alter column url drop not null` נוספו ל-`0135`,
+מילה-במילה מול `pg_get_functiondef` החי (לא שוחזר מהזיכרון) — אומת שוב
+ב-`begin;...rollback;` נקי על הדאטהבייס האמיתי, אפס שגיאות.
+
+עם ה-RPC layer שלם, נוסף גם צד ה-UI מ-`c2325a82` ל-`sites/36-nadlan-pro/
+tivuch/app.html` (`propDocsHtml`/`wirePropDocs`) — שדה "או קובץ מהמחשב",
+פתיחה דרך Signed URL קצר-מועד (`sb.storage...createSignedUrl`, אותו דפוס
+`sb.storage` הקיים כבר להעלאת תמונות ב-`nadlan-pro-media`), ומחיקת האובייקט
+מה-storage כניקוי best-effort לצד מחיקת השורה. הקטע הזה ב-`app.html` לא
+נגע ע"י אף סבב Loop A קודם (`propDocsHtml`/`wirePropDocs` זהים בדיוק למצב
+שלפני `c2325a82`), אז ההעתקה הייתה נקייה בלי קונפליקט. אומת: `node --check`
+על ה-`<script type="module">` המחולץ עבר נקי; `OFFICE.id`+תבנית-נתיב
+`{office}/{property}/{ts}-{filename}` הושוו מילה-במילה מול התבנית הקיימת
+כבר בהעלאת-תמונות (`nadlan-pro-media`, שורה 1867). `np_property_get`→
+`d.documents`→`propDocsHtml(d.documents)`/`wirePropDocs(p, d.documents)`
+אומת כשרשרת יחידה — אין צרכן שני של הצורה הישנה. אפס רגרסיה: הדבקת-קישור
+ממשיכה לעבוד זהה (`storage_path=null`), מסמכים קיימים (כולם עם `url`
+בלבד) ממשיכים לפתוח דרך `<a href>` כרגיל. system 35 KioskFleet לא נגע.
+
 ## עדכון — 25/08/2026 (Loop A, גיבוי 10 מיגרציות שהוחלו חי ולא נשמרו בריפו — 32+36)
 בדיקה של `mcp__supabase__list_migrations` מול `supabase/migrations/` המקומי
 מצאה פער אמיתי: כל מודול שנבנה על `nadlan_pro`/`nadlan` מ-18/08 עד עכשיו —

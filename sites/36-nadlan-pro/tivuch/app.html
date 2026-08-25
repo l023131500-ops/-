@@ -1168,13 +1168,19 @@ function wireFeasibility(p) {
 
 // Documents that belong to the property itself (tabu, permit, appraisal…),
 // distinct from `renderDocuments()` below which lists contracts/invoices per
-// deal. Same external-link pattern as the images field: paste a link, no
-// storage bucket yet — see NEEDS_USER.md.
+// deal. Two sources per row: a pasted external link (`url`, the original
+// paste-a-link flow) or a file uploaded to the private `nadlan-pro-docs`
+// bucket (`storage_path`) — private because a tabu extract or an id copy
+// must not sit on a public URL like the listing photos do; opening one mints
+// a short-lived signed URL, which Storage only grants to members of the
+// property's office.
 function propDocsHtml(docs) {
   const list = docs.length
     ? '<ul class="timeline">' + docs.map((doc) =>
         '<li><b>' + esc(doc.name) + '</b> · <span class="pill">' + esc(PDOCCAT_HE[doc.category] || doc.category) + '</span> · ' +
-        '<a href="' + esc(doc.url) + '" target="_blank" rel="noopener noreferrer">פתיחה</a>' +
+        (doc.storage_path
+          ? '<button class="btn btn-quiet btn-sm" data-opendoc="' + doc.id + '">פתיחה</button>'
+          : '<a href="' + esc(doc.url) + '" target="_blank" rel="noopener noreferrer">פתיחה</a>') +
         (doc.notes ? '<br/><span class="na" style="font-size:12px">' + esc(doc.notes) + '</span>' : '') +
         ' <button class="btn btn-danger btn-sm" data-deldoc="' + doc.id + '" style="margin-inline-start:8px">מחיקה</button>' +
         '<span class="w"> · ' + dtm(doc.created_at) + '</span></li>').join('') + '</ul>'
@@ -1188,6 +1194,9 @@ function propDocsHtml(docs) {
       '<label class="f">שם המסמך<input id="pd_name" placeholder="למשל: נסח טאבו" /></label>' +
       '<label class="f">סוג<select id="pd_category">' + catOpts + '</select></label>' +
       '<label class="f" style="min-width:240px">קישור<input id="pd_url" placeholder="https://..." /></label>' +
+      '<label class="f">או קובץ מהמחשב (PDF / תמונה)' +
+        '<input type="file" id="pd_file" accept="application/pdf,image/jpeg,image/png,image/webp" />' +
+      '</label>' +
       '<button class="btn btn-sm" id="pdAdd">הוספה</button>' +
     '</div>';
 }
@@ -1196,13 +1205,41 @@ function wirePropDocs(p, docs) {
   const box = $('propDocsBox');
   if (!box) return;
 
+  for (const b of box.querySelectorAll('[data-opendoc]')) {
+    b.addEventListener('click', async () => {
+      const doc = docs.find((d) => d.id === b.dataset.opendoc);
+      if (!doc || !doc.storage_path) return;
+      // The tab must be opened synchronously inside the click, or popup
+      // blockers eat it; the signed URL is set on it once minted.
+      const w = window.open('', '_blank');
+      b.disabled = true;
+      try {
+        const { data, error } = await sb.storage.from('nadlan-pro-docs')
+          .createSignedUrl(doc.storage_path, 3600);
+        if (error) throw error;
+        if (w) w.location = data.signedUrl;
+        else window.open(data.signedUrl, '_blank');
+      } catch (e) {
+        if (w) w.close();
+        toast('פתיחת הקובץ נכשלה: ' + e.message, true);
+      } finally { b.disabled = false; }
+    });
+  }
+
   for (const b of box.querySelectorAll('[data-deldoc]')) {
     b.addEventListener('click', async () => {
       if (!confirm('למחוק את המסמך?')) return;
       b.disabled = true;
       try {
+        const doc = docs.find((d) => d.id === b.dataset.deldoc);
         await rpc('np_property_document_delete', { p_id: b.dataset.deldoc });
-        const next = docs.filter((doc) => doc.id !== b.dataset.deldoc);
+        // The row is the source of truth; the object removal is best-effort
+        // cleanup (an orphaned file is unreachable — no row points at it, and
+        // the bucket is private).
+        if (doc && doc.storage_path) {
+          try { await sb.storage.from('nadlan-pro-docs').remove([doc.storage_path]); } catch (_) {}
+        }
+        const next = docs.filter((doc2) => doc2.id !== b.dataset.deldoc);
         box.innerHTML = propDocsHtml(next);
         wirePropDocs(p, next);
         toast('המסמך נמחק');
@@ -1212,15 +1249,32 @@ function wirePropDocs(p, docs) {
 
   const add = $('pdAdd');
   if (add) add.addEventListener('click', async () => {
-    const name = $('pd_name').value.trim();
+    const file = ($('pd_file') && $('pd_file').files[0]) || null;
+    // A file carries its own name — typing one is optional there, and the
+    // extension is dropped from the default because the shelf shows a title,
+    // not a filename.
+    const name = $('pd_name').value.trim() || (file ? file.name.replace(/\.[^.]+$/, '') : '');
     const url = $('pd_url').value.trim();
-    if (!name || !url) return toast('צריך שם וקישור', true);
+    if (!name) return toast('צריך שם למסמך', true);
+    if (!url && !file) return toast('צריך קישור או קובץ', true);
+    if (url && file) return toast('או קישור או קובץ — לא שניהם יחד', true);
     add.disabled = true;
     try {
+      let storagePath = null;
+      if (file) {
+        const clean = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
+        storagePath = OFFICE.id + '/' + p.id + '/' + Date.now() + '-' + clean;
+        const { error } = await sb.storage.from('nadlan-pro-docs').upload(storagePath, file, {
+          cacheControl: '3600', upsert: false, contentType: file.type || undefined,
+        });
+        if (error) throw error;
+      }
       const id = await rpc('np_property_document_add', {
-        p: { property_id: p.id, category: $('pd_category').value, name, url },
+        p: { property_id: p.id, category: $('pd_category').value, name,
+             url: url || null, storage_path: storagePath },
       });
-      const next = [{ id, category: $('pd_category').value, name, url, notes: null,
+      const next = [{ id, category: $('pd_category').value, name, url: url || null,
+                      storage_path: storagePath, notes: null,
                       created_at: new Date().toISOString() }, ...docs];
       box.innerHTML = propDocsHtml(next);
       wirePropDocs(p, next);
