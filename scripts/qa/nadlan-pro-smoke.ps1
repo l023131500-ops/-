@@ -358,9 +358,21 @@ Write-Host ("  passed: " + $script:pass) -ForegroundColor Green
 if ($script:fail -gt 0) { Write-Host ("  failed: " + $script:fail) -ForegroundColor Red }
 else { Write-Host "  failed: 0" -ForegroundColor Green }
 
+# The header above has always claimed "cleans up at the end unless -Keep is
+# passed", but no cleanup call ever existed -- every run left a full office
+# (and every contact/deal/invoice/contract it touched) behind in production.
+# 7 of them had accumulated by 25/08/2026. np_office_delete (owner-only,
+# cascades via the office_id FKs already ON DELETE CASCADE on every child
+# table) makes the header's claim true.
 if (-not $Keep) {
-  # The office cascades to everything created above.
-  Write-Host "`n(cleanup: pass -Keep to leave the test office in place)" -ForegroundColor DarkGray
+  try {
+    Rpc $tokA 'np_office_delete' @{ p_office = $officeA } | Out-Null
+    Write-Host "(cleanup: test office deleted)" -ForegroundColor DarkGray
+  } catch {
+    Write-Host ("(cleanup FAILED — test office left behind: " + $_.Exception.Message + ")") -ForegroundColor Red
+  }
+} else {
+  Write-Host "`n(-Keep passed: test office left in place)" -ForegroundColor DarkGray
 }
 Write-Host ("test office id: " + $officeA) -ForegroundColor DarkGray
 
