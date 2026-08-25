@@ -130,6 +130,13 @@ function localityWikiName(fromDeals: string | null, official?: string | null): s
 export interface PropertyReport {
   query: string;
   tier: ReportTier;
+  /**
+   * §8 · המלצה 5 ("מטמון לדוח") — נוכח רק כש-`/api/report` הגיש עותק שמור
+   * טרי במקום להריץ הפקה חדשה (ראה `lib/savedreports.ts:readFreshByParcelKey`).
+   * לעולם לא נכתב ע"י `buildReport` עצמו.
+   */
+  cached?: boolean;
+  cachedAt?: string;
   /** מגורים / שכירות / מסחרי / קרקע — קובע אילו סעיפים נבנים ומה נמשך מהלוחות. */
   assetType: AssetType;
   /**

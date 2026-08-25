@@ -16,6 +16,7 @@ import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 import { env } from './env';
 import type { PropertyReport } from './buildreport';
 import { TIER_ORDER, type ReportTier } from './report';
+import { isAssetType } from './assettype';
 
 type NadlanClient = SupabaseClient<any, 'nadlan', any>;
 
@@ -203,6 +204,64 @@ export async function readSaved(
     updatedAt: String(data.updated_at),
     generations: Number(data.generations) || 1,
   };
+}
+
+/**
+ * §8 · המלצה 5 ("מטמון לדוח") · מפתח-זהות מהיר לחיפוש גוש/חלקה בלבד, בלי
+ * להריץ את כל מנוע ההפקה (גיאוקוד+קדסטר) רק כדי לדעת אם כבר יש דוח שמור.
+ *
+ * ⚠️ תואם בדיוק את הענף `p:` שבונה `propertyKeyOf` — ומתאים **רק** לצורה
+ * `גוש X חלקה Y` שבה `ReportRequestForm.composeQuery()` שולח `q` כשמולאו שני
+ * השדות (ואינה שולחת שום טקסט נוסף באותו מקרה, ראה שם). כל צורה אחרת —
+ * כתובת חופשית, שם רחוב — לא ניתנת לזיהוי בלי גיאוקוד, ומחזירה `null` כאן
+ * כדי שהנתיב הרגיל (בניית דוח מלאה) ירוץ בלי שינוי, כמו היום.
+ */
+export function fastParcelKey(
+  q: string,
+  assetTypeRaw: string | null,
+  input: { tatHelka?: string | null; entrance?: string | null; apartment?: string | null },
+): string | null {
+  const m = /^גוש\s+(\S+)\s+חלקה\s+(\S+)$/.exec(q.trim());
+  if (!m) return null;
+  const assetType = isAssetType(assetTypeRaw) ? assetTypeRaw : 'residential';
+  const unitPart = [
+    input.tatHelka ? `t${tidy(input.tatHelka)}` : '',
+    input.entrance ? `e${tidy(input.entrance)}` : '',
+    input.apartment ? `a${tidy(input.apartment)}` : '',
+  ]
+    .filter(Boolean)
+    .join('-');
+  return [`p:${tidy(m[1])}/${tidy(m[2])}`, unitPart, assetType].filter(Boolean).join('|');
+}
+
+/**
+ * §8 · המלצה 5 · דוח שמור **טרי** לאותו מפתח-זהות **וברמה זהה בדיוק**.
+ *
+ * ⚠️ שתי שמירות מכוונות:
+ * 1. התאמת רמה מדויקת בלבד — `report` נשמר רק כשהיא ה-`best_tier`, כך
+ *    שדוח VIP שמור לעולם לא יוגש בתשובה לבקשת רמה חינמית/פרימיום: זו הייתה
+ *    חושפת תוכן ששולם עליו למי שלא ביקש/שילם עליו.
+ * 2. חלון-טריות — לא "קבוע" כמו הקישור ב-`readSaved` (§8 הקישור הקבוע
+ *    מתעדכן רק בלחיצה מפורשת), אלא חיסכון על הפקה **חוזרת תוך זמן קצר**
+ *    לאותו נכס/רמה (מסך → PDF → מצגת, ששלושתם מבקשים בדיוק אותו q/tier
+ *    תוך שניות-דקות).
+ */
+export async function readFreshByParcelKey(
+  propertyKey: string,
+  tier: ReportTier,
+  maxAgeMs: number,
+): Promise<{ report: PropertyReport; slug: string; updatedAt: string } | null> {
+  const db = store();
+  if (!db) return null;
+  const { data } = await db
+    .from('saved_reports')
+    .select('slug,report,best_tier,updated_at')
+    .eq('property_key', propertyKey)
+    .maybeSingle();
+  if (!data?.report || data.best_tier !== tier) return null;
+  const ageMs = Date.now() - new Date(data.updated_at).getTime();
+  if (!(ageMs >= 0) || ageMs > maxAgeMs) return null;
+  return { report: data.report as PropertyReport, slug: data.slug, updatedAt: String(data.updated_at) };
 }
 
 /** רשימת כל הדוחות השמורים — למרכז השליטה. */

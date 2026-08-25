@@ -25,6 +25,10 @@ export default function SavedReportView({
   const when = new Date(updatedAt).toLocaleString('he-IL');
   const params = new URLSearchParams({ q: report.query, tier: report.tier });
   if (report.assetType !== 'residential') params.set('type', report.assetType);
+  // §8 · המלצה 5 — לחיצה מפורשת על "מעודכן" חייבת לעקוף את מטמון ההפקה-
+  // החוזרת-קצרת-הטווח שנוסף ל-`/api/report`, אחרת הכפתור הזה עלול להחזיר
+  // בשקט עותק בן כמה שעות במקום הפקה אמיתית חדשה.
+  params.set('refresh', '1');
 
   return (
     <ReportView

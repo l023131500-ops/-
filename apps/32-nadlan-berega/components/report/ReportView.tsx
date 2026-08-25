@@ -50,10 +50,13 @@ export default function ReportView({
   layers: initialLayers,
   preloaded = null,
   savedNote = null,
+  refresh = false,
 }: {
   q: string;
   tier: ReportTier;
   assetType?: AssetType;
+  /** §8 · המלצה 5 — עוקף את מטמון הפקה-חוזרת-קצרת-טווח (`/api/report`). */
+  refresh?: boolean;
   /**
    * ⚠️ הטיפוס הזה הוא מה שתפס את הבאג: העמוד כבר קרא `tatHelka` ו-`apartment`
    * מהכתובת, אבל הם לא היו כאן, ולכן נעצרו בגבול הרכיב בלי שאיש ישים לב.
@@ -147,6 +150,9 @@ export default function ReportView({
     if (input?.apartment) params.set('apartment', input.apartment);
     // §1 · שכבה שבוטלה ועולה כסף — לא נמשכת בכלל, ולא רק מוסתרת.
     if (skipListings) params.set('skipListings', '1');
+    // §8 · המלצה 5 — "הפק דוח מעודכן" חייב לעקוף את מטמון ההפקה-החוזרת,
+    // אחרת לחיצה מפורשת על "מעודכן" הייתה יכולה להחזיר עותק בן כמה שעות.
+    if (refresh) params.set('refresh', '1');
 
     /**
      * תקרת זמן לבקשה.
@@ -184,7 +190,7 @@ export default function ReportView({
       ctl.abort();
     };
   }, [q, tier, assetType, input?.entrance, input?.floor, input?.rooms,
-      input?.tatHelka, input?.apartment, skipListings, preloaded]);
+      input?.tatHelka, input?.apartment, skipListings, preloaded, refresh]);
 
   // הדגשת הקטגוריה שנמצאת כרגע מול העין.
   useEffect(() => {
@@ -366,6 +372,25 @@ export default function ReportView({
 
       <div className="mx-auto max-w-6xl px-5">
         {savedNote}
+
+        {/* §8 · המלצה 5 — הדוח הוגש מעותק שמור טרי במקום הפקה חדשה בתשלום. */}
+        {!preloaded && data && data.cached && (
+          <div className="mt-6 rounded-2xl border border-line bg-bgsoft p-4 print:hidden">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <div className="text-[13.5px] leading-relaxed text-ink">
+                <b className="text-navy">דוח עדכני שכבר קיים.</b> כדי לחסוך תשלום חוזר על אותם
+                מקורות, זו ההפקה האחרונה לאותו נכס ולאותה רמה
+                {data.cachedAt ? ` — הופקה ב-${new Date(data.cachedAt).toLocaleString('he-IL')}` : ''}.
+              </div>
+              <a
+                href={apiUrl(`/report?${sharedQs}&tier=${tier}&refresh=1`)}
+                className="shrink-0 rounded-xl bg-teal px-5 py-2.5 text-[14px] font-bold text-white hover:bg-tealD"
+              >
+                הפק דוח חדש עכשיו
+              </a>
+            </div>
+          </div>
+        )}
 
         {/*
           §1 · מה שהלקוח בחר לא לכלול — נאמר במפורש, ולא נעלם בשקט.
