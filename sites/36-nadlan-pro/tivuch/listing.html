@@ -86,6 +86,28 @@ h1{font-family:'Suez One',serif;font-weight:400;font-size:26px;margin:0 0 4px}
 @media (prefers-reduced-motion:reduce){.spinner{animation-duration:2s}}
 .foot{text-align:center;color:var(--muted);font-size:12px;margin-top:40px;
   padding-top:20px;border-top:1px solid var(--line-2)}
+
+.toolbar{display:flex;justify-content:flex-end;margin:0 0 18px}
+
+/* Same convention as apps/32-nadlan-berega/app/globals.css's print block:
+   A4 page, dark theme flipped to ink-friendly white (a printed dark
+   background wastes toner and reads poorly on paper), cards/images kept
+   whole across page breaks, and on-screen-only controls hidden. */
+@media print{
+  .noprint{display:none !important}
+  @page{size:A4;margin:14mm 12mm}
+  body{background:#fff;color:#151726}
+  .brand{border-color:#ddd}
+  .brand .m{color:#151726}
+  .brand .m span{color:#9c7a1c}
+  h1,.price{color:#151726}
+  .sub,.desc,.office,.facts .k{color:#555}
+  .facts,.office,.note{border-color:#ddd;background:none;break-inside:avoid}
+  .gallery img{max-width:100% !important;break-inside:avoid;border-color:#ddd}
+  .video-embed{display:none}
+  a[href^="http"]::after{content:' (' attr(href) ')';font-size:9px;color:#555;word-break:break-all}
+  .foot{color:#555;border-color:#ddd}
+}
 </style>
 </head>
 <body>
@@ -95,6 +117,9 @@ h1{font-family:'Suez One',serif;font-weight:400;font-size:26px;margin:0 0 4px}
   <div id="loading" class="loading"><span class="spinner"></span>טוען את הנכס…</div>
 
   <main id="main" hidden>
+    <div class="toolbar noprint">
+      <button class="btn" id="pdfBtn" type="button">🖨️ הורדה כמצגת PDF</button>
+    </div>
     <h1 id="title"></h1>
     <p class="sub" id="sub"></p>
     <p class="price" id="price" hidden></p>
@@ -239,6 +264,8 @@ async function boot() {
     $('reportLink').hidden = false;
     $('reportLink').href = 'https://more30.com/nadlan/report?q=' + encodeURIComponent(d.report_query);
   }
+
+  $('pdfBtn').addEventListener('click', () => window.print());
 }
 
 boot();
