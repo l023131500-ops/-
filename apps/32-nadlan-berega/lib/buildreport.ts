@@ -1465,11 +1465,24 @@ export async function buildReport(
 
   // הסימון "בבניין הזה" נגזר ממזהה הבניין — לא רק מגוש/חלקה, שיכולים לחלוק
   // על העסקאות (ראה BuildingIdentity).
+  //
+  // ⚠️ P2 ACCURACY SPEC v2 §3 — "comparables stay correct" כשרחוב שינה שם.
+  // `streetNameMismatch` (למעלה) כבר מזהה שהעסקאות של **הבניין הזה עצמו**
+  // רשומות תחת שם שאינו באף כינוי ידוע — אבל בלי לספר על כך ל-`sortByProximity`,
+  // כל עסקה **אחרת** באותו רחוב (לא רק בבניין) שרשומה תחת אותו שם-רשום ממשיך
+  // ליפול ל"בסביבה" (rank 1000) במקום "באותו רחוב" (rank 500/10+), כי
+  // `matchesStreet` שם בודק רק מול `streetNames` המקורי. `registeredStreetName`
+  // אומת כבר כשם האמיתי שהרשומה הממשלתית משתמשת בו לבניין הזה בדיוק — לכן
+  // בטוח להוסיף אותו לרשימת השמות הידועים לצורך המיון, לא רק לאזהרה בטקסט.
+  const streetNamesForProximity =
+    streetNameMismatch && registeredStreetName
+      ? [...streetNames, registeredStreetName]
+      : streetNames;
   const soldDeals = sortByProximity(
     allTxns,
     gush,
     helka,
-    streetNames,
+    streetNamesForProximity,
     parsed.houseNum ?? null,
     buildingPolygonId,
     ageInfo?.redevelopmentYear ?? null,
