@@ -34,6 +34,7 @@ import PriceTrend from './PriceTrend';
 import PropertyImagery from './PropertyImagery';
 import TransitLines from './TransitLines';
 import AreaAlertSignup from './AreaAlertSignup';
+import TabuRequestPanel from './TabuRequestPanel';
 
 /** שלושת הכפתורים, בשפה של הלקוח. */
 const BUTTONS: { tier: ReportTier; title: string; sub: string }[] = [
@@ -644,6 +645,7 @@ export default function ReportView({
         ))}
 
         {tier === 'vip' && <VipPanel report={data} />}
+        {tier === 'vip' && <TabuRequestPanel report={data} />}
 
         {/* more30-feature-expansion.md · נדל"ן: התראות על עסקאות חדשות באזור/רחוב */}
         <AreaAlertSignup

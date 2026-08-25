@@ -34,6 +34,80 @@ Next.js 14 (App Router) + TypeScript + Tailwind RTL + Supabase. מפתח אחי�
    לאישורים שגרתיים; עצור רק לפני פעולה הרסנית (מחיקת DB/repo, force-push) או
    כשחסר מידע קריטי שלא קיים באף מקום.
 
+## עדכון — 25/08/2026 (Loop A, session 5 — TABU workflow §1-2: מקור-הבקשה מהלקוח, שהיה חסר לגמרי)
+`core.build_tasks` id=4/11 ("TABU workflow": checkbox+grade → mgmt task+email →
+upload+Research → view/download+AI-explanation → attach to client) עדיין
+`todo` על שתי המערכות. ביקורת מלאה (הופעל Explore agent + קריאה ישירה) מצאה
+ש-3 מתוך 5 השלבים כבר קיימים ועובדים, ורק אחד חסר לגמרי:
+
+- **קיים:** העלאה+ניתוח AI (`tabu_documents`, `lib/tabudoc.ts`, `TabuPanel` ב-
+  `RequestsBoard.tsx`) — ה"ניתוח" כבר כתוב ב-`analysis.summary` (3-5 שורות
+  עברית מדוברת, בדיוק "מה שקונה צריך לדעת") — זה כבר ההסבר-בשפה-פשוטה שהמפרט
+  מבקש, רק לא תויג ככזה במפורש.
+- **קיים ומחובר בפועל (אומת בקוד, לא הונח):** צירוף ללקוח — `reportEmailHtml`
+  (`lib/reporthtml.ts`) כבר מרנדר `tabuBlock(opts.tabuDocs)`, ו-`/api/admin/
+  requests` (route.ts שורה 117) כבר קורא ל-`tabuForProperty()` ומעביר את
+  התוצאה ל-`reportEmailHtml` בכל שליחת דוח בפועל.
+- **חסר לגמרי (עד הסבב הזה):** שום דרך ללקוח *לבקש* נסח. כל שורה ב-
+  `tabu_documents` הגיעה מיוזמת צוות בלבד — אין רישום שלקוח ביקש, ואין שום
+  התראה לצוות איזה גוש/חלקה דורש הזמנה אמיתית מרשם המקרקעין.
+
+**למה לא הוצג נתון-נסח על המסך (רק במייל):** `/report?q=` הוא עמוד ציבורי
+לגמרי (כל מי שמזין את הכתובת רואה VIP אם מוסיף `tier=vip` ל-URL — אין בדיקת
+תשלום ברמת העמוד), וגם הקישור הקבוע `/p/[slug]` **דטרמיניסטי מכתובת/גוש-חלקה**
+(`slugOf` ב-`lib/savedreports.ts`, לא טוקן סודי) — שני העמודים משותפים/ניתנים-
+לניחוש במפורש בכוונה (לינק ל-WhatsApp). `lib/tabudoc.ts` עצמו כותב במפורש
+"אין מסלול ציבורי" לנתוני נסח (שמות בעלים, סכומי משכנתה אמיתיים) בגלל זה
+בדיוק. הוספת נתוני נסח לאחד העמודים האלה הייתה **חושפת מידע משפטי פרטי לכל מי
+שיודע/מנחש כתובת** — נסוג מהרעיון הזה במפורש אחרי בדיקה, לא רק דילוג.
+
+**מה נבנה בפועל (רק §1-2, השלב שבאמת חסר):**
+- מיגרציה `0150_nadlan_tabu_requests.sql`: `nadlan.tabu_requests` — RLS זהה
+  ל-`report_requests` (INSERT בלבד ל-`public`, `with check(true)`, אותו grant
+  set בדיוק כמו `report_exports`/`tabu_documents`). אומת חי: insert תקין
+  עובר, `grade`/`status` לא-חוקיים נדחים ע"י check constraint, מעברי סטטוס
+  pending→sent→fulfilled עובדים, `get_advisors` (security) לא הראה אזהרה
+  חדשה. `tabu_document_id`/`fulfilled_at` נשארים בסכימה בלי קוד שכותב אליהם —
+  חיבור-הקישור בפועל (העלאת נסח ← איזו בקשה היא עונה עליה) **נשאר פתוח**
+  לסבב הבא, במכוון: לא רציתי לנעול/לשנות את זרימת ה-`TabuPanel` הקיימת
+  (צוות מעלה נסח יזום גם בלי בקשת לקוח — יכולת קיימת, אסור לפגוע בה).
+- `lib/requests.ts`: `createTabuRequest`/`listTabuRequests`/
+  `pendingTabuRequestCount`/`markTabuRequestSent`/`recordTabuRequestEmailResult`
+  — אותו דפוס בדיוק כמו `report_requests` (anon יוצר, service קורא/מעדכן).
+- `app/api/tabu-request/route.ts` (POST, ציבורי): מאמת גוש/חלקה/מייל, יוצר
+  שורה, ואז best-effort שולח מייל-התראה לצוות (`TABU_ADMIN_EMAIL`, משתנה סביבה
+  חדש — צריך הגדרה ב-Vercel; בלעדיו/בלי RESEND הבקשה עדיין נשמרת,
+  `admin_email_error` מתעד את הסיבה במקום להעלים אותה בשקט).
+- `app/api/admin/tabu-requests/route.ts` + `TabuRequestsBoard.tsx` (לוח ניהול
+  חדש, `adminGate` זהה ל-`RequestsBoard`): רשימת בקשות + כפתור "סומן כהוזמן —
+  נשלח לרשם המקרקעין" (הפעולה האנושית שאי אפשר להפוך לאוטומטית — אין API
+  ציבורי לנסח, ראה `lib/tabu.ts`). מחובר בעמוד `/admin` (section נפרד, אחרי
+  "בקשות דוח").
+- `TabuRequestPanel.tsx` (VIP בלבד, `tier === 'vip'`, אותו שער כמו `VipPanel`):
+  צ'קבוקס + בורר עדיפות (רגילה/דחופה) + שם/מייל/טלפון/הערות, בדוח עצמו
+  (`ReportView.tsx`, אחרי `VipPanel`). **כותב בלבד** — אף פעם לא קורא נתוני
+  נסח קיימים, מהסיבה שהוסברה למעלה.
+
+⚠️ קיים כבר מנגנון ישן ונפרד — `document_requests`/`RequestForm.tsx`/
+`/api/request` (`doc_type: 'tabu'|'rami'|'permit'|'other'`, עמוד `/request`
+עצמאי). לא נגעתי בו: הוא כללי (4 סוגי מסמך, בלי גוש/חלקה-חובה, בלי "grade"),
+ובבדיקה נמצא **ללא שום צרכן בניהול** (`grep` על `document_requests` מחזיר רק
+את `lib/store.ts` עצמו) — כלומר בקשות אליו נעלמות היום בלי שאף אחד רואה אותן.
+לא תוקן בסבב הזה (מחוץ לסקופ), אבל שווה לדעת שהוא שם ולא מיותר להחליף/לתקן
+בנפרד. `tabu_requests` החדש **לא** מחליף אותו.
+
+אומת: `node --check` לא זמין ל-TSX (כרגיל, אין `tsc`/`node_modules` בסביבה),
+כך שהאימות היה בדיקת איזון-סוגריים ממוקדת על כל קובץ חדש/שהשתנה (עברו נקי;
+הסטטיסטיקה השלילית שדיווח סקריפט האיזון על `ReportView.tsx` המלא אומתה
+כתקלה קיימת-מראש של הסקריפט מול generics/JSX בקובץ הענק הזה — נבדק גם על
+הגרסה *לפני* השינוי שלי, אותה תוצאה בדיוק) + שכפול-לוגיקה עצמאי ב-Node טהור
+של ולידציית ה-route (7 תרחישים: גוש/חלקה חסרים, מייל לא תקין, grade לא-מוכר
+→ נופל ל-`normal`, רווחים-בלבד נחשב חסר — כולם עברו). מיגרציית ה-DB אומתה חי
+דרך MCP (insert/constraint/status-transition + advisors, לא רק קריאת קוד).
+אפס רגרסיה: שני API routes חדשים + שני קומפוננטות חדשות + section חדש בעמוד
+ניהול + טבלה חדשה — שום route/קומפוננטה/RPC קיימים לא נגעו. System 35
+KioskFleet לא נגע, לפי ה-HARD STEERING.
+
 ## עדכון — 25/08/2026 (Loop A, session 4 — core.build_tasks reconciliation + implausible-price warning על system 36)
 הסבב הזה קרא לראשונה את `core.build_tasks` (טבלה חדשה שנוצרה היום ב-21:22:58,
 מקור-האמת החדש ל-PROGRESS CONTRACT לפי הנחיית הבעלים ב-core.projects #33).

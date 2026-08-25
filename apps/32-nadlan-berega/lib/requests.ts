@@ -417,3 +417,183 @@ export async function tabuForProperty(opts: {
     .sort((a, b) => a.r - b.r)
     .map((x) => x.d);
 }
+
+// ---------- בקשות נסח טאבו (מהלקוח, מתוך דוח VIP) ----------
+//
+// ⚠️ הטבלה נקראת אך ורק עם service key — בדיוק כמו tabu_documents/
+// report_requests. anon יכול **להכניס** בקשה (RLS: INSERT בלבד ל-public,
+// with check(true)) אבל לא לקרוא אף שורה, כולל את זו שהוא עצמו יצר: הטבלה
+// מכילה שם/מייל/טלפון אמיתיים של לקוח, ואין לה מסלול ציבורי לקריאה — אותו
+// עיקרון בדיוק ש-tabudoc.ts כבר כתב על tabu_documents עצמו.
+
+export type TabuRequestGrade = 'normal' | 'urgent';
+export type TabuRequestStatus = 'pending' | 'sent' | 'fulfilled' | 'failed';
+
+export interface TabuRequestInput {
+  gush: string;
+  helka: string;
+  tatHelka?: string | null;
+  entrance?: string | null;
+  apartment?: string | null;
+  address?: string | null;
+  city?: string | null;
+  assetType?: string | null;
+  grade: TabuRequestGrade;
+  requesterName?: string | null;
+  requesterEmail: string;
+  requesterPhone?: string | null;
+  notes?: string | null;
+}
+
+export interface TabuRequestRow {
+  id: number;
+  gush: string;
+  helka: string;
+  tat_helka: string | null;
+  entrance: string | null;
+  apartment: string | null;
+  address: string | null;
+  city: string | null;
+  asset_type: string | null;
+  grade: TabuRequestGrade;
+  requester_name: string | null;
+  requester_email: string;
+  requester_phone: string | null;
+  notes: string | null;
+  status: TabuRequestStatus;
+  admin_email_sent: boolean;
+  admin_email_error: string | null;
+  created_at: string;
+  sent_at: string | null;
+  sent_by: string | null;
+  fulfilled_at: string | null;
+  tabu_document_id: number | null;
+}
+
+const TABU_REQUEST_FIELDS =
+  'id,gush,helka,tat_helka,entrance,apartment,address,city,asset_type,grade,requester_name,' +
+  'requester_email,requester_phone,notes,status,admin_email_sent,admin_email_error,created_at,' +
+  'sent_at,sent_by,fulfilled_at,tabu_document_id';
+
+/**
+ * יצירת בקשת נסח — המסלול הציבורי, עם anon key.
+ * ⚠️ אין `.select()` בכוונה — אותה סיבה בדיוק כמו `createReportRequest`.
+ */
+export async function createTabuRequest(input: TabuRequestInput): Promise<void> {
+  const db = anonStore();
+  if (!db) throw new Error('Supabase לא מוגדר (SUPABASE_URL / SUPABASE_ANON_KEY).');
+  if (!input.gush?.trim() || !input.helka?.trim()) {
+    throw new Error('נדרשים גוש וחלקה כדי לבקש נסח טאבו.');
+  }
+  if (!looksLikeEmail(input.requesterEmail)) {
+    throw new Error('כתובת המייל אינה תקינה.');
+  }
+  const { error } = await db.from('tabu_requests').insert({
+    gush: input.gush.trim(),
+    helka: input.helka.trim(),
+    tat_helka: input.tatHelka ?? null,
+    entrance: input.entrance ?? null,
+    apartment: input.apartment ?? null,
+    address: input.address ?? null,
+    city: input.city ?? null,
+    asset_type: input.assetType ?? null,
+    grade: input.grade === 'urgent' ? 'urgent' : 'normal',
+    requester_name: input.requesterName ?? null,
+    requester_email: input.requesterEmail.trim(),
+    requester_phone: input.requesterPhone ?? null,
+    notes: input.notes ?? null,
+  });
+  if (error) throw new Error(error.message);
+}
+
+/**
+ * הבקשה שזה עתה נוצרה — לצורך רישום תוצאת מייל-ההתראה בלבד (§admin_email_sent).
+ * `createTabuRequest` לא עושה `.select()` (אין הרשאת קריאה ל-anon), ולכן הצעד
+ * הזה משתמש ב-service key ומאתר לפי email+gush+helka+הזמן האחרון — לא מדויק
+ * תיאורטית מול הגשה כפולה בו-זמנית, אבל אותה סובלנות "best effort" בדיוק כמו
+ * שאר הבקשות בקובץ הזה, ורק לצורך תיוג-מייל ולא לצורך נכונות הבקשה עצמה.
+ */
+async function latestTabuRequestId(email: string, gush: string, helka: string): Promise<number | null> {
+  const db = serviceStore();
+  if (!db) return null;
+  const { data } = await db
+    .from('tabu_requests')
+    .select('id')
+    .eq('requester_email', email)
+    .eq('gush', gush)
+    .eq('helka', helka)
+    .order('created_at', { ascending: false })
+    .limit(1)
+    .maybeSingle();
+  return (data as { id: number } | null)?.id ?? null;
+}
+
+export async function listTabuRequests(
+  opts: { status?: TabuRequestStatus; limit?: number } = {},
+): Promise<TabuRequestRow[]> {
+  const db = serviceStore();
+  if (!db) throw new Error('SUPABASE_SERVICE_KEY חסר — אין הרשאת קריאה לבקשות נסח.');
+  let q = db
+    .from('tabu_requests')
+    .select(TABU_REQUEST_FIELDS)
+    .order('created_at', { ascending: false })
+    .limit(opts.limit ?? 100);
+  if (opts.status) q = q.eq('status', opts.status);
+  const { data, error } = await q;
+  if (error) throw new Error(error.message);
+  return (data ?? []) as TabuRequestRow[];
+}
+
+/** ספירת בקשות ממתינות — ההתראה בניהול, אותו דפוס כמו `pendingCount`. */
+export async function pendingTabuRequestCount(): Promise<number | null> {
+  const db = serviceStore();
+  if (!db) return null;
+  const { count, error } = await db
+    .from('tabu_requests')
+    .select('id', { count: 'exact', head: true })
+    .eq('status', 'pending');
+  if (error) return null;
+  return count ?? 0;
+}
+
+/**
+ * סימון בקשה כ"נשלחה לרשם המקרקעין" — הפעולה האנושית שאי אפשר לבצע אוטומטית
+ * (אין API ציבורי לנסח, ראה `lib/tabu.ts`). מותנה ב-`status='pending'` כדי
+ * שלחיצה כפולה לא תדרוס `sent_at`/`sent_by` של הפעם הראשונה.
+ */
+export async function markTabuRequestSent(id: number, sentBy: string): Promise<TabuRequestRow | null> {
+  const db = serviceStore();
+  if (!db) throw new Error('SUPABASE_SERVICE_KEY חסר.');
+  const { data, error } = await db
+    .from('tabu_requests')
+    .update({ status: 'sent', sent_at: new Date().toISOString(), sent_by: sentBy })
+    .eq('id', id)
+    .eq('status', 'pending')
+    .select(TABU_REQUEST_FIELDS)
+    .maybeSingle();
+  if (error) throw new Error(error.message);
+  return (data as TabuRequestRow) ?? null;
+}
+
+/**
+ * best-effort — נכתב גם כשהמייל נכשל, כדי שהניהול יראה שהבקשה "תקועה" ולא
+ * "ממתין" סתם. מאתר את הבקשה שזה עתה נוצרה דרך `latestTabuRequestId` (ראו שם
+ * למה אין ID ישיר מ-`createTabuRequest`).
+ */
+export async function recordTabuRequestEmailResult(
+  email: string,
+  gush: string,
+  helka: string,
+  sent: boolean,
+  error: string | null,
+): Promise<void> {
+  const db = serviceStore();
+  if (!db) return;
+  const id = await latestTabuRequestId(email, gush, helka);
+  if (id == null) return;
+  await db
+    .from('tabu_requests')
+    .update({ admin_email_sent: sent, admin_email_error: error })
+    .eq('id', id);
+}
+
