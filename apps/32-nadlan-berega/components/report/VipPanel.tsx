@@ -29,6 +29,7 @@ export default function VipPanel({ report }: { report: PropertyReport }) {
   const [cgSalePrice, setCgSalePrice] = useState<number>(0);
   const [cgIsSingleHome, setCgIsSingleHome] = useState<boolean>(true);
   const [cgImprovementCosts, setCgImprovementCosts] = useState<number>(0);
+  const [cgSoldAnotherExempt, setCgSoldAnotherExempt] = useState<boolean>(false);
 
   const ils = (n: number) => new Intl.NumberFormat('he-IL').format(n);
 
@@ -89,8 +90,17 @@ export default function VipPanel({ report }: { report: PropertyReport }) {
         salePrice: cgSalePrice,
         isSingleHome: cgIsSingleHome,
         improvementCosts: cgImprovementCosts,
+        soldAnotherExemptHomeInLast18Months: cgSoldAnotherExempt,
       }),
-    [cgPurchaseDate, cgPurchasePrice, cgSaleDate, cgSalePrice, cgIsSingleHome, cgImprovementCosts],
+    [
+      cgPurchaseDate,
+      cgPurchasePrice,
+      cgSaleDate,
+      cgSalePrice,
+      cgIsSingleHome,
+      cgImprovementCosts,
+      cgSoldAnotherExempt,
+    ],
   );
 
   return (
@@ -471,6 +481,15 @@ export default function VipPanel({ report }: { report: PropertyReport }) {
             />
             דירה יחידה (אין דירה נוספת בבעלות)
           </label>
+          <label className="flex items-center gap-2 text-sm font-semibold text-ink">
+            <input
+              type="checkbox"
+              checked={cgSoldAnotherExempt}
+              onChange={(e) => setCgSoldAnotherExempt(e.target.checked)}
+              className="accent-teal"
+            />
+            מכרתי דירת מגורים אחרת בפטור זה ב-18 החודשים שקדמו למכירה הזו
+          </label>
         </div>
 
         {capitalGainsTax && (
@@ -506,6 +525,14 @@ export default function VipPanel({ report }: { report: PropertyReport }) {
               capitalGainsTax.exemptionIneligibleReason === 'holding-period' && (
                 <p className="mt-3 rounded-xl border border-gold/40 bg-gold/10 px-4 py-3 text-[13px] leading-relaxed text-[#7a5f1f]">
                   לא זכאי לפטור דירה יחידה: תקופת ההחזקה קצרה מ-18 חודשים (סעיף 49ב(2)).
+                </p>
+              )}
+
+            {capitalGainsTax.eligibleForSingleHomeExemption === false &&
+              capitalGainsTax.exemptionIneligibleReason === 'recent-exempt-sale' && (
+                <p className="mt-3 rounded-xl border border-gold/40 bg-gold/10 px-4 py-3 text-[13px] leading-relaxed text-[#7a5f1f]">
+                  לא זכאי לפטור דירה יחידה: נמכרה דירת מגורים אחרת בפטור לפי אותו סעיף ב-18
+                  החודשים שקדמו למכירה הזו (סעיף 49ב(2)) — זהו תנאי נפרד מתקופת ההחזקה.
                 </p>
               )}
 

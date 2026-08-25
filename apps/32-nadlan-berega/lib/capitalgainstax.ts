@@ -14,6 +14,15 @@
 //    פטור לגמרי, החלק מ-1.1.2014 ואילך חייב ב-25%. דירה שנרכשה ב-1.1.2014
 //    ואילך — כל השבח בקטגוריית "אחרי", כלומר כל השבח ב-25%.
 //
+// [25/08/2026 Loop A] תוקן: סעיף 49ב(2) קובע **שני** תנאי-סף מצטברים סביב
+// 18 חודשים, לא אחד — האימוש המקורי בדק רק את הראשון. אומת מול שני מקורות
+// עצמאיים (חיפוש רשת, לא ניחוש): (1) המוכר מחזיק בדירה 18 חודשים לפחות מהיום
+// שהייתה לדירת מגורים — זה מה ש-`meetsMinHoldingPeriod` כבר בדק. (2) תנאי
+// **נפרד**: המוכר לא מכר דירת מגורים **אחרת** בפטור לפי אותו סעיף ב-18
+// החודשים שקדמו למכירה הזו — זה לא היה קיים בכלל. הדוח אינו יודע (ולא יכול
+// לדעת) על מכירות אחרות של הלקוח, ולכן זהו קלט מהמשתמש (תיבת סימון), לא
+// חישוב — בדיוק כמו "דירה יחידה" שכבר קלט מהמשתמש ולא ניחוש.
+//
 // ⚠️ מגבלות מכוונות (מפורשות ללקוח בכרטיס, באותו דפוס בדיוק כמו מס רכישה):
 // - שווי הרכישה **אינו מתואם למדד המחירים לצרכן** (אין בסביבה הזו גישת רשת
 //   ישירה כדי לשלוף ולאמת סדרת מדד היסטורית לטווח שרירותי לפני המסירה —
@@ -34,6 +43,12 @@ export interface CapitalGainsTaxInput {
   isSingleHome: boolean;
   /** עלויות השבחה מוכרות (שיפוץ מהותי וכד') — לא חובה, ברירת מחדל 0. */
   improvementCosts?: number;
+  /**
+   * תנאי מצטבר שני בסעיף 49ב(2), נפרד מתקופת ההחזקה: המוכר לא זכאי אם מכר
+   * דירת מגורים **אחרת** בפטור לפי אותו סעיף ב-18 החודשים שקדמו למכירה הזו.
+   * ברירת מחדל false (לא מכר) — הנחה אופטימית, כמו כל שדה אופציונלי אחר כאן.
+   */
+  soldAnotherExemptHomeInLast18Months?: boolean;
 }
 
 export interface CapitalGainsTaxResult {
@@ -41,7 +56,7 @@ export interface CapitalGainsTaxResult {
   nominalGain: number;
   eligibleForSingleHomeExemption: boolean;
   /** למה לא זכאי, אם רלוונטי — לתצוגה. */
-  exemptionIneligibleReason: 'not-single-home' | 'holding-period' | null;
+  exemptionIneligibleReason: 'not-single-home' | 'holding-period' | 'recent-exempt-sale' | null;
   exemptionCeiling: number;
   /** true אם שווי המכירה חורג מתקרת הפטור (רלוונטי רק אם זכאי לפטור). */
   exceedsCeiling: boolean;
@@ -93,6 +108,7 @@ function meetsMinHoldingPeriod(purchaseMs: number, saleMs: number): boolean {
 export function calcCapitalGainsTax(input: CapitalGainsTaxInput): CapitalGainsTaxResult | null {
   const { purchaseDateIso, purchasePrice, saleDateIso, salePrice, isSingleHome } = input;
   const improvementCosts = input.improvementCosts ?? 0;
+  const soldAnotherExemptHomeInLast18Months = input.soldAnotherExemptHomeInLast18Months ?? false;
 
   if (!Number.isFinite(purchasePrice) || purchasePrice <= 0) return null;
   if (!Number.isFinite(salePrice) || salePrice <= 0) return null;
@@ -119,9 +135,10 @@ export function calcCapitalGainsTax(input: CapitalGainsTaxInput): CapitalGainsTa
     };
   }
 
-  let exemptionIneligibleReason: 'not-single-home' | 'holding-period' | null = null;
+  let exemptionIneligibleReason: 'not-single-home' | 'holding-period' | 'recent-exempt-sale' | null = null;
   if (!isSingleHome) exemptionIneligibleReason = 'not-single-home';
   else if (!meetsMinHoldingPeriod(purchaseMs, saleMs)) exemptionIneligibleReason = 'holding-period';
+  else if (soldAnotherExemptHomeInLast18Months) exemptionIneligibleReason = 'recent-exempt-sale';
   const eligibleForSingleHomeExemption = exemptionIneligibleReason === null;
 
   const exceedsCeiling = salePrice > SINGLE_HOME_EXEMPTION_CEILING_2026;
