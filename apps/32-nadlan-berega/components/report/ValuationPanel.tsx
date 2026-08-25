@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { hasValuation, type ValuationResult } from '@/lib/valuation';
 import { CertaintyBadge } from './Bits';
+import ComparablesTrend from './ComparablesTrend';
 
 /**
  * §2 · הערכת שווי.
@@ -130,6 +131,8 @@ export default function ValuationPanel({ valuation }: { valuation: ValuationResu
               </table>
             </div>
           )}
+
+          <ComparablesTrend comparables={v.comparables} />
         </div>
       )}
 

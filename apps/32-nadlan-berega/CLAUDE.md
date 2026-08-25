@@ -34,6 +34,41 @@ Next.js 14 (App Router) + TypeScript + Tailwind RTL + Supabase. מפתח אחי�
    לאישורים שגרתיים; עצור רק לפני פעולה הרסנית (מחיקת DB/repo, force-push) או
    כשחסר מידע קריטי שלא קיים באף מקום.
 
+## עדכון — 25/08/2026 (Loop A, גרף מגמת-מחיר בטבלת ההשוואה, systems 32+36)
+P2 ACCURACY SPEC §E (core.projects #33) מבקש בפירוש שני רכיבים נפרדים:
+"a comparable-deals table (comparison of transactions) with adjustments;
+**a price-trend chart** for the street/neighborhood". חצי ראשון (הטבלה) כבר
+היה בנוי משלם על שתי המערכות (`ValuationPanel.tsx` ב-32,
+`comparablesHtml()` ב-`app.html` של 36 — ראו העדכונים למטה). בדיקה עצמאית
+מצאה שהחצי השני (הגרף) **לא היה קיים באף אחת מהמערכות**: ל-32 יש
+`PriceTrend.tsx`, אבל הוא מציג את **מדד המחירים הארצי של הלמ״ס** (מגמת שוק
+כללית), לא מגמה ברמת הרחוב/השכונה של הנכס הספציפי — ול-36 לא היה שום גרף
+בכלל, רק הטבלה.
+
+נוסף `components/report/ComparablesTrend.tsx` (32): גרף recharts (תלות
+קיימת כבר בפרויקט, `PriceTrend.tsx` כבר משתמש בה) הבנוי **ישירות מ-
+`valuation.comparables`** — אותן עסקאות בדיוק שהטבלה שמעליו כבר מציגה
+(`valuate()` ב-`lib/valuation.ts` כבר בוחר אותן בסדר-עדיפות בניין→רחוב→
+אזור) — בלי קריאת רשת/מקור חדש. מסנן לעסקאות עם תאריך ומחיר-למ״ר, ממיין
+כרונולוגית, ודורש לפחות 3 נקודות (כמו הסף הקיים ב-`PriceTrend.tsx`) אחרת
+לא מרנדר כלום — אין קו-מגמה על שתי נקודות. מחווט לתוך `ValuationPanel.tsx`
+מיד אחרי טבלת ההשוואה, תמיד גלוי (לא תלוי בכפתור ההרחבה של הטבלה).
+
+באותו דפוס בדיוק על 36: `comparablesTrendHtml()` חדש ב-`app.html`
+(`sites/36-nadlan-pro/tivuch/app.html`) — אין ספריית גרפים בקובץ הזה, אז
+SVG מוטמע ידני (`polyline`+`circle`), אותם נתונים בדיוק מ-`val.comparables`
+(אותו אובייקט ש-`comparablesHtml()` הקיים כבר מרנדר לטבלה), אותו סף של 3
+נקודות. קרוי מתוך `valuationHtml()` מיד אחרי `comparablesHtml(val.comparables)`.
+
+אומת: `node --check` על ה-`<script type="module">` המחולץ מ-`app.html` עבר
+נקי (134,620 תווים). בדיקת איזון-סוגריים ייעודית על שני קבצי ה-TSX ששונו/
+נוספו ב-32 עברה נקי. `node_modules` לא מותקן כאן, אז `tsc`/`next build` לא
+הורצו — אותה מגבלה כמו כל סבב `apps/32`/`app.html`-בלבד קודם. `recharts`
+כבר תלות קיימת בפרויקט (`package.json`, בשימוש ב-`PriceTrend.tsx`), לא
+נוספה תלות חדשה בשום מקום. אפס רגרסיה: קובץ חדש + הוספת שורה אחת ב-
+`ValuationPanel.tsx` (import + קריאה אחת חדשה, שום JSX/handler קיים לא נגע),
+ופונקציה חדשה + שורה אחת ב-`app.html` (שום טאב/פאנל/handler קיים לא נגע).
+
 ## עדכון — 25/08/2026 (Loop A, system 36 nadlan-pro — הפרדת מחיר מכירה/שכירות)
 P2 ACCURACY SPEC סעיף D (core.projects #33, owner 2026-08-25): "ALWAYS separate
 SALE price vs RENT price — never mix them. Record per listing: what the client

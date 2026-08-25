@@ -1377,7 +1377,8 @@ function valuationHtml(val, askPrice) {
     '</div>' +
     '<p class="sub" style="font-size:12px;margin-top:8px">' + esc(val.explanation) + '</p>' +
     (val.wideSpread ? '<p class="note">' + esc(val.wideSpread) + '</p>' : '') +
-    comparablesHtml(val.comparables);
+    comparablesHtml(val.comparables) +
+    comparablesTrendHtml(val.comparables);
 }
 
 // P2 ACCURACY SPEC §E (core.projects #33): "a comparable-deals table
@@ -1407,6 +1408,51 @@ function comparablesHtml(comparables) {
       '<td>' + money(d.pricePerSqm) + '</td></tr>'
     ).join('') +
     '</tbody></table></div>';
+}
+
+// P2 ACCURACY SPEC §E (core.projects #33): "...a price-trend chart for the
+// street/neighborhood" — the chart half of the same sentence the table above
+// covers. Built purely from the same val.comparables array (no new fetch, no
+// new source: the exact deals valuate() already picked, in its own priority
+// order property→building→street→area). This file has no charting library,
+// so a minimal inline SVG polyline stands in — same data-or-nothing rule as
+// everywhere else here: fewer than 3 dated, priced points renders nothing.
+function comparablesTrendHtml(comparables) {
+  const points = (Array.isArray(comparables) ? comparables : [])
+    .filter((d) => d.date && d.pricePerSqm != null)
+    .map((d) => ({ t: new Date(d.date).getTime(), v: d.pricePerSqm }))
+    .filter((p) => Number.isFinite(p.t))
+    .sort((a, b) => a.t - b.t);
+  if (points.length < 3) return '';
+
+  const W = 640, H = 140, PAD = 28;
+  const minT = points[0].t, maxT = points[points.length - 1].t;
+  const minV = Math.min.apply(null, points.map((p) => p.v));
+  const maxV = Math.max.apply(null, points.map((p) => p.v));
+  const spanT = Math.max(1, maxT - minT);
+  const spanV = Math.max(1, maxV - minV);
+  const x = (t) => PAD + ((t - minT) / spanT) * (W - 2 * PAD);
+  const y = (val) => H - PAD - ((val - minV) / spanV) * (H - 2 * PAD);
+  const poly = points.map((p) => x(p.t) + ',' + y(p.v)).join(' ');
+  const dots = points.map((p) =>
+    '<circle cx="' + x(p.t) + '" cy="' + y(p.v) + '" r="3" fill="#14B88A" />'
+  ).join('');
+
+  const first = points[0].v, last = points[points.length - 1].v;
+  const changePct = first ? Math.round(((last - first) / first) * 1000) / 10 : null;
+  const changeHtml = changePct != null
+    ? ' <span style="font-size:12px;color:var(--muted)">שינוי בין העסקה המוקדמת לעדכנית: <b style="color:' +
+      (changePct >= 0 ? '#14B88A' : '#E0574E') + '">' + (changePct > 0 ? '+' : '') + changePct + '%</b></span>'
+    : '';
+
+  return '<h4 class="sec" style="font-size:13px;margin-top:14px">מגמת מחיר למ״ר בעסקאות ההשוואה' + changeHtml + '</h4>' +
+    '<svg viewBox="0 0 ' + W + ' ' + H + '" style="width:100%;max-width:640px;height:140px" dir="ltr">' +
+      '<polyline points="' + poly + '" fill="none" stroke="#14B88A" stroke-width="2" />' +
+      dots +
+    '</svg>' +
+    '<p class="sub" style="font-size:11px;margin-top:2px">' + points.length + ' עסקאות בעלות תאריך ומחיר למ״ר · ' +
+      money(minV) + ' – ' + money(maxV) + ' ₪ למ״ר · ' + dt(points[0].t) + ' – ' + dt(points[points.length - 1].t) +
+    '</p>';
 }
 
 // P2 FEATURE (core.projects #33, owner 25/08/2026): interactive 360° street
