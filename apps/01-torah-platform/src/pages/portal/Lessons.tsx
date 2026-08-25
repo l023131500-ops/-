@@ -22,11 +22,13 @@ const emptyForm = {
   subject: "", city: "", neighborhood: "", street: "", street_number: "",
   synagogue_name: "", schedule_time: "", schedule_days: [] as string[],
   schedule_notes: "", lesson_style: "", speaking_style: "", language: "עברית",
-  target_audience: [] as string[], audience_type: [] as string[],
+  audience: "", target_audience: [] as string[], audience_type: [] as string[],
   rabbi_phone: "", rabbi_role: "", contact_name: "", contact_phone: "",
   contact_email: "", donation_link: "", is_recurring: true, is_recorded: false,
   is_live_stream: false, recording_location: "", specific_date: "",
 };
+
+const dayIndex = (label: string) => DAY_NAMES.indexOf(label);
 
 const ChipPicker = ({ options, selected, onChange, label }: {
   options: string[]; selected: string[]; onChange: (v: string[]) => void; label: string;
@@ -52,6 +54,8 @@ const Lessons = () => {
   const { user } = useAuth();
   const [lessons, setLessons] = useState<any[]>([]);
   const [profileId, setProfileId] = useState<string | null>(null);
+  const [rabbiName, setRabbiName] = useState<string>("");
+  const [tenantId, setTenantId] = useState<string | null>(null);
   const [showAdd, setShowAdd] = useState(false);
   const [form, setForm] = useState(emptyForm);
   const [step, setStep] = useState(1);
@@ -61,9 +65,15 @@ const Lessons = () => {
   const fetchData = async () => {
     // profiles.id is the auth user id, and a lesson points at its teacher
     // through rabbi_user_id — teacher_id belonged to the pre-migration schema.
-    const { data: profile } = await supabase.from("profiles").select("id").eq("id", user!.id).maybeSingle();
+    // tenant_id is required on every lesson row; a teacher's tenant comes from
+    // their own user_roles grant (assigned by an admin/invite), not a self-pick.
+    const { data: profile } = await supabase.from("profiles").select("id, full_name, display_name").eq("id", user!.id).maybeSingle();
     if (!profile) return;
     setProfileId(profile.id);
+    setRabbiName(profile.display_name || profile.full_name || "");
+    const { data: role } = await supabase.from("user_roles").select("tenant_id")
+      .eq("user_id", profile.id).not("tenant_id", "is", null).limit(1).maybeSingle();
+    setTenantId(role?.tenant_id ?? null);
     const { data } = await supabase.from("lessons").select("*").eq("rabbi_user_id", profile.id).order("created_at", { ascending: false });
     setLessons(data || []);
   };
@@ -75,24 +85,52 @@ const Lessons = () => {
 
   const handleAdd = async () => {
     if (!form.subject || !profileId) { toast.error("נא לבחור נושא"); return; }
-    const { error } = await supabase.from("lessons").insert({
-      teacher_id: profileId,
-      subject: form.subject, city: form.city, neighborhood: form.neighborhood,
-      street: form.street, street_number: form.street_number,
-      synagogue_name: form.synagogue_name, schedule_time: form.schedule_time,
-      schedule_days: form.schedule_days, schedule_notes: form.schedule_notes,
-      lesson_style: form.lesson_style, speaking_style: form.speaking_style,
-      language: form.language, target_audience: form.target_audience,
-      audience_type: form.audience_type, rabbi_phone: form.rabbi_phone,
-      rabbi_role: form.rabbi_role, contact_name: form.contact_name,
-      contact_phone: form.contact_phone, contact_email: form.contact_email,
-      donation_link: form.donation_link, is_recurring: form.is_recurring,
-      is_recorded: form.is_recorded, is_live_stream: form.is_live_stream,
-      recording_location: form.recording_location,
-      specific_date: form.specific_date || null,
-    });
+    if (!tenantId) { toast.error("החשבון שלך עדיין לא משויך לבית-כנסת/ארגון — פנה למנהל המערכת"); return; }
+    if (form.is_recurring && form.schedule_days.length === 0) { toast.error("נא לבחור לפחות יום אחד"); return; }
+    if (!form.is_recurring && !form.specific_date) { toast.error("נא לבחור תאריך"); return; }
+
+    const address = [form.street, form.street_number].filter(Boolean).join(" ")
+      + (form.synagogue_name ? ` · ${form.synagogue_name}` : "");
+
+    const base = {
+      tenant_id: tenantId,
+      rabbi_user_id: profileId,
+      rabbi_name: rabbiName,
+      title: form.subject,
+      topic_free_text: form.subject,
+      description: form.schedule_notes || null,
+      city: form.city || null,
+      neighborhood: form.neighborhood || null,
+      address: address || null,
+      time_hhmm: form.schedule_time || null,
+      language: form.language,
+      audience: form.audience || null,
+      style: form.lesson_style || null,
+      recording_url: form.is_recorded ? (form.recording_location || null) : null,
+      contact_name: form.contact_name || null,
+      contact_phone: form.contact_phone || null,
+      contact_email: form.contact_email || null,
+      meta: {
+        speaking_style: form.speaking_style || null,
+        target_audience: form.target_audience,
+        audience_type: form.audience_type,
+        rabbi_phone: form.rabbi_phone || null,
+        rabbi_role: form.rabbi_role || null,
+        donation_link: form.donation_link || null,
+        is_live_stream: form.is_live_stream,
+      },
+    };
+
+    // The live schema holds one weekly slot per row (day_of_week is a single
+    // int, not an array) — a lesson recurring on several days becomes several
+    // rows, same as the existing seeded lessons in this table.
+    const rows = form.is_recurring
+      ? form.schedule_days.map(d => ({ ...base, day_of_week: dayIndex(d), date_specific: null }))
+      : [{ ...base, day_of_week: null, date_specific: form.specific_date }];
+
+    const { error } = await supabase.from("lessons").insert(rows);
     if (error) { toast.error("שגיאה: " + error.message); return; }
-    toast.success("שיעור נוסף בהצלחה!");
+    toast.success("שיעור נוסף בהצלחה! ממתין לאישור מנהל.");
     setShowAdd(false);
     setForm(emptyForm);
     setStep(1);
@@ -142,6 +180,13 @@ const Lessons = () => {
                     <Select value={form.language} onValueChange={v => setForm(p => ({ ...p, language: v }))}>
                       <SelectTrigger><SelectValue /></SelectTrigger>
                       <SelectContent>{LANGUAGES.map(l => <SelectItem key={l} value={l}>{l}</SelectItem>)}</SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium mb-1 block">קהל (מגדר)</label>
+                    <Select value={form.audience} onValueChange={v => setForm(p => ({ ...p, audience: v }))}>
+                      <SelectTrigger><SelectValue placeholder="בחר..." /></SelectTrigger>
+                      <SelectContent>{[...GENDER_OPTIONS, "מעורב"].map(a => <SelectItem key={a} value={a}>{a}</SelectItem>)}</SelectContent>
                     </Select>
                   </div>
                   <ChipPicker label="קהל יעד" options={AUDIENCE_TYPES} selected={form.target_audience} onChange={v => setForm(p => ({ ...p, target_audience: v }))} />
@@ -239,29 +284,28 @@ const Lessons = () => {
               <div className="flex items-start justify-between">
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
-                    <h3 className="font-heading font-bold text-foreground text-lg">{l.subject}</h3>
-                    {l.lesson_style && <Badge variant="outline" className="text-xs">{l.lesson_style}</Badge>}
-                    {l.is_recorded && <Badge variant="secondary" className="text-xs"><Mic className="w-3 h-3 ml-1" />מוקלט</Badge>}
-                    {l.is_live_stream && <Badge variant="secondary" className="text-xs"><Video className="w-3 h-3 ml-1" />חי</Badge>}
+                    <h3 className="font-heading font-bold text-foreground text-lg">{l.title}</h3>
+                    {l.style && <Badge variant="outline" className="text-xs">{l.style}</Badge>}
+                    {!l.is_approved && <Badge variant="outline" className="text-xs text-amber-600 border-amber-300">ממתין לאישור</Badge>}
+                    {l.recording_url && <Badge variant="secondary" className="text-xs"><Mic className="w-3 h-3 ml-1" />מוקלט</Badge>}
+                    {l.meta?.is_live_stream && <Badge variant="secondary" className="text-xs"><Video className="w-3 h-3 ml-1" />חי</Badge>}
                   </div>
                   <div className="flex flex-wrap gap-3 mt-2 text-sm text-muted-foreground">
-                    {l.city && <span className="flex items-center gap-1"><MapPin className="w-4 h-4" />{l.city} {l.neighborhood || ""} {l.street ? `- ${l.street} ${l.street_number || ""}` : ""}</span>}
-                    {l.schedule_time && <span className="flex items-center gap-1"><Clock className="w-4 h-4" />{l.schedule_time}</span>}
+                    {l.city && <span className="flex items-center gap-1"><MapPin className="w-4 h-4" />{l.city} {l.neighborhood || ""}</span>}
+                    {l.time_hhmm && <span className="flex items-center gap-1"><Clock className="w-4 h-4" />{l.time_hhmm}</span>}
                     {l.language && l.language !== "עברית" && <span>🌐 {l.language}</span>}
                   </div>
-                  {l.schedule_days?.length > 0 && (
+                  {(l.day_of_week != null || l.date_specific) && (
                     <div className="flex gap-1 mt-2">
-                      {l.schedule_days.map((d: string) => (
-                        <span key={d} className="bg-secondary/10 text-secondary text-xs px-2 py-1 rounded-full">{d}</span>
-                      ))}
+                      <span className="bg-secondary/10 text-secondary text-xs px-2 py-1 rounded-full">
+                        {l.day_of_week != null ? DAY_NAMES[l.day_of_week] : l.date_specific}
+                      </span>
                     </div>
                   )}
-                  {l.synagogue_name && <p className="text-sm text-muted-foreground mt-1">📍 {l.synagogue_name}</p>}
-                  {l.target_audience?.length > 0 && (
+                  {l.address && <p className="text-sm text-muted-foreground mt-1">📍 {l.address}</p>}
+                  {l.audience && (
                     <div className="flex gap-1 mt-2 flex-wrap">
-                      {l.target_audience.map((a: string) => (
-                        <span key={a} className="bg-muted text-muted-foreground text-xs px-2 py-0.5 rounded-full">{a}</span>
-                      ))}
+                      <span className="bg-muted text-muted-foreground text-xs px-2 py-0.5 rounded-full">{l.audience}</span>
                     </div>
                   )}
                 </div>
