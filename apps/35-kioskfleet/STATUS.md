@@ -7411,3 +7411,57 @@ to that constraint: they import only dependency-free modules (`hosts.js`,
   feature chain, the payment code (explicitly out of scope per the project
   note's PCI-DSS constraint), or `core.issues #215` (monorepo-vs-zol tree
   divergence), both unaffected by this round.
+
+- **[25/08/2026, Loop A] Found and merged a second chain-fork: the
+  `idle_return_seconds` clamp fix (`clampIdleReturnSeconds`, `idletimeout.js`)
+  was never in the 14-fix chain above.** Same shape as the enroll-serial/
+  deviceinfo merge earlier on this chain (`0bb1b114`) — two independent fix
+  branches forked from the same commit (`0f3947d`, the seedadmin Node-20 fix)
+  and neither iteration since noticed the other. `fix/kiosk-idle-return-
+  seconds-cap-0825` (`0bb7240`) fixed the exact gap its own STATUS.md entry
+  above describes in detail (PATCH `/devices/:id` silently swallowing a
+  malformed `idleReturnSeconds` into "no change" via `NaN`→SQL `NULL`→
+  `COALESCE`, plus no upper bound on any of the 3 write paths) — but that fix
+  landed on its own branch off `0f3947d` and the 14-fix chain grew from the
+  same point without it. Verified live in this checkout first: the current
+  tip (`20c49eb`) still had `policy.js`'s raw `Math.max(0,
+  Number(idleReturnSeconds))` with no cap, confirming the gap was real and
+  still open here, not already covered by anything in the 14-fix chain.
+
+  Branched `fix/kiosk-idle-return-seconds-cap-merge-0825` off the live tip
+  (`20c49eb`) and `git cherry-pick`ed `0bb7240`. Two conflicts, both from
+  independent fixes touching the same lines since the fork — resolved by
+  keeping both sides' work: (1) `routes/devices.js`'s import block, combined
+  `names.js`/`commandid.js` (added by the 14-fix chain after the fork) with
+  the new `idletimeout.js` import; (2) `policy.js`'s UPDATE `.run(...)` call,
+  where the 14-fix chain had switched `name` to the validated `nameValue`
+  and `0bb7240` had switched the raw `Math.max(...)` to
+  `clampIdleReturnSeconds(...)` — merged into one call keeping `nameValue`
+  (the newer, validated field) and `clampIdleReturnSeconds` (the newer,
+  capped field), since neither side's change subsumes the other.
+  `templatepolicy.js` and its test file merged clean with no conflict.
+
+  Full suite after resolving: **195/195** (189 baseline from the 14-fix
+  chain + 6 new from `idletimeout.test.mjs`/`templatepolicy.test.mjs`, zero
+  regressions). Booted the merged server live against a scratch DB and
+  re-verified all 3 write paths end-to-end: `POST /enrollments` with
+  `idleReturnSeconds: 999999999` → stored `86400` (was unbounded); on an
+  enrolled device, `PATCH /devices/:id` with `idleReturnSeconds: "abc"` after
+  first setting it to `30` → now `0` (was silently staying `30` — the
+  NaN→NULL→COALESCE swallow); the same PATCH with `999999999` → `86400`
+  (was unbounded); `idleReturnSeconds: 0` → stays `0` (the explicit "off"
+  state, confirmed not clamped up to the 5s floor, as a control);
+  `POST /templates` with `999999999` → stored `86400`, and applying that
+  template to the enrolled device via `POST /templates/:id/apply` pushed
+  `86400` onto it — the shared `applyDevicePolicy` path confirmed live.
+
+  Committed + pushed to `l023131500-ops/zol` branch
+  `fix/kiosk-idle-return-seconds-cap-merge-0825` (`7f0df42`), off the tip
+  (`20c49eb`, the linkId fix recorded above) — not merged, same human-review
+  convention as every prior fix branch on this chain. The original orphaned
+  branch (`fix/kiosk-idle-return-seconds-cap-0825`, `0bb7240`) is left as-is,
+  untouched, its work now carried forward here instead of superseded. Zero
+  Android/Kotlin/Windows work touched. Did not touch the still-parked feature
+  chain, the payment code (explicitly out of scope per the project note's
+  PCI-DSS constraint), or `core.issues #215` (the monorepo-vs-zol divergence
+  proper), both unaffected by this round.
