@@ -6054,3 +6054,58 @@ to that constraint: they import only dependency-free modules (`hosts.js`,
   **Not verified beyond that**: no live device to see the corrected padding
   render, no Railway deploy log visible from this sandbox to confirm the
   push actually triggered/completed a redeploy.
+
+- **[25/08/2026, Loop A] Business-hours schedule was never persisted to the
+  device — only enforced live by the server's sweep, on `zol` not this
+  tree.** KIOSK_BUILD.md §0 requires enforcement "**גם אונליין וגם
+  אופליין** — הנעילה נאכפת מקומית ומחזיקה בלי אינטרנט" (locally enforced,
+  holds without internet) and §9 lists "**תזמון:** נעילה/פתיחה/כיבוי לפי
+  שעות" among the fields every other device-level control (maintenance
+  mode, gesture settings, orientation, zoom) already routes through
+  `enroll`/`heartbeat`/`update_config` and persists to `Prefs`. Schedule was
+  the one exception: `scheduleEnabled`/`scheduleOpenTime`/
+  `scheduleCloseTime` existed in the DB and drove a live 60-second server
+  sweep that issued `screen_on`/`screen_off` commands, but were never
+  included in any payload to the device itself. A device that rebooted
+  (power loss, watchdog reboot, OTA update) during closed hours came back
+  up showing the live storefront, unlocked, until the next sweep caught it
+  or the device reconnected — a direct violation of the offline-holds
+  guarantee for this one field.
+
+  Fix mirrors the existing `maintenanceEnabled` pattern end to end:
+  `policy.js`/`routes/agent.js` add the three schedule fields to the
+  `enroll`/`heartbeat`/`update_config` payloads. Android: `Prefs.kt` gains
+  the three keys, `AgentClient.kt` persists them on both config paths
+  (heartbeat fallback + WS `update_config`), `KioskActivity.kt` adds
+  `applyScheduleState()` (reusing the existing screen-blackout mechanism)
+  invoked both on `onCreate()` (covers boot/crash/watchdog resume) and
+  `onConfigUpdated()` (live push) — so a reboot during closed hours now
+  blanks the screen from cached local state alone, no server round-trip
+  required.
+
+  Server: **122/123 pass** (same pre-existing `seedadmin.test.mjs`/
+  `node:sqlite`-needs-Node-22+ gap every prior entry has hit). Live-server
+  verified: booted against a throwaway SQLite db, logged in, enrolled a
+  device, `PATCH`ed a schedule (08:30–22:15), confirmed it round-trips
+  through the `PATCH` response, `GET /devices/:id`, the stored
+  `update_config` command payload, and a subsequent heartbeat response;
+  confirmed the existing equal-open/close-time validation still rejects bad
+  input.
+
+  **Not verified beyond that**: no Android SDK/kotlinc/real device in this
+  sandbox (same gap every prior Kotlin-touching entry has hit) —
+  `AgentClient.kt`/`KioskActivity.kt`/`Prefs.kt` reviewed by hand, brace/
+  paren balance checked across all three touched files, not compiled or
+  run; no real device rebooted during closed hours to see the blackout
+  survive end to end.
+
+  Committed on a **new branch**, `feat/kiosk-schedule-offline-persist-0825`
+  (branched fresh from `origin/claude/what-do-you-see-gxo5tc`, **not**
+  stacked on the 9-deep parked lockdown/payment/provisioning chain — same
+  "independent, isolated" treatment the maintenance-overlay padding fix
+  got), pushed to `l023131500-ops/zol` (`b2ba75c`) — **deliberately not**
+  merged into `claude/what-do-you-see-gxo5tc`: this adds new autonomous
+  local logic that can blank a live screen from cached state alone, which
+  is exactly the class of change every prior round has left for a human to
+  validate against a real device before it reaches customer-facing
+  hardware, even though it is not part of the existing 9-deep chain.
