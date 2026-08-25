@@ -5364,3 +5364,69 @@ to that constraint: they import only dependency-free modules (`hosts.js`,
   (`8ed63cb`) — **deliberately not** merged into `claude/what-do-you-see-gxo5tc`,
   same reasoning as every entry above: feature branch only, no live host
   here to validate against before production.
+
+- **[25/08/2026, Loop A] Per-device payment-mode field — KIOSK_BUILD.md §7
+  ("תשלום ואמצעי קלט, 3 אופציות"), was entirely unbuilt, on `zol` not this
+  tree.** `docs/payment-he.md` already documented how each of the spec's
+  three no-PAN-storage input methods works mechanically (all three already
+  function today through the existing allow-list/deep-link mechanism — a
+  payment page is just another locked link, nothing device-side to build),
+  but nothing recorded *which* method a given device actually uses, so the
+  console had no way to show the owner their own choice, or the spec's own
+  recommended note for it (e.g. "confirm with your payment provider that a
+  card-reader is approved" for option 2).
+
+  `src/payment.js` (new, dependency-free like `exitcode.js`/`maintenance.js`/
+  `schedule.js` — unit-tested for real in this sandbox):
+  `PAYMENT_MODES` (`'none'|'manual'|'card_reader'|'emv'`),
+  `validatePaymentMode` (case-insensitive; null/undefined/`''` default to
+  `'none'`, the honest value for every device before this field existed),
+  `PAYMENT_MODE_INFO` (Hebrew label + the spec's own note per paid mode).
+  5 new tests in `test/payment.test.mjs`.
+
+  Deliberately server/console-only — the one way this differs from every
+  other per-device policy field (`exit_code`/`display_zoom_percent`/
+  `schedule_*`/`signage_*`/`maintenance_*`): it never rides on
+  `commands.js`'s `update_config` payload, because it never changes what
+  the Android agent enforces (all three modes already work purely through
+  the allow-list). It follows `access_code`'s shape instead — owner-facing
+  metadata whose only path to a console is `devicepayload.js`'s
+  `CONSOLE_DEVICE_FIELDS` allow-list, never the device itself.
+
+  Wired through every layer the other per-device policy fields already use:
+  `db.js` (`devices.payment_mode` NOT NULL DEFAULT `'none'`, plus nullable
+  `templates.payment_mode`/`policy_snapshots.payment_mode`, all via
+  `ensureColumn` like every column added after the original `CREATE TABLE`);
+  `policy.js`'s `applyDevicePolicy` (validated + COALESCEd into the UPDATE,
+  same single-field shape `exitCode` uses); `templatepolicy.js`
+  (`buildTemplateFields`/`policyPatchFromTemplate`/`TEMPLATE_COLUMNS`, so a
+  fleet template can carry a payment-mode default too); `snapshots.js`
+  (`SNAPSHOT_COLUMNS`/`POLICY_BODY_KEYS`, so backup/restore round-trips it);
+  `routes/devices.js`'s `publicDevice()` and `routes/templates.js`'s
+  `publicTemplate()` over REST; `public/js/app.js` (`mapDevice()`, a 💳
+  device-card badge, an edit-device `<select>` with a live-updating note,
+  and a matching opt-in `<select>` + `templateSummary()` line in the
+  template builder — same "checkbox gates a field group" shape
+  maintenance/schedule/signage already use there). `docs/payment-he.md`
+  gained a short pointer explaining the field is documentation-only.
+
+  `node --check` clean on every touched/added file. Full suite
+  (`node --test test/`): **166/168 pass** (158 baseline + 5 new
+  `payment.test.mjs` tests + 3 new assertions in
+  `devicepayload.test.mjs`/`templatepolicy.test.mjs`/`snapshots.test.mjs`)
+  — the 2 failures are the same pre-existing `routing.test.mjs`/
+  `seedadmin.test.mjs` gap (`better-sqlite3`/`express` not installed in
+  this sandbox) every prior entry in this log has hit, unrelated to this
+  change.
+
+  **Not verified beyond that**: no live server in this sandbox (no
+  `better-sqlite3` install) to click through the console UI against a
+  running instance — same category of gap every non-Kotlin entry in this
+  log hits when the missing piece is a live host rather than a compiler.
+
+  Committed on the existing `feat/kiosk-launcher-access-code-0825` branch
+  (the same one the previous entry above used), pushed to
+  `l023131500-ops/zol` (`991c4d5`) — **deliberately not** merged into
+  `claude/what-do-you-see-gxo5tc`, same reasoning as every entry above:
+  feature branch only, no live host here to validate against before
+  production.
