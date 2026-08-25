@@ -6607,3 +6607,45 @@ to that constraint: they import only dependency-free modules (`hosts.js`,
   human real-device-validation decision flagged by every prior round.
   `core.issues #215` (this monorepo tree vs. the live `zol` tree) remains
   open and unaffected by this round.
+
+- **[25/08/2026, Loop A] Caught the 9-deep parked chain
+  (`feat/kiosk-exit-gesture-config-0825`) falling one commit behind the live
+  tip again, and closed that gap.** The previous round's merge of the live
+  tip into this chain (`af4222d`) predates that same round's own follow-up
+  fix (`0f3947d`, the seedadmin/`node:sqlite` fix that landed on the live
+  tip afterward) — so the chain's own `seedadmin.test.mjs` had silently
+  drifted back to the pre-fix stand-in. Confirmed by diffing branches
+  directly (`git log tip..chain -- kiosk/` showed 11 chain-only commits;
+  `git log chain..tip` showed 1 tip-only commit the chain was missing) rather
+  than trusting the prose above.
+
+  Merged `origin/claude/what-do-you-see-gxo5tc` into
+  `feat/kiosk-exit-gesture-config-0825` — one file touched
+  (`seedadmin.test.mjs`), no conflicts, purely mechanical (same fix already
+  applied twice elsewhere, now applied here a third time by the merge
+  itself rather than by hand). Ran the **full** suite on the merged chain,
+  not just the touched file: **244/244**, zero skips, zero failures — this
+  is the entire parked feature set (USB/Windows offline packages, Route A
+  QR/zero-touch provisioning, the §2★ז access-code launcher, per-device
+  payment-mode/orientation-lock/exit-gesture-config fields, the §2★ב install
+  checklist wizard, remote app OTA update — 3492 lines across 47 files) all
+  green together for the first time since the chain last touched the live
+  tip. Also booted the merged server directly (`node src/index.js` against a
+  scratch sqlite db, `JWT_SECRET`/`PORT` env only) as a smoke test beyond the
+  unit suite: seeded its initial super-admin, served `/` (200) and the new
+  `/launcher.html` (200) without error. Pushed the merge to
+  `origin/feat/kiosk-exit-gesture-config-0825` (`5435d64..08d8ea0`).
+
+  **Deliberately did not fast-forward this into `claude/what-do-you-see-
+  gxo5tc`.** Every prior direct-to-tip push this chain has seen was a small,
+  single-purpose hotfix (a validation gap, a test-runner incompatibility);
+  this would be nine previously-unbuilt features — including new
+  device-facing routes (`launcher.js`, `accesscode.js`, `qrprovision.js`)
+  and a payment-mode field — going live simultaneously on a fleet-management
+  system with **zero** real-device validation behind any of them, which is
+  exactly the gap every entry on this chain has flagged since it was first
+  parked. The chain is now current, fully green, and mergeable with a single
+  fast-forward whenever a human signs off on the real-device pass §12
+  requires — that sign-off, not another rebase, is what is actually blocking
+  it from reaching Railway. `core.issues #215` remains open, unaffected by
+  this round.
