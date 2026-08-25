@@ -6975,3 +6975,55 @@ to that constraint: they import only dependency-free modules (`hosts.js`,
   still-parked feature chain, the payment code (explicitly out of scope
   per the project note's PCI-DSS constraint), or `core.issues #215`
   (monorepo-vs-zol tree divergence), all unaffected by this round.
+
+- **[25/08/2026, Loop A] Found and fixed a real crash on two device-facing
+  routes: `POST /api/agent/ack` and `POST /api/agent/screenshot`'s optional
+  `commandId` went straight from `req.body` into a `better-sqlite3` bind
+  with no type check.** Continued the same class-of-bug audit into the
+  two remaining unchecked fields in `routes/agent.js` — every other field
+  in that file (`serial`/`model`/`androidVersion`/`appVersion` via
+  `deviceinfo.js`, `battery` via `batterylevel.js`, the exit-attempt/
+  watchdog-report bodies via their own validators) already has one;
+  `commandId` on `/ack` and `/screenshot` did not.
+
+  Reproduced live against a scratch-DB server boot before touching
+  anything: enrolled a real device, then `POST /ack` and `POST /screenshot`
+  with `commandId: {"a": 1}`, held by that device's real `device_token`
+  (device-facing auth, not JWT — the same semi-trusted-caller shape the
+  screenshot route's own header comment already describes), both 500'd with
+  a raw stack trace (`RangeError: Too few parameter values were provided` —
+  better-sqlite3 spreads a plain object into named bind params instead of
+  binding it as one positional value, the same crash shape `fullName`/
+  `battery` hit above). No global Express error handler exists in this app,
+  so both surfaced as an unhandled 500 to any device holding a valid token.
+
+  Fixed with a new `commandid.js` (`validateCommandId`: a falsy value
+  (`undefined`/`null`/`''`/`0`) is treated as "not provided" — the exact
+  truthy gate both call sites already used before this fix (`if
+  (commandId)`), preserved exactly; anything else that is not a positive
+  integer, or a numeric string of one, is rejected with a clean 400 instead
+  of reaching the SQL bind). Wired into both routes in `routes/agent.js` in
+  place of the raw `commandId` binds. New `test/commandid.test.mjs` (5
+  cases: valid integer/numeric-string pass through, falsy values including
+  `NaN` treated as not-provided, objects/arrays/booleans rejected,
+  non-numeric/negative/non-integer values rejected). Full suite: **150/150**
+  (145 baseline + 5 new), zero regressions.
+
+  Re-verified live after the fix, same scratch-DB server: an object, a
+  boolean, and an array `commandId` on `/ack` now all return a clean 400
+  (`"מזהה פקודה לא תקין"`) instead of crashing; `/screenshot` with an object
+  `commandId` returns the same clean 400; a `/screenshot` upload with no
+  `commandId` at all still succeeds (200); a real command issued through the
+  console and then acked with its real numeric id, and again with that same
+  id as a numeric string, both still succeed (200), confirming the happy
+  path — including the numeric-string shape a device could legitimately
+  send — is unaffected.
+
+  Committed + pushed to `l023131500-ops/zol` branch
+  `fix/kiosk-agent-commandid-validation-0825` (`75f0618`), off the live tip
+  (`3bfb1d6`, the admin-fullname-validation fix recorded above) — not
+  merged, same human-review convention as every prior fix branch on this
+  chain. Zero Android/Kotlin/Windows work touched. Did not touch the
+  still-parked feature chain, the payment code (explicitly out of scope per
+  the project note's PCI-DSS constraint), or `core.issues #215`
+  (monorepo-vs-zol tree divergence), both unaffected by this round.
