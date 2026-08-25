@@ -1535,6 +1535,74 @@ function propertyForm(existing) {
   });
 }
 
+// מדד שכר דירה (הלמ״ס) — NADLAN_PRO_מחקר_ואפיון.md מודול 6 מבטיח "אינדקס
+// שכירות (הלמ״ס)" בניהול השכירות. אותה סדרה (120460, "שכר דירה פרטי, ציבורי
+// ושכירות ארוכת טווח בפיקוח ממשלתי") ש-lib/cbs.ts באפליקציה 32-nadlan-berega
+// כבר משתמש בה לדוח השכירות — ⚠️ לא 40010 (מדד מחירי דירות מעסקאות, מדד שונה
+// לגמרי) ולא 120450 ("דיור", כולל זקיפת דיור לבעלי דירות — לא שכ״ד בפועל).
+// ה-API רשמי, פתוח, ללא מפתח, עם CORS פתוח (נבדק: Access-Control-Allow-Origin: *)
+// — נקרא ישירות מהדפדפן, בלי שרת ביניים, בדיוק כמו שאר קריאות ה-fetch בקובץ הזה.
+const CBS_RENT_INDEX_ID = 120460;
+
+function cbsPeriod(dateStr) {
+  const d = new Date(dateStr);
+  return String(d.getMonth() + 1).padStart(2, '0') + '-' + d.getFullYear();
+}
+
+async function fetchCbsRentIndexRow(params) {
+  const url = 'https://api.cbs.gov.il/index/data/price?id=' + CBS_RENT_INDEX_ID +
+    '&format=json&download=false&' + params;
+  const res = await fetch(url, { headers: { accept: 'application/json' } });
+  if (!res.ok) throw new Error('הלמ״ס החזירה ' + res.status);
+  const json = await res.json();
+  const row = json && json.month && json.month[0] && json.month[0].date && json.month[0].date[0];
+  if (!row) return null;
+  const value = Number(row.currBase && row.currBase.value);
+  if (!Number.isFinite(value)) return null;
+  return { value, baseDesc: (row.currBase && row.currBase.baseDesc) || null,
+           label: (row.monthDesc || '') + ' ' + row.year };
+}
+
+// שכ״ד צמוד למדד — לא חוזה הצמדה אמיתי, רק אומדן: כמה היה שכר הדירה עולה
+// אילו הוצמד למדד הלמ״ס מתחילת החוזה ועד היום. תואם את עקרון הברזל של
+// המערכת: "אין נתוני דמה. מקור שלא נטען → לא זמין" — כשלון משיכה מוצג
+// כ"לא זמין", לא מוחלף בשקט באפס או בערך ישן.
+async function loadLeaseIndexPanel(l) {
+  const box = $('liBox');
+  if (!box) return;
+  try {
+    const [start, latest] = await Promise.all([
+      fetchCbsRentIndexRow('startPeriod=' + cbsPeriod(l.start_date) + '&endPeriod=' + cbsPeriod(l.start_date)),
+      fetchCbsRentIndexRow('last=1'),
+    ]);
+    if (!start || !latest) {
+      box.innerHTML = '<p class="na">אין עדיין פרסום של הלמ״ס לחודש תחילת החוזה או למדד העדכני.</p>';
+      return;
+    }
+    if (start.baseDesc !== latest.baseDesc) {
+      // לא אמור לקרות באותה סדרה, אבל lib/cbs.ts אוסר במפורש להשוות ערכים
+      // בין בסיסי מדידה שונים בלי ריבייס — עדיף "לא זמין" מהשוואה שגויה.
+      box.innerHTML = '<p class="na">בסיס המדד השתנה בין התאריכים — לא ניתן להשוות ישירות.</p>';
+      return;
+    }
+    const pct = Math.round(((latest.value / start.value) - 1) * 1000) / 10;
+    const linked = l.monthly_rent ? Math.round(l.monthly_rent * (latest.value / start.value)) : null;
+    box.innerHTML =
+      '<div class="kpis">' +
+        '<div class="kpi"><p class="k">מדד בתחילת החוזה (' + esc(start.label) + ')</p><p class="v">' + start.value + '</p></div>' +
+        '<div class="kpi"><p class="k">מדד עדכני (' + esc(latest.label) + ')</p><p class="v">' + latest.value + '</p></div>' +
+        '<div class="kpi"><p class="k">שינוי במדד</p><p class="v ' + (pct >= 0 ? 'warn' : 'good') + '">' +
+          (pct >= 0 ? '+' : '') + pct + '%</p></div>' +
+        '<div class="kpi"><p class="k">שכ״ד צמוד למדד (משוער)</p><p class="v">' + money(linked) + '</p></div>' +
+      '</div>' +
+      '<p class="note">לפי מדד שכר דירה של הלמ״ס (סדרה ' + CBS_RENT_INDEX_ID + ', בסיס ' +
+      esc(start.baseDesc || '') + ') — אומדן אריתמטי בלבד, לא הצמדה חוזית בפועל. יש לבדוק את סעיף ' +
+      'ההצמדה הספציפי בחוזה לפני עדכון שכ״ד בפועל.</p>';
+  } catch (e) {
+    box.innerHTML = '<p class="na">משיכת מדד הלמ״ס נכשלה: ' + esc(e.message || String(e)) + '</p>';
+  }
+}
+
 /* ── rentals: leases + rent payment schedule ────────────────────────────── */
 async function renderRentals() {
   const body = $('rentalsBody');
@@ -1611,11 +1679,15 @@ async function openLease(id) {
       }).join('') + '</tbody></table></div>';
   }
 
+  html += '<h2 class="sec">מדד שכר דירה (הלמ״ס)</h2>' +
+    '<div id="liBox"><p class="loading"><span class="spinner"></span>טוען מדד…</p></div>';
+
   html += '<p style="margin-top:18px"><button class="btn" id="lEdit">עריכה</button> ' +
     '<button class="btn" id="lRemind">+ תזכורת חידוש</button></p>';
 
   drawer(l.notes || (d.property ? (d.property.address || d.property.title) : 'חוזה שכירות'),
          'חוזה שכירות · נפתח ' + dt(l.created_at), html, (close) => {
+    loadLeaseIndexPanel(l);
     const gen = $('lGenSchedule');
     if (gen) gen.addEventListener('click', async () => {
       gen.disabled = true;
