@@ -34,6 +34,49 @@ Next.js 14 (App Router) + TypeScript + Tailwind RTL + Supabase. מפתח אחי�
    לאישורים שגרתיים; עצור רק לפני פעולה הרסנית (מחיקת DB/repo, force-push) או
    כשחסר מידע קריטי שלא קיים באף מקום.
 
+## עדכון — 25/08/2026 (Loop A, פנורמה על system 36 nadlan-pro — בלי דוח VIP מלא)
+ההנחיה מ-25/08 ("P2 FEATURE") מכסה את שתי המערכות (32+36), אבל הסבב הקודם
+(ראה למטה) בנה רק על 32 והשאיר את 36 בפירוש כפריט פתוח — "אותו פיצ'ר בדיוק
+על system 36 nadlan-pro". `sites/36-nadlan-pro/tivuch/app.html` כבר קורא ל-
+`/nadlan/api/report` (דוח-אמת, ראה `truthHtml`/`fetchTruth`) אבל **בלי**
+`tier=vip` — כך שהוא תמיד מקבל דוח `basic` (בכוונה, כדי לא לשלם על Apify/
+Places/Distance Matrix בכל פתיחת נכס). `report.panorama` עצמו מוגבל ל-VIP
+בלבד (`tierMayUseImagery`), אז פשוט להוסיף `&tier=vip` לקריאה הקיימת היה
+פותר את הפנורמה אבל גם מפעיל את **כל** שאר המקורות בתשלום של דוח VIP בכל
+לחיצה על נכס — בניגוד ישיר להנחיית הבעלים לתכונה הזו עצמה: "Use the existing
+Google Maps API key already configured... no cost beyond existing key."
+
+לכן, במקום להרחיב את מנגנון הרמות, נוסף מסלול צר ועצמאי ב-32:
+`lib/panoramalookup.ts` (`lookupPanorama(q)`) + `app/api/panorama-lookup/
+route.ts` (`GET ?q=`) — משתמש **רק** במקורות שהרמה החינמית כבר משתמשת בהם
+(GovMap/Nominatim דרך `geocodeAddress`, קדסטר דרך `parcelByGushHelka` לגוש/
+חלקה), ואז `streetViewMeta` (בדיקת-מטא-דאטה של גוגל — **חינמית**, בשונה
+מהתמונה הסטטית עצמה) עם נפילה חזרה ל-Mapillary. שום קריאה בתשלום, שום שינוי
+ל-`buildreport.ts`/`report.ts` (לא נוגע ברמות/VIP הקיימים של 32 עצמה —
+הדוח הציבורי של 32 ממשיך להגביל פנורמה ל-VIP כפי שהיה).
+
+ב-`app.html`: פאנל חדש "פנורמה אינטראקטיבית 360°" בכרטיס הנכס (לפני "דוח
+האמת"), נטען אוטומטית בפתיחת הכרטיס (`loadPanorama`, זול/חינמי אז אין צורך
+בכפתור-משיכה ידני כמו בדוח-האמת היקר) — קורא ל-`/nadlan/api/panorama-lookup`
+(אותו origin, אותו דפוס בדיוק כמו `/nadlan/api/report`/`/nadlan/api/
+area-alert` הקיימים), ומרנדר `<iframe>` אל `/nadlan/api/panorama-embed`
+הקיים (אותו endpoint שנבנה עבור 32 עצמה — משותף, לא כפול) כשהמקור גוגל, או
+`<img>` כשהמקור Mapillary. "אין כיסוי" כשאין נקודה/כיסוי בשני המקורות —
+לא תמונה ריקה.
+
+אומת: `node --check` על ה-`<script type="module">` המחולץ מ-`app.html` עבר
+נקי (123,976 תווים) — אותה מגבלת-סביבה כמו כל סבב `app.html`-בלבד קודם, בלי
+דפדפן חי לקליק-דרך. `lib/panoramalookup.ts`/`route.ts` נבדקו ידנית: בדיקת
+איזון-סוגריים ייעודית עברה נקי, וכל ייבוא (`geocodeAddress`, `parcelByGushHelka`,
+`itmToWgs84`, `resolveStreet`, `googleConfigured`, `streetViewMeta`,
+`mapillaryNearest`, `parseQuery`) הושווה מילה-במילה מול חתימת הייצוא האמיתית
+בקובץ המקור שלו. `node_modules` לא מותקן כאן, אז `tsc`/`next build` לא
+הורצו. אפס רגרסיה: שני קבצים חדשים ב-32 (לא נוגעים בשום קובץ קיים), ותוספת
+פאנל+2 פונקציות חדשות ב-`app.html` של 36 (שום טאב/פאנל/handler קיים לא נגע).
+
+**נותר לסבב עם יכולת בנייה:** פריט 2 של אותה הנחיה (וידאו רחוב מקודד
+ffmpeg) — עדיין לא בנוי על אף אחת מהמערכות, ראה הרשומה למטה.
+
 ## עדכון — 25/08/2026 (Loop A, פנורמה אינטראקטיבית 360°)
 הנחיית בעלים 25/08/2026 (core.projects #33, "P2 FEATURE") ביקשה בכל דף נכס
 (1) פנורמה אינטראקטיבית 360° בנקודת הגיאוקוד המדויקת (Google Street View

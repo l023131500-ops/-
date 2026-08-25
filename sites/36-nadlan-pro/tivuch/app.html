@@ -976,6 +976,8 @@ async function openProperty(id) {
     html += '<h2 class="sec">סרטון הנכס</h2>' + videoEmbedHtml(p.video_url);
   }
 
+  html += '<h2 class="sec">פנורמה אינטראקטיבית 360°</h2><div id="panoBox">' + panoLoadingHtml() + '</div>';
+
   html += '<h2 class="sec">דוח האמת — נדל״ן ברגע</h2><div id="truthBox">' + truthHtml(p) + '</div>';
 
   html += '<h2 class="sec">מעקב אזור — התראה על עסקה חדשה</h2><div id="watchBox">' + watchHtml(p) + '</div>';
@@ -998,6 +1000,7 @@ async function openProperty(id) {
          esc(p.address || '') + (p.city ? ' · ' + esc(p.city) : ''), html, (close) => {
     $('pEdit').addEventListener('click', () => { close(); propertyForm(p); });
     $('pTruth').addEventListener('click', () => fetchTruth(p, $('pTruth')));
+    loadPanorama(p);
     wireWatch(p);
     wireShareBox(p);
     wirePropDocs(p, d.documents || []);
@@ -1333,6 +1336,61 @@ function valuationHtml(val, askPrice) {
     '</div>' +
     '<p class="sub" style="font-size:12px;margin-top:8px">' + esc(val.explanation) + '</p>' +
     (val.wideSpread ? '<p class="note">' + esc(val.wideSpread) + '</p>' : '');
+}
+
+// P2 FEATURE (core.projects #33, owner 25/08/2026): interactive 360° street
+// panorama on every property page, for systems 32 AND 36. System 32 already
+// shipped panel §1 on its own consumer report (PanoramaPanel.tsx), gated to
+// its own VIP tier since there it rides inside a full paid report. A broker's
+// own inventory here has no such tier — but calling system 32's full
+// /nadlan/api/report at tier=vip just to unlock the panorama would trigger
+// every paid source on that report (Apify listings, Places, Distance Matrix)
+// on every drawer open, which violates the owner's explicit "no cost beyond
+// existing key" for this exact feature. So system 32 grew a second, narrow
+// endpoint (/api/panorama-lookup, lib/panoramalookup.ts) that resolves only
+// a point + Street View coverage using the same free sources the free tier
+// already uses (GovMap/Nominatim/cadastre + free Street View metadata check,
+// Mapillary fallback) — no tier, no paid call. This just renders that.
+function panoLoadingHtml() {
+  return '<p class="loading"><span class="spinner"></span>מאתר פנורמה…</p>';
+}
+
+function panoHtml(out) {
+  if (!out || !out.available) {
+    return '<p class="na">אין כיסוי פנורמה בנקודה המדויקת הזו (לא ב-Google Street View ולא ב-Mapillary).</p>';
+  }
+  if (out.source === 'google') {
+    return '<iframe src="/nadlan/api/panorama-embed?lat=' + encodeURIComponent(out.lat) +
+        '&lng=' + encodeURIComponent(out.lng) + '" title="פנורמת רחוב אינטראקטיבית" loading="lazy" allowfullscreen ' +
+        'referrerpolicy="no-referrer-when-downgrade" ' +
+        'style="width:100%;height:360px;border:0;border-radius:8px;display:block"></iframe>' +
+      '<p class="sub" style="font-size:12px;margin-top:6px">' + (out.date ? 'צולם ' + esc(out.date) + '. ' : '') +
+      'תצוגה חיה מ-Google Street View — ניתן לגרור כדי להסתובב ולהתקרב.</p>';
+  }
+  return '<img src="' + esc(out.mapillaryImageUrl) + '" alt="תצלום רחוב" loading="lazy" ' +
+      'style="width:100%;max-height:360px;object-fit:cover;border-radius:8px;display:block" />' +
+    '<p class="sub" style="font-size:12px;margin-top:6px">' + (out.date ? 'צולם ' + esc(out.date) + '. ' : '') +
+    'תצלום רחוב סטטי מ-Mapillary — אין כיסוי Google Street View בנקודה זו.</p>';
+}
+
+async function loadPanorama(p) {
+  const box = $('panoBox');
+  if (!box) return;
+  const q = [p.address, p.city].filter(Boolean).join(' ') ||
+            (p.gush && p.helka ? 'גוש ' + p.gush + ' חלקה ' + p.helka : '');
+  if (!q) {
+    box.innerHTML = '<p class="na">אין כתובת או גוש/חלקה לאיתור פנורמה.</p>';
+    return;
+  }
+  try {
+    // Same origin as /nadlan/api/report above, so a plain fetch with no key.
+    const res = await fetch('/nadlan/api/panorama-lookup?q=' + encodeURIComponent(q));
+    const out = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error(out.error || ('שגיאה ' + res.status));
+    box.innerHTML = panoHtml(out);
+  } catch (e) {
+    box.innerHTML = '<p class="na">הפנורמה לא נטענה: ' + esc(e.message || String(e)) + '</p>';
+  }
 }
 
 // NADLAN_PRO_מחקר_ואפיון.md module 3, "מעקב נדל״ן בזמן אמת + התראות": the
