@@ -2763,7 +2763,20 @@ async function contractForm() {
         client_name: sel ? sel.dataset.name : ctx.buyer_name,
         client_id: ctx.buyer_id,
         property_address: [ctx.property_address, ctx.property_city].filter(Boolean).join(', '),
-        property_details: ctx.property_rooms ? ' · ' + ctx.property_rooms + ' חדרים' : '',
+        // Room count + area + the cadastral parcel — same identifying fields the
+        // property drawer/area-watch/panorama lookup already show elsewhere in
+        // this file (search "גוש" for the other call sites of this exact shape).
+        // A street address alone can be ambiguous for one unit in a subdivided
+        // building; the parcel (and sub-parcel, when recorded) is what a
+        // brokerage agreement or memorandum actually needs to identify the asset.
+        property_details: [
+          ctx.property_rooms ? ctx.property_rooms + ' חדרים' : '',
+          ctx.property_area ? ctx.property_area + ' מ״ר' : '',
+          ctx.property_gush && ctx.property_helka
+            ? 'גוש ' + ctx.property_gush + ' חלקה ' + ctx.property_helka +
+              (ctx.property_tat_helka ? '/' + ctx.property_tat_helka : '')
+            : '',
+        ].filter(Boolean).map((s) => ' · ' + s).join(''),
         commission_pct: ctx.commission_pct,
         price: ctx.price ? nf.format(ctx.price) : null,
         duration_months: 6, days_to_contract: 30,
