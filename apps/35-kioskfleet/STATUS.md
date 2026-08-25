@@ -7307,3 +7307,55 @@ to that constraint: they import only dependency-free modules (`hosts.js`,
   touch the still-parked feature chain, the payment code (explicitly out of
   scope per the project note's PCI-DSS constraint), or `core.issues #215`
   (the monorepo-vs-zol divergence proper), both unaffected by this round.
+
+- **[25/08/2026, Loop A] Found and fixed a 13th write-path class of bug —
+  same crash shape as the `serial` bug above, but on an **array** field
+  instead of a scalar: `POST /api/templates/:id/apply` (device-group
+  "apply template to devices" action, `routes/templates.js`) iterated the
+  request's `deviceIds` array and passed each raw element straight into
+  `db.prepare('SELECT * FROM devices WHERE id = ?').get(id)` with no
+  per-element type check. The route already validated that `deviceIds` is
+  present and is an array — it just never validated what was *inside* it,
+  so a malformed element crashed the whole batch instead of the request
+  being naturally per-element tolerant (the route's own `applied`/`skipped`
+  split already implies "some ids may not resolve").
+
+  Reproduced live first, real server against a scratch DB, seeded admin +
+  template + device: `POST /api/templates/1/apply {"deviceIds":[{"foo":1}]}`
+  → raw 500 `RangeError: Too few parameter values were provided`; a nested
+  array element (`[[1,2,3]]`) → 500 `RangeError: Too many parameter values
+  were provided` (better-sqlite3 treats a lone array argument as positional
+  params, so a 3-element array supplies 3 params where 1 was expected); a
+  boolean element (`[true]`) → 500 `TypeError: SQLite3 can only bind
+  numbers, strings, bigints, buffers, and null`.
+
+  Fixed with a new `commandid.js` export, `isValidRowId` — the same
+  bindable positive-integer/numeric-string shape `validateCommandId`
+  already checks, but without that function's "falsy = not provided"
+  carve-out, since every element of `deviceIds` is required, not optional.
+  Wired into the apply loop in `templates.js`: an element that fails
+  `isValidRowId` now lands in the existing `skipped` bucket — the same
+  bucket a stale/foreign device id already uses — instead of throwing and
+  failing the entire request, matching the route's own "never
+  all-or-nothing" behavior. New test cases in `commandid.test.mjs`: accepts
+  positive integer and numeric-string forms; rejects object/array/boolean
+  elements and zero/negative/non-integer/NaN/non-numeric-string values.
+  Full suite: baseline 183/183 → **186/186** after, zero regressions.
+
+  Re-verified live after the fix, same scratch DB: all three previously-
+  crashing payloads above now return a clean 200 with the bad element
+  reported in `skipped` (`{"applied":[],"skipped":[{"foo":1}]}` etc.); a
+  mixed payload (`[1,{"foo":1}]`, one valid id + one malformed) returns
+  `{"applied":[1],"skipped":[{"foo":1}]}` — the valid id still applies, the
+  bad one is reported, not silently dropped or crash-the-batch; a normal
+  `{"deviceIds":[1]}` request against a real device still returns
+  `{"applied":[1],"skipped":[]}`, confirmed as a control.
+
+  Committed + pushed to `l023131500-ops/zol` branch
+  `fix/kiosk-template-apply-deviceids-0825` (`45abf7f`), off the live tip
+  (`8bbdb50`, the enroll-serial merge recorded above) — not merged, same
+  human-review convention as every prior fix branch on this chain. Zero
+  Android/Kotlin/Windows work touched. Did not touch the still-parked
+  feature chain, the payment code (explicitly out of scope per the project
+  note's PCI-DSS constraint), or `core.issues #215` (monorepo-vs-zol tree
+  divergence), both unaffected by this round.
