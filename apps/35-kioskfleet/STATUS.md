@@ -7194,3 +7194,53 @@ to that constraint: they import only dependency-free modules (`hosts.js`,
   parked feature chain, the payment code (explicitly out of scope per the
   project note's PCI-DSS constraint), or `core.issues #215`
   (monorepo-vs-zol tree divergence), both unaffected by this round.
+
+- **[25/08/2026, Loop A] Found and fixed the last un-migrated `name` write
+  path — not a crash this time, a **silent-corruption** variant of the same
+  class: `templatepolicy.js`'s `buildTemplateFields` (the device-group
+  "template" feature, KIOSK_BUILD.md §8) stored a template's `name` via bare
+  `String(b.name ?? '').trim()` instead of the shared `validateName`
+  (`names.js`) that `devices.js`/`clients.js`/`links.js` were already
+  switched to across the 9th fix on this chain. A non-string value never
+  throws through `String()`, so nothing crashed — but an object `name`
+  silently saved as the literal string `"[object Object]"`, an array saved
+  as `"1,2,3"`, both with a clean 200 and no error surfaced to the caller.
+  It also had no length cap at all, where every other `name` field on the
+  platform (device/enrollment, client, link) caps at 120 chars — a 500-char
+  name was accepted and stored whole.
+
+  Reproduced live first, real server against a scratch DB, seeded admin:
+  `POST /api/templates {"name":{"pwn":1}}` → 200, `template.name` ===
+  `"[object Object]"`; `{"name":[1,2,3]}` → 200, `template.name` ===
+  `"1,2,3"`; a 500-character Hebrew `name` → 200, stored at its full 500
+  chars.
+
+  Fixed by routing both `templatepolicy.js`'s `buildTemplateFields` (used by
+  both `POST /templates` and `PATCH /templates/:id`) and
+  `routes/templates.js`'s own POST pre-check (which used to run its own
+  separate `String(body.name ?? '').trim()` blank-check before
+  `buildTemplateFields` ever saw the body) through `validateName`. New test
+  cases in `templatepolicy.test.mjs`: non-string rejection (object, array,
+  boolean, number) and the 120-char cap (121 rejected, exactly 120 accepted).
+  Full suite: baseline 170/170 → **172/172** after, zero regressions.
+
+  Re-verified live after the fix, same scratch DB: the object/array/overlong
+  cases above now each answer a clean 400 (`"שם התבנית חייב להיות טקסט"` /
+  `"שם התבנית ארוך מדי (עד 120 תווים)"`) instead of silently storing junk,
+  on both `POST /api/templates` and `PATCH /api/templates/:id`; a normal
+  create-with-valid-name then rename-with-valid-name round trip still
+  returns 200 with the correct stored value each time, confirmed as a
+  control.
+
+  Committed + pushed to `l023131500-ops/zol` branch
+  `fix/kiosk-template-name-validation-0825` (`4d7d7e3`), off the live tip
+  (`c6bd452`, the username/password fix recorded above) — not merged, same
+  human-review convention as every prior fix branch on this chain. This was
+  the last outstanding `String(x).trim()`-shaped `name` door found by
+  grepping every route file (`devices.js`, `clients.js`, `links.js`,
+  `snapshots.js`, `alerts.js`, `templates.js`) against `names.js`'s
+  `validateName` call sites — the other five were already migrated by prior
+  rounds on this chain. Zero Android/Kotlin/Windows work touched. Did not
+  touch the still-parked feature chain, the payment code (explicitly out of
+  scope per the project note's PCI-DSS constraint), or `core.issues #215`
+  (monorepo-vs-zol tree divergence), both unaffected by this round.
