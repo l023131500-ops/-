@@ -34,6 +34,43 @@ Next.js 14 (App Router) + TypeScript + Tailwind RTL + Supabase. מפתח אחי�
    לאישורים שגרתיים; עצור רק לפני פעולה הרסנית (מחיקת DB/repo, force-push) או
    כשחסר מידע קריטי שלא קיים באף מקום.
 
+## עדכון — 25/08/2026 (Loop A, גיבוי 10 מיגרציות שהוחלו חי ולא נשמרו בריפו — 32+36)
+בדיקה של `mcp__supabase__list_migrations` מול `supabase/migrations/` המקומי
+מצאה פער אמיתי: כל מודול שנבנה על `nadlan_pro`/`nadlan` מ-18/08 עד עכשיו —
+`nadlan_area_alerts`(+`_delivery_tracking`), `nadlan_pro_team_invites`,
+`nadlan_pro_property_save_images_clear_fix`, `nadlan_rental_cache_area_month_unique`,
+`0144_nadlan_pro_docs_upload`, `nadlan_pro_role_set_owner_guard`,
+`nadlan_pro_rental_management`, `nadlan_pro_forum`(+`_fix_cross_office_names`),
+`nadlan_pro_office_public_site`(+`_token_regen_fix_search_path`),
+`nadlan_pro_office_delete`, `nadlan_pro_listing_purpose`(+3 המשך-מיגרציות),
+`nadlan_pro_lead_intake`(+`_enum`+`_regen_revoke_anon`) — הוחל חי דרך ה-MCP
+אבל **מעולם לא נשמר כקובץ בריפו**. הריפו והדאטהבייס החי סטו זה מזה: מי שהיה
+בונה סביבה חדשה מהריפו הזה (או `supabase db reset`) היה מקבל סכימה חסרה —
+בלי טאב "צוות", בלי שכירויות, בלי פורום, בלי אתר-משרד ציבורי, בלי קליטת
+לידים חיצונית — כל אלה כבר חיים ב-production ומשמשים את app.html בפועל.
+
+תוקן: 10 קבצי מיגרציה חדשים (0126–0135), כל אחד לפי גבול-פיצ'ר (לא לפי כל
+מיגרציה חיה בנפרד) עם DDL שנשלף ואומת ישירות מהדאטהבייס החי (`pg_get_functiondef`,
+`information_schema`, `pg_policies`, `pg_indexes`) — לא שוחזר מהזיכרון/מהתיעוד.
+כשמיגרציה חיה תיקנה באג באותו יום (למשל role_set_owner_guard, forum_fix_cross_office_names,
+office_public_token_regen_fix_search_path, lead_intake_regen_revoke_anon) — הקובץ
+המגובה מכיל ישירות את הגרסה **הסופית המתוקנת**, לא את מצב-הביניים הפגיע, כי
+המטרה היא סביבה חדשה נכונה, לא שחזור-היסטוריה מדויק. כל 10 הקבצים אומתו
+חיים בפועל — לא רק נקראו: כל אחד הורץ בתוך `begin; ... rollback;` על
+הדאטהבייס האמיתי דרך ה-MCP (לא רק בדיקת-תחביר סטטית), ותפס ותיקן שני פערים
+אמיתיים באמצע האימות: (1) הריפו ניחש `alter table … add constraint …
+offices_public_token_key` אבל `offices_lead_intake_token` בפועל מוגן ב-unique
+**אינדקס** רגיל (`offices_lead_intake_token_idx`), לא constraint בשם קבוע —
+תוקן לפי המבנה האמיתי; (2) `exception when duplicate_object` לא תופס
+`42P07 duplicate_table` שקורה כש-constraint עם שם implicit כבר קיים — הורחב
+ל-`when duplicate_object or duplicate_table`. גם תוקן פער-הפניה-קדימה עצמאי:
+`np_office_public` (0129) הפנה במקור ל-`properties.listing_purpose` שנוסף רק
+ב-0131 המאוחר יותר — הוזזה ההגדרה עם השדה ל-0131 כדי שכל קובץ יהיה עצמאי אם
+ירוץ ברצף על דאטהבייס ריק. אפס שינוי לדאטהבייס החי עצמו — כל הקבצים תוספתיים
+(`create table/type if not exists`, `create or replace function`, `do $$
+... exception when duplicate_object then null`) ומשקפים בדיוק את המצב שכבר
+רץ; זו עבודת תיעוד/שחזור-סביבה, לא שינוי פיצ'ר. system 35 KioskFleet לא נגע.
+
 ## עדכון — 25/08/2026 (Loop A, תיקון שני בכיוון-מצלמה ב"סיור רחוב" — heading קבוע לכל מסגרת, לא רק לעוגן)
 בדיקת-אימות עצמאית **על התיקון הקודם באותו יום** (הרשומה מיד למטה — 763ebf48,
 ששילחה שעות ספורות קודם) מצאה שהוא תיקן רק חצי מהבעיה: הוא פתר את ה-404
