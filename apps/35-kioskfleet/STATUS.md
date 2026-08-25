@@ -6282,3 +6282,77 @@ to that constraint: they import only dependency-free modules (`hosts.js`,
   sweep). `apps/35-kioskfleet/server`'s own copy of this bug (if any —
   §0תג already calls that whole tree abandoned/divergent) was deliberately
   **not** touched, per the standing "zol files only" rule from §0תג/13/08.
+
+- **[25/08/2026, Loop A] The home_url scheme-validation fix (`9de50d0`)
+  missed a sixth door — device-group templates — on `zol` not this tree.**
+  Continued auditing already-shipped code against §0's retail-grade mandate
+  rather than mining KIOSK_BUILD.md for more unbuilt spec items (still
+  blocked on human real-device validation). The previous round's own
+  write-up enumerated exactly five doors onto a device's `home_url` (`PATCH
+  /devices/:id`, `POST /enrollments`, `set_url`, `POST`/`PATCH /links`) and
+  fixed all five with `hosts.js`'s `normalizeHomeUrl()`. `templatepolicy.js`'s
+  `buildTemplateFields` — the validator behind `POST`/`PATCH /templates`
+  (KIOSK_BUILD.md §8 "קבוצות/תבניות") — was never on that list, and still
+  used the old weak `try { new URL(homeUrl) } catch` shape: `new
+  URL('javascript://x')` doesn't throw, so a template's `home_url` could be
+  saved as a script URL with no error at all. `templatepolicy.test.mjs`'s
+  own coverage only asserted `'not a url'` was rejected — no scheme case
+  existed, so nothing caught the gap.
+
+  Confirmed the actual write-path risk before treating it as cosmetic:
+  `POST /templates/:id/apply` → `policyPatchFromTemplate(template)` copies
+  `row.home_url` straight into the patch, but `policy.js`'s
+  `applyDevicePolicy` already re-validates with `normalizeHomeUrl()` before
+  any real device write — so a bad template could never actually reach a
+  device. The real bug was UX/data-integrity: the template silently stored
+  an unusable `home_url` with no error at creation time, then silently
+  failed into `apply`'s `skipped` list (no reason surfaced) the moment an
+  owner tried to use it on their fleet — worse than any of the other five
+  doors, which all reject immediately with a clear message.
+
+  Fix: routed `buildTemplateFields`'s `homeUrl` field through the same
+  `normalizeHomeUrl()` every other door already uses, with the matching
+  "must start with http:// or https://" Hebrew message. 4 new cases in
+  `templatepolicy.test.mjs` (`javascript://x`/`javascript:`/`data:`/`ftp:`
+  rejected with the scheme message; whitespace-padded good URL still
+  trims through). Full suite: **127/128** (126 baseline + 4 new − 3 the old
+  bad-homeUrl test already counted once, same pre-existing
+  `seedadmin.test.mjs`/`node:sqlite`-needs-Node-22+ gap every prior entry
+  has hit).
+
+  **Live-server verified, not source-review-only**: booted the real server
+  against a throwaway SQLite db, logged in as the seeded admin. `POST
+  /templates` with `homeUrl: "javascript://x"` → 400, not stored (confirmed
+  via a follow-up `GET /templates`); same for `data:text/html,<script>1</script>`.
+  `PATCH` an existing legit template to `javascript:alert(1)` → 400,
+  confirmed the stored URL never moved. A legitimate whitespace-padded
+  `https://` URL → 200, stored trimmed. Full end-to-end round-trip: created
+  an enrollment, enrolled a real device on it, applied a legit `https://`
+  template to that device via `POST /templates/:id/apply`, confirmed via
+  `GET /devices/:id` the device's `homeUrl` actually updated to the
+  template's value. Full suite re-run clean afterward; stopped the server
+  and removed the throwaway db.
+
+  **Housekeeping note**: found the sandbox's own previous throwaway
+  verification server (from an earlier round in this same session, bound to
+  `/tmp/kiosk-verify.db`) still running and holding port 8099 from a prior
+  step — confirmed via `/proc/<pid>/cwd` and `/proc/<pid>/environ` that it
+  was disposable test debris (not a live service) before killing it and
+  booting a clean one for this round's own verification.
+
+  **Pure server-side validation, zero Android/Kotlin touched, no new
+  autonomous on-device behaviour** — same risk class as the already-
+  fast-tracked home_url/heartbeat fixes. Branched fresh off
+  `origin/claude/what-do-you-see-gxo5tc` as
+  `fix/kiosk-template-homeurl-scheme-validation-0825` (`8e8f37b`), then
+  fast-forwarded straight into `claude/what-do-you-see-gxo5tc` and pushed
+  (`9de50d0..8e8f37b`) — this **is** the branch Railway deploys, so this
+  lands in production on the next deploy. Did not touch the still-parked
+  9-deep lockdown/payment/provisioning chain or
+  `feat/kiosk-schedule-offline-persist-0825`.
+
+  **Not verified beyond that**: no Railway deploy log visible from this
+  sandbox to confirm the push actually triggered/completed a redeploy; no
+  sweep of already-stored `templates.home_url` rows for a pre-existing bad
+  value (same "the refusal belongs at the door, not a retroactive sweep"
+  reasoning the home_url fix gave for `devices`/`links`).
