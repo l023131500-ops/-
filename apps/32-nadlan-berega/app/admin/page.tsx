@@ -2,6 +2,7 @@ import { cookies } from 'next/headers';
 import AreaAlertsBoard from '@/components/admin/AreaAlertsBoard';
 import RequestsBoard from '@/components/admin/RequestsBoard';
 import TabuRequestsBoard from '@/components/admin/TabuRequestsBoard';
+import TikMeidaRequestsBoard from '@/components/admin/TikMeidaRequestsBoard';
 import SavedReportsBoard from '@/components/admin/SavedReportsBoard';
 import SessionGate from '@/components/admin/SessionGate';
 import { ADMIN_COOKIE, verifyAdminCookie } from '@/lib/adminauth';
@@ -88,6 +89,20 @@ export default function AdminPage({ searchParams }: { searchParams: { key?: stri
       >
         {process.env.ADMIN_TOKEN ? (
           <TabuRequestsBoard token={searchParams.key ?? ''} />
+        ) : (
+          <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">
+            הלוח נעול עד שיוגדר <code>ADMIN_TOKEN</code>. הוא קורא כתובות מייל ושמות של לקוחות.
+          </div>
+        )}
+      </Section>
+
+      {/* ===== בקשות תיק מידע להיתר — מהצ'קבוקס בדוח ה-VIP (TikMeidaRequestPanel) ===== */}
+      <Section
+        title="בקשות תיק מידע להיתר (מלקוחות)"
+        note="לקוח שסימן בדוח ה-VIP שהוא רוצה תיק מידע להיתר רשמי מהוועדה המקומית. יש להגיש ידנית ואז לסמן כ'הוגש', ולהעלות את התיק כשהוא מתקבל — ההעלאה משייכת ומעדכנת אוטומטית ל'הונפק'."
+      >
+        {process.env.ADMIN_TOKEN ? (
+          <TikMeidaRequestsBoard token={searchParams.key ?? ''} />
         ) : (
           <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">
             הלוח נעול עד שיוגדר <code>ADMIN_TOKEN</code>. הוא קורא כתובות מייל ושמות של לקוחות.

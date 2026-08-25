@@ -650,3 +650,281 @@ export async function fulfillMatchingTabuRequests(doc: {
     .in('id', ids);
 }
 
+// ---------- תיק מידע להיתר (מהלקוח, מתוך דוח VIP) ----------
+//
+// אותו דפוס בדיוק כמו בקשות נסח טאבו למעלה: anon יכול **להכניס** בקשה בלבד
+// (RLS: INSERT ל-public, with check(true)), כל קריאה/עדכון עוברים דרך service
+// key. בשונה מנסח טאבו, תיק מידע הוא ברמת גוש/חלקה שלמה (לא לפי דירה/כניסה) —
+// הוועדה המקומית מנפיקה אותו לחלקה, לא ליחידה בתוכה.
+
+export type TikMeidaRequestGrade = 'normal' | 'urgent';
+export type TikMeidaRequestStatus = 'pending' | 'sent' | 'fulfilled' | 'failed';
+
+export interface TikMeidaRequestInput {
+  gush: string;
+  helka: string;
+  address?: string | null;
+  city?: string | null;
+  assetType?: string | null;
+  purpose?: string | null;
+  grade: TikMeidaRequestGrade;
+  requesterName?: string | null;
+  requesterEmail: string;
+  requesterPhone?: string | null;
+  notes?: string | null;
+}
+
+export interface TikMeidaRequestRow {
+  id: number;
+  gush: string;
+  helka: string;
+  address: string | null;
+  city: string | null;
+  asset_type: string | null;
+  purpose: string | null;
+  grade: TikMeidaRequestGrade;
+  requester_name: string | null;
+  requester_email: string;
+  requester_phone: string | null;
+  notes: string | null;
+  status: TikMeidaRequestStatus;
+  admin_email_sent: boolean;
+  admin_email_error: string | null;
+  created_at: string;
+  sent_at: string | null;
+  sent_by: string | null;
+  fulfilled_at: string | null;
+  tik_meida_document_id: number | null;
+}
+
+const TIK_MEIDA_REQUEST_FIELDS =
+  'id,gush,helka,address,city,asset_type,purpose,grade,requester_name,requester_email,' +
+  'requester_phone,notes,status,admin_email_sent,admin_email_error,created_at,sent_at,sent_by,' +
+  'fulfilled_at,tik_meida_document_id';
+
+/**
+ * יצירת בקשת תיק מידע — המסלול הציבורי, עם anon key.
+ * ⚠️ אין `.select()` בכוונה — אותה סיבה בדיוק כמו `createTabuRequest`.
+ */
+export async function createTikMeidaRequest(input: TikMeidaRequestInput): Promise<void> {
+  const db = anonStore();
+  if (!db) throw new Error('Supabase לא מוגדר (SUPABASE_URL / SUPABASE_ANON_KEY).');
+  if (!input.gush?.trim() || !input.helka?.trim()) {
+    throw new Error('נדרשים גוש וחלקה כדי לבקש תיק מידע להיתר.');
+  }
+  if (!looksLikeEmail(input.requesterEmail)) {
+    throw new Error('כתובת המייל אינה תקינה.');
+  }
+  const { error } = await db.from('tik_meida_requests').insert({
+    gush: input.gush.trim(),
+    helka: input.helka.trim(),
+    address: input.address ?? null,
+    city: input.city ?? null,
+    asset_type: input.assetType ?? null,
+    purpose: input.purpose ?? null,
+    grade: input.grade === 'urgent' ? 'urgent' : 'normal',
+    requester_name: input.requesterName ?? null,
+    requester_email: input.requesterEmail.trim(),
+    requester_phone: input.requesterPhone ?? null,
+    notes: input.notes ?? null,
+  });
+  if (error) throw new Error(error.message);
+}
+
+/** אותו רעיון בדיוק כמו `latestTabuRequestId` — לתיוג תוצאת מייל-ההתראה בלבד. */
+async function latestTikMeidaRequestId(email: string, gush: string, helka: string): Promise<number | null> {
+  const db = serviceStore();
+  if (!db) return null;
+  const { data } = await db
+    .from('tik_meida_requests')
+    .select('id')
+    .eq('requester_email', email)
+    .eq('gush', gush)
+    .eq('helka', helka)
+    .order('created_at', { ascending: false })
+    .limit(1)
+    .maybeSingle();
+  return (data as { id: number } | null)?.id ?? null;
+}
+
+export async function listTikMeidaRequests(
+  opts: { status?: TikMeidaRequestStatus; limit?: number } = {},
+): Promise<TikMeidaRequestRow[]> {
+  const db = serviceStore();
+  if (!db) throw new Error('SUPABASE_SERVICE_KEY חסר — אין הרשאת קריאה לבקשות תיק מידע.');
+  let q = db
+    .from('tik_meida_requests')
+    .select(TIK_MEIDA_REQUEST_FIELDS)
+    .order('created_at', { ascending: false })
+    .limit(opts.limit ?? 100);
+  if (opts.status) q = q.eq('status', opts.status);
+  const { data, error } = await q;
+  if (error) throw new Error(error.message);
+  return (data ?? []) as TikMeidaRequestRow[];
+}
+
+/** ספירת בקשות ממתינות — ההתראה בניהול, אותו דפוס כמו `pendingTabuRequestCount`. */
+export async function pendingTikMeidaRequestCount(): Promise<number | null> {
+  const db = serviceStore();
+  if (!db) return null;
+  const { count, error } = await db
+    .from('tik_meida_requests')
+    .select('id', { count: 'exact', head: true })
+    .eq('status', 'pending');
+  if (error) return null;
+  return count ?? 0;
+}
+
+/**
+ * סימון בקשה כ"נשלחה לוועדה המקומית" — הפעולה האנושית שאי אפשר לבצע אוטומטית
+ * (אין API ציבורי להגשת בקשת תיק מידע). מותנה ב-`status='pending'` כדי שלחיצה
+ * כפולה לא תדרוס `sent_at`/`sent_by` של הפעם הראשונה.
+ */
+export async function markTikMeidaRequestSent(id: number, sentBy: string): Promise<TikMeidaRequestRow | null> {
+  const db = serviceStore();
+  if (!db) throw new Error('SUPABASE_SERVICE_KEY חסר.');
+  const { data, error } = await db
+    .from('tik_meida_requests')
+    .update({ status: 'sent', sent_at: new Date().toISOString(), sent_by: sentBy })
+    .eq('id', id)
+    .eq('status', 'pending')
+    .select(TIK_MEIDA_REQUEST_FIELDS)
+    .maybeSingle();
+  if (error) throw new Error(error.message);
+  return (data as TikMeidaRequestRow) ?? null;
+}
+
+/** best-effort — אותו דפוס בדיוק כמו `recordTabuRequestEmailResult`. */
+export async function recordTikMeidaRequestEmailResult(
+  email: string,
+  gush: string,
+  helka: string,
+  sent: boolean,
+  error: string | null,
+): Promise<void> {
+  const db = serviceStore();
+  if (!db) return;
+  const id = await latestTikMeidaRequestId(email, gush, helka);
+  if (id == null) return;
+  await db
+    .from('tik_meida_requests')
+    .update({ admin_email_sent: sent, admin_email_error: error })
+    .eq('id', id);
+}
+
+// ---------- מסמכי תיק מידע להיתר ----------
+
+export interface TikMeidaDocRow {
+  id: number;
+  request_id: number | null;
+  gush: string;
+  helka: string;
+  address: string | null;
+  city: string | null;
+  file_name: string;
+  file_path: string;
+  mime_type: string;
+  size_bytes: number;
+  note: string | null;
+  uploaded_by: string | null;
+  uploaded_at: string;
+}
+
+const TIK_MEIDA_DOC_FIELDS =
+  'id,request_id,gush,helka,address,city,file_name,file_path,mime_type,size_bytes,note,uploaded_by,uploaded_at';
+
+export const TIK_MEIDA_BUCKET = 'tik-meida';
+
+export async function saveTikMeidaDocument(row: {
+  requestId?: number | null;
+  gush: string;
+  helka: string;
+  address?: string | null;
+  city?: string | null;
+  fileName: string;
+  filePath: string;
+  mimeType: string;
+  sizeBytes: number;
+  note?: string | null;
+  uploadedBy?: string | null;
+}): Promise<TikMeidaDocRow> {
+  const db = serviceStore();
+  if (!db) throw new Error('SUPABASE_SERVICE_KEY חסר — אין הרשאת כתיבה לתיקי מידע.');
+  const { data, error } = await db
+    .from('tik_meida_documents')
+    .insert({
+      request_id: row.requestId ?? null,
+      gush: row.gush,
+      helka: row.helka,
+      address: row.address ?? null,
+      city: row.city ?? null,
+      file_name: row.fileName,
+      file_path: row.filePath,
+      mime_type: row.mimeType,
+      size_bytes: row.sizeBytes,
+      note: row.note ?? null,
+      uploaded_by: row.uploadedBy ?? null,
+    })
+    .select(TIK_MEIDA_DOC_FIELDS)
+    .single();
+  if (error) throw new Error(error.message);
+  return data as TikMeidaDocRow;
+}
+
+export async function listTikMeidaDocuments(
+  opts: { gush?: string | null; helka?: string | null; limit?: number } = {},
+): Promise<TikMeidaDocRow[]> {
+  const db = serviceStore();
+  if (!db) throw new Error('SUPABASE_SERVICE_KEY חסר.');
+  let q = db
+    .from('tik_meida_documents')
+    .select(TIK_MEIDA_DOC_FIELDS)
+    .order('uploaded_at', { ascending: false })
+    .limit(opts.limit ?? 100);
+  if (opts.gush) q = q.eq('gush', opts.gush);
+  if (opts.helka) q = q.eq('helka', opts.helka);
+  const { data, error } = await q;
+  if (error) throw new Error(error.message);
+  return (data ?? []) as TikMeidaDocRow[];
+}
+
+/** תיקי המידע ששייכים לחלקה — לצירוף לדוח/מייל, החדש ביותר קודם. */
+export async function tikMeidaForProperty(opts: {
+  gush?: string | null;
+  helka?: string | null;
+}): Promise<TikMeidaDocRow[]> {
+  if (!opts.gush || !opts.helka) return [];
+  const db = serviceStore();
+  if (!db) return [];
+  const { data, error } = await db
+    .from('tik_meida_documents')
+    .select(TIK_MEIDA_DOC_FIELDS)
+    .eq('gush', opts.gush)
+    .eq('helka', opts.helka)
+    .order('uploaded_at', { ascending: false });
+  if (error || !data) return [];
+  return data as TikMeidaDocRow[];
+}
+
+/**
+ * שיוך תיק-מידע שהועלה בפועל לבקשות-לקוח ממתינות/שנשלחו לאותה חלקה —
+ * ברמת גוש/חלקה בלבד (בשונה מ-`fulfillMatchingTabuRequests`, אין כאן דירוג
+ * דירה/כניסה/בניין: תיק מידע חל תמיד על כל החלקה). נקרא מ-`PUT
+ * /api/admin/tik-meida` מיד אחרי שההעלאה עצמה הצליחה — אין שלב "ניתוח" נפרד
+ * (בשונה מטאבו): תיק מידע הוא מסמך רשמי מהוועדה, וההעלאה עצמה היא ה"הנפקה".
+ */
+export async function fulfillMatchingTikMeidaRequests(doc: {
+  id: number;
+  gush: string;
+  helka: string;
+}): Promise<void> {
+  const db = serviceStore();
+  if (!db) return;
+  await db
+    .from('tik_meida_requests')
+    .update({ status: 'fulfilled', fulfilled_at: new Date().toISOString(), tik_meida_document_id: doc.id })
+    .eq('gush', doc.gush)
+    .eq('helka', doc.helka)
+    .in('status', ['pending', 'sent']);
+}
+

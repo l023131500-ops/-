@@ -19,6 +19,7 @@ import {
   pendingCount,
   resetToPending,
   tabuForProperty,
+  tikMeidaForProperty,
   type RequestStatus,
 } from '@/lib/requests';
 
@@ -121,10 +122,17 @@ export async function POST(req: NextRequest) {
       entrance: claimed.entrance,
     }).catch(() => []);
 
+    // תיקי מידע להיתר שהונפקו בניהול, משויכים לנכס ברמת גוש/חלקה.
+    const tikMeidaDocs = await tikMeidaForProperty({
+      gush: report.title.gush,
+      helka: report.building.registeredHelka ?? report.title.helka,
+    }).catch(() => []);
+
     const baseUrl = publicBaseUrl(req);
     const html = reportEmailHtml(report, {
       baseUrl,
       tabuDocs,
+      tikMeidaDocs,
       customerName: claimed.full_name,
     });
 
@@ -154,6 +162,7 @@ export async function POST(req: NextRequest) {
       costUsd: report.costUsd,
       headline: report.title.headline,
       tabuAttached: tabuDocs.length,
+      tikMeidaAttached: tikMeidaDocs.length,
       warnings: report.warnings.length,
     });
   } catch (e: any) {

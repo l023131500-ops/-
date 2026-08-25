@@ -12,7 +12,7 @@ import type { PropertyReport } from './buildreport';
 import { dealIdentity } from './buildreport';
 import { CERTAINTY_LABEL, TIER_LABEL, tierAllows, formatFactValue } from './report';
 import type { Fact } from './report';
-import type { TabuAnalysis, TabuDocRow } from './requests';
+import type { TabuAnalysis, TabuDocRow, TikMeidaDocRow } from './requests';
 import { computeStreetStats } from './streetstats';
 import { hasValuation } from './valuation';
 
@@ -180,6 +180,31 @@ function tabuBlock(docs: TabuDocRow[]): string {
   return section(
     'טאבו — מתוך הנסח שהופק',
     'הנתונים הבאים חולצו מנסח טאבו רשמי שצורף לדוח הזה, ומשויכים לנכס לפי היקף הנסח.',
+    blocks.join(''),
+  );
+}
+
+/**
+ * "attach to client" של build_tasks id=5 — תיק מידע להיתר שהונפק בפועל
+ * ושויך לחלקה הזו (`tikMeidaForProperty`). בשונה מ-`tabuBlock`, אין כאן
+ * שדות משפטיים מנותחים בפני עצמם — התיק הוא PDF/תמונה רשמיים, וההערה
+ * (`note`) היא תמצות קצר שהצוות הקליד בעת ההעלאה, לא ניתוח AI.
+ */
+function tikMeidaBlock(docs: TikMeidaDocRow[]): string {
+  if (!docs.length) return '';
+
+  const blocks = docs.map((d) => {
+    const when = new Date(d.uploaded_at).toLocaleDateString('he-IL');
+    return `<div style="margin-top:10px;padding:12px;border:1px solid ${LINE};border-radius:8px;background:#fafafa">
+  <div style="font-size:13px;font-weight:800;color:${NAVY}">${esc(d.file_name)}</div>
+  <div style="font-size:11px;color:${MUTED}">התקבל מהוועדה המקומית · ${esc(when)}</div>
+  ${d.note ? `<div style="margin-top:6px;font-size:13px;line-height:1.8;color:${INK}">${esc(d.note)}</div>` : ''}
+</div>`;
+  });
+
+  return section(
+    'תיק מידע להיתר',
+    'המסמך הרשמי שהתקבל מהוועדה המקומית לתכנון ולבנייה, לפי בקשתך.',
     blocks.join(''),
   );
 }
@@ -402,6 +427,8 @@ export interface ReportEmailOptions {
   baseUrl: string;
   /** נסחי טאבו מנותחים ששויכו לנכס. */
   tabuDocs?: TabuDocRow[];
+  /** תיקי מידע להיתר שהונפקו ושויכו לנכס. */
+  tikMeidaDocs?: TikMeidaDocRow[];
   /** מה שהלקוח כתב בטופס. */
   customerName?: string | null;
 }
@@ -565,6 +592,7 @@ export function reportEmailHtml(report: PropertyReport, opts: ReportEmailOptions
       : ''
   }
   ${tabuBlock(opts.tabuDocs ?? [])}
+  ${tikMeidaBlock(opts.tikMeidaDocs ?? [])}
 
   <div style="margin-top:26px;padding:14px;border:1px solid ${LINE};border-radius:8px;background:#fff;font-size:12px;line-height:1.8;color:${MUTED}">
     הדוח כולל ${filled} נתונים מתוך ${total} שנבדקו. הופק ב-${new Date(report.generatedAt).toLocaleString('he-IL')}.

@@ -34,6 +34,78 @@ Next.js 14 (App Router) + TypeScript + Tailwind RTL + Supabase. מפתח אחי�
    לאישורים שגרתיים; עצור רק לפני פעולה הרסנית (מחיקת DB/repo, force-push) או
    כשחסר מידע קריטי שלא קיים באף מקום.
 
+## עדכון — 25/08/2026 (Loop A, session 8 — build_tasks id=5: תיק מידע להיתר — workflow request→mgmt→issue→attach)
+`core.build_tasks` id=5 (system 32, priority 50): "Planning info auto-pull
+(govmap/minhal ha-tichnun layers) shown immediately; tik-meida-le-heter as
+official request workflow (request->mgmt->issue->attach)". חלק ראשון נבדק
+ונמצא כבר בנוי במלואו: ייעוד קרקע + מרשם התכניות (XPLAN שכבות 1/4) נשאלים
+ללא תלות-רמה בכל דוח (`lib/permits.ts`/`lib/xplan.ts`) ומוצגים מיד ב-
+`PermitsPanel.tsx` — אין בקשה נדרשת. חלק שני היה חסר לגמרי: שום דרך ללקוח
+*לבקש* תיק מידע להיתר רשמי (מסמך שהוועדה המקומית מנפיקה לפי חלקה — שונה
+לגמרי מסיכום התכניות האוטומטי, ושונה מנסח טאבו) — אין רישום בקשה, אין
+התראה לצוות, ואין ערוץ להחזיר את התיק ללקוח.
+
+נבנה אותו דפוס בדיוק כמו "TABU workflow" (id=4, ראו הרשומה הבאה למטה),
+בהתאמה ל"תיק מידע" (ברמת גוש/חלקה שלמה, לא לפי דירה — הוועדה מנפיקה לחלקה,
+לא ליחידה בתוכה; ואין שלב "ניתוח AI" — תיק מידע הוא מסמך רשמי מהוועדה
+שהתוכן שלו כבר "מדבר", בשונה מנסח טאבו שדורש חילוץ נתונים גולמי):
+
+- מיגרציה `0152_nadlan_tik_meida_requests.sql`: `nadlan.tik_meida_documents`
+  (RLS מופעל בלי policy — service-role בלבד, אותה עמדה כמו `tabu_documents`)
+  + `nadlan.tik_meida_requests` (RLS: INSERT בלבד ל-`public`, `with
+  check(true)`, אותו grant set כמו `tabu_requests`) + bucket פרטי חדש
+  `tik-meida` (25MB, pdf/jpeg/png/webp).
+- `lib/requests.ts`: `createTikMeidaRequest`/`listTikMeidaRequests`/
+  `pendingTikMeidaRequestCount`/`markTikMeidaRequestSent`/
+  `recordTikMeidaRequestEmailResult`/`saveTikMeidaDocument`/
+  `listTikMeidaDocuments`/`tikMeidaForProperty`/
+  `fulfillMatchingTikMeidaRequests` — האחרון פשוט מ-`fulfillMatchingTabuRequests`
+  (אין דירוג דירה/כניסה/בניין: כל תיק חל על החלקה כולה, אז ההתאמה היא
+  גוש/חלקה בלבד).
+- `app/api/tik-meida-request/route.ts` (POST ציבורי): מאמת גוש/חלקה/מייל,
+  יוצר שורה, שולח מייל-התראה best-effort לצוות (`TIK_MEIDA_ADMIN_EMAIL`,
+  נופל ל-`TABU_ADMIN_EMAIL` הקיים אם לא הוגדר ייעודי — אותו צוות מקבל שני
+  סוגי הבקשות).
+- `app/api/admin/tik-meida-requests/route.ts` (GET+POST mark_sent) +
+  `TikMeidaRequestsBoard.tsx` (לוח ניהול חדש, מחובר ב-`/admin` בסקשן נפרד):
+  רשימת בקשות, כפתור "סומן כהוגש לוועדה", וטופס-העלאה מוטמע ("העלאת תיק
+  מידע": קובץ + הערת-תמצות קצרה אופציונלית) שקורא ל-
+  `app/api/admin/tik-meida/route.ts` (PUT) — ההעלאה **היא** ה"הנפקה": מיד
+  אחריה `fulfillMatchingTikMeidaRequests` משייכת ומעדכנת סטטוס ל-`fulfilled`
+  לכל בקשה ממתינה/שנשלחה לאותה חלקה, בלי שלב ביניים נפרד.
+- `TikMeidaRequestPanel.tsx` (VIP בלבד, אותו שער כמו `TabuRequestPanel`):
+  צ'קבוקס + עדיפות (רגילה/דחופה) + שדה "מטרת הבקשה" (חופשי — מה מתכננים
+  לבקש היתר עבורו) + שם/מייל/טלפון/הערות, מוצג בדוח אחרי `TabuRequestPanel`.
+  כותב בלבד, לעולם לא קורא תיקים קיימים (אותה סיבה בדיוק כמו טאבו: דף הדוח
+  ציבורי/משותף).
+- `lib/reporthtml.ts`: `tikMeidaBlock()` חדש (שם קובץ + תאריך קבלה + הערת
+  התמצות) + שדה `tikMeidaDocs` ב-`ReportEmailOptions`, קרוי מיד אחרי
+  `tabuBlock`. `app/api/admin/requests/route.ts` קורא ל-`tikMeidaForProperty`
+  (גוש/חלקה בלבד) ומעביר את התוצאה — זהו ה"attach to client" בפועל, באותו
+  ערוץ מסירה (המייל שנשלח ללקוח).
+
+אומת: בדיקת איזון-סוגריים על כל 11 הקבצים החדשים/שהשתנו — כולם תקינים.
+מיגרציה הורצה תחילה בתוך `BEGIN;...ROLLBACK;` (יצירת בקשה, סימון-כנשלח,
+העלאת-תיק, שיוך אוטומטי, ואימות ששורת חלקה **אחרת** לא הושפעה) ואז הוחלה
+בפועל דרך `apply_migration`. אומתה שוב חי אחרי ההחלה: בקשה על גוש 9999/888
++ בקשה נפרדת על גוש 7777/111 → סימון-נשלח → העלאת-תיק על 9999/888 → שיוך
+אוטומטי הפך את הבקשה הראשונה ל-`fulfilled` עם `tik_meida_document_id`/
+`fulfilled_at` נכונים, בעוד הבקשה על החלקה האחרת נשארה `pending` בלי שינוי —
+בדיוק כמו שקרה בבדיקת ה-ROLLBACK. שתי הבדיקות רצו בלי `COMMIT`/`ROLLBACK`
+מפורש בסוף (טעות בשלב הביניים) — אומת בנפרד ש-0 שורות נשארו ב-DB אחרי
+(`execute_sql` רץ בכל קריאה בחיבור/session נפרד, וטרנזקציה פתוחה בלי COMMIT
+נסגרת ב-ROLLBACK אוטומטי כשה-session מסתיים — לא הותיר שיוריות, אך לקח
+לב שזו לא ההתנהגות המכוונת ולתמיד לסגור טרנזקציה במפורש). `get_advisors`
+(security) אחרי ההחלה מראה רק `rls_enabled_no_policy` INFO על
+`tik_meida_documents` — צפוי ומכוון, אותה עמדה כמו `tabu_documents`, אין
+אזהרה על `tik_meida_requests` (מדיניות ה-INSERT מספקת את הלינטר) ואין אזהרה
+חדשה אחרת. אין `node_modules`/דפדפן בסביבה הזו לקליק-דרך, אותה מגבלה כמו
+כל סבב `apps/32` קודם. אפס רגרסיה: תוספת טהורה — טבלאות/bucket חדשים, שתי
+פונקציות UI חדשות + שורת-רינדור אחת חדשה ב-`ReportView`/`reporthtml.ts`,
+שני imports חדשים + סקשן `/admin` חדש — שום route/RPC/handler/UI קיימים
+לא נגעו. `core.build_tasks` id=5 סומן `done`. System 35 KioskFleet לא נגע,
+לפי ה-HARD STEERING.
+
 ## עדכון — 25/08/2026 (Loop A, session 7 — build_tasks id=4 הושלם: שיוך נסח-שנותח לבקשת-הלקוח)
 `core.build_tasks` id=4 ("TABU workflow", system 32) נשאר `todo` מסבב session 5
 בגלל שני פריטים פתוחים: (1) counterpart על system 36 — התברר בסבב הזה, בבדיקת
