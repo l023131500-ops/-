@@ -5430,3 +5430,68 @@ to that constraint: they import only dependency-free modules (`hosts.js`,
   `claude/what-do-you-see-gxo5tc`, same reasoning as every entry above:
   feature branch only, no live host here to validate against before
   production.
+
+- **[25/08/2026, Loop A] Per-device screen-orientation lock — KIOSK_BUILD.md
+  §5 "בחירת אוריינטציה: אורך / רוחב — נכפה על המכשיר", was entirely unbuilt,
+  on `zol` not this tree.** §5 has two halves — "הגדלת מסך (זום)" (the
+  earlier "Display zoom" log entry above) and orientation. Only zoom ever
+  got built: every device has been hardcoded to landscape only since
+  `KioskActivity` existed, via `AndroidManifest.xml`'s static
+  `android:screenOrientation="landscape"` — there was no way for an owner to
+  lock a specific device to portrait, or leave rotation unforced, from the
+  console.
+
+  Added `displayOrientation` (`'landscape'|'portrait'|'auto'`, default
+  `'landscape'` — matches every device's pre-existing hardcoded behavior
+  exactly, so this migration changes no device's actual behavior on its
+  own) as a full per-device policy field, wired through every layer
+  `display_zoom_percent` already uses: `src/orientation.js` (new
+  dependency-free validator, unit-tested for real in this sandbox — 6
+  tests), `db.js` (`devices`/`templates`/`policy_snapshots` columns),
+  `policy.js` (`applyDevicePolicy` + `pushConfigUpdate` — unlike
+  `payment_mode`, this rides `commands.js`'s `update_config` payload,
+  because it *does* change what the Android agent enforces),
+  `templatepolicy.js`/`snapshots.js` (fleet templates and backup/restore
+  both carry it), `devicepayload.js` (console allow-list),
+  `routes/devices.js`/`routes/templates.js` (REST), `routes/agent.js`
+  (enroll + heartbeat), `usbpackage.js` (offline USB Route D payload).
+
+  Android: `AgentClient.kt` parses `displayOrientation` on all three config
+  paths (initial WS connect, heartbeat fallback, pushed `update_config`)
+  into `Prefs.DISPLAY_ORIENTATION`; `KioskActivity.applyOrientation()` maps
+  it to `requestedOrientation`
+  (`SCREEN_ORIENTATION_LANDSCAPE`/`PORTRAIT`/`UNSPECIFIED`), called on cold
+  start and live from `onConfigUpdated` whenever it actually changes
+  (independent of any navigation, same shape the maintenance-state apply
+  already uses); `EnrollActivity` persists it from the enroll response —
+  network and offline-USB paths share `applyEnrollResult`, so both device
+  provisioning routes get it for free, no separate wiring needed.
+
+  Console: the device-edit form gets an orientation `<select>` right next
+  to the existing zoom slider (both §5), the template builder gets a
+  matching checkbox+select (`tpl-orient-on`/`tpl-orient`), the device card
+  shows a badge when a device's orientation deviates from the landscape
+  default, `templateSummary()` lists it.
+
+  `node --check` clean on every touched/added JS file. Dependency-free
+  suite (`node --test`, no `better-sqlite3` in this sandbox): **176/178
+  pass** (158 baseline + 6 new `orientation.test.mjs` tests + 8 new
+  assertions across `templatepolicy`/`snapshots`/`devicepayload`/
+  `usbpackage` tests) — the 2 failures are the same pre-existing
+  `routing.test.mjs`/`seedadmin.test.mjs` gap every prior entry in this log
+  has hit, unrelated to this change.
+
+  **Not verified beyond that**: no live server in this sandbox to click
+  through the console UI, and no Android SDK/`kotlinc` here to compile the
+  Kotlin side — the four touched `.kt` files were reviewed by hand
+  (brace-balance checked, every `CommandHandler` call site updated for the
+  new `onConfigUpdated` parameter) rather than compiled. Same category of
+  gap every non-compiler-checked entry in this log hits when the missing
+  piece is a live host or toolchain.
+
+  Committed on the existing `feat/kiosk-launcher-access-code-0825` branch
+  (the same one every recent entry above has used), pushed to
+  `l023131500-ops/zol` (`1756cbb`) — **deliberately not** merged into
+  `claude/what-do-you-see-gxo5tc`, same reasoning as every entry above:
+  feature branch only, no live host here to validate against before
+  production.
