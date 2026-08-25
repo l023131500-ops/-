@@ -6696,3 +6696,46 @@ to that constraint: they import only dependency-free modules (`hosts.js`,
   server-side validation, no real-device dependency. Did not touch the
   still-parked 9-deep chain or `core.issues #215`, both unaffected by this
   round.
+
+- **[25/08/2026, Loop A] The previous round's `clampIdleReturnSeconds()` gate
+  (commit `3519cfb`, still parked/unmerged) only wired the two edit paths
+  (`policy.js`'s `PATCH /devices/:id`, `templatepolicy.js`'s bulk template
+  apply) — it missed a third write path that creates the field in the first
+  place: `routes/devices.js`'s `POST /enrollments` still had its own inline
+  `Math.max(0, Number(idleReturnSeconds) || 0)`, with no upper bound at all.**
+  Per GLOBAL PRIORITY ORDER, P1 = 35 KioskFleet; looked for a genuine
+  server-side gap rather than repeating the rebase, same approach as the
+  round that found the original bug. Traced the cascade before fixing
+  anything: `routes/agent.js`'s `POST /enroll` (device provisioning) reads
+  `enr.idle_return_seconds` straight off the enrollment row created by that
+  same route (only `?? 0` as a fallback) and writes it onto the new device
+  row unclamped — so `POST /enrollments` with `idleReturnSeconds: 999999999`
+  stores that value uncapped on the enrollment, and it reaches the device
+  itself the moment someone enrolls with that code, defeating KIOSK_BUILD.md
+  §4's auto-return safety net exactly like the two paths closed last round.
+
+  Fix is a two-line swap, zero new logic: imported the same
+  `clampIdleReturnSeconds` from `idletimeout.js` that `policy.js`/
+  `templatepolicy.js` already use and replaced the inline computation with
+  it — the shared function is already exhaustively unit-tested
+  (`idletimeout.test.mjs`), and this codebase's test convention only unit-
+  tests extracted pure modules (no route-level/HTTP test harness exists for
+  any route file, confirmed by checking), so no new test file was needed.
+  Reproduced the clamp directly: `999999999` → `86400`, `"abc"` → `0`, `30` →
+  `30`, matching the two already-fixed paths exactly. Full suite after:
+  **134/134** on the live tip base (134 baseline, unaffected — this fix
+  doesn't touch the parked 7-test idletimeout suite's branch), zero
+  regressions. Booted the server against a scratch sqlite db as a smoke
+  test: seeded its initial admin, served `/` (200).
+
+  Committed on `zol` to a fresh branch off the live tip,
+  `fix/kiosk-enrollment-idle-return-seconds-cap-0825` (`a885577`), pushed to
+  `origin/fix/kiosk-enrollment-idle-return-seconds-cap-0825` — **not**
+  fast-forwarded into `claude/what-do-you-see-gxo5tc`, same reasoning as the
+  still-parked `fix/kiosk-idle-return-seconds-validation-0825`: a human
+  review-and-merge is what's left before either reaches Railway, and the two
+  parked branches are independent (this one is *not* stacked on the other —
+  both branch directly off the live tip, so either can merge first without
+  waiting on the other). Zero Android/Kotlin/Windows work touched. Did not
+  touch the still-parked 9-deep feature chain or `core.issues #215`, both
+  unaffected by this round.
