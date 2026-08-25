@@ -1088,6 +1088,32 @@ A), ניסיונות עדכון/מחיקה של B על תוכן של A עדיי�
 `fix/36-nadlan-pro-forum-rls-initplan-0825`. System 35 KioskFleet לא נגע, לפי
 ה-HARD STEERING.
 
+## עדכון — 25/08/2026 (Loop A, multiple_permissive_policies ב-36 nadlan-pro)
+`get_advisors` (performance) סימן 15 אזהרות `multiple_permissive_policies` על שלוש
+טבלאות ב-`nadlan_pro`: `offices`, `office_members`, `contract_templates` (5
+תפקידים × 3 טבלאות). לכל אחת מהן יש מדיניות SELECT לקריאה בלבד, ובנוסף מדיניות
+"כתיבה" נפרדת שהוגדרה `FOR ALL` — כך שעל כל SELECT היה Postgres מריץ ומאחד
+(OR) שתי מדיניות permissive במקום אחת. אלו שלוש הטבלאות היחידות בסכמה עם תנאי
+קריאה שונה מתנאי כתיבה (כל חבר משרד פעיל קורא, רק owner/manager — `manages_office()`
+— כותב); `contacts`/`deals`/`properties` משתמשות במדיניות `ALL` יחידה כי אצלן
+תנאי הקריאה והכתיבה זהים (`can_touch()`). זרוע ה-SELECT שבמדיניות הכתיבה הייתה
+מיותרת: `manages_office()` הוא כבר תת-קבוצה מלאה של תנאי הקריאה
+(`my_office_ids()`/`is_super_admin()`), כך שהסרת SELECT ממדיניות הכתיבה לא
+משנה אף שורה נראית — רק מבטלת הערכה כפולה.
+
+מיגרציה `0141_nadlan_pro_multiple_permissive_policies_fix.sql` מחליפה כל מדיניות
+`FOR ALL` בשלוש מדיניות מפורשות (INSERT/UPDATE/DELETE) עם אותם ביטויי
+USING/WITH CHECK כמו קודם. אומת חי ב-MCP בתוך `BEGIN/ROLLBACK` על משרד ה-QA
+האמיתי עם שלושה משתמשים: owner (קריאה+כתיבה מלאה נשארה עובדת: select, insert,
+update, delete על contract_templates ו-offices), agent רגיל שנוסף זמנית
+כחבר-צוות (קריאה נשארה עובדת, כל ניסיון כתיבה — הוספת תבנית, עדכון משרד,
+מחיקת חבר-owner — נחסם בדיוק כמו לפני התיקון), ו-outsider ממשרד אחר לגמרי
+(0 שורות בקריאה, לפני ואחרי). `get_advisors` אחרי ההחלה: אפס אזהרות
+`multiple_permissive_policies` על `nadlan_pro`, אין אזהרות חדשות. אפס רגרסיה,
+אפס שיוריות אחרי rollback. נדחה+נדחף לענף
+`fix/36-nadlan-pro-multiple-permissive-policies-0825`. System 35 KioskFleet
+לא נגע, לפי ה-HARD STEERING.
+
 ## איך ממשיכים בין סשנים (חשוב!)
 - עבוד ב-Claude Code **מקומי** (לא Remote) על התיקייה הזו — הכל נשמר על הדיסק.
 - להמשך שיחה אחרונה: `claude --continue`   ·   לבחירת סשן קודם: `claude --resume`
