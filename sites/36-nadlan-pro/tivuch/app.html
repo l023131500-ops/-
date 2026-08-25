@@ -933,13 +933,145 @@ async function openProperty(id) {
   html += '<h2 class="sec">מאגר מסמכים לנכס</h2><div id="propDocsBox">' +
     propDocsHtml(d.documents || []) + '</div>';
 
+  html += '<h2 class="sec">ניתוח כדאיות והשקעה</h2><div id="feasBox">' + feasibilityHtml(p) + '</div>';
+
   drawer(p.title || p.address || 'נכס',
          esc(p.address || '') + (p.city ? ' · ' + esc(p.city) : ''), html, (close) => {
     $('pEdit').addEventListener('click', () => { close(); propertyForm(p); });
     $('pTruth').addEventListener('click', () => fetchTruth(p, $('pTruth')));
     wireShareBox(p);
     wirePropDocs(p, d.documents || []);
+    wireFeasibility(p);
   });
+}
+
+// ── investment feasibility (NADLAN_PRO_מחקר_ואפיון.md module 7,
+// "ניתוח כדאיות והשקעה") ──────────────────────────────────────────────────
+// Pure arithmetic on the property's own listed price plus figures the agent
+// types in — no external source, no RPC, nothing to fetch. Same formulas as
+// 32-nadlan-berega's VIP report (components/report/VipPanel.tsx +
+// lib/purchasetax.ts), ported here because a broker analysing their own
+// listing for a buyer needs exactly the same numbers nadlan-berega already
+// verified: rental yield, a Spitzer-formula mortgage estimate, net monthly
+// cash flow, and purchase tax by the Tax Authority's official brackets.
+// Recomputes live on every input change; nothing is persisted.
+
+// מדרגות מס רכישה — מקור: lib/purchasetax.ts באפליקציה 32-nadlan-berega,
+// שם אומתו מול הוראת ביצוע מיסוי מקרקעין 1/2026 (gov.il) ומול דוגמת חישוב
+// רשמית (דירה יחידה 2,400,000 ₪ -> 15,538 ₪). מוקפאות 15.1.2026–15.1.2028.
+const PURCHASE_TAX_BRACKETS = {
+  single: [
+    { from: 0, to: 1978745, rate: 0 },
+    { from: 1978745, to: 2347040, rate: 3.5 },
+    { from: 2347040, to: 6055070, rate: 5 },
+    { from: 6055070, to: 20183565, rate: 8 },
+    { from: 20183565, to: null, rate: 10 },
+  ],
+  additional: [
+    { from: 0, to: 6055070, rate: 8 },
+    { from: 6055070, to: null, rate: 10 },
+  ],
+};
+
+function calcPurchaseTaxJs(price, buyerType) {
+  if (!Number.isFinite(price) || price <= 0) return null;
+  const brackets = PURCHASE_TAX_BRACKETS[buyerType] || PURCHASE_TAX_BRACKETS.single;
+  let total = 0;
+  const lines = [];
+  for (const b of brackets) {
+    if (price <= b.from) break;
+    const upper = b.to == null ? price : Math.min(price, b.to);
+    const taxable = Math.max(0, upper - b.from);
+    if (taxable <= 0) continue;
+    const tax = (taxable * b.rate) / 100;
+    total += tax;
+    lines.push({ from: b.from, to: b.to, rate: b.rate, tax: Math.round(tax) });
+  }
+  return { total: Math.round(total), effectivePct: Math.round((total / price) * 1000) / 10, lines };
+}
+
+// נוסחת "שפיצר" (תשלום חודשי קבוע) — זהה ל-VipPanel.tsx.
+function calcMortgageJs(price, down, ratePct, years) {
+  if (!price || !ratePct || !years || down < 0 || down >= price) return null;
+  const loan = price - down;
+  const r = ratePct / 100 / 12;
+  const n = years * 12;
+  const monthly = r === 0 ? loan / n : (loan * r) / (1 - Math.pow(1 + r, -n));
+  return {
+    loan,
+    monthly: Math.round(monthly),
+    totalInterest: Math.round(monthly * n - loan),
+    ltv: Math.round((loan / price) * 1000) / 10,
+  };
+}
+
+function feasibilityHtml(p) {
+  if (!p.price) {
+    return '<p class="na">נדרש מחיר לנכס כדי לחשב תשואה/משכנתא/מס — הוסף מחיר בעריכת הנכס.</p>';
+  }
+  return (
+    '<div class="controls">' +
+      '<label class="f">שכר דירה חודשי משוער (₪)<input id="fs_rent" type="number" min="0" step="100" /></label>' +
+      '<label class="f">הון עצמי (₪)<input id="fs_down" type="number" min="0" step="10000" /></label>' +
+      '<label class="f">ריבית שנתית (%)<input id="fs_rate" type="number" min="0" max="20" step="0.1" /></label>' +
+      '<label class="f">תקופת החזר (שנים)<input id="fs_years" type="number" min="1" max="35" step="1" /></label>' +
+      '<label class="f">הוצאות קבועות חודשיות (₪)<input id="fs_exp" type="number" min="0" step="50" /></label>' +
+      '<label class="f">סוג רכישה<select id="fs_buyer">' +
+        '<option value="single">דירה יחידה</option>' +
+        '<option value="additional">דירה נוספת / משקיע</option>' +
+      '</select></label>' +
+    '</div>' +
+    '<div id="feasOut"></div>' +
+    '<p class="note">אומדן אריתמטי בלבד — לא ייעוץ מס/משכנתא. מס רכישה לפי מדרגות רשמיות ' +
+    'מוקפאות עד 15.1.2028, בלי הנחות אישיות (עולה חדש/נכה/משפחה מרובת ילדים). יש לאמת מול ' +
+    'הסימולטור הרשמי (misim.gov.il) והבנק לפני החלטה.</p>'
+  );
+}
+
+function recomputeFeasibility(p) {
+  const out = $('feasOut');
+  if (!out) return;
+  const price = p.price;
+  const rent = Number($('fs_rent').value) || 0;
+  const down = Number($('fs_down').value) || 0;
+  const rate = Number($('fs_rate').value) || 0;
+  const years = Number($('fs_years').value) || 0;
+  const exp = Number($('fs_exp').value) || 0;
+  const buyer = $('fs_buyer').value;
+
+  const yieldPct = rent > 0 ? Math.round(((rent * 12) / price) * 1000) / 10 : null;
+  const mortgage = calcMortgageJs(price, down, rate, years);
+  const cashFlow = rent > 0 && mortgage ? Math.round(rent - mortgage.monthly - exp) : null;
+  const tax = calcPurchaseTaxJs(price, buyer);
+
+  const tile = (k, val, cls) =>
+    '<div class="kpi"><p class="k">' + k + '</p><p class="v ' + (cls || '') + '">' + val + '</p></div>';
+
+  let html = '<div class="kpis">' +
+    tile('תשואה שנתית ברוטו', yieldPct != null ? yieldPct + '%' : NA) +
+    tile('החזר חודשי משוער', mortgage ? money(mortgage.monthly) : NA) +
+    tile('אחוז מימון (LTV)', mortgage ? mortgage.ltv + '%' : NA, mortgage && mortgage.ltv > 75 ? 'warn' : '') +
+    tile('תזרים חודשי נקי', cashFlow != null ? money(cashFlow) : NA,
+         cashFlow == null ? '' : cashFlow >= 0 ? 'good' : 'warn') +
+    tile('מס רכישה משוער', tax ? money(tax.total) : NA) +
+  '</div>';
+
+  if (mortgage && mortgage.ltv > 75) {
+    html += '<p class="note">אחוז מימון מעל 75% חורג מהתקרה המקובלת לדירה יחידה (הנחיית בנק ' +
+      'ישראל) — ייתכן שהבנק ידרוש הון עצמי גבוה יותר.</p>';
+  }
+
+  out.innerHTML = html;
+}
+
+function wireFeasibility(p) {
+  if (!p.price) return;
+  const ids = ['fs_rent', 'fs_down', 'fs_rate', 'fs_years', 'fs_exp', 'fs_buyer'];
+  for (const id of ids) {
+    const el = $(id);
+    if (el) el.addEventListener('input', () => recomputeFeasibility(p));
+  }
+  recomputeFeasibility(p);
 }
 
 // Documents that belong to the property itself (tabu, permit, appraisal…),
