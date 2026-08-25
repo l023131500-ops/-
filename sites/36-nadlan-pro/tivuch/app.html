@@ -214,6 +214,7 @@ td.num{font-variant-numeric:tabular-nums;white-space:nowrap}
       <button class="tab" data-view="documents">מסמכים</button>
       <button class="tab" data-view="tasks">משימות</button>
       <button class="tab" data-view="team">צוות</button>
+      <button class="tab" data-view="forum">פורום</button>
     </div>
     <select class="office-pick" id="officePick" hidden aria-label="בחירת משרד"></select>
   </div>
@@ -370,6 +371,31 @@ td.num{font-variant-numeric:tabular-nums;white-space:nowrap}
     </div>
   </section>
 
+  <section class="panel" id="viewForum" hidden>
+    <div class="wrap">
+      <h1 class="page display">פורום</h1>
+      <p class="sub">
+        רשת בין-משרדית: "יש לי קונה" / "יש לי נכס" / שאלה מקצועית — גלוי לכל
+        מתווך פעיל בכל משרד ברשת, לא רק במשרד שלכם.
+      </p>
+      <div class="controls">
+        <label class="f">סוג
+          <select id="fKind">
+            <option value="">הכל</option><option value="has_buyer">יש לי קונה</option>
+            <option value="has_property">יש לי נכס</option><option value="question">שאלה</option>
+          </select></label>
+        <label class="f">סטטוס
+          <select id="fStatus">
+            <option value="open">פתוחות בלבד</option><option value="">הכל</option>
+          </select></label>
+        <label class="f">חיפוש<input type="search" id="fQ" placeholder="כותרת, עיר או טקסט" /></label>
+        <span class="spacer"></span>
+        <button class="btn" id="newForumPost">+ פוסט חדש</button>
+      </div>
+      <div id="forumBody"></div>
+    </div>
+  </section>
+
   <section class="panel" id="viewError" hidden>
     <div class="wrap"><div class="err" id="errText"></div></div>
   </section>
@@ -468,6 +494,7 @@ const PDOCCAT_HE = {
 const ROLE_HE = { owner: 'בעלים', manager: 'מנהל', agent: 'מתווך' };
 const LSTATUS_HE = { active: 'פעיל', ended: 'הסתיים', cancelled: 'בוטל' };
 const RSTATUS_HE = { due: 'ממתין', paid: 'שולם', waived: 'ויתור' };
+const FKIND_HE = { has_buyer: 'יש לי קונה', has_property: 'יש לי נכס', question: 'שאלה' };
 
 let ME = null;        // np_me()
 let OFFICE = null;    // the selected office row
@@ -496,7 +523,8 @@ function fail(msg) {
 
 function show(id) {
   for (const s of ['booting', 'viewSetup', 'viewDash', 'viewBoard', 'viewContacts',
-                   'viewProperties', 'viewRentals', 'viewDocuments', 'viewTasks', 'viewTeam', 'viewError']) {
+                   'viewProperties', 'viewRentals', 'viewDocuments', 'viewTasks', 'viewTeam',
+                   'viewForum', 'viewError']) {
     $(s).hidden = s !== id;
   }
 }
@@ -510,7 +538,7 @@ function setView(name) {
   history.replaceState(null, '', '?v=' + name);
   const map = { dash: renderDash, board: renderBoard, contacts: renderContacts,
                 properties: renderProperties, rentals: renderRentals, documents: renderDocuments,
-                tasks: renderTasks, team: renderTeam };
+                tasks: renderTasks, team: renderTeam, forum: renderForum };
   show('view' + name[0].toUpperCase() + name.slice(1));
   map[name]();
 }
@@ -2440,6 +2468,163 @@ function wireTeamBody(canManage) {
   });
 }
 
+/* ── forum (Module 8 — cross-office network, not scoped to OFFICE.id) ──────── */
+async function renderForum() {
+  const body = $('forumBody');
+  body.innerHTML = '<p class="loading"><span class="spinner"></span>טוען…</p>';
+
+  let rows;
+  try {
+    rows = await rpc('np_forum_posts', {
+      p_kind: $('fKind').value || null,
+      p_status: $('fStatus').value || null,
+      p_search: $('fQ').value.trim() || null,
+      p_limit: 200,
+    });
+  } catch (e) { body.innerHTML = '<div class="err">' + esc(e.message) + '</div>'; return; }
+
+  rows = rows || [];
+  if (!rows.length) {
+    body.innerHTML = '<div class="empty"><b>אין עדיין פוסטים</b>לחצו על "+ פוסט חדש" כדי לפרסם לרשת כולה.</div>';
+    return;
+  }
+
+  body.innerHTML = '<ul class="timeline">' + rows.map((p) =>
+    '<li data-id="' + p.id + '">' +
+      '<span class="pill' + (p.kind === 'has_buyer' || p.kind === 'has_property' ? ' on' : '') + '">' +
+        esc(FKIND_HE[p.kind] || p.kind) + '</span> ' +
+      (p.status === 'closed' ? '<span class="pill">נסגר</span> ' : '') +
+      '<b>' + esc(p.title) + '</b>' + (p.city ? ' · ' + esc(p.city) : '') +
+      '<br><span class="dsub">' + esc(p.office_name) + ' · ' + esc(p.author_name) + ' · ' + dt(p.created_at) +
+      ' · ' + p.comment_count + ' תגובות</span>' +
+    '</li>').join('') + '</ul>';
+
+  for (const li of body.querySelectorAll('li[data-id]')) {
+    li.addEventListener('click', () => openForumPost(li.dataset.id));
+  }
+}
+
+async function openForumPost(id) {
+  let d;
+  try { d = await rpc('np_forum_post_get', { p_id: id }); }
+  catch (e) { return toast('טעינה נכשלה: ' + e.message, true); }
+  if (!d || !d.post) return toast('הפוסט לא נמצא', true);
+
+  const p = d.post;
+  const comments = d.comments || [];
+  let html =
+    '<p><span class="pill' + (p.kind === 'has_buyer' || p.kind === 'has_property' ? ' on' : '') + '">' +
+      esc(FKIND_HE[p.kind] || p.kind) + '</span> ' +
+      (p.status === 'closed' ? '<span class="pill">נסגר</span>' : '') + '</p>' +
+    (p.body ? '<p>' + esc(p.body).replace(/\n/g, '<br>') + '</p>' : '') +
+    '<p class="dsub">' + esc(p.office_name) + ' · ' + esc(p.author_name) +
+      (p.city ? ' · ' + esc(p.city) : '') + ' · ' + dt(p.created_at) + '</p>';
+
+  html += '<h2 class="sec">תגובות</h2>';
+  html += comments.length
+    ? '<ul class="timeline">' + comments.map((c) =>
+        '<li><b>' + esc(c.author_name) + '</b> · <span class="dsub">' + dt(c.created_at) + '</span>' +
+        (c.is_mine ? ' <button class="btn btn-danger btn-sm" data-delcomment="' + c.id + '">מחיקה</button>' : '') +
+        '<br>' + esc(c.body).replace(/\n/g, '<br>') + '</li>').join('') + '</ul>'
+    : '<p class="na">אין עדיין תגובות.</p>';
+
+  html += '<div class="form-grid"><label class="f span2">תגובה חדשה<textarea id="fcBody"></textarea></label></div>' +
+    '<p><button class="btn" id="fcAdd">פרסום תגובה</button></p>';
+
+  if (p.is_mine) {
+    html += '<p style="margin-top:10px">' +
+      '<button class="btn" id="fEdit">עריכה</button> ' +
+      '<button class="btn" id="fToggle">' + (p.status === 'closed' ? 'פתיחה מחדש' : 'סימון כנסגר') + '</button> ' +
+      '<button class="btn btn-danger" id="fDelete">מחיקה</button></p>';
+  }
+
+  drawer(p.title, p.office_name + ' · ' + p.author_name, html, (close) => {
+    for (const btn of document.querySelectorAll('[data-delcomment]')) {
+      btn.addEventListener('click', async () => {
+        if (!confirm('למחוק את התגובה?')) return;
+        btn.disabled = true;
+        try {
+          await rpc('np_forum_comment_delete', { p_id: btn.dataset.delcomment });
+          close(); openForumPost(id);
+        } catch (e) { btn.disabled = false; toast('המחיקה נכשלה: ' + e.message, true); }
+      });
+    }
+    $('fcAdd').addEventListener('click', async () => {
+      const text = $('fcBody').value.trim();
+      if (!text) return;
+      $('fcAdd').disabled = true;
+      try {
+        await rpc('np_forum_comment_add', { p_post: id, p_body: text });
+        close(); openForumPost(id);
+        if (VIEW === 'forum') renderForum();
+      } catch (e) { $('fcAdd').disabled = false; toast('פרסום התגובה נכשל: ' + e.message, true); }
+    });
+    const editBtn = $('fEdit');
+    if (editBtn) editBtn.addEventListener('click', () => { close(); forumPostForm(p); });
+    const toggleBtn = $('fToggle');
+    if (toggleBtn) toggleBtn.addEventListener('click', async () => {
+      toggleBtn.disabled = true;
+      try {
+        await rpc('np_forum_post_save', { id: p.id, status: p.status === 'closed' ? 'open' : 'closed' });
+        close(); openForumPost(id);
+        if (VIEW === 'forum') renderForum();
+      } catch (e) { toggleBtn.disabled = false; toast('העדכון נכשל: ' + e.message, true); }
+    });
+    const delBtn = $('fDelete');
+    if (delBtn) delBtn.addEventListener('click', async () => {
+      if (!confirm('למחוק את הפוסט? הפעולה בלתי הפיכה.')) return;
+      delBtn.disabled = true;
+      try {
+        await rpc('np_forum_post_delete', { p_id: p.id });
+        toast('הפוסט נמחק');
+        close();
+        if (VIEW === 'forum') renderForum();
+      } catch (e) { delBtn.disabled = false; toast('המחיקה נכשלה: ' + e.message, true); }
+    });
+  });
+}
+
+function forumPostForm(existing) {
+  const p = existing || {};
+  const kOpts = Object.entries(FKIND_HE).map(([k, lbl]) =>
+    '<option value="' + k + '"' + ((p.kind || 'has_buyer') === k ? ' selected' : '') + '>' + lbl + '</option>').join('');
+
+  const html =
+    '<div id="fpErr"></div><div class="form-grid">' +
+      '<label class="f">סוג<select id="fp_kind">' + kOpts + '</select></label>' +
+      '<label class="f">עיר<input id="fp_city" value="' + esc(p.city || '') + '" /></label>' +
+      '<label class="f span2">כותרת *<input id="fp_title" value="' + esc(p.title || '') + '" /></label>' +
+      '<label class="f span2">פירוט<textarea id="fp_body">' + esc(p.body || '') + '</textarea></label>' +
+    '</div>' +
+    '<p style="margin-top:16px"><button class="btn" id="fpSave">' + (p.id ? 'שמירה' : 'פרסום') + '</button></p>';
+
+  drawer(p.id ? 'עריכת פוסט' : 'פוסט חדש לפורום', 'גלוי לכל מתווך פעיל ברשת', html, (close) => {
+    $('fpSave').addEventListener('click', async () => {
+      const payload = {
+        kind: $('fp_kind').value,
+        city: $('fp_city').value.trim(),
+        title: $('fp_title').value.trim(),
+        body: $('fp_body').value.trim(),
+      };
+      if (!payload.title) {
+        $('fpErr').innerHTML = '<div class="err">כותרת היא שדה חובה.</div>';
+        return;
+      }
+      if (p.id) payload.id = p.id; else payload.office_id = OFFICE.id;
+      $('fpSave').disabled = true;
+      try {
+        await rpc('np_forum_post_save', payload);
+        toast(p.id ? 'הפוסט עודכן' : 'הפוסט פורסם');
+        close();
+        if (VIEW === 'forum') renderForum();
+      } catch (e) {
+        $('fpErr').innerHTML = '<div class="err">' + esc(e.message) + '</div>';
+        $('fpSave').disabled = false;
+      }
+    });
+  });
+}
+
 /* ── boot ────────────────────────────────────────────────────────────────── */
 async function requireSession() {
   const { data } = await sb.auth.getSession();
@@ -2498,7 +2683,7 @@ async function boot() {
   pickOffice(saved && ME.offices.some((o) => o.id === saved) ? saved : ME.offices[0].id);
 
   const want = new URLSearchParams(location.search).get('v');
-  setView(['dash', 'board', 'contacts', 'properties', 'rentals', 'documents', 'tasks', 'team'].includes(want) ? want : 'dash');
+  setView(['dash', 'board', 'contacts', 'properties', 'rentals', 'documents', 'tasks', 'team', 'forum'].includes(want) ? want : 'dash');
 }
 
 $('officePick').addEventListener('change', (e) => { pickOffice(e.target.value); setView(VIEW); });
@@ -2534,6 +2719,9 @@ $('pStatus').addEventListener('change', renderProperties);
 $('newLease').addEventListener('click', () => leaseForm(null));
 $('lStatus').addEventListener('change', renderRentals);
 $('tFilter').addEventListener('change', renderTasks);
+$('newForumPost').addEventListener('click', () => forumPostForm(null));
+$('fQ').addEventListener('input', () => { clearTimeout(cTimer); cTimer = setTimeout(renderForum, 250); });
+for (const id of ['fKind', 'fStatus']) $(id).addEventListener('change', renderForum);
 
 boot();
 </script>
