@@ -215,6 +215,7 @@ td.num{font-variant-numeric:tabular-nums;white-space:nowrap}
       <button class="tab" data-view="tasks">משימות</button>
       <button class="tab" data-view="team">צוות</button>
       <button class="tab" data-view="forum">פורום</button>
+      <button class="tab" data-view="settings">הגדרות</button>
     </div>
     <select class="office-pick" id="officePick" hidden aria-label="בחירת משרד"></select>
   </div>
@@ -396,6 +397,14 @@ td.num{font-variant-numeric:tabular-nums;white-space:nowrap}
     </div>
   </section>
 
+  <section class="panel" id="viewSettings" hidden>
+    <div class="wrap" style="max-width:680px">
+      <h1 class="page display">הגדרות</h1>
+      <p class="sub">פרטי המשרד, ואתר משרד ציבורי — עמוד ללא כניסה שמציג את הנכסים שכבר שותפו בקישור צפייה.</p>
+      <div id="settingsBody"></div>
+    </div>
+  </section>
+
   <section class="panel" id="viewError" hidden>
     <div class="wrap"><div class="err" id="errText"></div></div>
   </section>
@@ -524,7 +533,7 @@ function fail(msg) {
 function show(id) {
   for (const s of ['booting', 'viewSetup', 'viewDash', 'viewBoard', 'viewContacts',
                    'viewProperties', 'viewRentals', 'viewDocuments', 'viewTasks', 'viewTeam',
-                   'viewForum', 'viewError']) {
+                   'viewForum', 'viewSettings', 'viewError']) {
     $(s).hidden = s !== id;
   }
 }
@@ -538,7 +547,7 @@ function setView(name) {
   history.replaceState(null, '', '?v=' + name);
   const map = { dash: renderDash, board: renderBoard, contacts: renderContacts,
                 properties: renderProperties, rentals: renderRentals, documents: renderDocuments,
-                tasks: renderTasks, team: renderTeam, forum: renderForum };
+                tasks: renderTasks, team: renderTeam, forum: renderForum, settings: renderSettings };
   show('view' + name[0].toUpperCase() + name.slice(1));
   map[name]();
 }
@@ -2465,6 +2474,122 @@ function wireTeamBody(canManage) {
       $('ivErr').innerHTML = '<div class="err">' + esc(e.message) + '</div>';
       create.disabled = false;
     }
+  });
+}
+
+/* ── settings / public office site (Module 9 — אתר אישי למתווך) ────────────── */
+// Hardcoded origin, same reasoning as shareHtml()'s listing link and
+// joinLinkFor()'s invite link — this is copied out to strangers, so it must
+// be the real public domain even from a preview/staging URL.
+function officeLinkFor(token) { return 'https://more30.com/tivuch/office.html?t=' + encodeURIComponent(token); }
+
+async function renderSettings() {
+  const body = $('settingsBody');
+  body.innerHTML = '<p class="loading"><span class="spinner"></span>טוען…</p>';
+
+  const canManage = OFFICE.role === 'owner' || OFFICE.role === 'manager';
+  let s;
+  try { s = await rpc('np_office_settings_get', { p_office: OFFICE.id }); }
+  catch (e) { body.innerHTML = '<div class="err">' + esc(e.message) + '</div>'; return; }
+
+  const field = (id, label, val, type) =>
+    '<label class="f">' + label + '<input id="' + id + '" type="' + (type || 'text') + '"' +
+    (canManage ? '' : ' disabled') + ' value="' + esc(val || '') + '" /></label>';
+
+  let html = '<h2 class="sec">פרטי המשרד</h2><div class="controls">' +
+    field('st_name', 'שם המשרד', s.name) +
+    field('st_license', 'מספר רישיון', s.license_number) +
+    field('st_phone', 'טלפון', s.phone) +
+    field('st_email', 'דוא״ל', s.email, 'email') +
+    field('st_city', 'עיר', s.city) +
+    field('st_address', 'כתובת', s.address) +
+    field('st_logo', 'קישור ללוגו (URL)', s.logo_url, 'url') +
+    '</div><label class="f" style="margin-top:8px">אודות המשרד' +
+    '<textarea id="st_about" rows="3"' + (canManage ? '' : ' disabled') + '>' + esc(s.about || '') + '</textarea></label>' +
+    (canManage ? '<p style="margin:14px 0 0"><button class="btn" id="stSave">שמירת פרטים</button></p>' : '');
+
+  html += '<h2 class="sec">אתר משרד ציבורי</h2>' +
+    '<p class="sub" style="margin:0 0 10px">עמוד ללא כניסה, מותאם למובייל, שמציג את פרטי המשרד ואת ' +
+    'הנכסים שכבר הופעל עבורם קישור צפייה בטאב "נכסים" — לא נכסים נוספים.</p>' +
+    '<div id="stPublishBox"></div>';
+
+  body.innerHTML = html;
+  renderPublishBox(s, canManage);
+  wireSettingsBody(canManage);
+}
+
+function renderPublishBox(s, canManage) {
+  const box = $('stPublishBox');
+  if (s.public_enabled) {
+    const url = officeLinkFor(s.public_token);
+    box.innerHTML = '<p class="sub" style="margin:0 0 10px">האתר פעיל — כל מי שמחזיק בקישור יכול לצפות בו בלי כניסה למערכת.</p>' +
+      '<div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">' +
+        '<input readonly value="' + esc(url) + '" data-copy="' + esc(url) + '" style="flex:1;min-width:220px" />' +
+        '<button class="btn btn-sm" data-copybtn="' + esc(url) + '">העתק קישור</button>' +
+        (canManage ? '<button class="btn btn-quiet btn-sm" id="stPublishToggle" data-next="false">בטל פרסום</button>' +
+          '<button class="btn btn-quiet btn-sm" id="stRegen">קישור חדש (מבטל את הישן)</button>' : '') +
+      '</div>';
+  } else {
+    box.innerHTML = '<p class="sub" style="margin:0 0 10px">האתר כבוי כרגע.</p>' +
+      (canManage ? '<button class="btn btn-sm" id="stPublishToggle" data-next="true">הפעלת אתר משרד ציבורי</button>' : '');
+  }
+}
+
+function wireSettingsBody(canManage) {
+  const body = $('settingsBody');
+  for (const b of body.querySelectorAll('[data-copybtn]')) {
+    b.addEventListener('click', async () => {
+      try { await navigator.clipboard.writeText(b.dataset.copybtn); toast('הקישור הועתק'); }
+      catch (e) {
+        const inp = body.querySelector('[data-copy="' + b.dataset.copybtn + '"]');
+        if (inp) { inp.select(); toast('בחר והעתק ידנית (Ctrl+C)'); }
+      }
+    });
+  }
+  if (!canManage) return;
+
+  const save = $('stSave');
+  if (save) save.addEventListener('click', async () => {
+    save.disabled = true;
+    try {
+      await rpc('np_office_settings_save', { p: {
+        office_id: OFFICE.id,
+        name: $('st_name').value.trim(),
+        license_number: $('st_license').value.trim(),
+        phone: $('st_phone').value.trim(),
+        email: $('st_email').value.trim(),
+        city: $('st_city').value.trim(),
+        address: $('st_address').value.trim(),
+        logo_url: $('st_logo').value.trim(),
+        about: $('st_about').value.trim(),
+      } });
+      toast('הפרטים נשמרו');
+    } catch (e) { toast('השמירה נכשלה: ' + e.message, true); }
+    save.disabled = false;
+  });
+
+  const toggle = $('stPublishToggle');
+  if (toggle) toggle.addEventListener('click', async () => {
+    const next = toggle.dataset.next === 'true';
+    toggle.disabled = true;
+    try {
+      const r = await rpc('np_office_settings_save', { p: { office_id: OFFICE.id, public_enabled: next } });
+      toast(next ? 'האתר הופעל' : 'הפרסום בוטל');
+      renderPublishBox(r, canManage);
+      wireSettingsBody(canManage);
+    } catch (e) { toast('הפעולה נכשלה: ' + e.message, true); toggle.disabled = false; }
+  });
+
+  const regen = $('stRegen');
+  if (regen) regen.addEventListener('click', async () => {
+    if (!confirm('הקישור הישן יפסיק לעבוד מיד. להמשיך?')) return;
+    regen.disabled = true;
+    try {
+      const r = await rpc('np_office_public_token_regenerate', { p_office: OFFICE.id });
+      toast('נוצר קישור חדש');
+      renderPublishBox({ public_enabled: true, public_token: r.public_token }, canManage);
+      wireSettingsBody(canManage);
+    } catch (e) { toast('הפעולה נכשלה: ' + e.message, true); regen.disabled = false; }
   });
 }
 
