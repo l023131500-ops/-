@@ -1042,6 +1042,27 @@ CQL מתפרש ב-CRS המקורי, ולכן נקודת ITM החזירה תוצ�
 5. חישובי VIP: תשואה, מס רכישה/שבח, יתכנות משכנתא, תזרים (ראה PRODUCT_TIERS).
 6. זכויות בנייה כמותיות — אינטגרציית MAVAT דרך `pl_number`/`mp_id` (לא ב-XPLAN).
 
+## עדכון — 25/08/2026 (Loop A, RLS initplan על טבלאות הפורום ב-36 nadlan-pro)
+`get_advisors` (performance) סימן 7 מדיניות RLS על `nadlan_pro.forum_posts`/
+`forum_comments` (שנוספו באותו יום בסבב הפורום, מודול 8) כ-`auth_rls_initplan`:
+כל מדיניות קוראת ל-`auth.uid()` ישירות בביטוי ה-USING/WITH CHECK, כך ש-Postgres
+מריץ אותה מחדש לכל שורה במקום פעם אחת לשאילתה. שאר טבלאות `nadlan_pro` נמנעות
+מזה כי הן עוברות דרך פונקציות עטיפה STABLE SECURITY DEFINER (`can_touch`/
+`manages_office`/`my_office_ids`) שהקריאה הפנימית שלהן ל-`auth.uid()` שקופה
+ל-linter — הפורום היה היחיד עם `auth.uid()` כתוב ישירות בתוך מדיניות.
+
+מיגרציה `0139_nadlan_pro_forum_rls_initplan_fix.sql` עטפה את כל 7 הקריאות
+ב-`(select auth.uid())` דרך `ALTER POLICY` — אותה תוצאה בוליאנית לכל שורה,
+אותם תפקידים, שום שינוי הרשאה/נראות. אומת חי ב-MCP בתוך `BEGIN/ROLLBACK` עם
+שני משתמשים אמיתיים משני משרדים: קריאה חוצת-משרד עדיין עובדת (B רואה פוסט של
+A), ניסיונות עדכון/מחיקה של B על תוכן של A עדיין נחסמים, B עדיין יכול
+להוסיף/למחוק תגובה משלו, A עדיין יכול לערוך/למחוק פוסט משלו, ומשתמש בלי חברות
+באף משרד עדיין רואה 0 פוסטים — כל 9 הבדיקות תואמות בדיוק להתנהגות שלפני
+התיקון. `get_advisors` אחרי ההחלה: אפס אזהרות `auth_rls_initplan` על
+`nadlan_pro`. אפס רגרסיה, אפס שיוריות אחרי rollback. נדחה+נדחף לענף
+`fix/36-nadlan-pro-forum-rls-initplan-0825`. System 35 KioskFleet לא נגע, לפי
+ה-HARD STEERING.
+
 ## איך ממשיכים בין סשנים (חשוב!)
 - עבוד ב-Claude Code **מקומי** (לא Remote) על התיקייה הזו — הכל נשמר על הדיסק.
 - להמשך שיחה אחרונה: `claude --continue`   ·   לבחירת סשן קודם: `claude --resume`
