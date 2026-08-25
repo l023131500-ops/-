@@ -34,6 +34,33 @@ Next.js 14 (App Router) + TypeScript + Tailwind RTL + Supabase. מפתח אחי�
    לאישורים שגרתיים; עצור רק לפני פעולה הרסנית (מחיקת DB/repo, force-push) או
    כשחסר מידע קריטי שלא קיים באף מקום.
 
+## עדכון — 25/08/2026 (Loop A, השלמת מיגרציות חסרות — 4 טבלאות saved_reports/tabu)
+לאחר סבב האינדקסים החסרים (0142), `get_advisors` (security) המשיך להראות
+`rls_enabled_no_policy` על 4 טבלאות ב-`nadlan`: `saved_reports` (19 שורות),
+`saved_report_versions` (141 שורות), `report_exports` (22 שורות),
+`tabu_documents` (0 שורות). RLS מופעל וללא מדיניות = חסימה מוחלטת לכל תפקיד
+פרט ל-`service_role` — נבדק בקוד (`lib/savedreports.ts`, `lib/requests.ts`,
+`lib/store.ts`) שזה בדיוק הדפוס בפועל: כל גישה עוברת דרך מפתח שירות בלבד,
+אז זה **לא** באג, אלא התנהגות מכוונת. הבאג האמיתי היה שהטבלאות האלה
+(כמו גם `nadlan_report_requests_and_tabu` ו-`nadlan_saved_reports_permanent_links`
+שכבר רשומות ב-`list_migrations` החי) מעולם לא תועדו כקובץ מיגרציה בריפו —
+סביבה חדשה שנבנית מ-`supabase/migrations/` בלבד הייתה חסרה את ארבע הטבלאות
+האלה לגמרי, בזמן ש-`lib/*` כבר תלוי בהן.
+
+מיגרציה חדשה `0143_nadlan_saved_reports_backfill.sql` יוצרת מחדש בדיוק את
+ה-DDL החי (עמודות, FK-ים, CHECK-ים, אינדקסים, RLS מופעל, GRANT-ים) שנשלף
+ישירות מה-DB דרך `information_schema`/`pg_constraint`/`pg_indexes` —
+`CREATE TABLE IF NOT EXISTS` בלבד, לא reconstruction מהזיכרון. אומת חי ב-MCP:
+הרצה בתוך `BEGIN;...ROLLBACK;` קודם (ספירת שורות זהה לפני/אחרי — 19/141/22/0),
+ואז החלה אמיתית דרך `apply_migration` (idempotent, אפס שינוי בפועל כי
+הטבלאות כבר קיימות) — ספירת שורות שוב זהה אחרי, ו-`get_advisors` (security)
+מציג בדיוק אותן 8 אזהרות כמו לפני (4 `rls_enabled_no_policy` הצפויות + 2
+`function_search_path_mutable` + 2 `*_security_definer_function_executable`
+על `current_tier` — לא קשורות לסבב הזה, לא נגעו). אפס רגרסיה, אפס שינוי
+לנתונים החיים — תיעוד/שחזוריות טהורה, כמו סבב `2a6a9fcf` (nadlan_pro) אבל
+ל-`nadlan` (32). נדחף לענף `fix/32-nadlan-saved-reports-migration-backfill-0825`
+— לא מוזג. system 35 KioskFleet לא נגע, לפי ה-HARD STEERING.
+
 ## עדכון — 25/08/2026 (Loop A, תיקון initplan נוסף — nadlan.subscribers)
 `get_advisors` (performance) סימן עוד טבלה עם `auth_rls_initplan` מלבד שתי
 טבלאות הפורום של 36 שתוקנו קודם היום (ראה למטה): `nadlan.subscribers`
