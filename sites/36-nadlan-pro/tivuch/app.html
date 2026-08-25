@@ -513,6 +513,8 @@ const RSTATUS_HE = { due: 'ממתין', paid: 'שולם', waived: 'ויתור' }
 const FKIND_HE = { has_buyer: 'יש לי קונה', has_property: 'יש לי נכס', question: 'שאלה' };
 const COMM_PAYER_HE = { buyer: 'קונה', seller: 'מוכר', both: 'שני הצדדים' };
 const COMM_STATUS_HE = { pending: 'ממתין', invoiced: 'הופקה חשבונית', collected: 'נגבתה', written_off: 'נמחקה כאבודה' };
+const TABU_STATUS_HE = { pending: 'ממתין להזמנה', sent: 'הוזמן מרשם המקרקעין', fulfilled: 'הושלם' };
+const TABU_GRADE_HE = { normal: 'רגילה', urgent: 'דחופה' };
 
 let ME = null;        // np_me()
 let OFFICE = null;    // the selected office row
@@ -1014,6 +1016,11 @@ async function openProperty(id) {
   html += '<h2 class="sec">מאגר מסמכים לנכס</h2><div id="propDocsBox">' +
     propDocsHtml(d.documents || []) + '</div>';
 
+  if (p.gush && p.helka) {
+    html += '<h2 class="sec">בקשות נסח טאבו</h2><div id="tabuBox">' +
+      tabuHtml(p, d.tabu_requests || [], d.documents || []) + '</div>';
+  }
+
   html += '<h2 class="sec">ניתוח כדאיות והשקעה</h2><div id="feasBox">' + feasibilityHtml(p) + '</div>';
 
   drawer(p.title || p.address || 'נכס',
@@ -1025,6 +1032,7 @@ async function openProperty(id) {
     wireWatch(p);
     wireShareBox(p);
     wirePropDocs(p, d.documents || []);
+    if (p.gush && p.helka) wireTabu(p, d.tabu_requests || [], d.documents || []);
     wireFeasibility(p);
   });
 }
@@ -1282,6 +1290,182 @@ function wirePropDocs(p, docs) {
       wirePropDocs(p, next);
       toast('המסמך נוסף');
     } catch (e) { toast('ההוספה נכשלה: ' + e.message, true); add.disabled = false; }
+  });
+}
+
+// TABU workflow (core.build_tasks id=11): checkbox+grade -> mgmt task
+// (office owner/manager, not a central platform team -- system 36 has no
+// /admin surface at all, unlike system 32) -> upload nesach + AI research
+// -> view/download + plain-language rights explanation -> attach to client.
+// A TABU extract IS a property document (category='tabu', propDocsHtml above
+// already renders/opens it) -- this only adds the request/status/AI layer on
+// top of the same storage+document row, not a parallel upload path.
+function tabuAnalysisHtml(a) {
+  const items = (arr, render) => arr && arr.length
+    ? '<ul style="margin:4px 0 0;padding-inline-start:18px">' + arr.map(render).join('') + '</ul>' : '';
+  return '<div style="margin-top:8px;padding:10px;border-radius:8px;background:var(--bg-2,#f6f7f9)">' +
+    (a.summary ? '<p style="margin:0 0 6px">' + esc(a.summary) + '</p>' : '') +
+    (a.owners && a.owners.length ? '<p class="k" style="margin:6px 0 0">בעלים</p>' +
+      items(a.owners, (o) => '<li>' + esc(o.name) + (o.share ? ' — ' + esc(o.share) : '') + '</li>') : '') +
+    (a.mortgages && a.mortgages.length ? '<p class="k" style="margin:6px 0 0">משכנתאות</p>' +
+      items(a.mortgages, (m) => '<li>' + esc(m.holder) + (m.amount ? ' — ' + esc(m.amount) : '') + '</li>') : '') +
+    (a.cautionNotes && a.cautionNotes.length ? '<p class="k" style="margin:6px 0 0">הערות אזהרה</p>' +
+      items(a.cautionNotes, (c) => '<li>' + esc(c.kind) + (c.inFavourOf ? ' לטובת ' + esc(c.inFavourOf) : '') + '</li>') : '') +
+    (a.perFloorRights && a.perFloorRights.length ? '<p class="k" style="margin:6px 0 0">פירוט לפי קומה/תת-חלקה</p>' +
+      items(a.perFloorRights, (f) => '<li>' + (f.floor ? 'קומה ' + esc(f.floor) + ' — ' : '') + esc(f.summary) + '</li>') : '') +
+    (a.unreadable && a.unreadable.length ? '<p class="na" style="margin:6px 0 0">לא זוהו בנסח: ' + esc(a.unreadable.join(', ')) + '</p>' : '') +
+    '</div>';
+}
+
+function tabuHtml(p, requests, docs) {
+  const canManage = OFFICE.role === 'owner' || OFFICE.role === 'manager';
+  const docById = (id) => docs.find((d) => d.id === id);
+  const rows = (requests || []).map((r) => {
+    const doc = r.document_id ? docById(r.document_id) : null;
+    const badge = '<span class="pill">' + esc(TABU_STATUS_HE[r.status] || r.status) + '</span>' +
+      (r.grade === 'urgent' ? ' <span class="pill" style="color:#b42318">דחוף</span>' : '');
+    let actions = '';
+    if (r.status === 'pending' && canManage) {
+      actions = '<button class="btn btn-quiet btn-sm" data-tabusent="' + r.id + '">סומן כהוזמן — נשלח לרשם המקרקעין</button>';
+    } else if (r.status === 'sent' && canManage) {
+      actions =
+        '<label class="f">קובץ הנסח (PDF/תמונה)<input type="file" data-tabufile="' + r.id +
+          '" accept="application/pdf,image/jpeg,image/png,image/webp" /></label>' +
+        '<button class="btn btn-sm" data-tabuupload="' + r.id + '" style="margin-inline-start:8px">העלאה + ניתוח AI</button>';
+    } else if (r.status === 'fulfilled' && doc) {
+      actions =
+        '<button class="btn btn-quiet btn-sm" data-tabuopen="' + doc.id + '">פתיחת הנסח</button>' +
+        ' <button class="btn btn-quiet btn-sm" data-tabushare="' + doc.id + '" style="margin-inline-start:6px">🔗 העתקת קישור ללקוח</button>';
+    }
+    const analysisHtml = doc && doc.analysis ? tabuAnalysisHtml(doc.analysis)
+      : doc && doc.analysis_error ? '<p class="na" style="margin-top:8px">ניתוח ה-AI נכשל: ' + esc(doc.analysis_error) + '</p>'
+      : doc ? '<p class="na" style="margin-top:8px">הנסח הועלה, טרם נותח.</p>' : '';
+    return '<li>' + badge + ' · עדיפות ' + esc(TABU_GRADE_HE[r.grade] || r.grade) +
+      (r.notes ? '<br/><span class="na" style="font-size:12px">' + esc(r.notes) + '</span>' : '') +
+      '<span class="w"> · ' + dtm(r.created_at) + '</span>' +
+      (actions ? '<div class="controls" style="margin-top:8px">' + actions + '</div>' : '') +
+      analysisHtml + '</li>';
+  }).join('');
+
+  return (rows ? '<ul class="timeline">' + rows + '</ul>' : '<p class="na">אין עדיין בקשות נסח לנכס הזה.</p>') +
+    '<p style="margin-top:10px"><button class="btn btn-quiet btn-sm" id="tabuAddBtn">+ בקשת נסח טאבו</button></p>' +
+    '<div id="tabuAddBox"></div>';
+}
+
+function wireTabu(p, requests, docs) {
+  const box = $('tabuBox');
+  if (!box) return;
+
+  for (const b of box.querySelectorAll('[data-tabusent]')) {
+    b.addEventListener('click', async () => {
+      b.disabled = true;
+      try {
+        await rpc('np_tabu_request_mark_sent', { p_id: b.dataset.tabusent });
+        toast('סומן כהוזמן — אפשר להעלות את הנסח כשהוא מגיע');
+        openProperty(p.id);
+      } catch (e) { toast('העדכון נכשל: ' + e.message, true); b.disabled = false; }
+    });
+  }
+
+  for (const b of box.querySelectorAll('[data-tabuupload]')) {
+    b.addEventListener('click', async () => {
+      const reqId = b.dataset.tabuupload;
+      const fileInput = box.querySelector('[data-tabufile="' + reqId + '"]');
+      const file = fileInput && fileInput.files[0];
+      if (!file) return toast('יש לבחור קובץ נסח', true);
+      b.disabled = true;
+      try {
+        const clean = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
+        const storagePath = OFFICE.id + '/' + p.id + '/tabu/' + reqId + '/' + Date.now() + '-' + clean;
+        const { error } = await sb.storage.from('nadlan-pro-docs').upload(storagePath, file, {
+          cacheControl: '3600', upsert: false, contentType: file.type || undefined,
+        });
+        if (error) throw error;
+        const docId = await rpc('np_tabu_document_upload', { p: {
+          request_id: reqId, storage_path: storagePath, mime_type: file.type || null,
+          name: 'נסח טאבו — גוש ' + (p.gush || '') + ' חלקה ' + (p.helka || ''),
+        } });
+        toast('הנסח הועלה — מריץ ניתוח AI…');
+        // AI analysis runs through an Edge Function, never straight from the
+        // browser: the Anthropic key lives in core.secrets and the storage
+        // bucket is private. Same call shape as np-send-signature above.
+        const { data: sess } = await sb.auth.getSession();
+        const res = await fetch(SUPABASE_URL + '/functions/v1/np-tabu-document-analyze', {
+          method: 'POST',
+          headers: {
+            apikey: SUPABASE_ANON,
+            Authorization: 'Bearer ' + sess.session.access_token,
+            'content-type': 'application/json',
+          },
+          body: JSON.stringify({ document_id: docId }),
+        });
+        const out = await res.json();
+        if (!res.ok || out.ok === false) toast('הניתוח לא הושלם: ' + (out.error || 'שגיאה'), true);
+        else toast('הניתוח הושלם');
+        openProperty(p.id);
+      } catch (e) { toast('ההעלאה נכשלה: ' + e.message, true); b.disabled = false; }
+    });
+  }
+
+  for (const b of box.querySelectorAll('[data-tabuopen]')) {
+    b.addEventListener('click', async () => {
+      const doc = docs.find((d) => d.id === b.dataset.tabuopen);
+      if (!doc || !doc.storage_path) return;
+      const w = window.open('', '_blank');
+      b.disabled = true;
+      try {
+        const { data, error } = await sb.storage.from('nadlan-pro-docs').createSignedUrl(doc.storage_path, 3600);
+        if (error) throw error;
+        if (w) w.location = data.signedUrl; else window.open(data.signedUrl, '_blank');
+      } catch (e) {
+        if (w) w.close();
+        toast('פתיחת הקובץ נכשלה: ' + e.message, true);
+      } finally { b.disabled = false; }
+    });
+  }
+
+  for (const b of box.querySelectorAll('[data-tabushare]')) {
+    b.addEventListener('click', async () => {
+      const doc = docs.find((d) => d.id === b.dataset.tabushare);
+      if (!doc || !doc.storage_path) return;
+      b.disabled = true;
+      try {
+        // Same "copy a link" pattern already used for team-invite join links —
+        // this app has no email-sending infrastructure anywhere (team invites
+        // are copy-a-link only too), so "attach to client" means a link the
+        // broker sends themselves, not an automated send.
+        const { data, error } = await sb.storage.from('nadlan-pro-docs').createSignedUrl(doc.storage_path, 3600 * 24 * 3);
+        if (error) throw error;
+        await navigator.clipboard.writeText(data.signedUrl);
+        toast('הקישור הועתק — תקף ל-72 שעות, אפשר לשלוח ללקוח');
+      } catch (e) { toast('יצירת הקישור נכשלה: ' + e.message, true); } finally { b.disabled = false; }
+    });
+  }
+
+  const addBtn = $('tabuAddBtn');
+  if (addBtn) addBtn.addEventListener('click', () => {
+    addBtn.style.display = 'none';
+    $('tabuAddBox').innerHTML =
+      '<div id="tabuErr"></div><div class="controls">' +
+        '<label class="f">עדיפות<select id="tabu_grade">' +
+          Object.entries(TABU_GRADE_HE).map(([k, l]) => '<option value="' + k + '">' + l + '</option>').join('') +
+        '</select></label>' +
+        '<label class="f" style="min-width:220px">הערה<input id="tabu_notes" /></label>' +
+        '<button class="btn btn-sm" id="tabuSave">שליחת בקשה</button>' +
+      '</div>';
+    $('tabuSave').addEventListener('click', async () => {
+      $('tabuSave').disabled = true;
+      try {
+        await rpc('np_tabu_request_create', { p: {
+          property_id: p.id, grade: $('tabu_grade').value, notes: $('tabu_notes').value.trim(),
+        } });
+        toast('הבקשה נשלחה');
+        openProperty(p.id);
+      } catch (e) {
+        $('tabuErr').innerHTML = '<div class="err">' + esc(e.message) + '</div>';
+        $('tabuSave').disabled = false;
+      }
+    });
   });
 }
 
