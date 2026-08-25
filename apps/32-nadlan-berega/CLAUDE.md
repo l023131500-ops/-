@@ -1114,6 +1114,28 @@ update, delete על contract_templates ו-offices), agent רגיל שנוסף ז
 `fix/36-nadlan-pro-multiple-permissive-policies-0825`. System 35 KioskFleet
 לא נגע, לפי ה-HARD STEERING.
 
+## עדכון — 25/08/2026 (Loop A, unindexed_foreign_keys ב-32 nadlan + 36 nadlan-pro)
+`get_advisors` (performance) סימן 26 אזהרות `unindexed_foreign_keys`: 2 ב-`nadlan`
+(`rental_data.property_id`, `report_exports.property_id`) ו-24 ב-`nadlan_pro`
+(רוב עמודות ה-`created_by`/`*_contact_id`/`office_id`/`property_id` בטבלאות
+כמו `deals`, `contracts`, `invoices`, `leases`, `activities`, `commissions`,
+`forum_posts`/`forum_comments`, `office_members`, `office_invites`,
+`property_documents`, `signatures`, `deal_checklist`, `deal_stage_events`,
+`properties`). לעמודת FK בלי אינדקס מכסה יש Postgres שסורק סריקה סדרתית על
+הטבלה-הבת בכל בדיקת מפתח-זר (ON DELETE CASCADE/SET NULL) וגם בכל שאילתה/מדיניות
+RLS שמסננת/מצטרפת דרך אותה עמודה — כולל `can_touch()`/`manages_office()`
+שרצות על כמעט כל SELECT במערכת.
+
+מיגרציה `0142_nadlan_unindexed_foreign_keys_fix.sql` מוסיפה `CREATE INDEX IF
+NOT EXISTS` בודד לכל אחת מ-26 העמודות (btree רגיל על עמודת ה-FK, בלי לשנות
+מדיניות/סכמה/נתונים). אומת חי ב-MCP: כל 26 האינדקסים קיימים ב-`pg_indexes`
+לאחר ההחלה, ו-`get_advisors` אחרי — אפס אזהרות `unindexed_foreign_keys` על
+`nadlan`/`nadlan_pro` (האזהרה היחידה שנותרה, `unused_index`, היא צפויה
+ותקינה — אינדקס חדש-לגמרי טבעי שטרם נסרק, לא פגם). אפס רגרסיה — פעולה תוספתית
+בלבד, לא נגעה בשום מדיניות/RPC/UI קיימים. נדחה+נדחף לענף
+`fix/32-36-nadlan-unindexed-foreign-keys-0825`. System 35 KioskFleet לא נגע,
+לפי ה-HARD STEERING.
+
 ## איך ממשיכים בין סשנים (חשוב!)
 - עבוד ב-Claude Code **מקומי** (לא Remote) על התיקייה הזו — הכל נשמר על הדיסק.
 - להמשך שיחה אחרונה: `claude --continue`   ·   לבחירת סשן קודם: `claude --resume`
