@@ -3140,6 +3140,18 @@ async function renderSettings() {
     'ליד חדש מופיע ללא בעלים, כך שכל חברי הצוות רואים ויכולים לקחת אותו.</p>' +
     '<div id="stLeadIntakeBox"></div>';
 
+  // Every office was stuck with the three fixed system templates verbatim —
+  // contract_templates.office_id + RLS (np_tpl_write) already supported an
+  // office's own copy, np_template_save/delete (0146) finally give it a write
+  // path. "Copy to office" pre-fills the editor from a system template so
+  // editing never touches the shared original.
+  html += '<h2 class="sec">תבניות מסמכים</h2>' +
+    '<p class="sub" style="margin:0 0 10px">שלוש התבניות המערכתיות (הסכם תיווך / זיכרון דברים / אישור הצגת ' +
+    'נכס) זמינות לכל המשרדים. ניתן לשכפל כל אחת מהן לנוסח משרדי משלכם ולערוך אותו בלי לפגוע במקור — ' +
+    'הנוסח המשרדי יופיע לצד המערכתי ברשימת התבניות בעת יצירת מסמך חדש.</p>' +
+    '<div id="stTemplatesBox"></div>' +
+    (canManage ? '<p style="margin-top:10px"><button class="btn btn-quiet btn-sm" id="stTplNew">+ תבנית משרדית חדשה</button></p>' : '');
+
   // Owner-only danger zone: np_office_delete (migration 0130) has existed live
   // since 25/08 with a strict owner-only + cascading-delete guard, but no UI
   // ever called it — a departing/dissolving office had no way to remove itself
@@ -3159,7 +3171,77 @@ async function renderSettings() {
   body.innerHTML = html;
   renderPublishBox(s, canManage);
   renderLeadIntakeBox(s, canManage);
+  renderTemplatesBox(canManage);
   wireSettingsBody(canManage, s);
+}
+
+async function renderTemplatesBox(canManage) {
+  const box = $('stTemplatesBox');
+  if (!box) return;
+  box.innerHTML = '<p class="loading"><span class="spinner"></span>טוען…</p>';
+  let tpls;
+  try { tpls = await rpc('np_templates', { p_office: OFFICE.id }); }
+  catch (e) { box.innerHTML = '<div class="err">' + esc(e.message) + '</div>'; return; }
+
+  tpls = tpls || [];
+  const sys = tpls.filter((t) => t.is_system);
+  const own = tpls.filter((t) => !t.is_system);
+  const row = (t, isOwn) =>
+    '<li>' + '<b>' + esc(t.name) + '</b>' + (isOwn ? '' : ' <span class="pill">מערכתי</span>') +
+    (canManage
+      ? (isOwn
+          ? ' <button class="btn btn-quiet btn-sm" data-tpl-edit="' + t.id + '">עריכה</button>' +
+            ' <button class="btn btn-quiet btn-sm" data-tpl-del="' + t.id + '">מחיקה</button>'
+          : ' <button class="btn btn-quiet btn-sm" data-tpl-copy="' + t.id + '">שכפול לנוסח משרדי</button>')
+      : '') +
+    '</li>';
+  box.innerHTML = '<ul class="timeline">' + sys.map((t) => row(t, false)).join('') +
+    own.map((t) => row(t, true)).join('') + '</ul>';
+  if (!canManage) return;
+
+  box.querySelectorAll('[data-tpl-edit]').forEach((b) => b.addEventListener('click', () =>
+    openTemplateEditor(own.find((t) => t.id === b.dataset.tplEdit), canManage)));
+  box.querySelectorAll('[data-tpl-copy]').forEach((b) => b.addEventListener('click', () => {
+    const src = sys.find((t) => t.id === b.dataset.tplCopy);
+    openTemplateEditor({ name: src.name + ' (נוסח משרדי)', body_md: src.body_md, fields: src.fields }, canManage);
+  }));
+  box.querySelectorAll('[data-tpl-del]').forEach((b) => b.addEventListener('click', async () => {
+    if (!confirm('למחוק את התבנית הזו לצמיתות?')) return;
+    try { await rpc('np_template_delete', { p_id: b.dataset.tplDel }); toast('התבנית נמחקה'); renderTemplatesBox(canManage); }
+    catch (e) { toast('המחיקה נכשלה: ' + e.message, true); }
+  }));
+}
+
+function openTemplateEditor(tpl, canManage) {
+  tpl = tpl || {};
+  const html =
+    '<div id="tplErr"></div>' +
+    '<label class="f">שם התבנית<input id="tpl_name" value="' + esc(tpl.name || '') + '" /></label>' +
+    '<label class="f" style="margin-top:8px">תוכן (Markdown, עם {{שדות}})' +
+    '<textarea id="tpl_body" rows="14">' + esc(tpl.body_md || '') + '</textarea></label>' +
+    '<p style="margin-top:14px"><button class="btn" id="tplSave">שמירה</button></p>';
+  drawer(tpl.id ? 'עריכת תבנית' : 'תבנית משרדית חדשה',
+    'שדות בסוגריים כפולים כמו {{client_name}} ימולאו אוטומטית בעת יצירת מסמך',
+    html, (close) => {
+      $('tplSave').addEventListener('click', async () => {
+        const name = $('tpl_name').value.trim();
+        const body_md = $('tpl_body').value;
+        if (!name || !body_md.trim()) {
+          $('tplErr').innerHTML = '<div class="err">יש למלא שם ותוכן.</div>';
+          return;
+        }
+        $('tplSave').disabled = true;
+        try {
+          await rpc('np_template_save', { p: {
+            office_id: OFFICE.id, id: tpl.id || '', name, body_md, fields: tpl.fields || [],
+          } });
+          close(); toast('התבנית נשמרה'); renderTemplatesBox(canManage);
+        } catch (e) {
+          $('tplErr').innerHTML = '<div class="err">' + esc(e.message) + '</div>';
+          $('tplSave').disabled = false;
+        }
+      });
+    });
 }
 
 function leadIntakeEndpoint() { return SUPABASE_URL + '/rest/v1/rpc/np_lead_intake'; }
@@ -3286,6 +3368,9 @@ function wireSettingsBody(canManage, s) {
       wireSettingsBody(canManage, s);
     } catch (e) { toast('הפעולה נכשלה: ' + e.message, true); liRegen.disabled = false; }
   });
+
+  const tplNew = $('stTplNew');
+  if (tplNew) tplNew.addEventListener('click', () => openTemplateEditor(null, canManage));
 
   const delBtn = $('stDeleteOffice');
   if (delBtn) delBtn.addEventListener('click', async () => {
