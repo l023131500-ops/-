@@ -304,3 +304,33 @@ export async function listSaved(limit = 200): Promise<SavedReportRow[]> {
     .limit(limit);
   return (data ?? []) as SavedReportRow[];
 }
+
+export interface SavedReportVersionRow {
+  tier: string;
+  assetType: string;
+  createdAt: string;
+}
+
+/**
+ * §8/build_tasks id=7 · יומן-ביקורת — כל הפקה בפועל של נכס נתון (לא רק
+ * מונה `generations` המצטבר שכבר מוצג ב-`SavedReportsBoard`). כל שורה
+ * ב-`saved_report_versions` כבר נכתבת בכל `saveReport` (ראו שם) — פשוט לא
+ * נקראה משום מקום עד היום.
+ */
+export async function listVersionsBySlug(slug: string, limit = 100): Promise<SavedReportVersionRow[]> {
+  const db = store();
+  if (!db) return [];
+  const { data: saved } = await db.from('saved_reports').select('id').eq('slug', slug).maybeSingle();
+  if (!saved?.id) return [];
+  const { data } = await db
+    .from('saved_report_versions')
+    .select('tier,asset_type,created_at')
+    .eq('saved_report_id', saved.id)
+    .order('created_at', { ascending: false })
+    .limit(limit);
+  return (data ?? []).map((r) => ({
+    tier: String(r.tier),
+    assetType: String(r.asset_type),
+    createdAt: String(r.created_at),
+  }));
+}

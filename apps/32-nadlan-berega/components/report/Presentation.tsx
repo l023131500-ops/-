@@ -79,7 +79,9 @@ export default function Presentation({
 
   if (print) {
     return (
-      <div data-deck-ready="1">
+      // ⚠️ `data-permalink` — אותו טעם בדיוק כמו ב-ReportView.tsx: /api/deck
+      // קורא אותו כדי לשייך את הורדת המצגת ל-report_exports.slug הנכון.
+      <div data-deck-ready="1" data-permalink={(data as unknown as { permalink?: string | null }).permalink ?? ''}>
         <style>{DECK_PRINT_CSS}</style>
         {slides.map((s, k) => (
           <section key={k} className="hero-gradient deck-slide text-white">

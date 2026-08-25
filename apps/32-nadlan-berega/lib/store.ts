@@ -259,7 +259,7 @@ export async function submitAreaAlert(payload: AreaAlert): Promise<void> {
 }
 
 export async function logExport(
-  propertyKey: string,
+  slug: string | null,
   reportType: string,
   selectedLayers: string[],
 ): Promise<void> {
@@ -267,12 +267,31 @@ export async function logExport(
   if (!db) return;
   try {
     await db.from('report_exports').insert({
+      slug: slug || null,
       report_type: reportType,
       selected_layers: selectedLayers,
     });
   } catch {
     /* אופציונלי */
   }
+}
+
+/** §8 · יומן ההורדות (PDF/מצגת) לנכס נתון — חלק מ"יומן הביקורת" במרכז השליטה. */
+export interface ExportLogRow {
+  reportType: string;
+  createdAt: string;
+}
+
+export async function listExportsBySlug(slug: string): Promise<ExportLogRow[]> {
+  const db = getStore();
+  if (!db) return [];
+  const { data } = await db
+    .from('report_exports')
+    .select('report_type,created_at')
+    .eq('slug', slug)
+    .order('created_at', { ascending: false })
+    .limit(100);
+  return (data ?? []).map((r) => ({ reportType: String(r.report_type), createdAt: String(r.created_at) }));
 }
 
 // ==== §2 · מטמון "סיור רחוב" כווידאו — build_tasks id=2 (core.projects #33) ====

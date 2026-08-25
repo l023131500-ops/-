@@ -271,7 +271,10 @@ export default function ReportView({
   );
 
   return (
-    <div className="pb-20">
+    // ⚠️ `data-permalink` — כדי ש-/api/pdf ו-/api/deck (Puppeteer headless)
+    // יוכלו לקרוא את ה-slug של הדוח שרונדר בפועל ולרשום אותו ב-report_exports
+    // (ראה logExport ב-lib/store.ts) — בלי זה כל הורדה נרשמת בלי שיוך לנכס.
+    <div className="pb-20" data-permalink={permalink ?? ''}>
       {/* ===== כותרת ===== */}
       <section className="hero-gradient text-white print:bg-surface print:text-black">
         <div className="mx-auto max-w-6xl px-5 py-10">

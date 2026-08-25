@@ -46,6 +46,13 @@ export async function GET(req: NextRequest) {
     await page.goto(target.toString(), { waitUntil: 'networkidle0', timeout: 240_000 });
     await page.waitForSelector('[data-cat]', { timeout: 240_000 });
 
+    // ה-slug של הדוח שרונדר בפועל — כדי ש-report_exports ישויך לנכס הנכון
+    // (ראה `data-permalink` ב-ReportView.tsx). best-effort: `null` פשוט
+    // מדלג על שיוך, לא חוסם את הפקת ה-PDF.
+    const slug = await page
+      .$eval('[data-permalink]', (el) => el.getAttribute('data-permalink') || null)
+      .catch(() => null);
+
     // גיליון ההדפסה הקיים כבר מסתיר ניווט וכפתורים.
     await page.emulateMediaType('print');
 
@@ -65,7 +72,7 @@ export async function GET(req: NextRequest) {
 
     // לוג ההורדה — כדי ש-report_exports ישקף שימוש אמיתי בפיצ'ר, לא רק שהוא קיים.
     // לא חוסם את התגובה: logExport בולעת שגיאות שלה.
-    await logExport(q, `pdf_${tier}`, []);
+    await logExport(slug, `pdf_${tier}`, []);
 
     return new NextResponse(Buffer.from(pdf), {
       headers: {
