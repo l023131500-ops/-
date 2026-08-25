@@ -7465,3 +7465,54 @@ to that constraint: they import only dependency-free modules (`hosts.js`,
   chain, the payment code (explicitly out of scope per the project note's
   PCI-DSS constraint), or `core.issues #215` (the monorepo-vs-zol divergence
   proper), both unaffected by this round.
+
+- **[25/08/2026, Loop A] Found and fixed a 16th write-path class of bug — this
+  one silent state corruption, not a crash.** With the unchecked-bind sweep
+  (14th entry) exhaustively confirmed complete across every route file,
+  looked at `routes/alerts.js`/`routes/analytics.js` next (KIOSK_BUILD.md §9
+  features not covered by that audit) — both are GET-only, no write path, no
+  bug there. Read `policy.js` itself end to end instead and found: the
+  `signage_enabled`/`schedule_enabled`/`maintenance_enabled` flag each of the
+  three §9 blocks (signage, תזמון, מצב תחזוקה) writes is computed purely from
+  the matching `*Enabled` field in the request body (`!!signageEnabled` etc.)
+  with **no fallback to the device's current flag** — unlike every sibling
+  field on the same three blocks (urls, interval, open/close time, message),
+  which already falls back to `device.<column>` when the caller omits it.
+  Since the `UPDATE` writes the computed flag unconditionally (no
+  "leave alone" value for an already-non-null INTEGER column), sending only
+  the sibling field — e.g. an owner fixing one URL in an already-enabled
+  signage playlist, without resending `signageEnabled` because the checkbox
+  itself did not change — silently turns the whole feature off. Confirmed
+  live first, standalone against the real `applyDevicePolicy` on a scratch
+  DB: enable signage → edit only `signageUrls` → `signage_enabled` flips from
+  `1` to `0` on the same request that also correctly updated the playlist.
+  Same shape confirmed independently for `scheduleOpenTime`-only and
+  `maintenanceMessage`-only edits.
+
+  Fixed by deriving `enabled` the same way every sibling field already does:
+  `field !== undefined ? !!field : !!device.<column>`, at all three sites.
+  Explicit `signageEnabled: false` (and the schedule/maintenance
+  equivalents) still disables correctly, and enabling with an invalid
+  playlist/schedule window is still rejected — both re-verified as controls
+  after the fix, not assumed.
+
+  `applyDevicePolicy` — the shared write path behind both `PATCH
+  /devices/:id` and `POST /templates/:id/apply` — had no direct test file
+  before this round; only `templatepolicy.js`'s dependency-free half of the
+  same feature set was exercised for real. Added `test/policy.test.mjs` (10
+  cases, real `better-sqlite3` via `src/db.js` against a scratch on-disk DB,
+  the same pattern `test/seedadmin.test.mjs` uses) covering all three
+  features' silent-off bug plus the disable/reject controls. Full suite:
+  **134/134 → 142/142**, zero regressions. Also re-verified over real HTTP,
+  not only the standalone function: booted the server against a scratch DB,
+  logged in, inserted a device directly, `PATCH /api/devices/:id` to enable
+  signage, then a second `PATCH` with only `signageUrls` — `signageEnabled`
+  stayed `true` in the response (was silently `false`), playlist still
+  updated to the new value.
+
+  Committed + pushed to `l023131500-ops/zol` branch
+  `fix/kiosk-signage-schedule-maintenance-enabled-clobber-0825` (`1b51bf6`),
+  off the live tip (`0f3947d`) — not merged, same human-review convention as
+  every prior fix branch on this chain. Zero Android/Kotlin/Windows work
+  touched. Did not touch the still-parked feature chain, the payment code, or
+  `core.issues #215`, both unaffected by this round.
