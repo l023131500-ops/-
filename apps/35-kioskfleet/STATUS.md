@@ -5495,3 +5495,62 @@ to that constraint: they import only dependency-free modules (`hosts.js`,
   `claude/what-do-you-see-gxo5tc`, same reasoning as every entry above:
   feature branch only, no live host here to validate against before
   production.
+
+- **[25/08/2026, Loop A] First live-server verification pass — closes the
+  "not verified beyond that" gap every entry above (including this one's own
+  immediate predecessors) has carried.** This sandbox's `npm install` had
+  always been run `--offline` before, which failed with no cached registry
+  response; run without that flag it reaches the real npm registry and
+  `better-sqlite3`'s prebuilt binary installs cleanly — so instead of static
+  review this round could actually boot `zol`'s `kiosk/server` (cloned fresh
+  from `l023131500-ops/zol` at `feat/kiosk-launcher-access-code-0825`,
+  `1756cbb`) against a throwaway local SQLite file and drive it with real
+  HTTP/WebSocket calls. `node --test`: **182/183 pass** — the one failure is
+  the same pre-existing `seedadmin.test.mjs`/`node:sqlite` gap (needs Node
+  22+; this container runs 20.20.2) every entry above has already hit, now
+  confirmed to be the *only* failure in the full suite rather than one of two.
+
+  Exercised end-to-end and confirmed correct, all against the live server
+  (not just source review): `/api/auth/login`; `POST /api/enrollments` →
+  `POST /api/agent/enroll` (device provisioning); `GET/PATCH /api/devices`
+  including `displayOrientation`/`paymentMode`/`displayZoomPercent`/
+  `maintenanceEnabled` all round-tripping and correctly appearing in the next
+  `POST /api/agent/heartbeat` response; `POST /api/devices/:id/clients/:id`
+  (§2★ה approval) then **`GET /api/public/launcher/:code`** (§2★ז's newest
+  piece, `8ed63cb`, the one this log has never actually run) — case/dash-
+  insensitive lookup on a real per-device `access_code`, correct `{deviceName,
+  items}` shape, correct 404 on an unknown code and 400 on a malformed one,
+  and `GET /k/:code` serving `launcher.html` at `200`; `/api/analytics`,
+  `/api/devices/:id/snapshots`, `/api/alerts`, `/api/devices/:id/windows-
+  package`, `POST /api/enrollments/:id/usb-package` (real generated script,
+  correct `400` when `serial` is missing, correct `409` on an already-used
+  enrollment code); `/console` and `/` both `200`. Also opened a real
+  `ws://…/ws/agent?token=…` socket and confirmed `POST /api/devices/:id/
+  command` pushes a `reboot` command down it **instantly** (not just queued
+  for next poll) with `delivered:true` in the same response — the realtime
+  hub's core promise, never previously confirmed against a live process in
+  this log. No defect found anywhere in this pass.
+
+  This round also, before finding the live-server path above, mis-read the
+  gitignored/partially-tracked state of `apps/35-kioskfleet/server` in *this*
+  monorepo (real `zol` source checked out locally for continuity, per this
+  repo's own `.gitignore` policy — only `STATUS.md`/`app.json` and a handful
+  of legacy force-added files are actually tracked here) as a sign this log's
+  "on `zol` not this tree" entries might be unverifiable claims, and started
+  re-implementing an owner-wide version of the already-shipped `8ed63cb`
+  access-code feature directly in that gitignored local mirror before
+  checking `zol`'s own history. Confirmed via the GitHub API (commit
+  `1756cbb` exists in `l023131500-ops/zol` with the exact message this log
+  already recorded) that the prior entries are accurate; the duplicate
+  scaffolding was deleted and the one tracked file it had touched
+  (`public/js/app.js`) was reverted before this entry — no trace of it left
+  in either tree. Left as a note for whoever reads this next: the "on `zol`
+  not this tree" phrasing is easy to misread as unfalsifiable unless you
+  actually clone `zol` and check.
+
+  Not verified beyond that: no Android SDK/`kotlinc` in this sandbox either
+  (same gap every prior entry hits), so the Kotlin agent side is still
+  reviewed-by-hand only, not compiled or run on a device/emulator — this
+  pass only reaches the server half of the stack. No code changed in `zol`
+  this round (verification only, nothing to push); this entry is the only
+  change, committed here on `feat/35-kioskfleet-launcher-access-code-0825`.
