@@ -7359,3 +7359,55 @@ to that constraint: they import only dependency-free modules (`hosts.js`,
   feature chain, the payment code (explicitly out of scope per the project
   note's PCI-DSS constraint), or `core.issues #215` (monorepo-vs-zol tree
   divergence), both unaffected by this round.
+
+- **[25/08/2026, Loop A] Found and fixed a 14th write-path class of bug —
+  same unchecked-bind shape again, this time on `linkId`: both
+  `PATCH /api/devices/:id` (via the shared `policy.js` `applyDevicePolicy`)
+  and `POST /api/enrollments` (`routes/devices.js`) gated `linkId` with
+  nothing but a truthy `if (linkId)` check before binding it straight into
+  `db.prepare('SELECT * FROM links WHERE id = ? AND owner_id = ?').get(linkId, ...)`.
+  `POST /templates/:id/apply` also calls `applyDevicePolicy`, but its patch
+  is built server-side from the template row, never from `req.body`, so it
+  was not independently attacker-reachable for this field — the fix covers
+  it anyway since the function is shared.
+
+  Reproduced live first, real server against a scratch DB: `{"linkId":{"foo":1}}`
+  → 500 `RangeError: Too few parameter values were provided`;
+  `{"linkId":[1,2,3]}` → 500 `RangeError: Too many parameter values were
+  provided`; `{"linkId":true}` → 500 `TypeError: SQLite3 can only bind
+  numbers, strings, bigints, buffers, and null`. All three confirmed on both
+  routes independently.
+
+  Fixed by reusing the `isValidRowId` export `commandid.js` already gained
+  in the prior round (for `deviceIds` elements), gated by
+  `if (linkId && !isValidRowId(linkId)) return .../400` at both call sites —
+  preserving the existing "falsy = no link chosen" semantics exactly.
+  3 new tests added to `commandid.test.mjs` covering the guard expression
+  (falsy passthrough, valid-id passthrough, malformed-value rejection).
+  Full suite: 186/186 → **189/189**, zero regressions.
+
+  Re-verified live after the fix: object/array/boolean/junk-string `linkId`
+  on both `PATCH /devices/:id` and `POST /enrollments` now return a clean
+  400 (`"הקישור לא נמצא בספרייה"`), no crash; a valid numeric `linkId` still
+  applies the link's homeUrl/allowedHost correctly (200), and a request that
+  omits `linkId` entirely (plain name edit / enrollment with a manual URL)
+  is unaffected — both confirmed as controls.
+
+  Audited the remaining route files for the same class and found them
+  already covered: `routes/snapshots.js` (label correctly coerced via
+  `String()` before capping; restore reads only server-owned snapshot rows,
+  no user-supplied JSON blob), `routes/admin.js` (`deviceLimit`'s
+  NaN-on-bad-input path is a silent no-op via `COALESCE`, the same accepted
+  pattern as `idleReturnSeconds` elsewhere — not a crash, not flagged),
+  `routes/agent.js`, `routes/clients.js`, `routes/links.js`, `routes/auth.js`,
+  `routes/templates.js` — every request field reaching a DB bind or device
+  push has proper type/length/shape validation.
+
+  Committed + pushed to `l023131500-ops/zol` branch
+  `fix/kiosk-linkid-bindable-rowid-0825` (`20c49eb`), off the tip
+  (`45abf7f`, the deviceIds-array fix recorded above) — not merged, same
+  human-review convention as every prior fix branch on this chain. Zero
+  Android/Kotlin/Windows work touched. Did not touch the still-parked
+  feature chain, the payment code (explicitly out of scope per the project
+  note's PCI-DSS constraint), or `core.issues #215` (monorepo-vs-zol tree
+  divergence), both unaffected by this round.
