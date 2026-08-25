@@ -277,7 +277,7 @@ const STREET_TYPE_WORDS = new Set([
  * מדויק אחרי הסרת מילת-הסוג, לא הכלה — אותו עיקרון בדיוק כמו `verifyCity`
  * ב-`lib/geocode.ts`.
  */
-function normStreetName(s: string | null | undefined): string {
+export function normStreetName(s: string | null | undefined): string {
   const cleaned = (s ?? '').replace(/["'`״׳]/g, '').replace(/[-–—־]/g, ' ');
   let tokens = cleaned.split(/\s+/).filter(Boolean);
   if (tokens.length > 1 && STREET_TYPE_WORDS.has(tokens[0])) tokens = tokens.slice(1);

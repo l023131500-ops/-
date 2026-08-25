@@ -39,6 +39,7 @@ import {
   isLandDeal,
   parcelLabel,
   nadlanAddressRef,
+  normStreetName,
 } from './nadlan';
 import { buildingAge, type BuildingAge } from './buildingage';
 import { fetchHousingIndex, fetchRentIndex } from './cbs';
@@ -269,6 +270,14 @@ export interface BuildingIdentity {
   registeredHelka: string | null;
   /** הקדסטר והעסקאות חולקים על מספר החלקה — נאמר ללקוח במפורש. */
   parcelMismatch: boolean;
+  /** שם הרחוב כפי שהוא רשום **בעסקאות** של הבניין — יכול להיות שונה מהמבוקש. */
+  registeredStreetName: string | null;
+  /**
+   * הזיהוי הצליח (לפי מזהה-בניין או גוש/חלקה), אבל שם הרחוב הרשום בעסקאות
+   * אינו תואם לשום שם ידוע של הרחוב המבוקש (רשמי/כינוי מאומת) — סימן לרחוב
+   * ששינה שם, כתיב שונה במרשם, או חלוקה מחדש. ראה `note`.
+   */
+  streetNameMismatch: boolean;
   /** מספרי תת-החלקה שנמכרו בבניין — מגיעים חינם עם כל עסקה. */
   subParcels: string[];
   dealsInBuilding: number;
@@ -1243,6 +1252,25 @@ export async function buildReport(
   const parcelMismatch =
     !!registeredHelka && !!helka && String(registeredHelka) !== String(helka);
 
+  /**
+   * ⚠️ P2 ACCURACY SPEC v2 §3 — "match by gush/helka + coordinates, not by
+   * street name alone; note when a street was renamed so comparables stay
+   * correct." הזיהוי עצמו כבר לא תלוי בשם הרחוב כשההתאמה היא `polygon`/
+   * `parcel` (ראה השרשרת למעלה) — הפער שנשאר הוא **לספר ללקוח** כשזה קרה,
+   * כדי שהוא לא יתפלא שהרחוב בטבלת ההשוואה שונה מזה שחיפש. `knownStreetNames`
+   * הוא כל שם ידוע ומאומת של הרחוב המבוקש (רשמי + מה שהוקלד + כינויים
+   * מאומתים, אותה קבוצה ש-`filterToAddress` בדק מולה למעלה) — אם העסקה
+   * שממנה זוהה הבניין רשומה תחת שם שאינו באף אחד מהם, זה רחוב ששינה שם או
+   * שהמרשם כותב אותו אחרת ממה שהמאגר המאומת יודע.
+   */
+  const registeredStreetName = buildingTxns.find((t) => t.streetName)?.streetName ?? null;
+  const knownStreetNames = new Set(streetNames.map(normStreetName).filter(Boolean));
+  const streetNameMismatch =
+    (matchedBy === 'polygon' || matchedBy === 'parcel') &&
+    !!registeredStreetName &&
+    knownStreetNames.size > 0 &&
+    !knownStreetNames.has(normStreetName(registeredStreetName));
+
   // --- גיל הבניין ---
   const ageInfo = buildingAge(buildingTxns);
 
@@ -1280,17 +1308,22 @@ export async function buildReport(
     registeredGush,
     registeredHelka,
     parcelMismatch,
+    registeredStreetName,
+    streetNameMismatch,
     subParcels,
     dealsInBuilding: currentBuildingTxns.length,
     homeSalesInBuilding: buildingHomeSales.length,
     note:
-      matchedBy === 'polygon'
+      (matchedBy === 'polygon'
         ? 'הבניין זוהה לפי מזהה הבניין של מרשם העסקאות הממשלתי — כלומר בדיוק אותו קיבוץ שהמרשם עצמו עושה לעסקאות של הבניין הזה.'
         : matchedBy === 'parcel'
           ? 'הבניין זוהה לפי הגוש והחלקה שמרשם החלקות מחזיר לנקודת הכתובת.'
           : matchedBy === 'address'
             ? 'הבניין זוהה לפי התאמת רחוב ומספר בית מדויקת בעסקאות עצמן.'
-            : 'לא נמצאו עסקאות שניתן לשייך לבניין הזה.',
+            : 'לא נמצאו עסקאות שניתן לשייך לבניין הזה.') +
+      (streetNameMismatch
+        ? ` שים לב: העסקאות רשומות תחת השם "${registeredStreetName}", שאינו תואם לשם הרחוב המבוקש או לכינוי מאומת שלו — ייתכן שהרחוב שינה שם או שהמרשם כותב אותו אחרת. הזיהוי לא הסתמך על שם הרחוב, אלא על גוש/חלקה${buildingPolygonId ? ' ומזהה הבניין' : ''} של הנכס עצמו, כך שעסקאות ההשוואה נשארות נכונות.`
+        : ''),
   };
 
   // --- ההמרה בשני הכיוונים, עם אימות בלתי תלוי ---
