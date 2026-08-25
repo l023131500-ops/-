@@ -6419,3 +6419,77 @@ to that constraint: they import only dependency-free modules (`hosts.js`,
   sweep of already-stored `clients.url` rows for a pre-existing bad value
   (same "the refusal belongs at the door, not a retroactive sweep"
   reasoning every prior door fix gave).
+
+- **[25/08/2026, Loop A] Combined-feature live regression pass across the
+  full parked stack, zero defects found — no code change this round.**
+  Per GLOBAL PRIORITY ORDER, P1 = 35 KioskFleet. Read the last several
+  rounds' entries above first: the home_url-class door hunt (5→6→7 doors)
+  is the most recent thread, and every server-only, safe-to-fast-track gap
+  it or the RPC/RLS review below turned up was already closed. Rather than
+  mine KIOSK_BUILD.md for yet another isolated unbuilt spec item (the
+  9-deep `feat/kiosk-exit-gesture-config-0825` chain — USB Route D → device
+  access-code/launcher → payment-mode → orientation-lock → Route A QR → OTA
+  update → install-checklist wizard → §4 exit-gesture — already covers
+  nearly all of it, each piece individually tested against its own parent
+  commit but never exercised *together* on one device), this round checked
+  whether the accumulated stack is internally consistent.
+
+  Checked out the stack's tip (`9c59819`, zol) and ran the full suite clean
+  (231/232 — same pre-existing `seedadmin.test.mjs`/Node-22+ gap every
+  entry hits). Then live-server-verified a scenario no single round's own
+  testing would have exercised: one template with schedule (08:00–22:00) +
+  signage (2-URL playlist, 10s interval) + a non-default zoom (150%) + a
+  non-default exit-gesture (7 taps, bottom-right corner, 1500ms hold) all
+  set together, applied to one enrolled device. Confirmed via `GET
+  /devices/:id`, the `/api/agent/heartbeat` config payload (what the device
+  itself receives), and a snapshot save→mutate→restore round-trip that
+  every field lands and reads back independently — no field clobbers a
+  sibling, no cross-feature interaction bug. Separately checked the USB
+  Route D offline-enrollment envelope (`usbpackage.js`): it deliberately
+  carries only bootstrap-critical fields (home/allowed-host, idle-return,
+  admin code, zoom, orientation, approved clients, exit-gesture) and
+  *not* schedule/signage/maintenance — read the module's own header comment
+  before flagging this as a gap, and confirmed it is a deliberate, §0-
+  consistent choice ("הנעילה נאכפת מקומית... סנכרון/ניהול קורים כשיש
+  רשת" — the lock/exit mechanism travels offline, "ניהול" features sync
+  once the device has any network), not an oversight.
+
+  Also spent real effort looking for a fresh security gap the same way the
+  home_url door hunt found its last three doors — read every route file
+  (`admin.js`, `auth.js`, `alerts.js`, `analytics.js`, plus a re-read of
+  `devices.js`/`agent.js`/`hub.js`), every validated-input module
+  (`hosts.js`, `schedule.js`, `signage.js`, `exitcode.js`, `display.js`,
+  `maintenance.js`, `watchdog.js`), `policy.js`, `templatepolicy.js`,
+  `snapshots.js`, and `db.js`'s schema/migrations end to end. Nothing
+  survived: ownership checks are consistent (404-not-403 everywhere),
+  every URL-shaped field is now behind `normalizeHomeUrl`/an explicit
+  protocol check, every numeric/enum field is clamped or rejected, SQL is
+  parameterized throughout (the one dynamic-column-list spot,
+  `templateColumns()`, is a hardcoded whitelist, never request-derived),
+  and console rendering of device-controlled strings (`ev.detail`,
+  `command.result`) goes through `esc()`.
+
+  Also audited 36 nadlan-pro's Postgres surface (schema `nadlan_pro`,
+  project `uhnrgujb`) the same way, since today's earlier round found and
+  fixed a real `np_member_role_set` privilege-escalation gap there: read
+  every `np_*` RPC's source (`pg_proc.prosrc`) and its `GRANT`s. Confirmed
+  the role-set fix is live. `np_sign_log` looked suspicious in isolation —
+  it takes a bare `signature` id with no ownership check in its body — but
+  its `GRANT EXECUTE` is scoped to `postgres`/`service_role` only (unlike
+  every other client-facing `np_*` function, which all grant `anon`/
+  `authenticated`), so it is not reachable via PostgREST from a browser at
+  all; the missing in-body check is a non-issue given that boundary. RLS is
+  enabled on every `nadlan_pro` table, and `signature_events`' own INSERT
+  policy independently requires `can_touch()` on the owning contract's
+  office, so even direct table access (if the schema were ever exposed)
+  would not be open to an arbitrary authenticated user, let alone anon.
+  No fix needed here either.
+
+  **Net result this round: verification only, no code shipped.** The
+  remaining unbuilt/uncertain surface is exactly what every recent entry
+  already named — the 9-deep parked Android chain needs a human at a real
+  device, and `core.issues #215` (this monorepo tree vs. the live `zol`
+  tree) is still open, unanswered since 13/08, and blocks nothing today
+  but keeps blocking a clean single source of truth for future rounds.
+  Threw away the verification SQLite db/server afterward; touched no
+  production branch, no `zol` push, no `more30` code — only this file.
