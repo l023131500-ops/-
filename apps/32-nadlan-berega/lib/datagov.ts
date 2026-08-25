@@ -17,12 +17,15 @@ export async function datastoreSearch(
     limit?: number;
     /** עימוד — מאגר כמו מוסדות חינוך חורג בהרבה מתקרת השורות של קריאה אחת. */
     offset?: number;
+    /** צמצום עמודות מוחזרות (CKAN `fields`, מחרוזת מופרדת בפסיקים) — מקטין payload בשאילתות עם מספר שורות גדול. */
+    fields?: string;
   } = {},
 ): Promise<CkanResult> {
   const body: Record<string, unknown> = { resource_id: resourceId, limit: opts.limit ?? 50 };
   if (opts.q) body.q = opts.q;
   if (opts.filters) body.filters = opts.filters;
   if (opts.offset) body.offset = opts.offset;
+  if (opts.fields) body.fields = opts.fields;
 
   const res = await fetch(`${CKAN_BASE}/datastore_search`, {
     method: 'POST',

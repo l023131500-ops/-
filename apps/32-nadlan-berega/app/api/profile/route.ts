@@ -7,6 +7,8 @@ import { queryPlanningAtPoint } from '@/lib/xplan';
 import { checkRenewal } from '@/lib/hitchadshut';
 import { tabuOrderInfo } from '@/lib/tabu';
 import { environmentMetrics } from '@/lib/environment';
+import { crimeProfile } from '@/lib/crime';
+import { findCityCode } from '@/lib/placenames';
 import { cacheProfile } from '@/lib/store';
 import { opportunityScore, dealQuality } from '@/lib/score';
 import { pricePerSqm } from '@/lib/format';
@@ -243,6 +245,16 @@ export async function GET(req: NextRequest) {
   const envSchools = envMetrics.find((m) => m.label.includes('בתי ספר'));
   const envTransport = envMetrics.find((m) => m.label.includes('תחבורה'));
 
+  // פשיעה — ברמת יישוב בלבד (ראה lib/crime.ts). מזהה היישוב מגיע מ-key.city
+  // (שם הקדסטר, המקור החזק ביותר לזיהוי יישוב בקובץ הזה), לא מהגיאוקוד הגולמי.
+  let crime: Awaited<ReturnType<typeof crimeProfile>> = null;
+  if (key.city) {
+    try {
+      const cityCode = await findCityCode(key.city);
+      crime = await crimeProfile(cityCode);
+    } catch (e: any) { warnings.push(`נתוני פשיעה לא זמינים: ${e?.message ?? e}`); }
+  }
+
   const cbsLast = cbs?.points.at(-1) ?? null;
 
   const layers: LayerData[] = [
@@ -340,7 +352,19 @@ export async function GET(req: NextRequest) {
         envTransport?.configured
           ? ok(`תחנות תחבורה ציבורית (רדיוס ${(envTransport.radiusM / 1000).toFixed(0)} ק"מ)`, envTransport.count, 'datagov', now, 'ספירה מדויקת ברדיוס מנקודת הנכס — מקור: משרד התחבורה.')
           : pending('תחבורה ציבורית', 'datagov'),
-        pending('פשיעה (אזור סטטיסטי)', 'datagov'),
+        crime
+          ? ok(
+              `תיקי פשיעה שנפתחו ביישוב (${crime.year})`, crime.total, 'datagov', now,
+              [
+                crime.topCategories.length
+                  ? `בעיקר: ${crime.topCategories.map((c) => `${c.label} (${c.count.toLocaleString('he-IL')})`).join(', ')}.`
+                  : null,
+                'ברמת היישוב כולו — משטרת ישראל אינה מפרסמת לציבור את גבולות "האזור הסטטיסטי" ' +
+                  'שלה, ולכן זו אינה ספירה שכונתית/רדיוס כמו בתי-הספר והתחבורה למעלה. הנתון הוא ' +
+                  'תיקי חקירה שנפתחו (לא הרשעות) — מקור: משטרת ישראל.',
+              ].filter(Boolean).join(' '),
+            )
+          : pending('פשיעה (רמת יישוב)', 'datagov'),
       ],
     },
     {
