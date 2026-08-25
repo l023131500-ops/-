@@ -5265,3 +5265,102 @@ to that constraint: they import only dependency-free modules (`hosts.js`,
   entry above: this round's instructions say feature branch only, and
   there is no real adb/device host here to validate the script against
   before it would reach production.
+
+- **[25/08/2026, Loop A] Device access-code + unauthenticated launcher page —
+  KIOSK_BUILD.md §2★ז, the exact gap the previous entry's housekeeping finding
+  named, on `zol` not this tree.** That finding (24/08) checked a fresh clone
+  and confirmed no `access_code` column, no `/k/:code` route, and no launcher
+  page existed anywhere in the repo, despite older narrative entries in this
+  log describing it as built. This entry builds it for real.
+
+  `src/accesscode.js` (new, dependency-free — only `node:crypto`, so it is
+  unit-tested for real in this sandbox): a 33-symbol/6-char generator
+  (`generateAccessCode`, same alphabet as `routes/agent.js`'s enrollment
+  `tokenGen`/`routes/devices.js`'s `codeGen`, 0/1/I/O excluded) and
+  `normalizeAccessCode` (tolerates stray spacing/hyphens/case a human typing
+  it would produce, same reasoning as `clients.js`'s `normalizeClientCode`,
+  but rejects anything not exactly 6 alphabet characters rather than
+  accepting a truncated prefix). 7 new tests in `test/accesscode.test.mjs`:
+  shape, non-degenerate randomness over 500 draws, case-insensitive
+  round-trip, spacing/hyphen tolerance, wrong-length rejection, and
+  alphabet-exclusion rejection (`0`/`1`/`I`/`O`).
+
+  `src/db.js`: `devices.access_code TEXT` + a partial unique index
+  (`WHERE access_code IS NOT NULL`), backfilled for every pre-existing
+  device row at boot so nothing is left without a working code — the same
+  "eager, not lazy-on-next-edit" choice `display_zoom_percent`'s own
+  migration made. `nextAccessCode()` mints a collision-free code by
+  checking against the table in a loop (33^6 ≈ 1.29e9 possibilities, so in
+  practice the first draw). Both places a device row gets `INSERT`ed —
+  `routes/agent.js`'s `/enroll` and `routes/devices.js`'s USB-package
+  provisioning route — now assign one at creation, not just the backfill,
+  so a technician can hand out a working `/k/:code` link immediately after
+  a device's very first enrollment.
+
+  `src/routes/launcher.js` (new): `GET /api/public/launcher/:code`, public
+  and rate-limited (`launcherLimiter`, same shape as `/api/agent/enroll`'s
+  `enrollLimiter` — keyed by IP, 30/15min, so sweeping the code space is not
+  free). Looks the device up by `access_code`, returns
+  `approvedClientsForDevice()`'s existing per-device list (already built for
+  §2★ה's on-device switch) mapped down to `{code, name, url, logoUrl,
+  brandColor}` — deliberately nothing else: no serial, no owner id, no
+  `device_token`. Mounted at `/api/public` (not folded into `/api`) so it
+  can never end up behind a future blanket `requireAuth()` applied at that
+  mount point by mistake.
+
+  `public/launcher.html` + `public/js/launcher.js` (new): the page itself,
+  served at `GET /k/:code` (`site.get` in `index.js`, same "dynamic segment
+  past the static middleware" shape `/console` already uses). Big
+  touch-friendly buttons for a phone/tablet/kiosk screen rather than
+  `console.html`'s admin-card grid; dark-mode aware through the same
+  `--card`/`--line`/`--accent`/`--shadow` tokens `style.css` already
+  defines, including the identical early dark-mode-detection `<script>`
+  block `console.html`'s `<head>` uses, so it does not flash white. No
+  `auth-button.js`/login dependency — the whole point of the feature is
+  that it works with nothing but the code, standing at a venue with a
+  phone. `launcher.js` derives its mount prefix from `location.pathname`
+  the same way `app.js`'s own `BASE` does, and reads the code back out of
+  the URL itself rather than the server templating it in.
+
+  Console: `devices.js`'s `publicDevice()` and `devicepayload.js`'s
+  `CONSOLE_DEVICE_FIELDS` allow-list both gained `access_code` (the latter
+  is what actually reaches the console over the realtime socket — a field
+  added only to `publicDevice()` would work over REST but silently never
+  update live, the exact class of bug that allow-list's own header comment
+  warns about). Device cards now show the code and two new actions: "copy
+  launcher link" (`copyLauncherLink`, builds the full absolute
+  `origin + BASE + /k/ + code` URL — a technician forwarding this over
+  WhatsApp wants a tap-to-open link, not one more string to retype; falls
+  back to `window.prompt` if the Clipboard API is unavailable, e.g. an
+  older WebView) and "regenerate code"
+  (`POST /devices/:id/access-code/regenerate`, new route — rotates a
+  leaked code the same way re-enrolling already rotates a leaked
+  `device_token`, confirmed before sending since the old code stops
+  resolving immediately). Two new event types (`launcher_opened`,
+  `access_code_regenerated`) got `EVENT_LABELS` entries so the per-device
+  activity log (§9, already built) renders them in Hebrew instead of the
+  raw type string.
+
+  `node --check` clean on every touched/added file. Full suite
+  (`node --test test/*.test.mjs`): **158/160 pass** (150 baseline + 7 new
+  `accesscode.test.mjs` tests + 1 new `devicepayload.test.mjs` assertion
+  that `access_code` survives the console-socket allow-list) — the 2
+  failures are the same pre-existing `routing.test.mjs`/`seedadmin.test.mjs`
+  gap (`express`/`better-sqlite3` not installed in this sandbox) every
+  prior entry in this log has hit, unrelated to this change.
+
+  **Not verified beyond that**: no live server/browser in this sandbox to
+  actually open `/k/:code` and click a button against a running instance —
+  same category of gap this log's non-Kotlin entries hit when the missing
+  piece is a live host rather than a compiler. `launcher.html`/`launcher.js`
+  are plain HTML/JS (no build step, same as every other page in `public/`),
+  so there is nothing to compile-check beyond `node --check` on the `.js`
+  file, which passed.
+
+  Committed on a **new branch**, `feat/kiosk-launcher-access-code-0825`
+  (branched from `feat/usb-offline-kiosk-package-0824`, so it carries every
+  prior unmerged slice of the A+B+C+D decision as an ancestor, same
+  reasoning as every branch note above), pushed to `l023131500-ops/zol`
+  (`8ed63cb`) — **deliberately not** merged into `claude/what-do-you-see-gxo5tc`,
+  same reasoning as every entry above: feature branch only, no live host
+  here to validate against before production.
