@@ -7244,3 +7244,66 @@ to that constraint: they import only dependency-free modules (`hosts.js`,
   touch the still-parked feature chain, the payment code (explicitly out of
   scope per the project note's PCI-DSS constraint), or `core.issues #215`
   (monorepo-vs-zol tree divergence), both unaffected by this round.
+
+- **[25/08/2026, Loop A] Found and fixed a real tree-divergence bug, not a
+  new one from scratch: while auditing `agent.js`'s `POST /enroll` for the
+  next unvalidated write-path field, found that a non-string `serial`
+  (`{"code":"...","serial":{"foo":1}}`) still crashed the live tip
+  (`fix/kiosk-template-name-validation-0825`, the 11th-fix commit above)
+  with a raw 500 — `db.prepare('SELECT * FROM devices WHERE serial = ?')
+  .get(serial)` passed a bare object to better-sqlite3, which treats a lone
+  object argument as named params and throws `RangeError: Too few parameter
+  values were provided`; an array threw the "too many" variant; a boolean
+  threw a bind-type `TypeError`. `model`/`androidVersion`/`appVersion` also
+  had no length cap on insert, and `/heartbeat`'s `status`/`appVersion`/`ip`
+  had the same unbounded-write gap.
+
+  This exact bug turned out to already be fixed — on a **sibling** branch,
+  `fix/kiosk-enroll-device-info-validation-0825` (commit `59d20b9`, "kiosk:
+  validate serial + cap device-metadata length on /enroll and /heartbeat"),
+  which forked from the same commit (`0f3947d`, the seedadmin Node-20 fix)
+  as the chain that grew into the 11-fix sequence recorded above. Two
+  separate fix chains grew from that one fork point and neither iteration
+  since noticed the other existed, so the `serial`/`deviceinfo.js` fix
+  never made it into the chain that kept extending — this is the same
+  "chain fork" shape as `core.issues #215` (monorepo-vs-zol divergence),
+  just internal to zol between two of its own fix branches instead of
+  between zol and this monorepo.
+
+  Rather than re-implement the same fix a second time (which would have
+  produced a near-duplicate diff for human review and left the original
+  `59d20b9` branch orphaned), merged the existing fix forward: branched
+  `fix/kiosk-enroll-serial-devicedeinfo-merge-0825` off the live tip
+  (`4d7d7e3`) and `git cherry-pick 59d20b9`. Two conflicts, both from
+  independent fixes touching the same lines since the fork — resolved by
+  keeping both sides' work, not picking one over the other: (1) the import
+  block, combined `batterylevel.js`/`commandid.js` (added by the 11-fix
+  chain after the fork) with the new `deviceinfo.js` import; (2) the
+  `/heartbeat` UPDATE's `.run(...)` call, where the 11-fix chain had wired
+  `sanitizeBatteryLevel` for `battery` and `59d20b9` had wired
+  `sanitizeDeviceInfo` for `status`/`appVersion`/`ip` — merged into one
+  call sanitizing all four fields, since both fixes are independently real
+  and neither subsumes the other.
+
+  Full suite after resolving: **183/183** (172 baseline from the 11-fix
+  chain + 11 new from `deviceinfo.test.mjs`, all passing, zero regressions
+  either direction). Re-verified live against a fresh scratch DB on the
+  merged branch: `POST /api/agent/enroll {"code":"<valid>","serial":{"foo":1}}`
+  → clean 400 `"מספר סידורי לא תקין"` (was a raw 500 stack trace on the tip
+  before this merge); a numeric `serial` (`12345`) now enrolls cleanly,
+  string-coerced; a 5000-char `model` enrolls successfully with the value
+  truncated rather than crashing or bloating the row unbounded; a normal
+  enroll → heartbeat (`status`/`battery`/`appVersion` all present) round
+  trip still returns 200 with correct data both times, confirmed as a
+  control.
+
+  Committed + pushed to `l023131500-ops/zol` branch
+  `fix/kiosk-enroll-serial-devicedeinfo-merge-0825` (`8bbdb50`), off the
+  live tip (`4d7d7e3`, the template-name fix recorded above) — not merged,
+  same human-review convention as every prior fix branch on this chain.
+  The original orphaned branch (`fix/kiosk-enroll-device-info-validation-0825`,
+  `59d20b9`) is left as-is, untouched, its work now carried forward here
+  instead of superseded. Zero Android/Kotlin/Windows work touched. Did not
+  touch the still-parked feature chain, the payment code (explicitly out of
+  scope per the project note's PCI-DSS constraint), or `core.issues #215`
+  (the monorepo-vs-zol divergence proper), both unaffected by this round.
