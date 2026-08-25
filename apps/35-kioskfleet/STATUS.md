@@ -7027,3 +7027,56 @@ to that constraint: they import only dependency-free modules (`hosts.js`,
   still-parked feature chain, the payment code (explicitly out of scope per
   the project note's PCI-DSS constraint), or `core.issues #215`
   (monorepo-vs-zol tree divergence), both unaffected by this round.
+
+- **[25/08/2026, Loop A] Found and fixed an 8th instance of the same
+  unvalidated-write-path class: `kiosk/server/src/policy.js`'s
+  `applyDevicePolicy` (shared by `PATCH /api/devices/:id` and
+  `POST /api/templates/:id/apply`) destructured `name` from `req.body` and
+  bound it straight into a `COALESCE(?, name)` SQLite update with no type
+  check — the one field in that function that skipped the validate-then-bind
+  pattern every sibling field there (`exitCode`, `schedule`, `signage`,
+  `maintenance`) already follows.
+
+  Reproduced live first, real server against a scratch DB, seeded admin,
+  real enrolled device: `PATCH /api/devices/1 {"name":{"pwn":1}}` → 500
+  `RangeError: Too few parameter values were provided`; `{"name":["a","b"]}`
+  → 500 `RangeError: Too many parameter values were provided`;
+  `{"name":true}` → 500 `TypeError: SQLite3 can only bind numbers, strings,
+  bigints, buffers, and null`. Same raw-stack-trace-to-any-authenticated-
+  owner shape as every prior entry on this chain.
+
+  Fixed with a new `devicename.js` (`validateDeviceName`: 120-char cap,
+  Hebrew errors `שם המכשיר חייב להיות טקסט` / `שם המכשיר ארוך מדי (עד 120
+  תווים)`), wired into `policy.js` ahead of the existing `exitCode` check.
+  Preserved exact prior semantics: `undefined` → no change (COALESCE keeps
+  the existing name), `''`/`null` → explicit clear, trimmed non-empty string
+  → new name. New `test/devicename.test.mjs` (6 cases: undefined-vs-clear,
+  trimming, object/array/boolean/number type rejection, length cap,
+  whitespace-only). Full suite: baseline 150/150 (confirmed via `git stash
+  -u` on the pre-fix tree) → **156/156** after, zero regressions.
+
+  Re-verified live after the fix: all three malicious payloads now return a
+  clean 400 with the Hebrew type error; a 200-character name returns 400
+  with the length error; `{"name":"My Kiosk"}` returns 200; a PATCH that
+  omits `name` entirely (touching only `displayZoomPercent`) still returns
+  200 with the existing name untouched. Server stayed up throughout, no
+  crash-log lines.
+
+  While auditing for this, confirmed three other apparent candidates
+  (`serial`/`model`/`androidVersion`/`appVersion` on `/enroll` and
+  `/heartbeat`, `idle_return_seconds`, device/template `name` length caps)
+  are already fixed on sibling branches
+  (`fix/kiosk-enroll-device-info-validation-0825` @ 59d20b9,
+  `fix/kiosk-idle-return-seconds-validation-0825`,
+  `fix/kiosk-name-length-cap-0825`) — those branches are siblings of this
+  chain, not ancestors of its tip, so they were correctly left untouched
+  rather than re-fixed or merged by this round.
+
+  Committed + pushed to `l023131500-ops/zol` branch
+  `fix/kiosk-device-name-validation-0825` (`b1bd3cb`), off the live tip
+  (`75f0618`, the agent-commandId fix recorded above) — not merged, same
+  human-review convention as every prior fix branch on this chain. Zero
+  Android/Kotlin/Windows work touched. Did not touch the still-parked
+  feature chain, the payment code (explicitly out of scope per the project
+  note's PCI-DSS constraint), or `core.issues #215`
+  (monorepo-vs-zol tree divergence), both unaffected by this round.
