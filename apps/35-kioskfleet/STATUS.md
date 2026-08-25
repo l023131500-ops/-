@@ -5780,3 +5780,70 @@ to that constraint: they import only dependency-free modules (`hosts.js`,
   `claude/what-do-you-see-gxo5tc`, same reasoning as every entry above:
   feature branch only, no live host here to validate against before
   production.
+
+- **[25/08/2026, Loop A] §2★ב install-checklist wizard — KIOSK_BUILD.md's
+  own "מחייב, גובר על כל השאר" (mandatory, overrides everything else) core
+  flow, was entirely unbuilt.** An owner generating an enrollment code saw
+  only the bare 6-char code in a chip; every install step after that lived
+  in `viewGuide()`, a single static page with no relationship to that code,
+  no checkboxes, and no per-step "מה בדיוק ללחוץ / מה אמור להופיע" text —
+  exactly the gap §2★ב names.
+
+  `server/src/installsteps.js` (new, dependency-free, unit-tested — same
+  "generate now, verify by inspection" shape as `payment.js`/`exitcode.js`):
+  route-aware ordered step lists for the three routes an enrollment code
+  actually carries a device through — B (ADB, primary), A (QR/zero-touch),
+  D (USB-offline). Route C (Windows) deliberately excluded: it already
+  provisions straight from an existing device row (`windows-package.js`),
+  never through an enrollment code, so there is no enrollment checklist for
+  it to attach to. Each step's text interpolates the real enrollment
+  code/home URL so the owner never re-copies them from elsewhere.
+
+  New table `enrollment_checklist(enrollment_id, step_id)` — which steps
+  are ticked, keyed by enrollment (the checklist exists *before* a device
+  row does) and independent per route, so switching the route dropdown
+  mid-flow never loses or conflicts with the other route's progress. New
+  routes: `GET/POST/DELETE /enrollments/:id/checklist(/:stepId)`, same
+  ownership-collapses-to-404 convention as every other enrollment route in
+  `devices.js`, step ids validated against `installsteps.js` before being
+  written (rejects `B:999`/foreign ids, not just well-formed-looking ones).
+
+  Console (`app.js`): new "🚀 הפעל" button per open enrollment code opens a
+  modal wizard — route dropdown, one checkbox per step with its
+  detail/expected-result text, live-toggled through the new endpoints, an
+  "✅ activated" banner once every step in the selected route is checked.
+  Reuses the existing `--ink`/`--muted`/`--line` dark-mode-aware CSS
+  variables and `.alert-ok`/`.field`/`.modal` classes — no new CSS.
+
+  `node --check` clean on every touched/added file. Full suite (`node
+  --test test/`): **211/212 pass** (204 baseline + 8 new
+  `installsteps.test.mjs` tests) — the 1 failure is the same pre-existing
+  `seedadmin.test.mjs`/`node:sqlite` gap every prior entry in this log has
+  hit, unrelated to this change.
+
+  Live-server verified, not just source review: booted the server against a
+  throwaway SQLite db, logged in as the seeded admin, created a real
+  enrollment, drove `GET`/`POST`/`DELETE` checklist through a full
+  check-all → `allDone: true` → uncheck-one → `allDone: false` cycle,
+  confirmed route A's steps stay independently unchecked while route B's
+  are ticked, confirmed `400` on an unsupported route and on route C
+  (explicitly not enrollment-based), `400` on a fabricated step id, `401`
+  with no token, `404` on a nonexistent enrollment, and — created a real
+  second owner account via the admin API and confirmed — `404` (not `403`)
+  when that second owner tries to read or tick a step on the first owner's
+  enrollment, matching this file's existing ownership convention exactly.
+  No config value needed — nothing added to `NEEDS_USER.md` this round.
+
+  **Not verified beyond that**: no live browser in this sandbox to click
+  through the modal itself (same gap every prior console-only round has
+  hit) — the DOM logic mirrors `openUsbPackageForm`/`openQrPackageForm`'s
+  already-shipped, already-tested pattern.
+
+  Committed on a **new branch**, `feat/kiosk-install-checklist-wizard-0825`
+  (branched from `feat/kiosk-app-ota-update-0825`, so it carries every
+  prior unmerged slice — A+B+C+D routes, launcher access-code, app-OTA — as
+  an ancestor, same reasoning as every branch note above), pushed to
+  `l023131500-ops/zol` (`3b3aa89`) — **deliberately not** merged into
+  `claude/what-do-you-see-gxo5tc`, same reasoning as every entry above:
+  feature branch only, no live host here to validate against before
+  production.
