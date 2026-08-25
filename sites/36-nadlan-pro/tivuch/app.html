@@ -2079,17 +2079,23 @@ async function openLease(id) {
     html += '<p class="na">עדיין לא הופק לוח תשלומים.</p>' +
       '<p><button class="btn" id="lGenSchedule">הפקת לוח תשלומים חודשי</button></p>';
   } else {
-    html += '<div class="table-scroll"><table><thead><tr><th>תאריך יעד</th><th>סכום</th><th>סטטוס</th><th></th></tr></thead><tbody>' +
+    html += '<div class="table-scroll"><table><thead><tr><th>תאריך יעד</th><th>סכום</th><th>סטטוס</th><th>הערה</th><th></th></tr></thead><tbody>' +
       payments.map((p) => {
         const overdue = p.status === 'due' && new Date(p.due_date).getTime() < Date.now();
         return '<tr><td>' + dt(p.due_date) + '</td><td>' + money(p.amount) + '</td>' +
           '<td>' + (overdue
             ? '<span class="pill hot">איחור</span>'
             : '<span class="pill' + (p.status === 'paid' ? ' on' : '') + '">' + esc(RSTATUS_HE[p.status] || p.status) + '</span>') + '</td>' +
+          '<td>' + (p.note ? esc(p.note) : NA) + '</td>' +
           '<td>' + (p.status === 'due'
-            ? '<button class="btn btn-sm" data-pay="' + p.id + '">סימון כשולם</button>' : '') + '</td></tr>';
+            ? '<button class="btn btn-sm" data-pay="' + p.id + '">סימון כשולם</button> ' +
+              '<button class="btn btn-quiet btn-sm" data-edit-pay="' + p.id + '">עריכה</button> ' +
+              '<button class="btn btn-quiet btn-sm" data-waive="' + p.id + '">ויתור</button>'
+            : '') + '</td></tr>';
       }).join('') + '</tbody></table></div>';
   }
+  html += '<p style="margin-top:10px"><button class="btn btn-quiet btn-sm" id="payAdd">+ תשלום ידני</button></p>' +
+    '<div id="payAddBox"></div>';
 
   html += '<h2 class="sec">מדד שכר דירה (הלמ״ס)</h2>' +
     '<div id="liBox"><p class="loading"><span class="spinner"></span>טוען מדד…</p></div>';
@@ -2119,6 +2125,47 @@ async function openLease(id) {
           if (VIEW === 'rentals') renderRentals();
         } catch (e) { toast('העדכון נכשל: ' + e.message, true); btn.disabled = false; }
       });
+    }
+    for (const btn of document.querySelectorAll('[data-waive]')) {
+      btn.addEventListener('click', async () => {
+        if (!confirm('לוותר על התשלום הזה? הוא יסומן כ״ויתור״ ולא ייספר כחוב פתוח.')) return;
+        btn.disabled = true;
+        try {
+          await rpc('np_rent_payment_waive', { p_id: btn.dataset.waive });
+          toast('סומן כוויתור');
+          close(); openLease(l.id);
+          if (VIEW === 'rentals') renderRentals();
+        } catch (e) { toast('העדכון נכשל: ' + e.message, true); btn.disabled = false; }
+      });
+    }
+    function showPayForm(existing) {
+      const box = $('payAddBox');
+      const p = existing || {};
+      box.innerHTML =
+        '<div id="pfErr"></div><div class="controls">' +
+          '<label class="f">תאריך יעד<input id="pf_due_date" type="date" value="' + esc(p.due_date || '') + '" /></label>' +
+          '<label class="f">סכום<input id="pf_amount" type="number" value="' + esc(p.amount || '') + '" /></label>' +
+          '<label class="f">הערה<input id="pf_note" type="text" value="' + esc(p.note || '') + '" /></label>' +
+          '<span class="spacer"></span><button class="btn btn-sm" id="pfSave">שמירה</button>' +
+        '</div>';
+      $('pfSave').addEventListener('click', async () => {
+        $('pfSave').disabled = true;
+        try {
+          const body = { lease_id: l.id, due_date: $('pf_due_date').value.trim(), amount: $('pf_amount').value.trim(), note: $('pf_note').value.trim() };
+          if (p.id) body.id = p.id;
+          await rpc('np_rent_payment_save', { p: body });
+          close(); toast('התשלום נשמר'); openLease(l.id);
+          if (VIEW === 'rentals') renderRentals();
+        } catch (e) {
+          $('pfErr').innerHTML = '<div class="err">' + esc(e.message) + '</div>';
+          $('pfSave').disabled = false;
+        }
+      });
+    }
+    const payAddBtn = $('payAdd');
+    if (payAddBtn) payAddBtn.addEventListener('click', () => showPayForm());
+    for (const btn of document.querySelectorAll('[data-edit-pay]')) {
+      btn.addEventListener('click', () => showPayForm(payments.find((p) => p.id === btn.dataset.editPay)));
     }
     $('lEdit').addEventListener('click', () => { close(); leaseForm(l); });
     $('lRemind').addEventListener('click', () => {
