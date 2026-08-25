@@ -6180,3 +6180,105 @@ to that constraint: they import only dependency-free modules (`hosts.js`,
   `feat/kiosk-schedule-offline-persist-0825` — neither is affected by this
   fix and both still need the same human real-device-validation decision
   flagged by every prior round since.
+
+- **[25/08/2026, Loop A] `home_url` — the field a kiosk actually locks onto —
+  was checked less than `set_url`'s own host allow-list, and a `javascript:`
+  URL there is script running in the one WebView that is supposed to run
+  nothing, on `zol` not this tree.** Continued the "audit already-shipped
+  code against §0's retail-grade mandate" approach the last two rounds
+  established, rather than more spec-coverage mining (still blocked on human
+  real-device validation per the standing housekeeping note). This round
+  also started from a real lead: `NEEDS_USER.md`'s §0תג already documents
+  that `apps/35-kioskfleet/server` in *this* monorepo tree is an abandoned,
+  divergent build of system 35 (different console, different schema —
+  `display_url`/`access_code`/`approvals.js` that `zol` never had), and that
+  `QA/kiosk/home-url-0811/` records a fully designed, 19-assertion-verified
+  fix for exactly this class of bug that was written against *that*
+  divergent tree back on 11/08 and explicitly logged **"Not deployed"** —
+  before the 13/08 finding even established "zol files only" as the safe
+  rule. Checking today: neither `apps/35-kioskfleet/server` nor any `zol`
+  checkout in this sandbox has a `displayurl.js` — the fix was designed,
+  verified against a throwaway harness, and never actually committed
+  anywhere. Real work, genuinely lost.
+
+  Re-verified the underlying claim directly (not trusted from the old
+  write-up): `new URL('javascript:alert(1)').host` is `''` (so `POST /links`'
+  host-only check happens to block bare `javascript:` by accident), but
+  `new URL('javascript://x').host` is `'x'` — non-empty, so the same
+  host-only check passes it straight through. Read `zol`'s actual live doors
+  onto `home_url` and found every one of them under-checked in exactly the
+  shape the old write-up described, adjusted for `zol`'s real (simpler)
+  schema — no `display_url`/`access_code`/`approvals.js` here, just
+  `home_url` on `devices`/`enrollments`/`links`:
+
+  | door | before |
+  |---|---|
+  | `PATCH /devices/:id` (`policy.js`) | stored `homeUrl` raw, no parse at all, on *both* the manual and `linkId` paths |
+  | `POST /enrollments` | `try { new URL(homeUrl) } catch` only |
+  | `POST /devices/:id/command` (`set_url`) | host-on-allow-list only — `javascript://<allowed-host>` passes |
+  | `POST /links` | host-non-empty only (blocked plain `javascript:`, not `javascript://x`) |
+  | `PATCH /links/:id` | nothing at all |
+
+  The library matters because both device routes accept a `linkId` and copy
+  `link.url` straight into a device's `home_url` — a bad row planted through
+  `POST`/`PATCH /links` reaches every device that later adopts it.
+
+  Fix: `normalizeHomeUrl()` in `hosts.js` (dependency-free, unit-tested
+  alongside the rest of that module) — `undefined` = not sent (leave
+  existing value alone, the same COALESCE convention every other field
+  already uses), empty = explicit no-op, everything else must parse as
+  `http:`/`https:`. Wired through all five doors above; `set_url` now sends
+  the checked, trimmed value on to the device instead of the raw one (a
+  pasted trailing newline no longer reaches the WebView). The library path
+  gets its own Hebrew error message naming "ספריית קישורים" — the owner did
+  not type that address and cannot fix it from the device-edit form, so
+  blaming "האתר הראשי" would send them to the wrong screen.
+
+  4 new cases in `hosts.test.mjs` (`javascript:`/`javascript://x`/`data:`/
+  `ftp:` rejected with the right `reason`; unparseable input distinct from a
+  bad scheme; trim-through on a clean URL; `undefined`/`''`/whitespace-only
+  treated as "no-op", not "invalid"). Full suite: **126/127** (122 baseline +
+  4 new, the 1 failure the same pre-existing `seedadmin.test.mjs`/
+  `node:sqlite`-needs-Node-22+ gap every prior entry has hit).
+
+  **Live-server verified, all five doors, not source-review-only**: booted
+  the real server against a throwaway SQLite db, logged in as the seeded
+  admin. `POST /links` with `javascript://alert(1)` → 400; a legitimate
+  `https://` link → 200. Created a second link legitimately, then
+  `PATCH`ed it to `javascript://x` → 400, confirmed via a follow-up `GET
+  /links` that its `url` column never moved. `POST /enrollments` with
+  `javascript:alert(1)` → 400, with a good `homeUrl` → 200 and an
+  enrollment code. Enrolled a real device on that code, then `PATCH
+  /devices/:id` with `homeUrl: "javascript:fetch(1)"` → 400 and confirmed
+  via `GET /devices/:id` the column never moved; a valid (whitespace-padded)
+  `homeUrl` → 200, stored trimmed. `POST /devices/:id/command` `set_url`
+  with `ftp://hall.example.com/x` (host on the allow-list) → 400; with
+  `javascript://hall.example.com/x` (host *also* on the allow-list, the
+  exact bypass a host-only check misses) → 400; with a valid `https://` URL
+  → 200, command payload carries the checked/trimmed value. `PATCH
+  /devices/:id` with `linkId` pointing at the good library link → 200, home
+  URL and allow-list both take the link's own values. Sending no `homeUrl`
+  field at all (a name-only rename) → home URL unchanged, confirming the
+  `undefined` no-op path. Full suite re-run clean afterward. Stopped the
+  server and removed the throwaway db/log.
+
+  **Pure server-side validation, zero Android/Kotlin touched, no new
+  autonomous on-device behaviour** — same risk class the heartbeat-replay
+  fix (`c754249`) was fast-tracked under, not the "needs a human at a real
+  device" class the schedule-persist/lockdown-chain fixes were parked under.
+  Branched fresh off `origin/claude/what-do-you-see-gxo5tc` as
+  `fix/kiosk-home-url-scheme-validation-0825` (`9de50d0`), then
+  fast-forwarded straight into `claude/what-do-you-see-gxo5tc` and pushed
+  (`c754249..9de50d0`) — this **is** the branch Railway deploys, so this
+  lands in production on the next deploy. Did not touch the still-parked
+  9-deep lockdown/payment/provisioning chain or `feat/kiosk-schedule-offline-persist-0825`.
+
+  **Not verified beyond that**: no Railway deploy log visible from this
+  sandbox to confirm the push actually triggered/completed a redeploy; no
+  sweep of already-stored `home_url`/`links.url` rows for a pre-existing bad
+  value (deliberate, same reasoning the old 11/08 write-up gave — a boot
+  migration rewriting an owner's stored address without anyone asking is the
+  wrong kind of surprise; the refusal belongs at the door, not a retroactive
+  sweep). `apps/35-kioskfleet/server`'s own copy of this bug (if any —
+  §0תג already calls that whole tree abandoned/divergent) was deliberately
+  **not** touched, per the standing "zol files only" rule from §0תג/13/08.
