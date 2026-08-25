@@ -6822,3 +6822,55 @@ to that constraint: they import only dependency-free modules (`hosts.js`,
   the entry above — not merged. Zero Android/Kotlin/Windows work touched;
   the parked 9-deep feature chain and `core.issues #215` (monorepo-vs-zol
   tree divergence) remain untouched by this round.
+
+- **[25/08/2026, Loop A] Fix: `POST /api/agent/enroll` — the one route in
+  this app with zero authentication — crashed with a raw stack-trace-leaking
+  500 on a non-string `serial`, and had no length cap at all on `serial`/
+  `model`/`androidVersion`/`appVersion`.** Continued the same class-of-bug
+  audit as the two entries above (unbounded/unvalidated input reaching
+  storage), this time on the device-facing side rather than the
+  console/owner-facing routes already covered. `/enroll` proves nothing but
+  a 6-character enrollment code (`enrollLimiter`'s own header comment: a
+  script can sweep the whole ~1.29e9-combination space), so every field in
+  its body is attacker-reachable with no login required — a stricter bar
+  than `name`'s owner-typed console fields.
+
+  Reproduced both live against the real `zol` tree (`claude/what-do-you-see-
+  gxo5tc` tip, `0f3947d`) before touching anything, via a scratch-DB server
+  boot: `POST /enroll` with `serial: 12345` (a JSON number, not a string)
+  500'd with a raw Express stack trace body (`TypeError: serial.slice is not
+  a function` at `routes/agent.js:79`, full file paths included) — the
+  crash comes from the enrollment's `name` fallback,
+  `` enr.name || `מכשיר ${serial.slice(-4)}` ``, which only guards against a
+  *falsy* serial, not a non-string one. Separately, `POST /enroll` with a
+  5000-character `model` stored the full 5000 characters unchanged — `model`/
+  `android_ver`/`app_version` are plain `TEXT` columns with no application-
+  level cap anywhere on the insert.
+
+  Fixed with a new `deviceinfo.js`: `validateSerial` (rejects non-string/
+  non-number, empty, or >128-char serials with a clean 400 — the same shape
+  `code` already gets) and `sanitizeDeviceInfo` (truncates an optional
+  diagnostic value to 100 chars instead of rejecting, matching watchdog.js's
+  `detail` field — both are device-authored telemetry the console only
+  displays, not owner-typed data like `name`). Wired `validateSerial` into
+  `/enroll`'s serial check and `sanitizeDeviceInfo` into `/enroll`'s model/
+  androidVersion/appVersion insert *and* `/heartbeat`'s status/appVersion/ip
+  update (same unbounded-write shape, same fix). New
+  `test/deviceinfo.test.mjs` (11 cases). Full suite: **145/145** (134
+  baseline + 11 new), zero regressions.
+
+  Re-verified live after the fix, same scratch-DB server: `serial: 12345`
+  now enrolls cleanly (200, device named "מכשיר 2345" from the coerced
+  string, no crash); a 200-char serial gets a clean 400
+  ("מספר סידורי ארוך מדי"); the 5000-char model now stores truncated to
+  exactly 100 characters; a normal enroll+heartbeat control case (real
+  string serial, normal-length model/version/status) still stores every
+  field correctly, confirming no regression to the happy path.
+
+  Committed + pushed to `l023131500-ops/zol` branch
+  `fix/kiosk-enroll-device-info-validation-0825` (`59d20b9`), off the live
+  tip (`0f3947d`) — not merged, same human-review convention as every prior
+  fix branch on this chain. Zero Android/Kotlin/Windows work touched. Did
+  not touch the still-parked 9-deep feature chain, the two still-parked
+  idle-return-seconds/name-length-cap fix branches, or `core.issues #215`
+  (monorepo-vs-zol tree divergence) — all unaffected by this round.
