@@ -7516,3 +7516,76 @@ to that constraint: they import only dependency-free modules (`hosts.js`,
   every prior fix branch on this chain. Zero Android/Kotlin/Windows work
   touched. Did not touch the still-parked feature chain, the payment code, or
   `core.issues #215`, both unaffected by this round.
+
+- **[25/08/2026, Loop A] Owner steering (project 33 note): stop fixing the
+  unchecked-bind class one field at a time, add a single shared guard
+  applied to all write paths at once, verify, commit, then move to P2. Done
+  — with an important caveat surfaced along the way (below).**
+
+  This sandbox session has **no `l023131500-ops/zol` remote or checkout** —
+  only `origin` → `l023131500-ops/-.git` (this public monorepo) is
+  configured. `core.issues #215` (open) already documents that this
+  session's only available tree, `apps/35-kioskfleet/server`, is a
+  **divergent, unverified-against-production build**, not the live
+  `l023131500-ops/zol` checkout the last several STATUS.md entries describe
+  fixing (their file references — `policy.js`, `commandid.js`,
+  `routes/templates.js`, `routes/snapshots.js`, `routes/alerts.js`,
+  `routes/analytics.js` — do not exist anywhere in this tree; confirmed by
+  `find`). #215's own operational directive is explicit: every real fix to
+  35 must be a surgical edit to zol files, never a swap from this local
+  tree. This entry cannot follow that directive — there is nothing to edit
+  it *with* here — so it is scoped honestly to what this session's tree
+  actually contains, real files, real tests, real live verification, all
+  reproducible from this repo's own git history, with no production-push
+  claim.
+
+  What was built: `src/inputguard.js`, one small dependency-free Express
+  middleware (`guardWriteBody`), mounted once in `src/index.js` right after
+  `express.json()`/`cookieParser()`, ahead of every route file (`auth`,
+  `devices`, `links`, `clients`, `admin`, `agent`). It replaces the
+  "special-case one field's crash after it's reported" pattern with a
+  generic pass: any request-body field whose value is an object or array is
+  rejected with a clean 400 before any route handler runs, except `payload`
+  (POST `/devices/:id/command` — stored via `JSON.stringify` in
+  `commands.js`, never a raw bind, so an object there is correct). On top of
+  that, `linkId`/`commandId` (the two fields in this tree that reach a raw
+  `db.prepare(...).get/run()` bind behind only a truthy check —
+  `routes/devices.js` PATCH `/devices/:id` + POST `/enrollments`, and
+  `routes/agent.js` `/ack` + `/screenshot`) get a same-shape catch for the
+  one non-scalar type a generic object/array check misses: a bare `true`.
+  Confirmed directly against the installed native module first, not
+  assumed — `better-sqlite3` throws `"SQLite3 can only bind numbers,
+  strings, bigints, buffers, and null"` on a raw boolean bind exactly like
+  an object/array, so `{"commandId": true}` reached the same crash as
+  `{"commandId": {}}` before this fix.
+
+  Verified live, not only unit-tested: booted the real server
+  (`node src/index.js`, real `better-sqlite3`, no mocks) against a scratch
+  on-disk DB, logged in as the seeded admin, and reproduced the documented
+  crash shapes over real HTTP — `{"commandId":{"foo":1}}` and
+  `{"commandId":true}` on `/api/agent/ack` both now return a clean
+  `{"error":"שדה \"commandId\" אינו תקין"}` (400) instead of an unhandled
+  500. Confirmed the fix does not touch legitimate traffic: created a user
+  with a plain-string `fullName` (still 200), ran a full enrollment →
+  device-enroll → `POST /devices/:id/command` round trip with an object
+  `payload` (still 200, command delivered), and confirmed a falsy
+  `linkId`/`commandId` (`0`, `""`, `false`) still passes through unchanged
+  — the route's own existing `if (linkId)` / `if (!commandId)` gate already
+  treats those as "not provided", so the guard must not re-reject them.
+
+  Added `test/inputguard.test.mjs` (13 cases: object/array/boolean-id
+  rejection, scalar passthrough, the `payload` exemption, the falsy-id
+  passthrough, top-level array bodies). Full suite: **66/66 → 77/77**, zero
+  regressions — 66 was this tree's real baseline going in, not the
+  "189/189"/"142/142" figures the last several entries recorded (those refer
+  to the zol tree's own suite, unreachable from here for the reason above).
+
+  Not done: porting this to the actual `l023131500-ops/zol` production tree
+  — this session cannot reach it. Whoever next has zol access should port
+  `src/inputguard.js` verbatim (it is dependency-free) plus the two-line
+  `index.js` mount, and decide `core.issues #215` itself (repoint this
+  monorepo's `apps/35-kioskfleet` at zol, or mark it an abandoned branch) so
+  future loop iterations stop needing to rediscover the divergence.
+  Per owner steering, KioskFleet (35) is now treated as hardened-enough for
+  this loop; the next Loop A iteration moves to P2 Real-estate (32
+  Nadlan-BeRega + 36 nadlan-pro).
