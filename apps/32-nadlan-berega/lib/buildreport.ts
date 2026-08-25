@@ -1841,6 +1841,37 @@ export async function buildReport(
             : 'כדי לזהות את הדירה המסוימת צריך להזין מספר קומה ו/או מספר חדרים בטופס.',
       },
     ),
+    // תת-חלקה היא מזהה הדירה הספציפית (ראה ההערה למעלה) — אם אותה תת-חלקה
+    // נמכרה יותר מפעם אחת, זו ההיסטוריה של הדירה הזו עצמה, לא של הבניין.
+    // בכוונה לא נבנה מ-`currentBuildingTxns` (כולל עסקאות שאינן מכירת דירה)
+    // אלא מ-`buildingRealSales`, אותו סינון "עסקה אמיתית" שכל שאר הדוח סומך
+    // עליו. פחות משתי מכירות = אין סיפור היסטוריה לספר; המכירה היחידה כבר
+    // מוצגת למעלה כ"מחיר אחרון שנסגר בבניין".
+    fact(
+      `היסטוריית מכירות של ${unitNoun} שלך`,
+      (() => {
+        if (!matchedUnit?.tatHelka || matchedUnit.tatHelka === '0') return null;
+        const sameUnit = buildingRealSales
+          .filter((t) => t.tatHelka === matchedUnit.tatHelka)
+          .slice()
+          .reverse(); // buildingRealSales ממוין מהחדש לישן; ההיסטוריה מסופרת מהישן לחדש
+        if (sameUnit.length < 2) return null;
+        return sameUnit
+          .map(
+            (t) =>
+              `${new Date(t.dealDate).toLocaleDateString('he-IL')} · ${t.price != null ? `${t.price.toLocaleString('he-IL')} ₪` : 'מחיר לא דווח'}`,
+          )
+          .join(' ← ');
+      })(),
+      {
+        certainty: 'approx',
+        sourceKey: 'carmen',
+        sourceNote: `כל המכירות שנרשמו במרשם עבור תת-חלקה ${matchedUnit?.tatHelka ?? ''} בבניין הזה — כלומר אותה דירה ממש, ולא הבניין כולו — ממוינות לפי תאריך.`,
+        missingReason: !matchedUnit
+          ? 'לא זוהתה הדירה הספציפית שלך (הזינו קומה ו/או מספר חדרים בטופס), ולכן אין ממה לבנות היסטוריה לדירה עצמה.'
+          : 'נמצאה רק מכירה אחת של הדירה הזו במרשם מאז 1998 — ראו "מחיר אחרון שנסגר בבניין" למעלה.',
+      },
+    ),
     fact('שטח החלקה כולה', parcelAreaSqm, {
       certainty: 'verified',
       unit: 'מ"ר',
