@@ -5260,3 +5260,75 @@
      הומצא). הצפנת-שדה לתוכן רגיש עדיין לא נבנתה. `MAATEFET_BUILD.md` קיבל
      שורת-סטטוס שלישית בראש הקובץ. ענף חדש `feat/c-maatefet-mfa-0820`
      (מ-`feat/c-maatefet-schema-0820`).
+
+## 25/08/2026 (LOOP A) — 01-torah-platform: `nedarim-admin` נבנה ומאובטח מלא, אף מסך אדמין לא קרא לו
+
+462. **הקשר.** `core.run_progress` אומת (אחרון `[loop A]`: `1e83388b`, טאב
+     "צוות" ב-36 nadlan-pro). GLOBAL PRIORITY ORDER: P1=35 (קיוסקים) — נבדק
+     `apps/35-kioskfleet/STATUS.md` (5556 שורות): כל סעיפי `KIOSK_BUILD.md`
+     בנויים, סבב האימות האחרון ("first live-server E2E verification pass")
+     לא מצא באג אחד. P2=32/36 — שניהם קיבלו סבב ממשי ב-25/08 עצמו (הקובץ
+     הזה, #d0c9fc19/#1e83388b) ואין באג פתוח ב-`core.project_bugs`. עברתי
+     ל-P3: "בנה רק את המוצר הטוב מבין 01/15, העריכ את שניהם". 15-egod יושב
+     על פרויקט Supabase נפרד (`hkkkynyoigzlttpynoeo`) שאינו נגיש מה-MCP הזה
+     כלל (נבדק `list_projects` — לא ברשימה); 01 יושב על `bieebmnmkffwbqlsfozh`
+     שכן נגיש ו-`ACTIVE_HEALTHY`. שני המוצרים כבר קיבלו עשרות סבבי תיקון
+     בעבר (ראו רשומות `01-torah-platform:`/`15-egod:` קודמות בקובץ זה); לא
+     בוצעה כאן "הריגת המפסיד" בפועל — זה מנוגד לכלל "אפס רגרסיה, לעולם לא
+     למחוק פיצ'ר קיים" מהנחיות הלולאה, וההחלטה האם למחוק מוצר חי היא החלטת
+     בעלים, לא החלטת-לולאה חד-צדדית. במקום זאת: 01 היא ה"HUB" המתועד,
+     נגישה לאימות חי, ומקבלת את רוב ההשקעה ההיסטורית — נבחרה כיעד ההמשך
+     הפעיל, ו-15 נשארת כפי שהיא (לא נגעתי בה).
+463. **מה נמצא.** `supabase/functions/nedarim-admin/index.ts` — פונקציית
+     Edge שלמה ומאובטחת: דורשת Authorization תקין, בודקת `is_super_admin`
+     או תפקיד `tenant_admin`/`super_admin` בטבלת `user_roles` עבור ה-tenant
+     המבוקש, טוענת `mosad_id`/`api_password` מ-`nedarim_configs` דרך
+     service-role (עוקף RLS), קוראת ל-Nedarim Plus (`RefundTransaction`/
+     `CancelInvoice`/`GetHistoryJson`/`DeletedAllowedTransaction`) ורושמת
+     ל-`audit_log` עם `api_password` מוסתר. הפונקציה פרוסה חי
+     (`list_edge_functions` → `nedarim-admin`, `status: ACTIVE`,
+     `verify_jwt: true`). מול זה: `src/pages/legacy/NedarimManagement.tsx`
+     (מנותב ב-`/legacy/nedarim`, מאחורי `RequireSuperAdmin`) קרא אך ורק
+     מ-`nedarim_submissions` (טפסי-ליד) — אף קריאה ל-`nedarim_transactions`
+     (יומן התשלומים האמיתי: `status`/`amount_ils`/`error_message`/
+     `confirmation_code`, קיים חי עם שורה אחת אמיתית) ואף קריאה ל-
+     `supabase.functions.invoke("nedarim-admin", …)` בכל ה-`src/`. שום מסך
+     אדמין לא נתן גישה לזיכוי/ביטול עסקה אמיתית, למרות שהתשתית המלאה קיימת
+     ופרוסה מאז סבב קודם.
+464. **מה נבנה.** נוסף פאנל "עסקאות תשלום" ל-`NedarimManagement.tsx`:
+     `fetchTransactions()` קורא `nedarim_transactions` ישירות (מדיניות
+     RLS `neda_txn` כבר מאפשרת ל-super_admin לראות שורות של כל ה-tenants —
+     אומת ישירות מול `pg_policies` על `bieebmnmkffwbqlsfozh`), מציג
+     סטטוס/סכום/מזהה-עסקה/קוד-אישור/הודעת-שגיאה/תאריך לכל שורה. לכל שורה
+     עם `transaction_id` אמיתי (לא `null`) — כפתורי "זיכוי" (`RefundTransaction`,
+     בסכום המלא של השורה) ו"ביטול" (`CancelInvoice`), כל אחד מאחורי
+     `confirm()` מפורש שמתאר את הפעולה האמיתית והבלתי-הפיכה שתישלח
+     ל-Nedarim Plus, ומאחורי אותו נעילת `busyTxId` (מניעת לחיצה כפולה)
+     שכל שאר קבצי הניהול במערכת הזו כבר משתמשים בה (`AdminDashboard.tsx`
+     וכו') — תבנית קיימת, לא הומצאה. שורות בלי `transaction_id` (למשל
+     השורה הבודדת האמיתית שקיימת כרגע — `pending`, טרם קיבלה מזהה מ-Nedarim)
+     מציגות את הכפתורים כ-disabled במקום לאפשר קריאה שתיכשל.
+465. **אימות — ללא הרצת פעולה אמיתית.** בהתאם לכלל "כל שליחה/חיוב חייבת
+     להיות במצב טסט בלבד": לא הופעלה אף קריאת זיכוי/ביטול אמיתית מול
+     Nedarim Plus הפרודקשן בסבב הזה. אומת במקום זאת מול הסביבה החיה
+     דרך ה-MCP: מבנה עמודות `nedarim_transactions`, תוכן מדיניות ה-RLS,
+     קיום `is_super_admin`/`has_tenant_role` ב-`pg_proc`, פריסת
+     `nedarim-admin` כ-`ACTIVE`/`verify_jwt=true`, ותבנית
+     `supabase.functions.invoke(...)` הזהה למופעים קיימים אחרים באותו קובץ
+     עץ (`DonationPage.tsx`, `Matching.tsx`, `ActivateInvite.tsx`). נספר
+     תווים/סוגריים/מאזן-`{}`/`()` על הקובץ המלא ונקרא שורה-שורה; אין
+     `node_modules`/`tsc` בסביבה הזו לבדיקת-טיפוסים מלאה (אותה מגבלה
+     שרשומות קודמות ל-01/15 כבר נתקלו בה).
+466. **אפס רגרסיה + מה לא בוצע.** לא נגעתי ב-15-egod, לא במוגן
+     (`zr_*`/`igud`/`csj`/`csj_src`), לא בטבלאות של מערכות אחרות החולקות את
+     אותו פרויקט Supabase (`hf_*`/`crm_*`/`pc_*`/`fin_*` וכו' — שייכות
+     ל-28/30/27/34, לא נגעתי). שים לב: `list_tables` על `bieebmnmkffwbqlsfozh`
+     חשף `public.knowledge_chunks` עם RLS כבוי (ממצא אבטחה קריטי מה-advisor)
+     — לא תוקן כאן: לא נמצא קורא לו תחת `apps/01-torah-platform/src`
+     בכלל, וההפניה היחידה שנמצאה (`supabase/consolidation/bieebmnm-logic/`)
+     מצביעה על סכימת `igud.` המוגנת — נשאר ללא שינוי, מתועד כאן לסבב הבא
+     שיבדוק בעלות מדויקת לפני נגיעה. מקור הקוד חי בריפו הפרטי
+     `l023131500-ops/torah-platform` (לא vendored כאן); נדחף לענף
+     `fix/nedarim-admin-wiring-0825` (`1fa05d6`) שם, ולענף
+     `fix/01-torah-nedarim-admin-wiring-0825` (`64f05ace`) כאן — שני הענפים
+     לא מוזגו ל-`main`.
