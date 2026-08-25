@@ -6932,3 +6932,46 @@ to that constraint: they import only dependency-free modules (`hosts.js`,
   branches. Zero Android/Kotlin/Windows work touched. Did not touch the
   still-parked 9-deep feature chain or `core.issues #215`
   (monorepo-vs-zol tree divergence), both unaffected by this round.
+
+- **[25/08/2026, Loop A] Found and fixed a real crash on the super-admin
+  account-management route: `POST /admin/users` and `PATCH
+  /admin/users/:id`'s optional `fullName` field went straight from
+  `req.body` into a `better-sqlite3` bind with no type check** —
+  `fullName || null` / `fullName ?? null`, unlike every other free-text
+  field in this app (`maintenance.js`'s `message`, `watchdog.js`'s
+  `detail`, the enroll/heartbeat device-info fields fixed in earlier rounds
+  above), all of which already validate type + cap length before touching
+  SQL. Continued the same class-of-bug audit into `routes/admin.js`, a file
+  not yet covered by any prior round on this chain.
+
+  Reproduced live against a scratch-DB server boot before touching
+  anything: `POST /admin/users` with `fullName: {"a": 1}` throws
+  `RangeError: Too few/many parameter values were provided` — better-sqlite3
+  spreads a plain object into named bind params instead of binding it as one
+  value — and `fullName: true` throws `TypeError: SQLite3 can only bind
+  numbers, strings, bigints, buffers, and null`. With no global Express
+  error handler in this app, both surfaced as a raw-stack-trace 500 to the
+  caller (a signed-in super admin, but still an unhandled crash, not a
+  clean 400) on both the create and update routes.
+
+  Fixed with a new `users.js` (`validateFullName`: rejects non-string types
+  with a clean Hebrew error, caps length at 120 chars — same shape as
+  `maintenance.js`'s `MAX_MESSAGE_LENGTH` — and preserves the existing
+  `undefined` = "field not sent" vs. `null`/`''` = "explicit clear"
+  semantics PATCH's `COALESCE(?, full_name)` already relies on, so an
+  update that omits `fullName` still leaves the stored name untouched
+  rather than silently clearing it). Wired into both routes in
+  `routes/admin.js` in place of the raw `fullName || null` / `fullName ??
+  null` binds. New `test/users.test.mjs` (4 cases: undefined/null/empty
+  handling, trim + whitespace-only clears to null, non-string rejection,
+  length cap). Full suite: **145/145** (141 baseline + 4 new), zero
+  regressions.
+
+  Committed + pushed to `l023131500-ops/zol` branch
+  `fix/kiosk-admin-fullname-validation-0825` (`3bfb1d6`), off the live tip
+  (`e206e5e`, the heartbeat-battery-validation fix recorded above) — not
+  merged, same human-review convention as every prior fix branch on this
+  chain. Zero Android/Kotlin/Windows work touched. Did not touch the
+  still-parked feature chain, the payment code (explicitly out of scope
+  per the project note's PCI-DSS constraint), or `core.issues #215`
+  (monorepo-vs-zol tree divergence), all unaffected by this round.
