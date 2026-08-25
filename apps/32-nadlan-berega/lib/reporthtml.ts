@@ -258,6 +258,9 @@ export function reportEmailHtml(report: PropertyReport, opts: ReportEmailOptions
     imgs.push(
       `<img src="${opts.baseUrl}/api/image?kind=satellite&${q}" width="560" alt="תצלום אוויר" style="display:block;width:100%;max-width:560px;border-radius:8px;border:1px solid ${LINE};margin-top:8px">`,
     );
+    imgs.push(
+      `<div style="max-width:560px;margin-top:4px;font-size:11px;color:${MUTED}">מקור תצלום האוויר: Google Maps — גוגל אינו חושף תאריך צילום דרך שירות זה.</div>`,
+    );
   }
 
   const categories = report.categories

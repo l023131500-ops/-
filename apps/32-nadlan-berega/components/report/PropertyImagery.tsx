@@ -156,7 +156,11 @@ export default function PropertyImagery({
                     loading="eager"
                     onError={() => setAerialFailed(true)}
                   />
-                  <p className="px-4 py-2.5 text-[11px] text-muted">הסימון הירוק הוא הנכס.</p>
+                  <p className="px-4 py-2.5 text-[11px] text-muted">
+                    הסימון הירוק הוא הנכס. מקור: Google Maps (תצלום לוויין/היברידי) — גוגל אינו
+                    חושף תאריך צילום דרך שירות זה, ולכן אין תאריך מדויק להצגה. זהו תצלום ביניים;
+                    אורתופוטו עדכני מ-govmap.gov.il (בדרך כלל חדש יותר) עדיין אינו מחובר.
+                  </p>
                 </>
               ) : (
                 <p className="px-4 py-6 text-[14px] leading-relaxed text-muted">

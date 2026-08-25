@@ -309,6 +309,7 @@ function buildSlides(d: PropertyReport): Slide[] {
     s.push({
       kicker: 'מבט על',
       title: 'תצלום אוויר',
+      subtitle: 'מקור: Google Maps — תאריך צילום אינו נחשף על-ידי גוגל.',
       image: apiUrl(`/api/image?kind=satellite&lat=${lat}&lng=${lng}&zoom=18&w=1000&h=560`),
     });
   }
