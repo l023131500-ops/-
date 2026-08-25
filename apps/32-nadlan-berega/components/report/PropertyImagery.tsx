@@ -37,9 +37,11 @@ const InteractiveMap = dynamic(() => import('./InteractiveMap'), {
 export default function PropertyImagery({
   report,
   tier,
+  permalink,
 }: {
   report: PropertyReport;
   tier: ReportTier;
+  permalink?: string | null;
 }) {
   const { lat, lng } = report.location;
   const [photoFailed, setPhotoFailed] = useState(false);
@@ -175,10 +177,11 @@ export default function PropertyImagery({
               `precise` (למשל מרחק פנורמה גדול שמקשה על חישוב כיוון אמין). */}
           <PanoramaPanel report={report} />
 
-          {/* "סיור רחוב" — ראה buildreport.ts על streetWalk. גרסת-ביניים כנה
-              לפריט 2 של P2 FEATURE (וידאו MP4 מקודד-ffmpeg, עדיין לא בנוי —
-              ffmpeg לא זמין בסביבת הבנייה). */}
-          <StreetWalkPanel report={report} />
+          {/* "סיור רחוב" — ראה buildreport.ts על streetWalk. פריט 2 של P2
+              FEATURE (וידאו MP4): הקידוד קורה בדפדפן הצופה (אין ffmpeg
+              בסביבת השרת/הבנייה) ומטמון-קליפ-לנכס נשמר בשרת — ראה
+              StreetWalkPanel.tsx + lib/store.ts. */}
+          <StreetWalkPanel report={report} permalink={permalink} />
 
           {/* מפה אזורית מתויגת — נכנסת גם ל-PDF ולמצגת, שם אין מפה אינטראקטיבית. */}
           <figure className="mt-4 overflow-hidden rounded-2xl border border-line bg-surface shadow-card">

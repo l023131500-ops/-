@@ -50,6 +50,7 @@ export default function ReportView({
   input,
   layers: initialLayers,
   preloaded = null,
+  preloadedSlug = null,
   savedNote = null,
   refresh = false,
 }: {
@@ -80,6 +81,15 @@ export default function ReportView({
    * בתשלום בכל פתיחה שלו.
    */
   preloaded?: PropertyReport | null;
+  /**
+   * §8 · ה-slug הקבוע של הקישור, כשמגיעים דרך `/p/[slug]` (`SavedReportView`).
+   * ה-JSON השמור ב-DB הוא ה-`PropertyReport` הגולמי בלבד (ראה `saveReport`) —
+   * `permalink` מתווסף רק בתשובת ה-API החי, ולכן בנתיב הקבוע הוא לא מגיע דרך
+   * `data` בכלל; בלעדי הפרמטר הזה תכונות שתלויות ב-slug (כמו מטמון וידאו-רחוב,
+   * build_tasks id=2) היו נעלמות בשקט בדיוק בעמוד שבו יש להן הכי הרבה ערך —
+   * צפיות חוזרות באותו נכס.
+   */
+  preloadedSlug?: string | null;
   /** שורת ההסבר שמוצגת מעל דוח שמור. */
   savedNote?: React.ReactNode;
 }) {
@@ -249,8 +259,10 @@ export default function ReportView({
   if (!data) return null;
 
   const t = data.title;
-  // ה-slug מגיע כשדה נוסף בתשובת ה-API ואינו חלק ממודל הדוח עצמו.
-  const permalink = (data as unknown as { permalink?: string | null }).permalink ?? null;
+  // ה-slug מגיע כשדה נוסף בתשובת ה-API ואינו חלק ממודל הדוח עצמו — ובנתיב
+  // הקבוע (`preloadedSlug`) הוא בכלל לא בתוך `data`, ראה ההערה על הפרמטר הזה.
+  const permalink =
+    preloadedSlug ?? (data as unknown as { permalink?: string | null }).permalink ?? null;
   const totalFacts = categories.reduce((s, c) => s + c.facts.length, 0);
   const filledFacts = categories.reduce(
     (s, c) => s + c.facts.filter((f) => f.value !== null).length,
@@ -521,7 +533,9 @@ export default function ReportView({
         {layers.includes('valuation') && <ValuationPanel valuation={data.valuation} />}
 
         {/* מפה אינטראקטיבית בכל הרמות; צילום ומפה אזורית — VIP (§2, §4). */}
-        {layers.includes('imagery') && <PropertyImagery report={data} tier={tier} />}
+        {layers.includes('imagery') && (
+          <PropertyImagery report={data} tier={tier} permalink={permalink} />
+        )}
 
         <div className="mt-4">
           <CertaintyLegend />

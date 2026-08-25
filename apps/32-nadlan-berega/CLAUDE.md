@@ -34,6 +34,84 @@ Next.js 14 (App Router) + TypeScript + Tailwind RTL + Supabase. מפתח אחי�
    לאישורים שגרתיים; עצור רק לפני פעולה הרסנית (מחיקת DB/repo, force-push) או
    כשחסר מידע קריטי שלא קיים באף מקום.
 
+## עדכון — 25/08/2026 (Loop A, session 6 — build_tasks id=2: מטמון "סיור רחוב" כווידאו)
+`core.build_tasks` id=2 ("Auto street video along property road — Street View
+frames to MP4, cached per property") היה `todo` מאז שנוצרה הטבלה. סבבים קודמים
+(ראו "סיור רחוב — גרסת-ביניים כנה" למטה) בנו במפורש רק חצי מהפריט — רצף תמונות
+Street View מתחלף, לא וידאו — ודחו את חלק ה-MP4/ffmpeg שוב ושוב מאותה סיבה:
+אין `ffmpeg` binary ואין `node_modules` בסביבת הבנייה הזו (נבדק שוב הסבב הזה:
+`which ffmpeg` ריק, `ls node_modules` לא קיים), וגם ב-Vercel serverless התקנת
+binary חיצוני אינה נתיב פשוט.
+
+**החלטת ארכיטקטורה:** במקום לדחות שוב, הקידוד עצמו הועבר למקום שבו כבר קיים
+מקודד וידאו אמיתי בחינם — הדפדפן של הצופה עצמו. `StreetWalkPanel.tsx` (כשהדפדפן
+תומך ב-`MediaRecorder`+`canvas.captureStream`, מזוהה ב-feature-detection, בלי
+לשבור דפדפנים ישנים/PDF headless שלא תומכים) מציע כפתור "🎬 צור סרטון רחוב":
+מצייר את אותן מסגרות בדיוק (`streetWalk.points`, אותו מקור נתונים כמו הקרוסלה
+הקיימת, דרך `/api/image` הקיים) על קנבס נסתר, מקליט אותן ל-Blob אמיתי (MP4 אם
+הדפדפן תומך בקידוד `avc1`, אחרת WebM — נבחר דרך `MediaRecorder.isTypeSupported`)
+ומעלה אותו פעם אחת ל-`/api/street-video` (POST, ציבורי כמו tabu-request/
+area-alert — לא דורש התחברות). כל צופה הבא של אותו נכס מקבל את הקליפ השמור
+ישירות (GET לפי `slug`, אותו permalink קבוע כמו הקישור הקבוע ב-`lib/savedreports.ts`)
+בלי להקליט מחדש — זה בדיוק מה ש"cached per property" מבקש, בלי להמציא תלות
+ffmpeg בשרת שלא ניתן לאמת בסביבה הזו בכלל.
+
+**מה נוסף:** מיגרציה `0151_nadlan_street_video_cache.sql` — טבלה
+`nadlan.street_video_cache` (RLS מופעל בלי policy, בדיוק כמו `saved_reports`:
+כל גישה עוברת דרך מפתח השירות) + באקט אחסון ציבורי-קריאה חדש
+`nadlan-street-video` (15MB, `video/webm`/`video/mp4` בלבד — הקליפ הוא רק
+קידוד-מחדש של אותן תמונות Street View ציבוריות שכבר מוגשות דרך `/api/image`,
+אין בו מידע פרטי, אותה עמדה בדיוק כמו `nadlan-pro-media`). `lib/store.ts`:
+`getStreetVideo`/`saveStreetVideo` (מפתח הנתיב הפיזי הוא hash של ה-slug ולא
+ה-slug עצמו — הוא יכול לכלול עברית לנכס בלי גוש/חלקה, ראה `slugOf`, ואין
+תקדים בקוד הזה לתווים לא-ASCII בנתיב אחסון). `lib/savedreports.ts`:
+`savedReportExists` חדש — קיום-בלבד בלי להגדיל את מונה הצפיות של `readSaved`,
+כדי שבדיקת-קיום ל-slug (הגנה מפני קליפים תחת מזהה מומצא) לא תזייף צפיות.
+`app/api/street-video/route.ts` (GET/POST חדשים). `ReportView.tsx` קיבל
+`preloadedSlug` חדש — גילוי אמיתי תוך כדי הבנייה: בנתיב הקישור הקבוע
+(`/p/[slug]`, `SavedReportView.tsx`) ה-JSON השמור ב-DB הוא ה-`PropertyReport`
+הגולמי בלבד (`permalink` מתווסף רק בתשובת ה-API החי, לא נשמר בתוך הדוח עצמו) —
+בלי `preloadedSlug` הפיצ'ר היה נעלם בשקט בדיוק בעמוד שבו יש לו הכי הרבה ערך
+(צפיות חוזרות של אותו נכס, בדיוק מקרה השימוש של מטמון).
+
+**באג אמיתי שנתפס באימות ותוקן לפני הפריסה:** `MediaRecorder` נושא קודק בתוך
+ה-`type` (למשל `video/webm;codecs=vp9`) — ההשוואה המקורית
+`ALLOWED_MIME.includes(file.type)` הייתה דוחה כל קליפ תקין (רק
+`video/webm`/`video/mp4` המדויקים היו עוברים), וגם ה-`contentType` שהיה מועבר
+לאחסון לא היה תואם ל-`allowed_mime_types` המדויק של הבאקט. תוקן: `baseMime =
+file.type.split(';')[0]` לפני גם ההשוואה וגם ה-upload/השמירה ב-DB.
+
+אומת: אין `node_modules`/דפדפן בסביבה הזו (כרגיל), אז לא ניתן להריץ
+`MediaRecorder`/`canvas.captureStream` בפועל — זו אותה מגבלה בדיוק כמו כל סבב
+`app.html`/TSX-בלבד קודם, ומתועדת כמגבלה מפורשת, לא הוסתרה. מה שכן אומת: (1)
+בדיקת איזון-סוגריים על כל 7 הקבצים שנוספו/שונו — כולם תקינים; (2) `SLUG_RE`
+(התבנית שמאמתת `slug` בנתיב) נבדקה ב-Node טהור מול פלט אמיתי של `slugOf` —
+כולל התרחיש שנתפס תוך כדי בדיקה: `slugOf` **כן** מייצר slugs עם עברית לנכס
+בלי גוש/חלקה (כתובת חופשית), ורג'קס ראשוני שהתיר רק ASCII היה דוחה אותם תמיד;
+תוקן לטווח היוניקוד העברי המדויק של `slugOf` עצמו (`֐`-`׿`), ונבדק
+גם שהוא דוחה path-traversal/רווח/מחרוזת ריקה/קצרה מדי; (3) לוגיקת הוולידציה
+של ה-POST route (slug/mime/גודל/מספר-מסגרות) שוכפלה עצמאית ב-Node טהור מול 7
+תרחישים — כולם עברו, כולל הבאג שנמצא ותוקן; (4) בחירת-סיומת הקובץ (`mp4`
+מול `webm`) ובניית-הנתיב-בהאש נבדקו דטרמיניסטית. אומת חי ב-MCP: המיגרציה
+הורצה תחילה בתוך `BEGIN;...ROLLBACK;` (כולל בדיקת-קיום-slug מול שורה אמיתית
+ב-`nadlan.saved_reports`, יצירת קליפ ראשון, ורענון/upsert לאותו slug עם נתיב
+אחר — נבדק שנשארת בדיוק שורה אחת, לא כפילות), ואז הוחלה בפועל דרך
+`apply_migration`; `get_advisors` (security) אחריה מראה רק `rls_enabled_no_policy`
+INFO על `street_video_cache` — אותה אזהרה-צפויה-ומכוונת בדיוק כמו
+`saved_reports`, לא ממצא חדש. אין העלאת-storage אמיתית שנבדקה (דורשת
+`@supabase/supabase-js` מותקן, לא זמין כאן) — הקוד עוקב מילה-במילה אחרי אותו
+`db.storage.from(bucket).upload(path, bytes, {contentType, upsert})` שכבר
+מוכח עובד ב-`app/api/admin/tabu/route.ts`.
+
+אפס רגרסיה: קובץ מיגרציה חדש + קובץ API חדש + שתי פונקציות חדשות ב-`lib/
+store.ts` + פונקציה חדשה ב-`lib/savedreports.ts` (אדיטיבית, שום ייצוא קיים
+לא נגע) + שני props אופציונליים חדשים (`permalink` ל-`StreetWalkPanel`/
+`PropertyImagery`, `preloadedSlug` ל-`ReportView`, כולם ברירת-מחדל `null`) —
+נתיב הקרוסלה הקיים (`allFailed`/רצף-תמונות) לא נגע כלל, ומוצג בדיוק כמו לפני
+בכל מקרה שבו אין קליפ שמור (כולל דפדפן שלא תומך בהקלטה — הכפתור פשוט לא
+מוצג). System 35 KioskFleet לא נגע, לפי ה-HARD STEERING (owner directive v2,
+2026-08-25) שמעביר סבב זה ל-P2 Real-estate.
+
 ## עדכון — 25/08/2026 (Loop A, session 5 — TABU workflow §1-2: מקור-הבקשה מהלקוח, שהיה חסר לגמרי)
 `core.build_tasks` id=4/11 ("TABU workflow": checkbox+grade → mgmt task+email →
 upload+Research → view/download+AI-explanation → attach to client) עדיין

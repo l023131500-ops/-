@@ -3,6 +3,7 @@
 // (היסטוריה רב-שנתית) בסכימת nadlan. אם לא מוגדרים — המערכת פועלת רגיל (חי בלבד).
 // הכתיבה היא best-effort: כישלון אחסון לעולם אינו שובר את התגובה למשתמש.
 
+import { createHash } from 'node:crypto';
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 import type { PropertyProfile } from './types';
 import { env } from './env';
@@ -272,4 +273,88 @@ export async function logExport(
   } catch {
     /* אופציונלי */
   }
+}
+
+// ==== §2 · מטמון "סיור רחוב" כווידאו — build_tasks id=2 (core.projects #33) ====
+//
+// אין ffmpeg/node_modules בסביבת הבנייה הזו (ראה CLAUDE.md על סבבים קודמים
+// שדחו את הפריט הזה שוב ושוב מהסיבה הזו) — ולכן הקידוד עצמו לא קורה כאן: הוא
+// קורה בדפדפן הצופה (`canvas.captureStream()`+`MediaRecorder`, ראה
+// `StreetWalkPanel.tsx`). מה שכן שייך לשרת הוא המטמון עצמו: ברגע שדפדפן אחד
+// הפיק קליפ לנכס נתון, הוא מועלה לכאן ונשמר, כך שכל צופה הבא מקבל אותו ישירות
+// בלי להקליט מחדש — זה בדיוק מה ש"cached per property" מבקש.
+const STREET_VIDEO_BUCKET = 'nadlan-street-video';
+
+export interface StreetVideoCacheRow {
+  storagePath: string;
+  mimeType: string;
+  frameCount: number;
+  url: string;
+}
+
+export async function getStreetVideo(slug: string): Promise<StreetVideoCacheRow | null> {
+  const db = getStore();
+  if (!db) return null;
+  const { data } = await db
+    .from('street_video_cache')
+    .select('storage_path,mime_type,frame_count')
+    .eq('slug', slug)
+    .maybeSingle();
+  if (!data) return null;
+  const { data: pub } = db.storage.from(STREET_VIDEO_BUCKET).getPublicUrl(data.storage_path);
+  return {
+    storagePath: data.storage_path,
+    mimeType: data.mime_type,
+    frameCount: data.frame_count,
+    url: pub.publicUrl,
+  };
+}
+
+/** שמירת קליפ שהופק בדפדפן. דורסת קליפ קודם לאותו נכס (רענון) ומנקה את הישן. */
+export async function saveStreetVideo(
+  slug: string,
+  bytes: Buffer,
+  mimeType: string,
+  frameCount: number,
+): Promise<StreetVideoCacheRow> {
+  const db = getStore();
+  if (!db) throw new Error('SUPABASE_SERVICE_KEY חסר — אין אחסון לסרטון.');
+
+  const { data: existing } = await db
+    .from('street_video_cache')
+    .select('storage_path')
+    .eq('slug', slug)
+    .maybeSingle();
+
+  // מפתח הנתיב הוא hash של ה-slug ולא ה-slug עצמו: הוא יכול לכלול עברית
+  // (נכס בלי גוש/חלקה, ראה slugOf ב-savedreports.ts) — ואין תקדים בקוד הזה
+  // לתווים לא-ASCII בנתיב אחסון (tabu/nadlan-pro-media שניהם gush-helka/uuid
+  // בלבד). ה-slug עצמו עדיין מפתח החיפוש ב-DB, רק לא חלק מהנתיב הפיזי.
+  const ext = mimeType.includes('mp4') ? 'mp4' : 'webm';
+  const pathKey = createHash('sha256').update(slug).digest('base64url').slice(0, 20);
+  const path = `${pathKey}/${Date.now()}.${ext}`;
+
+  const up = await db.storage.from(STREET_VIDEO_BUCKET).upload(path, bytes, {
+    contentType: mimeType,
+    upsert: false,
+  });
+  if (up.error) throw new Error(`שמירת הסרטון נכשלה: ${up.error.message}`);
+
+  const { error } = await db
+    .from('street_video_cache')
+    .upsert(
+      { slug, storage_path: path, mime_type: mimeType, frame_count: frameCount },
+      { onConflict: 'slug' },
+    );
+  if (error) {
+    await db.storage.from(STREET_VIDEO_BUCKET).remove([path]).catch(() => null);
+    throw new Error(`שמירת רשומת המטמון נכשלה: ${error.message}`);
+  }
+
+  if (existing?.storage_path && existing.storage_path !== path) {
+    await db.storage.from(STREET_VIDEO_BUCKET).remove([existing.storage_path]).catch(() => null);
+  }
+
+  const { data: pub } = db.storage.from(STREET_VIDEO_BUCKET).getPublicUrl(path);
+  return { storagePath: path, mimeType, frameCount, url: pub.publicUrl };
 }

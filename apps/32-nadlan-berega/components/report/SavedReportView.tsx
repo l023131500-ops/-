@@ -36,6 +36,7 @@ export default function SavedReportView({
       tier={report.tier}
       assetType={report.assetType}
       preloaded={report}
+      preloadedSlug={slug}
       savedNote={
         <div className="mt-6 rounded-2xl border border-line bg-bgsoft p-4 print:hidden">
           <div className="flex flex-wrap items-center justify-between gap-3">

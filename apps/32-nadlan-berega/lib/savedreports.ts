@@ -178,6 +178,18 @@ export async function saveReport(
   return slug;
 }
 
+/**
+ * קיום בלבד — בלי להגדיל מונה צפיות (בשונה מ-`readSaved` למטה). משמש לאימות
+ * `slug` לפני קבלת תוכן חיצוני שנשלח אליו (כמו וידאו-רחוב שהופק בדפדפן) —
+ * כדי לא לקבל קליפים תחת מזהים שרירותיים שלא מייצגים דוח אמיתי שקיים.
+ */
+export async function savedReportExists(slug: string): Promise<boolean> {
+  const db = store();
+  if (!db) return false;
+  const { data } = await db.from('saved_reports').select('id').eq('slug', slug).maybeSingle();
+  return !!data;
+}
+
 /** קריאת דוח שמור לפי הקישור הקבוע. מגדילה מונה צפיות. */
 export async function readSaved(
   slug: string,
