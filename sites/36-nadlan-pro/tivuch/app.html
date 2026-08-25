@@ -1195,6 +1195,15 @@ function wireShareBox(p) {
 // The truth engine is system 32 and stays system 32. This never recomputes a
 // valuation — it calls /nadlan/api/report (same origin under more30.com, so no
 // proxy and no key) and stores the answer with the time it was given.
+//
+// ⚠️ Fixed 25/08/2026: every row here used to read fields that do not exist on
+// system 32's actual PropertyReport (`r.title.address`, `r.key.gush/helka`,
+// `r.parcelTransactions`, `r.priceBand`, `r.opportunityScore` — none of these
+// are real keys, see apps/32-nadlan-berega/lib/buildreport.ts's PropertyReport
+// interface). v() silently rendered "לא זמין" for all of them, so this panel
+// has shown almost nothing since module 0 shipped. Real field names: title.
+// {headline,gush,helka}, soldDeals[], and — the actual §2 "smart valuation"
+// module the spec calls for — the `valuation` object from lib/valuation.ts.
 function truthHtml(p) {
   if (p.truth_report_error) {
     return '<div class="note"><b>הדוח לא נטען.</b> ' + esc(p.truth_report_error) +
@@ -1206,18 +1215,64 @@ function truthHtml(p) {
       '<p class="why">המערכת הזו לא מחשבת שווי בעצמה — היא שואלת את מנוע האמת ושומרת את התשובה עם השעה.</p></div>';
   }
   const r = p.truth_report;
+  const address = (r.title && r.title.headline) ||
+    (r.title && [r.title.streetDisplay, r.title.houseNumber, r.title.city].filter(Boolean).join(' ')) || null;
+  const gush = r.title && r.title.gush;
+  const helka = r.title && r.title.helka;
+  const dealsCount = Array.isArray(r.soldDeals) ? r.soldDeals.length : null;
   const rows = [
-    ['כתובת מזוהה', r.title && r.title.address],
-    ['גוש/חלקה', r.key && r.key.gush ? r.key.gush + '/' + (r.key.helka || '') : null],
-    ['עסקאות בחלקה', r.parcelTransactions && r.parcelTransactions.length],
-    ['טווח מחירים', r.priceBand && r.priceBand.label],
-    ['ציון הזדמנות', r.opportunityScore],
+    ['כתובת מזוהה', address],
+    ['גוש/חלקה', gush ? gush + '/' + (helka || '') : null],
+    ['עסקאות שנמצאו באזור', dealsCount],
   ];
   return '<div class="table-scroll"><table><tbody>' +
     rows.map(([k, val]) => '<tr><th>' + k + '</th><td>' + v(val) + '</td></tr>').join('') +
     '</tbody></table></div>' +
+    valuationHtml(r.valuation, p.price) +
     '<p class="sub" style="font-size:12px;margin-top:8px">נמשך: ' + dtm(p.truth_report_at) +
     ' · מקור: מערכת 32, "נדל״ן ברגע".</p>';
+}
+
+// NADLAN_PRO_מחקר_ואפיון.md module 2, "הערכת שווי חכמה (מול יד2)": range +
+// certainty + source for every number, positioned against calculators that
+// give a single figure with no explanation. System 32 already computes
+// exactly this (lib/valuation.ts) — this only renders the object the truth
+// report already carries; no valuation math happens in this file.
+function valuationHtml(val, askPrice) {
+  if (!val) return '';
+  const tile = (k, value, cls) =>
+    '<div class="kpi"><p class="k">' + k + '</p><p class="v ' + (cls || '') + '">' + value + '</p></div>';
+
+  if (val.notEnoughData) {
+    let html = '<h3 class="sec" style="font-size:14px;margin-top:18px">הערכת שווי (מודול 2)</h3>' +
+      '<p class="na">' + esc(val.notEnoughData) + '</p>';
+    if (val.regional) {
+      html += '<div class="kpis">' +
+        tile('מחיר למ״ר אזורי עדכני', money(val.regional.medianPerSqm)) +
+        tile('מבוסס על', val.regional.count + ' עסקאות') +
+      '</div>' +
+      '<p class="sub" style="font-size:12px;margin-top:6px">' + esc(val.regional.windowLabel) +
+        (val.regional.latestDate ? ' · עסקה אחרונה: ' + esc(val.regional.latestDate) : '') + '</p>';
+    }
+    return html;
+  }
+
+  const diffPct = askPrice && val.mid
+    ? Math.round(((askPrice - val.mid) / val.mid) * 1000) / 10
+    : null;
+  return '<h3 class="sec" style="font-size:14px;margin-top:18px">הערכת שווי (מודול 2) ' +
+      '<span class="pill' + (val.certainty === 'verified' ? ' on' : '') + '">' +
+      (val.certainty === 'verified' ? 'מאומת — עסקה על הנכס עצמו' : 'הערכה — ' + esc(val.basis.label)) +
+      '</span></h3>' +
+    '<div class="kpis">' +
+      tile('טווח שווי', money(val.low) + ' – ' + money(val.high)) +
+      tile('אומדן מרכזי', money(val.mid)) +
+      tile('מחיר למ״ר', money(val.medianPerSqm)) +
+      (diffPct != null ? tile('מבוקש מול האומדן', (diffPct > 0 ? '+' : '') + diffPct + '%',
+          diffPct > 10 ? 'warn' : diffPct < -10 ? 'good' : '') : '') +
+    '</div>' +
+    '<p class="sub" style="font-size:12px;margin-top:8px">' + esc(val.explanation) + '</p>' +
+    (val.wideSpread ? '<p class="note">' + esc(val.wideSpread) + '</p>' : '');
 }
 
 async function fetchTruth(p, btn) {
