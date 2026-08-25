@@ -6109,3 +6109,74 @@ to that constraint: they import only dependency-free modules (`hosts.js`,
   is exactly the class of change every prior round has left for a human to
   validate against a real device before it reaches customer-facing
   hardware, even though it is not part of the existing 9-deep chain.
+
+- **[25/08/2026, Loop A] Heartbeat fallback re-executed already-delivered
+  commands every 60s cycle until acked — a real correctness bug, not a
+  spec-coverage audit, on `zol` not this tree.** Rather than continuing to
+  mine KIOSK_BUILD.md line-by-line for uncovered sub-items (the last several
+  rounds' own notes flagged that the remaining spec gaps are now blocked on
+  human real-device validation, not more autonomous building), this round
+  read the live deployed server code end to end looking for genuine
+  production bugs instead — the §0 "retail-grade, zero customer-visible
+  bugs" mandate applies to what's already shipped, not only to what's still
+  unbuilt.
+
+  Found: `routes/agent.js`'s `/heartbeat` fetched commands with
+  `status IN ('pending','delivered')` and returned+re-marked all of them
+  every single 60-second heartbeat, unconditionally. `AgentClient.kt`'s
+  `heartbeat()` has no per-command dedup on the device side — it blindly
+  `execute()`s every entry in the response's `commands` array. Normally a
+  command is acked within milliseconds of execution, so this doesn't show
+  up — but `AgentClient.ack()` treats okhttp's `WebSocket.send()` returning
+  `true` as success, and that only means the frame was *queued*, not that it
+  crossed a silently-dead connection (common on retail wifi: AP handoff,
+  router reboot, NAT timeout) — the HTTP fallback in `ack()` only fires when
+  `send()` itself returns `false`, so a dead-but-undetected socket loses the
+  ack with **no retry**. Once that happens, the command sits at status
+  `'delivered'` forever, and every subsequent heartbeat re-sends and
+  re-executes it: a `screen_off`/`screen_on` toggles every 60s, a `message`
+  popup re-shows every 60s, or — worst case — `reboot` fires again and
+  again, all directly customer-visible. `hub.js`'s own WS-reconnect flush
+  already filters to `status = 'pending'` only (no equivalent bug there);
+  the heartbeat fallback path just never got the same treatment, despite
+  `index.js`'s own `schedule_last_state` comment explicitly warning about
+  exactly this class of "re-sent every tick" bug elsewhere in the same file.
+
+  Fix: gated the `'delivered'` branch on staleness (`delivered_at` older
+  than one full heartbeat cycle, 2 minutes) so a command delivered seconds
+  ago and still in flight is left alone, but a truly stuck one (ack lost) is
+  retried after a cooldown instead of either spamming every cycle or being
+  lost forever. Also switched the retry's own `UPDATE` from
+  `COALESCE(delivered_at, datetime('now'))` to an unconditional
+  `datetime('now')` — without that the staleness clock would never reset on
+  a retry, so a once-stale command would satisfy the 2-minute gate on every
+  heartbeat forever after its first retry instead of backing off another
+  full cycle each time.
+
+  **Verified live**, more thoroughly than a static/hand-reviewed round:
+  booted the real server against a throwaway SQLite db, logged in, created
+  an enrollment code, enrolled a device, issued a `message` command while
+  the device was offline (lands `pending`, no WS), then walked it through
+  four real HTTP round-trips — (1) first heartbeat delivers it, status →
+  `delivered`; (2) an *immediate* second heartbeat returns an empty
+  `commands` list (the bug, confirmed fixed — previously this would have
+  re-sent it); (3) backdating `delivered_at` to 5 minutes ago and calling
+  heartbeat again *does* redeliver it (the stuck-command safety net,
+  confirmed preserved); (4) acking it to `'done'`, backdating again to 10
+  minutes, and heartbeating once more confirms a terminal-state command
+  never resurfaces regardless of staleness. Full server suite: **122/123
+  pass** (same pre-existing `seedadmin.test.mjs`/`node:sqlite`-needs-
+  Node-22+ gap every prior entry has hit).
+
+  **Pure server-side, zero Android/Kotlin touched** — lower risk than even
+  the already-fast-tracked maintenance-overlay padding fix, since this adds
+  no new autonomous on-device logic at all, just corrects a backend query.
+  Branched fresh off `origin/claude/what-do-you-see-gxo5tc` as
+  `fix/kiosk-heartbeat-command-replay-0825` (`c754249`), then fast-forwarded
+  straight into `claude/what-do-you-see-gxo5tc` and pushed
+  (`e358091..c754249`) — this **is** the branch Railway deploys, so this
+  lands in production on the next deploy. Did not touch the still-parked
+  9-deep lockdown/payment/provisioning chain or the also-parked
+  `feat/kiosk-schedule-offline-persist-0825` — neither is affected by this
+  fix and both still need the same human real-device-validation decision
+  flagged by every prior round since.
