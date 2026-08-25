@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import type { Json } from "@/integrations/supabase/types";
 import { Settings, Save, Upload, Image as ImageIcon, Trash2, ExternalLink, Copy } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
@@ -19,7 +20,6 @@ type Profile = {
   donation_link: string; lesson_download_url: string;
   rabbi_photo_url: string; logo_url: string; custom_background_url: string;
   background_preset: string; font_color: string; portal_language: string;
-  public_token?: string;
 };
 
 type Photo = { id: string; image_url: string; caption: string | null };
@@ -40,15 +40,43 @@ const PortalSettings = () => {
   const [saving, setSaving] = useState(false);
   const [photoBusy, setPhotoBusy] = useState(false);
   const photoInput = useRef<HTMLInputElement>(null);
+  // profiles.meta keys that don't have their own column live here (see handleSave) --
+  // kept around so a save only touches the sub-keys this page owns, not the whole blob.
+  const rawMeta = useRef<Record<string, Json>>({});
 
   useEffect(() => { if (user) fetchAll(); }, [user]);
 
   const fetchAll = async () => {
-    const { data } = await supabase.from("profiles").select("*").eq("user_id", user!.id).maybeSingle();
+    const { data } = await supabase.from("profiles").select("*").eq("id", user!.id).maybeSingle();
     if (data) {
-      setProfile({ ...empty, ...Object.fromEntries(Object.entries(data).map(([k,v]) => [k, v ?? (empty as any)[k] ?? ""])) } as Profile);
-      const { data: ph } = await supabase.from("portal_photos").select("*").eq("teacher_id", data.id).order("created_at", { ascending: false });
-      setPhotos(ph || []);
+      const meta = (data.meta as Record<string, Json>) || {};
+      rawMeta.current = meta;
+      setProfile({
+        ...empty,
+        id: data.id,
+        full_name: data.full_name || "",
+        phone: data.phone || "",
+        email: (meta.email as string) || "",
+        city: data.city || "",
+        neighborhood: data.neighborhood || "",
+        bio: data.bio || "",
+        about_text: (meta.about_text as string) || "",
+        contact_whatsapp: data.whatsapp || "",
+        contact_fax: (meta.contact_fax as string) || "",
+        contact_mailing_address: (meta.contact_mailing_address as string) || "",
+        donation_link: (meta.donation_link as string) || "",
+        lesson_download_url: (meta.lesson_download_url as string) || "",
+        rabbi_photo_url: data.avatar_url || "",
+        logo_url: (meta.logo_url as string) || "",
+        custom_background_url: (meta.custom_background_url as string) || "",
+        background_preset: (meta.background_preset as string) || "preset-1",
+        font_color: (meta.font_color as string) || "light",
+        portal_language: data.language || "עברית",
+      });
+      // public.portal_photos does not exist in the live schema (verified via MCP) --
+      // this stays empty until that table is added; harmless no-op in the meantime.
+      const { data: ph } = await supabase.from("portal_photos" as any).select("*").eq("teacher_id", data.id).order("created_at", { ascending: false });
+      setPhotos((ph as any) || []);
     }
   };
 
@@ -98,18 +126,36 @@ const PortalSettings = () => {
 
   const handleSave = async () => {
     setSaving(true);
-    const { id, public_token, ...payload } = profile;
-    const { error } = await supabase.from("profiles").update(payload).eq("user_id", user!.id);
+    const payload = {
+      full_name: profile.full_name,
+      phone: profile.phone,
+      whatsapp: profile.contact_whatsapp,
+      city: profile.city,
+      neighborhood: profile.neighborhood,
+      bio: profile.bio,
+      avatar_url: profile.rabbi_photo_url,
+      language: profile.portal_language,
+      meta: {
+        ...rawMeta.current,
+        email: profile.email,
+        about_text: profile.about_text,
+        contact_fax: profile.contact_fax,
+        contact_mailing_address: profile.contact_mailing_address,
+        donation_link: profile.donation_link,
+        lesson_download_url: profile.lesson_download_url,
+        logo_url: profile.logo_url,
+        custom_background_url: profile.custom_background_url,
+        background_preset: profile.background_preset,
+        font_color: profile.font_color,
+      } as Json,
+    };
+    const { error } = await supabase.from("profiles").update(payload).eq("id", user!.id);
     setSaving(false);
     if (error) { toast.error("שגיאה בשמירה"); return; }
     toast.success("ההגדרות נשמרו בהצלחה!");
   };
 
-  const publicUrl = profile.public_token
-    ? buildRabbiUrl(profile.public_token)
-    : profile.id
-      ? buildRabbiUrl(profile.id)
-      : "";
+  const publicUrl = profile.id ? buildRabbiUrl(profile.id) : "";
 
   return (
     <PortalLayout>
