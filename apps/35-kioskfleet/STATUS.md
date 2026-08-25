@@ -6356,3 +6356,66 @@ to that constraint: they import only dependency-free modules (`hosts.js`,
   sweep of already-stored `templates.home_url` rows for a pre-existing bad
   value (same "the refusal belongs at the door, not a retroactive sweep"
   reasoning the home_url fix gave for `devices`/`links`).
+
+- **[25/08/2026, Loop A] A client's "אתר תדמית" (brand site, §2★ד) URL was a
+  7th door onto the same `javascript:`/`data:`-into-the-WebView bug class —
+  on `zol` not this tree.** Continued auditing already-shipped code for
+  genuine §0 retail-grade gaps rather than more spec-coverage mining (the
+  9-deep lockdown/payment/provisioning chain and
+  `feat/kiosk-schedule-offline-persist-0825` remain parked on human
+  real-device validation, unchanged this round). The last two rounds'
+  enumeration of `home_url` doors (`PATCH /devices/:id`, `POST
+  /enrollments`, `set_url`, `POST`/`PATCH /links`, device-group templates)
+  never covered `routes/clients.js` — a different table (`clients`, KIOSK_
+  BUILD.md §2★ד's owner-registered customer directory), but `GET
+  /devices/:id/clients` (routes/devices.js:73/77) hands that row's `url`
+  straight through as the address a device's WebView navigates to the
+  instant someone types that client's code in, so it's device-reachable the
+  same way. `routes/clients.js`'s POST/PATCH still used the original weak
+  `try { new URL(url) } catch` shape — `new URL('javascript://x')` doesn't
+  throw — even though this same file's `normalizeLogoUrl` (KIOSK_BUILD.md §9
+  branding) already correctly required http(s) for the *logo* URL sitting
+  right next to it, which is what made the gap on the *brand-site* URL stand
+  out as an inconsistency rather than a deliberate choice.
+
+  Fix: routed both POST and PATCH through the existing
+  `normalizeHomeUrl()` (hosts.js) — same http(s)-only rule and matching
+  Hebrew scheme message every other door uses. PATCH's url handling also
+  now stores the checked/trimmed value instead of the raw input (previously
+  `newUrl = url || client.url` never trimmed at all, unlike every sibling
+  door).
+
+  **Live-server verified**: booted the real server against a throwaway
+  SQLite db (found and killed a stale verification server debris-squatting
+  on port 8099 from an earlier round first, confirmed disposable via
+  `/proc/<pid>/cwd`+`environ` before reusing the port, same housekeeping
+  as the previous round). `POST /clients` with `url: "javascript://x"` and
+  with a `data:text/html,<script>` URL → both 400 with the scheme message,
+  neither stored; a whitespace-padded legit `https://` URL → 200, stored
+  trimmed. `PATCH /clients/:id` with `javascript:alert(1)` → 400, confirmed
+  via a follow-up `GET /clients` the stored URL never moved; a legit
+  whitespace-padded URL → 200, stored trimmed, host allow-list updated.
+  Full round-trip: created an enrollment, enrolled a real device, approved
+  the (legit-URL) client for that device, confirmed `GET
+  /devices/:id/clients` reflects exactly the validated URL. Full suite:
+  **127/128** (same pre-existing `seedadmin.test.mjs`/`node:sqlite`-needs-
+  Node-22+ gap every prior entry has hit) — no new unit tests added since
+  `normalizeHomeUrl` itself is already covered by `hosts.test.mjs`; this
+  route had no prior URL-validation unit tests of its own to extend either.
+
+  **Pure server-side validation, zero Android/Kotlin touched, no new
+  autonomous on-device behaviour** — same risk class as the other five
+  fast-tracked home_url-class fixes. Branched fresh off
+  `origin/claude/what-do-you-see-gxo5tc` as
+  `fix/kiosk-client-brand-url-scheme-validation-0825` (`9f081bc`), then
+  fast-forwarded straight into `claude/what-do-you-see-gxo5tc` and pushed
+  (`8e8f37b..9f081bc`) — this **is** the branch Railway deploys, so this
+  lands in production on the next deploy. Did not touch the still-parked
+  9-deep lockdown/payment/provisioning chain or
+  `feat/kiosk-schedule-offline-persist-0825`.
+
+  **Not verified beyond that**: no Railway deploy log visible from this
+  sandbox to confirm the push actually triggered/completed a redeploy; no
+  sweep of already-stored `clients.url` rows for a pre-existing bad value
+  (same "the refusal belongs at the door, not a retroactive sweep"
+  reasoning every prior door fix gave).
