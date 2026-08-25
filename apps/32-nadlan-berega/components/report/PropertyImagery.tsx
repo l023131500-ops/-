@@ -9,6 +9,7 @@ import { distanceText, tierMayUseImagery, walkText } from '@/lib/report';
 import type { ReportTier } from '@/lib/report';
 import { apiUrl } from '@/lib/basepath';
 import PanoramaPanel from './PanoramaPanel';
+import StreetWalkPanel from './StreetWalkPanel';
 
 /**
  * הנכס והסביבה: מפה אינטראקטיבית (כל הרמות) · צילום הבניין ומפה אזורית (VIP).
@@ -169,6 +170,11 @@ export default function PropertyImagery({
               כאן המשתמש מסתובב בעצמו, ולכן מוצגת גם כשהצילום המכוון אינו
               `precise` (למשל מרחק פנורמה גדול שמקשה על חישוב כיוון אמין). */}
           <PanoramaPanel report={report} />
+
+          {/* "סיור רחוב" — ראה buildreport.ts על streetWalk. גרסת-ביניים כנה
+              לפריט 2 של P2 FEATURE (וידאו MP4 מקודד-ffmpeg, עדיין לא בנוי —
+              ffmpeg לא זמין בסביבת הבנייה). */}
+          <StreetWalkPanel report={report} />
 
           {/* מפה אזורית מתויגת — נכנסת גם ל-PDF ולמצגת, שם אין מפה אינטראקטיבית. */}
           <figure className="mt-4 overflow-hidden rounded-2xl border border-line bg-surface shadow-card">

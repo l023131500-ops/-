@@ -86,6 +86,11 @@ export function costBreakdown(tier: ReportTier, apifyMaxItems = 20): CostLine[] 
       detail: 'תמונת Street View + מפה סטטית',
       usd: UNIT_USD.streetViewImage + UNIT_USD.staticMap,
     });
+    lines.push({
+      label: 'סיור רחוב',
+      detail: 'עד 5 תמונות Street View נוספות לאורך הרחוב (בפועל רק כשיש כיסוי)',
+      usd: 5 * UNIT_USD.streetViewImage,
+    });
   }
 
   return lines;

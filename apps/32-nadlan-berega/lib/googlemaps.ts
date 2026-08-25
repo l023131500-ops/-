@@ -531,7 +531,7 @@ export async function streetViewMeta(lat: number, lng: number): Promise<StreetVi
 // ‎bearingDeg‎, ‎AimQuality‎ ו-‎aimQuality‎ עברו ל-`./aim` — גאומטריה טהורה בלי
 // רשת, ולכן ניתנת להרצה בבדיקה. ראה ההסבר שם ואת scripts/qa/streetview-aim.mjs.
 // מיוצאות מחדש כאן כדי שכל היבוא הקיים ימשיך לעבוד ללא שינוי.
-export { bearingDeg } from './aim';
+export { bearingDeg, destinationPoint } from './aim';
 export { aimQuality };
 export type { AimQuality, PanoMeta } from './aim';
 

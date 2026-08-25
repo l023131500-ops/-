@@ -11,6 +11,7 @@ import {
   addWalkingTimes,
   streetViewMeta,
   aimQuality,
+  destinationPoint,
   mergePlaces,
   primaryNearest,
   isPreschoolName,
@@ -183,6 +184,14 @@ export interface PropertyReport {
         mapillaryImageUrl?: string;
       }
     | null;
+  /**
+   * §2 · "סיור רחוב" — רצף תמונות Street View אמיתיות ומתוארכות לאורך הרחוב
+   * (VIP בלבד, כמו `streetView`/`panorama`). כל נקודה מוצגת דרך
+   * `/api/image?kind=street` בדיוק כמו צילום הבניין הבודד — לא וידאו מקודד.
+   * `null` כשאין עוגן אמין לרחוב (בלי `streetView.precise`) או פחות משלוש
+   * נקודות עם כיסוי אמיתי.
+   */
+  streetWalk: { points: { lat: number; lng: number }[]; date: string | null } | null;
   /** דירה בבניין או בית שהנכס הוא כולו — משנה את מה שהדוח מתאר. */
   propertyKind: PropertyKindResult;
   /** איך הבניין זוהה, ומה נמצא בו. שקיפות מלאה — כולל אי-התאמות. */
@@ -1119,6 +1128,59 @@ export async function buildReport(
     } else if (mapillaryConfigured()) {
       const shot = await mapillaryNearest(lat, lng);
       if (shot) panorama = { source: 'mapillary', date: shot.date, lat, lng, mapillaryImageUrl: shot.imageUrl };
+    }
+  }
+
+  /**
+   * §2 · "סיור רחוב" — P2 FEATURE (core.projects #33, 25/08/2026) פריט 2 ביקש
+   * וידאו MP4 מקודד-ffmpeg מדגימת פריימים לאורך הרחוב; ffmpeg (וגם
+   * node_modules בכלל) אינו זמין בסביבת הפיתוח הנוכחית בשום סבב עד כה (ראה
+   * CLAUDE.md). זו גרסת-ביניים כנה במקום לא לספק כלום: רצף תמונות Street
+   * View אמיתיות ומתוארכות לאורך הרחוב — לא וידאו מקודד, ומתויג ככזה ב-UI.
+   * פריט ה-MP4 עצמו נשאר פתוח.
+   *
+   * העוגן הוא מיקום הפנורמה הקרובה ביותר לנכס (`streetViewMetaRes` — נמצאת
+   * בפועל **על** הכביש, בשונה מקואורדינטת הנכס עצמה שיכולה להיות מוסטת
+   * פנימה מהרחוב), והכיוון הוא ניצב לאזימוט "מהפנורמה אל הבניין" שכבר חושב
+   * ב-`svAim.heading` — כלומר לאורך הרחוב, לא לרוחבו. `svAim.ok` (לא רק
+   * `streetViewMetaRes.available`) נבחר בכוונה: אם המרחק/הכיוון לא מהימנים
+   * מספיק לצילום הבודד (`aimQuality`), הם גם לא עוגן אמין להליכה על הרחוב.
+   *
+   * כל נקודת-מועמד נבדקת בנפרד מול `streetViewMeta` (חינמי — ראה
+   * `lib/costs.ts`) כדי לא להציג נקודה בלי כיסוי אמיתי, ונקודות עוקבות
+   * שנופלות על **אותה** פנורמה בדיוק (כיסוי דליל בקטע הזה של הרחוב) מכווצות
+   * לאחת — בלי מסגרות כפולות זהות ב"סיור".
+   */
+  let streetWalk: PropertyReport['streetWalk'] = null;
+  if (
+    lat != null &&
+    lng != null &&
+    tierMayUseImagery(tier) &&
+    svAim?.ok &&
+    svAim.heading != null &&
+    streetViewMetaRes?.lat != null &&
+    streetViewMetaRes?.lng != null
+  ) {
+    const anchorLat = streetViewMetaRes.lat;
+    const anchorLng = streetViewMetaRes.lng;
+    const alongStreet = (svAim.heading + 90) % 360;
+    const offsetsM = [-40, -20, 0, 20, 40];
+    const candidates = offsetsM.map((o) => destinationPoint(anchorLat, anchorLng, alongStreet, o));
+    const metas = await Promise.all(
+      candidates.map((c) => streetViewMeta(c.lat, c.lng).catch(() => null)),
+    );
+    const points: { lat: number; lng: number }[] = [];
+    let lastPanoKey: string | null = null;
+    for (let i = 0; i < candidates.length; i++) {
+      const m = metas[i];
+      if (!m?.available || m.lat == null || m.lng == null) continue;
+      const panoKey = `${m.lat.toFixed(6)},${m.lng.toFixed(6)}`;
+      if (panoKey === lastPanoKey) continue;
+      lastPanoKey = panoKey;
+      points.push(candidates[i]);
+    }
+    if (points.length >= 3) {
+      streetWalk = { points, date: streetViewMetaRes.date };
     }
   }
 
@@ -3382,6 +3444,7 @@ export async function buildReport(
     location: { lat, lng, itmX, itmY },
     streetView,
     panorama,
+    streetWalk,
     propertyKind,
     building,
     parcelIdentity,
