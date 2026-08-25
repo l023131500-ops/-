@@ -212,6 +212,7 @@ td.num{font-variant-numeric:tabular-nums;white-space:nowrap}
       <button class="tab" data-view="properties">נכסים</button>
       <button class="tab" data-view="documents">מסמכים</button>
       <button class="tab" data-view="tasks">משימות</button>
+      <button class="tab" data-view="team">צוות</button>
     </div>
     <select class="office-pick" id="officePick" hidden aria-label="בחירת משרד"></select>
   </div>
@@ -343,6 +344,14 @@ td.num{font-variant-numeric:tabular-nums;white-space:nowrap}
     </div>
   </section>
 
+  <section class="panel" id="viewTeam" hidden>
+    <div class="wrap">
+      <h1 class="page display">צוות</h1>
+      <p class="sub">חברי הצוות במשרד, והזמנות ממתינות. קישור הזמנה בתוקף ל-14 יום ומיועד לשימוש חד-פעמי.</p>
+      <div id="teamBody"></div>
+    </div>
+  </section>
+
   <section class="panel" id="viewError" hidden>
     <div class="wrap"><div class="err" id="errText"></div></div>
   </section>
@@ -438,6 +447,7 @@ const PDOCCAT_HE = {
   appraisal: 'חוות דעת שמאי', poa: 'ייפוי כוח', id_copy: 'צילום ת.ז.',
   contract_draft: 'טיוטת חוזה', other: 'אחר',
 };
+const ROLE_HE = { owner: 'בעלים', manager: 'מנהל', agent: 'מתווך' };
 
 let ME = null;        // np_me()
 let OFFICE = null;    // the selected office row
@@ -466,7 +476,7 @@ function fail(msg) {
 
 function show(id) {
   for (const s of ['booting', 'viewSetup', 'viewDash', 'viewBoard', 'viewContacts',
-                   'viewProperties', 'viewDocuments', 'viewTasks', 'viewError']) {
+                   'viewProperties', 'viewDocuments', 'viewTasks', 'viewTeam', 'viewError']) {
     $(s).hidden = s !== id;
   }
 }
@@ -479,7 +489,8 @@ function setView(name) {
   }
   history.replaceState(null, '', '?v=' + name);
   const map = { dash: renderDash, board: renderBoard, contacts: renderContacts,
-                properties: renderProperties, documents: renderDocuments, tasks: renderTasks };
+                properties: renderProperties, documents: renderDocuments, tasks: renderTasks,
+                team: renderTeam };
   show('view' + name[0].toUpperCase() + name.slice(1));
   map[name]();
 }
@@ -517,7 +528,7 @@ function drawer(title, subtitle, bodyHtml, onMount) {
 async function renderDash() {
   const body = $('dashBody');
   $('dashSub').textContent = OFFICE
-    ? OFFICE.name + ' · ' + ({ owner: 'בעלים', manager: 'מנהל', agent: 'מתווך' }[OFFICE.role] || OFFICE.role)
+    ? OFFICE.name + ' · ' + (ROLE_HE[OFFICE.role] || OFFICE.role)
     : '';
   body.innerHTML = '<p class="loading"><span class="spinner"></span>טוען…</p>';
 
@@ -1851,6 +1862,145 @@ function taskForm(ctx) {
   });
 }
 
+/* ── team ────────────────────────────────────────────────────────────────── */
+// Hardcoded origin, same reasoning as shareHtml()'s public listing link: a
+// join link is meant to be forwarded to someone outside the app (WhatsApp,
+// SMS), and must be the real public domain even when this page is loaded
+// from a preview/staging URL.
+function joinLinkFor(code) { return 'https://more30.com/tivuch/app?join=' + encodeURIComponent(code); }
+
+async function renderTeam() {
+  const body = $('teamBody');
+  body.innerHTML = '<p class="loading"><span class="spinner"></span>טוען…</p>';
+
+  const canManage = OFFICE.role === 'owner' || OFFICE.role === 'manager';
+  let members, invites;
+  try {
+    [members, invites] = await Promise.all([
+      rpc('np_office_members', { p_office: OFFICE.id }),
+      canManage ? rpc('np_member_invites_list', { p_office: OFFICE.id }) : Promise.resolve([]),
+    ]);
+  } catch (e) { body.innerHTML = '<div class="err">' + esc(e.message) + '</div>'; return; }
+
+  members = (members || []).filter((m) => m.is_active);
+  const ownerCount = members.filter((m) => m.role === 'owner').length;
+  const roleOpts = (selected, offerOwner) => Object.entries(ROLE_HE)
+    .filter(([k]) => offerOwner || k !== 'owner')
+    .map(([k, l]) => '<option value="' + k + '"' + (selected === k ? ' selected' : '') + '>' + l + '</option>').join('');
+
+  let html = '<div class="table-scroll"><table><thead><tr>' +
+    '<th>שם</th><th>רישיון</th><th>טלפון</th><th>דוא״ל</th><th>תפקיד</th>' + (canManage ? '<th></th>' : '') +
+    '</tr></thead><tbody>' +
+    members.map((m) => {
+      const self = m.user_id === ME.user_id;
+      // The last active owner can't be demoted or removed here — the RPCs
+      // enforce this too (would_strand_office), but disabling it in the UI
+      // turns a server error into a self-explanatory disabled control.
+      const lastOwner = m.role === 'owner' && ownerCount <= 1;
+      const roleCell = canManage
+        ? '<select data-role="' + m.user_id + '"' + (lastOwner ? ' disabled title="לא ניתן לשנות — הבעלים היחיד של המשרד"' : '') +
+          '>' + roleOpts(m.role, OFFICE.role === 'owner' || m.role === 'owner') + '</select>'
+        : '<span class="pill">' + esc(ROLE_HE[m.role] || m.role) + '</span>';
+      const removeCell = canManage
+        ? '<td>' + (self || lastOwner ? '' :
+            '<button class="btn btn-danger btn-sm" data-remove="' + m.user_id + '">הסרה</button>') + '</td>'
+        : '';
+      return '<tr><td>' + v(m.full_name) + (self ? ' <span class="pill">אני</span>' : '') + '</td>' +
+        '<td>' + v(m.license_number) + '</td><td>' + v(m.phone) + '</td><td>' + v(m.email) + '</td>' +
+        '<td>' + roleCell + '</td>' + removeCell + '</tr>';
+    }).join('') + '</tbody></table></div>';
+
+  if (canManage) {
+    const pending = (invites || []).filter((i) => !i.used_at && !i.revoked_at && new Date(i.expires_at) > new Date());
+    html += '<h2 class="sec">הזמנות ממתינות</h2>' + (pending.length
+      ? '<ul class="timeline">' + pending.map((i) =>
+          '<li><b>' + esc(i.code) + '</b> · <span class="pill">' + esc(ROLE_HE[i.role] || i.role) + '</span>' +
+          (i.full_name ? ' · ' + esc(i.full_name) : '') + ' · בתוקף עד ' + dt(i.expires_at) +
+          ' <button class="btn btn-sm" data-copyjoin="' + esc(i.code) + '">העתקת קישור</button>' +
+          ' <button class="btn btn-danger btn-sm" data-revoke="' + i.id + '">ביטול</button></li>').join('') + '</ul>'
+      : '<p class="na">אין הזמנות ממתינות.</p>');
+
+    html += '<h2 class="sec">הזמנת חבר צוות</h2><div id="ivErr"></div><div class="controls">' +
+      '<label class="f">שם (לא חובה)<input id="iv_name" /></label>' +
+      '<label class="f">תפקיד<select id="iv_role">' + roleOpts('agent', OFFICE.role === 'owner') + '</select></label>' +
+      '<label class="f">טלפון<input id="iv_phone" /></label>' +
+      '<label class="f">דוא״ל<input id="iv_email" type="email" /></label>' +
+      '<span class="spacer"></span><button class="btn" id="ivCreate">יצירת קישור הזמנה</button></div>';
+  }
+
+  body.innerHTML = html;
+  wireTeamBody(canManage);
+}
+
+function wireTeamBody(canManage) {
+  const body = $('teamBody');
+  if (!canManage) return;
+
+  for (const sel of body.querySelectorAll('[data-role]')) {
+    const prev = sel.value;
+    sel.addEventListener('change', async () => {
+      sel.disabled = true;
+      try {
+        await rpc('np_member_role_set', { p_office: OFFICE.id, p_user_id: sel.dataset.role, p_role: sel.value });
+        toast('התפקיד עודכן');
+        renderTeam();
+      } catch (e) { sel.value = prev; sel.disabled = false; toast('העדכון נכשל: ' + e.message, true); }
+    });
+  }
+
+  for (const btn of body.querySelectorAll('[data-remove]')) {
+    btn.addEventListener('click', async () => {
+      if (!confirm('להסיר את חבר הצוות מהמשרד? הוא יאבד גישה מיידית.')) return;
+      btn.disabled = true;
+      try {
+        await rpc('np_member_remove', { p_office: OFFICE.id, p_user_id: btn.dataset.remove });
+        toast('חבר הצוות הוסר');
+        renderTeam();
+      } catch (e) { btn.disabled = false; toast('ההסרה נכשלה: ' + e.message, true); }
+    });
+  }
+
+  for (const btn of body.querySelectorAll('[data-copyjoin]')) {
+    btn.addEventListener('click', async () => {
+      const url = joinLinkFor(btn.dataset.copyjoin);
+      try { await navigator.clipboard.writeText(url); toast('קישור ההזמנה הועתק'); }
+      catch (e) { window.prompt('העתיקו את קישור ההזמנה:', url); }
+    });
+  }
+
+  for (const btn of body.querySelectorAll('[data-revoke]')) {
+    btn.addEventListener('click', async () => {
+      if (!confirm('לבטל את ההזמנה? הקישור יפסיק לעבוד מיד.')) return;
+      btn.disabled = true;
+      try {
+        await rpc('np_member_invite_revoke', { p_id: btn.dataset.revoke });
+        toast('ההזמנה בוטלה');
+        renderTeam();
+      } catch (e) { btn.disabled = false; toast('הביטול נכשל: ' + e.message, true); }
+    });
+  }
+
+  const create = $('ivCreate');
+  if (create) create.addEventListener('click', async () => {
+    create.disabled = true;
+    try {
+      const code = await rpc('np_member_invite_create', {
+        p_office: OFFICE.id, p_role: $('iv_role').value,
+        p_full_name: $('iv_name').value.trim() || null,
+        p_phone: $('iv_phone').value.trim() || null,
+        p_email: $('iv_email').value.trim() || null,
+      });
+      const url = joinLinkFor(code);
+      try { await navigator.clipboard.writeText(url); toast('נוצרה הזמנה — הקישור הועתק, שלחו אותו למוזמן'); }
+      catch (e) { window.prompt('נוצרה הזמנה. העתיקו את הקישור ושלחו למוזמן:', url); }
+      renderTeam();
+    } catch (e) {
+      $('ivErr').innerHTML = '<div class="err">' + esc(e.message) + '</div>';
+      create.disabled = false;
+    }
+  });
+}
+
 /* ── boot ────────────────────────────────────────────────────────────────── */
 async function requireSession() {
   const { data } = await sb.auth.getSession();
@@ -1876,6 +2026,26 @@ async function boot() {
   try { ME = await rpc('np_me'); }
   catch (e) { return fail('טעינת החשבון נכשלה: ' + e.message); }
 
+  // A team-invite join link (created by the "הזמנת חבר צוות" form in
+  // renderTeam() below) lands here as ?join=CODE — before the "no offices
+  // yet" branch below, since the whole
+  // point is to let a brand-new agent (zero offices) skip viewSetup and land
+  // straight in the office they were invited to, the same as an existing
+  // agent joining a second one. One-time by construction: np_member_invite_redeem
+  // marks the code used_at on first success, so reloading this URL after
+  // redemption just re-shows the same "invalid or already used" error a
+  // stale/reused link would.
+  const joinCode = new URLSearchParams(location.search).get('join');
+  if (joinCode) {
+    history.replaceState(null, '', location.pathname); // never re-submit the code on reload
+    try {
+      const joined = await rpc('np_member_invite_redeem', { p_code: joinCode });
+      ME = await rpc('np_me');
+      try { localStorage.setItem('np-office', joined.office_id); } catch (e) {}
+      toast('הצטרפת למשרד ' + joined.office_name);
+    } catch (e) { toast(e.message, true); }
+  }
+
   if (!ME.offices || !ME.offices.length) { show('viewSetup'); return; }
 
   const sel = $('officePick');
@@ -1889,7 +2059,7 @@ async function boot() {
   pickOffice(saved && ME.offices.some((o) => o.id === saved) ? saved : ME.offices[0].id);
 
   const want = new URLSearchParams(location.search).get('v');
-  setView(['dash', 'board', 'contacts', 'properties', 'documents', 'tasks'].includes(want) ? want : 'dash');
+  setView(['dash', 'board', 'contacts', 'properties', 'documents', 'tasks', 'team'].includes(want) ? want : 'dash');
 }
 
 $('officePick').addEventListener('change', (e) => { pickOffice(e.target.value); setView(VIEW); });
