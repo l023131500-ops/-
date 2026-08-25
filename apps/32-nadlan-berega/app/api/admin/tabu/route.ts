@@ -12,6 +12,7 @@ import { adminGate } from '@/lib/adminauth';
 import {
   claimTabuAnalysis,
   failTabuAnalysis,
+  fulfillMatchingTabuRequests,
   getTabuDocument,
   listTabuDocuments,
   saveTabuAnalysis,
@@ -205,6 +206,14 @@ export async function POST(req: NextRequest) {
     }
 
     await saveTabuAnalysis(id, res.analysis, res.rawText);
+    await fulfillMatchingTabuRequests({
+      id,
+      gush: claimed.gush,
+      helka: claimed.helka,
+      tatHelka: claimed.tat_helka,
+      entrance: claimed.entrance,
+      scope: claimed.scope,
+    }).catch(() => null); // best-effort — ניתוח כבר הצליח ונשמר, אין לחסום עליו
     return NextResponse.json({ ok: true, analysis: res.analysis });
   } catch (e: any) {
     const msg = e?.message ?? String(e);

@@ -597,3 +597,56 @@ export async function recordTabuRequestEmailResult(
     .eq('id', id);
 }
 
+/**
+ * שיוך נסח שנותח בפועל לבקשות-לקוח ממתינות/שנשלחו לאותו נכס — "הושלם" הופך
+ * זמין ללקוח (`tabuForProperty`/`tabuBlock` במייל) רק אחרי ניתוח, לא רק
+ * העלאה גולמית; ראו ההערה על `tabu_document_id` ב-`0150_nadlan_tabu_requests.sql`:
+ * "Set once the extract that answers this request is uploaded+analyzed".
+ * לכן זה נקרא מ-`POST /api/admin/tabu` (אחרי `saveTabuAnalysis`), לא מ-`PUT`
+ * (העלאה גולמית) — בקשה לא מסומנת "הושלם" על סמך קובץ שעדיין לא נקרא.
+ *
+ * ⚠️ בכוונה לא נועל/לא נוגע ב-`TabuPanel` הקיים (`RequestsBoard.tsx`, העלאה
+ * יזומה ע"י צוות ללא בקשת-לקוח קודמת) — זו יכולת קיימת שממשיכה לעבוד זהה גם
+ * כשאין שום בקשה תואמת (0 שורות מתעדכנות, לא שגיאה).
+ *
+ * כלל ההתאמה משקף בדיוק את דירוג-הרלוונטיות הקיים כבר ב-`tabuForProperty`:
+ * נסח בהיקף "בניין שלם" עונה על כל בקשה לאותו גוש/חלקה; נסח "דירה"/"כניסה"
+ * עונה רק על בקשה שלא ציינה תת-חלקה/כניסה, או ציינה בדיוק את אותה אחת.
+ */
+export async function fulfillMatchingTabuRequests(doc: {
+  id: number;
+  gush: string | null;
+  helka: string | null;
+  tatHelka: string | null;
+  entrance: string | null;
+  scope: TabuScope;
+}): Promise<void> {
+  if (!doc.gush || !doc.helka) return;
+  const db = serviceStore();
+  if (!db) return;
+  const { data, error } = await db
+    .from('tabu_requests')
+    .select('id, tat_helka, entrance')
+    .eq('gush', doc.gush)
+    .eq('helka', doc.helka)
+    .in('status', ['pending', 'sent']);
+  if (error || !data) return;
+
+  const covers = (r: { tat_helka: string | null; entrance: string | null }): boolean => {
+    if (doc.scope === 'building') return true;
+    if (doc.scope === 'apartment') return !r.tat_helka || r.tat_helka === doc.tatHelka;
+    if (doc.scope === 'entrance') return !r.entrance || r.entrance === doc.entrance;
+    return false;
+  };
+
+  const ids = (data as { id: number; tat_helka: string | null; entrance: string | null }[])
+    .filter(covers)
+    .map((r) => r.id);
+  if (!ids.length) return;
+
+  await db
+    .from('tabu_requests')
+    .update({ status: 'fulfilled', fulfilled_at: new Date().toISOString(), tabu_document_id: doc.id })
+    .in('id', ids);
+}
+
