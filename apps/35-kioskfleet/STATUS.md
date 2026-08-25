@@ -7129,3 +7129,68 @@ to that constraint: they import only dependency-free modules (`hosts.js`,
   feature chain, the payment code (explicitly out of scope per the project
   note's PCI-DSS constraint), or `core.issues #215`
   (monorepo-vs-zol tree divergence), both unaffected by this round.
+
+- **[25/08/2026, Loop A] Found and fixed a 10th instance of the same
+  unvalidated-write-path class — but the first one reachable with **no
+  authentication at all**: `POST /api/auth/login`, `POST
+  /api/auth/change-password`, `POST /api/admin/users`, and `POST
+  /api/admin/users/:id/reset-password` (`routes/auth.js`, `routes/admin.js`)
+  only ever did a truthiness/`.length` check on `username`/`password`
+  before handing the raw value to a `better-sqlite3` bind (username) or
+  `bcryptjs`'s `hashSync`/`compareSync` (password) — same class as the 9
+  prior fixes (`policy.js` device name, `users.js` fullName, `agent.js`
+  commandId, `names.js` name, etc.), but every previous instance required an
+  authenticated session first. A numeric/object/array `password` on
+  `/login`, or an object/array/boolean `username` on `POST /admin/users`,
+  reaches bcrypt/SQLite raw and crashes with a raw, unhandled 500 stack
+  trace — from the public, unauthenticated login endpoint. An 8-element
+  array `password` also slipped past the old `.length < 8` check on POST
+  `/admin/users` undetected (arrays have a `.length`) before reaching
+  bcrypt and crashing there instead.
+
+  Reproduced live first, real server against a scratch DB, seeded admin:
+  `POST /api/auth/login {"username":"admin","password":12345678}` → 500
+  `Error: Illegal arguments: number, string` at `bcrypt.compareSync`; same
+  route with `password:{"a":1}` → 500 `Illegal arguments: object, string`;
+  `POST /api/admin/users {"username":{"pwn":1},"password":"12345678"}` → 500
+  `RangeError: Too few parameter values were provided` at the `username`
+  SELECT bind; array username → `RangeError: Too many parameter values`;
+  boolean username → `TypeError: SQLite3 can only bind numbers, strings,
+  bigints, buffers, and null`; numeric password on user-create → 500 at
+  `hashPassword`; numeric password on `reset-password` → same; numeric
+  `currentPassword` on `change-password` → same at `verifyPassword`. Six
+  distinct crash sites, all unauthenticated or admin-authenticated the same
+  shape as every prior entry on this chain, but `/login` itself needs no
+  token at all.
+
+  Fixed with a new shared `credentials.js`: `validateUsername` (type +
+  trim + 64-char cap, same shape as `names.js`), `validatePassword`
+  (type + configurable min-length policy + caller label, for *setting* a
+  password — creation, admin reset, self-service change), and
+  `requireNonEmptyString` (type-only check with no length policy, for
+  *checking* a password already on file — login, change-password's
+  `currentPassword` — since a wrong/short existing password is "wrong
+  password" 401/403, not a validation error). New `test/credentials.test.mjs`
+  (13 cases: type rejection for both fields including an 8-element array
+  password, trim/empty rejection, length cap, label customization). Full
+  suite: baseline 163/163 → **170/170** after, zero regressions.
+
+  Re-verified live after the fix, same scratch DB: all six previously-
+  crashing requests now return a clean 400 (`"שם משתמש חייב להיות טקסט"` /
+  `"סיסמה חייבת להיות טקסט"` / the existing 8-char-minimum wording) instead
+  of a raw stack trace; a wrong-but-well-typed login password still answers
+  the original 401 `"שם משתמש או סיסמה שגויים"` (not 400 — behavior
+  unchanged for a real wrong-password attempt); every happy path (normal
+  login, user creation with fullName, password reset, self-service password
+  change, then a fresh login with the *new* password to confirm the hash
+  actually took) still returns 200 with correct data, confirmed as a
+  control.
+
+  Committed + pushed to `l023131500-ops/zol` branch
+  `fix/kiosk-username-password-crash-validation-0825` (`c6bd452`), off the
+  live tip (`985ac8e`, the name-crash-validation fix recorded above) — not
+  merged, same human-review convention as every prior fix branch on this
+  chain. Zero Android/Kotlin/Windows work touched. Did not touch the still-
+  parked feature chain, the payment code (explicitly out of scope per the
+  project note's PCI-DSS constraint), or `core.issues #215`
+  (monorepo-vs-zol tree divergence), both unaffected by this round.
