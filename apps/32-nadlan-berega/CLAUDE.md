@@ -1,5 +1,71 @@
 # CLAUDE.md — נדל"ן ברגע (קרא אותי בתחילת כל סשן)
 
+## עדכון — 25/08/2026 (Loop A, session 11 — build_tasks id=7: יומן ביקורת מלא במרכז השליטה)
+`core.build_tasks` id=6 (priority 60) נשאר `todo` בכוונה: חלק (c) שלו ("data
+behind Enter-System login") הוא קונפליקט ממשי מתועד מול זכות-קיימת
+(דוח-חינמי-בלי-הרשמה/שיתוף-וואטסאפ), לא "עוד לא הגעתי" — ראה הרשומה למטה
+(session 9) לניתוח המלא. במקום לחזור על אותה בדיקה, הסבב הזה עבר ל-id=7
+(priority 70, "every search and produced report fully visible — full
+detail... full audit trail"), עדיין `todo`/לא-מתועד עד היום.
+
+בדיקה מצאה ש-`SavedReportsBoard.tsx` (מרכז השליטה) כבר מציג את כל הנכסים
+שנבדקו, אבל רק **מונה מצטבר** (`generations`/`views`) — לא יומן-אירועים
+ברמת-בקשה. שני מקורות-נתונים לרמת-האירוע כבר קיימים בפועל, פשוט לא נקראו
+משום מקום: (1) `nadlan.saved_report_versions` (141 שורות בפועל) — נכתבת
+בכל `saveReport()` (`lib/savedreports.ts`) עם תג-זמן/רמה/סוג-נכס לכל הפקה
+בפועל, אבל שום קוד לא קרא ממנה מעולם. (2) `nadlan.report_exports` — נרשמת
+בכל הורדת PDF/מצגת (`logExport()`, `lib/store.ts`), אבל `property_id`
+תמיד היה `null`: `logExport` קיבל את `propertyKey` כפרמטר ומעולם לא כתב
+אותו לשום עמודה — **באג אמיתי**, לא רק שדה לא-מנוצל. חקירה נוספת גילתה
+שגם אם הפרמטר היה נכתב, זה לא היה עוזר: `report_exports.property_id` הוא
+`bigint` עם FK ל-`nadlan.properties` — טבלה **אחרת לגמרי**, שייכת לתכונת
+"כרטיס זיהוי נכס" הישנה (`app/api/profile`, `PropertyIdCard.tsx`,
+`cacheProfile()`), לא לזרם-הדוח החי (`/report`) שמזהה הכל לפי `slug`
+(`text`, `saved_reports.slug` — אותו מפתח בדיוק ש-`street_video_cache`/
+`tabu_documents` כבר משתמשים בו). כתיבת `propertyKey` הגולמי (`q`, מחרוזת
+חיפוש חופשית) לעמודת `bigint` שמפנה לזהות-נכס לגמרי אחרת לא הייתה מתקנת
+כלום — הייתה רק מחליפה `null` בערך שגוי.
+
+**התיקון:** מיגרציה `0156` מוסיפה `nadlan.report_exports.slug` (FK ל-
+`saved_reports.slug`, אותו מודל-זהות כמו כל שאר הטבלאות בזרם הזה) —
+`property_id`/`nadlan.properties` לא נגעו, התכונה הישנה ממשיכה לעבוד זהה.
+`ReportView.tsx`/`Presentation.tsx` חושפים עכשיו את ה-`permalink` של הדוח
+שרונדר בפועל דרך תכונת `data-permalink` (על `[data-cat]`'s parent ועל
+`[data-deck-ready]` בהתאמה) — `/api/pdf`/`/api/deck` (Puppeteer headless)
+קוראים אותה אחרי הרינדור ומעבירים ל-`logExport`, כך שכל הורדה משוייכת
+לנכס הנכון סוף-סוף. `lib/savedreports.ts` מקבל `listVersionsBySlug`,
+`lib/store.ts` מקבל `listExportsBySlug`, ו-`GET /api/admin/saved/history?
+slug=` חדש מאחד את שניהם. `SavedReportsBoard.tsx`: כל שורת-נכס מקבלת
+כפתור "יומן ביקורת" שנטען בעצלנות ומרנדר את כל האירועים (הפקות+הורדות)
+ממוינים לפי זמן — לא רק שני מספרים מצטברים.
+
+**"who produced" לא מומש:** `/report`/`/present` הם עמודים ציבוריים לגמרי
+בלי התחברות (אותה החלטת-ארכיטקטורה מתועדת ב-session 9/5 למטה — דוח-חינמי-
+בלי-הרשמה ושיתוף-וואטסאפ) — אין זהות-משתמש לשייך לאירוע-חיפוש כלשהו, אותה
+מגבלה בדיוק כמו כל שאר הזרם הציבורי הזה. "status" מיוצג ע"י סוג-האירוע עצמו
+(הפקת-דוח לפי רמה / הורדת-PDF / הורדת-מצגת), לא שדה-סטטוס נפרד שלא קיים לו
+משמעות בזרם הזה.
+
+אומת חי ב-MCP: `BEGIN;...ROLLBACK;` לפני ההחלה (insert+join על העמודה
+החדשה מול שורה אמיתית ב-`saved_reports`) ואז `apply_migration` אמיתי;
+טרנזקציה מגולגלת-לאחור נוספת אחרי ההחלה שכפלה את שתי השאילתות
+(`listExportsBySlug`/`listVersionsBySlug`) מול נתונים אמיתיים — כולל שורת
+`saved_report_versions` היסטורית אמיתית (מ-05/08/2026, לא נוצרה בבדיקה הזו)
+שחזרה נכון מהצירוף. `SELECT count(*) WHERE report_type='test_pdf'` אחרי
+כל הבדיקות = 0 (אפס שיוריות); `report_type='pdf_vip'` (10 שורות אמיתיות
+מ-24/08) אושרו כנתונים קיימים-מראש, לא תוצר של הבדיקה. `get_advisors`
+(security+performance) אחרי ההחלה: רק `rls_enabled_no_policy` הצפוי (אותה
+עמדה כמו `saved_reports`/`saved_report_versions`) ו-`unused_index` על
+האינדקס החדש (טבעי, טרם נסרק) — אין אזהרה חדשה/בלתי-צפויה. בדיקת
+איזון-סוגריים על כל 8 הקבצים שנוספו/שונו עברה נקי. אין `node_modules`/
+דפדפן בסביבה הזו לקליק-דרך, אותה מגבלה כמו כל סבב `apps/32` קודם.
+
+אפס רגרסיה: `report_exports.property_id`/`nadlan.properties` (זרם-ה-
+"כרטיס-זיהוי" הישן) לא נגעו; המונים המצטברים הקיימים ב-`SavedReportsBoard`
+לא שונו — יומן-הביקורת הוא הרחבה תוספתית (שורה-נפתחת-לפי-דרישה) בלבד.
+נדחף לענף `fix/32-nadlan-berega-saved-reports-audit-trail-0825` (55711503)
+— לא מוזג. System 35 KioskFleet לא נגע, לפי ה-HARD STEERING.
+
 ## עדכון — 25/08/2026 (Loop A, system 36 nadlan-pro — תיק מידע להיתר, build_tasks id=12 חלק 2 נסגר)
 `core.build_tasks` id=12 (system 36, priority 50): "Planning info auto-pull
 shown immediately; tik-meida-le-heter as official request workflow
