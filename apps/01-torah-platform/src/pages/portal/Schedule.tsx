@@ -20,7 +20,7 @@ export default function Schedule() {
   const { user } = useAuth();
   const qc = useQueryClient();
   const [open, setOpen] = useState(false);
-  const [form, setForm] = useState<any>({ title: "", teacher_name: "", description: "", location: "", time: "", days_of_week: [] as number[], audience: "", lesson_type: "", contact_phone: "", is_public: true, is_active: true });
+  const [form, setForm] = useState<any>({ title: "", teacher_name: "", description: "", location: "", time: "", days_of_week: [] as number[], audience: "", lesson_type: "", contact_phone: "", is_active: true });
 
   const { data: lessons } = useQuery({
     queryKey: ["my-lessons", tenant?.id, user?.id],
@@ -33,13 +33,34 @@ export default function Schedule() {
 
   const create = useMutation({
     mutationFn: async () => {
-      const { error } = await supabase.from("lessons").insert({ ...form, tenant_id: tenant!.id, created_by: user!.id });
+      // "lessons" has no teacher_name/location/time/days_of_week[]/lesson_type/is_public
+      // columns (post-multi-tenant-migration schema) — map to the real columns
+      // (rabbi_name/address/time_hhmm/day_of_week int/style), same rename this
+      // table's other screens (e.g. portal/Lessons.tsx) already went through.
+      // day_of_week is one int per row, so a lesson recurring on several days
+      // becomes several rows, same convention portal/Lessons.tsx uses.
+      const base = {
+        tenant_id: tenant!.id,
+        title: form.title,
+        rabbi_name: form.teacher_name || null,
+        description: form.description || null,
+        address: form.location || null,
+        time_hhmm: form.time || null,
+        audience: form.audience || null,
+        style: form.lesson_type || null,
+        contact_phone: form.contact_phone || null,
+        is_active: form.is_active,
+      };
+      const rows = form.days_of_week.length > 0
+        ? form.days_of_week.map((d: number) => ({ ...base, day_of_week: d }))
+        : [base];
+      const { error } = await supabase.from("lessons").insert(rows);
       if (error) throw error;
     },
     onSuccess: () => {
       toast.success("שיעור נוסף");
       setOpen(false);
-      setForm({ title: "", teacher_name: "", description: "", location: "", time: "", days_of_week: [], audience: "", lesson_type: "", contact_phone: "", is_public: true, is_active: true });
+      setForm({ title: "", teacher_name: "", description: "", location: "", time: "", days_of_week: [], audience: "", lesson_type: "", contact_phone: "", is_active: true });
       qc.invalidateQueries({ queryKey: ["my-lessons"] });
     },
     onError: (e: any) => toast.error(e.message),
@@ -95,12 +116,12 @@ export default function Schedule() {
           <Card key={l.id}>
             <CardHeader>
               <CardTitle className="text-lg">{l.title}</CardTitle>
-              <div className="text-sm text-muted-foreground">{l.teacher_name}</div>
+              <div className="text-sm text-muted-foreground">{l.rabbi_name}</div>
             </CardHeader>
             <CardContent className="space-y-1 text-sm">
-              {l.location && <div>{l.location}</div>}
-              {l.time && <div>{l.time}</div>}
-              {Array.isArray(l.days_of_week) && <div className="flex gap-1">{l.days_of_week.map((d: number) => <Badge key={d} variant="secondary" className="text-xs">{DAYS[d]}</Badge>)}</div>}
+              {l.address && <div>{l.address}</div>}
+              {l.time_hhmm && <div>{l.time_hhmm}</div>}
+              {l.day_of_week != null && <div className="flex gap-1"><Badge variant="secondary" className="text-xs">{DAYS[l.day_of_week]}</Badge></div>}
               <div className="flex justify-end pt-2"><Button size="icon" variant="ghost" onClick={() => del.mutate(l.id)}><Trash2 className="h-4 w-4 text-destructive" /></Button></div>
             </CardContent>
           </Card>
