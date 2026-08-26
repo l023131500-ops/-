@@ -6416,3 +6416,66 @@
      System 35 KioskFleet לא נגע, per HARD STEERING; מערכות
      08/09/bkalut-app/bkalot-admin/`zr_*`/webhook NEDARIM3873/`csj`/
      `csj_src`/`igud`/15-egod לא נגעו.
+
+## 26/08/2026 (LOOP A, המשך אותו יום) — 01-torah-platform: העלאת "חומרי עזר" (portal/Materials.tsx) לא הייתה קיימת בכלל
+
+544. **ההקשר.** בדיקת `core.build_tasks` הראתה שכל שורות P2
+     (32+36) כבר `done` (ראו רשומה 462/ה-note של פרויקט 33 — "All
+     P2 (32+36) build_tasks rows now done"), אז המערכת עברה ל-P3
+     כמתחייב מ-GLOBAL PRIORITY ORDER. אין שורות `build_tasks` בכלל
+     ל-01/15, אז המשך באותה שיטת חקירה חופשית שכבר נבחרה על 01
+     (רשומה 462) — הפעם דרך `core.issues`. שלושת הפריטים הפתוחים על
+     `01-torah-platform` שם (#138 פוטר, #257 `PortalSettings.tsx`,
+     #259 `Matching.tsx`) כולם מסומנים `blocked_on` הכרעת-משתמש/מוצר
+     מפורשת (איזו עמודה להסתיר, איזה תרשים-ארכיטקטורה לבחור) — לא
+     נגעתי בהם כדי לא להמציא הכרעת-מוצר בשם המשתמש. סרקתי דפים
+     שעדיין לא נבדקו בסבבים קודמים (`Materials`/`Gallery`/`Forums`/
+     `Participants`/`StudySchedule`/`Tips`) בהשוואה לסכימה החיה.
+545. **מה נמצא.** `public.materials` (מיגרציה 002) הוא צינור מודרציה
+     שלם: עמודת `status` (`pending`/`approved`/`rejected`, ברירת
+     מחדל `pending`) + `rejection_reason`, `admin/Content.tsx` כבר
+     קיים ומאשר/דוחה/מוחק (תוקן בסבב קודם — a875b0d7), ה-bucket
+     `materials-media` כבר קיים (ציבורי-לקריאה, כתיבה למאומת, זרוע
+     במיגרציה 004), ואפילו יש דגל הרשאה `materials_upload` בשתי
+     רמות (`tenant_features` ברמת הטננט, `user_roles.permissions`
+     ברמת המגיד הבודד ב-`admin/TeacherFeatures.tsx`). אבל `grep`
+     גלובלי על `.from("materials")` בכל הריפו הראה **אפס** מקומות
+     שכותבים (`insert`) לטבלה — `portal/Materials.tsx` (העמוד היחיד
+     שמגיד רואה) רק קרא ממנה. כלומר כל שרשרת המודרציה שכבר בנויה
+     הייתה מתה: אין דרך שמגיד יעלה קובץ מלכתחילה, אז מסך האישור של
+     האדמין תמיד ריק והתכונה לא עבדה במאה אחוז, למרות שכל שאר החלקים
+     כבר קיימים. (הערה בצד: `user_roles.permissions.materials_upload`
+     ודגלי-האחים שלו — `bulk_upload`/`attendance`/`forums_access`/
+     `messaging`/`analytics` — נקראים אך ורק על-ידי מסך האדמין עצמו
+     ואינם נבדקים באף עמוד פורטל; זה חור נפרד ורחב-יותר, לא תוקן פה
+     כי גיוס הרשאות-פר-מגיד על תכונות שכבר עובדות היום לכל טננט-מנוי
+     (`member`/`moderator`/`tenant_admin` דרך ה-RLS הגנרי) מסוכן
+     לנעילה-בטעות של תכונות חיות — משאיר לסבב עתידי עם היקף מוגדר
+     בבירור.)
+546. **מה נבנה.** הוספתי דיאלוג העלאה ל-`portal/Materials.tsx`: קובץ
+     + כותרת + קטגוריה/תת-קטגוריה (מ-`MATERIAL_CATEGORIES` הקיים,
+     אותו מיפוי ש-`admin/Content.tsx` כבר מסנן לפיו) + תיאור. ההעלאה
+     הולכת ל-bucket `materials-media` (אותו תבנית-קוד בדיוק כמו
+     `portal/PortalSettings.tsx:89`), ואז `insert` לטבלה עם
+     `owner_user_id` מ-`useAuth()` ו-`media_kind` שנגזר מ-MIME type
+     של הקובץ. גם הוספתי badge של סטטוס (`pending`/`approved`/
+     `rejected` + סיבת-דחייה אם קיימת) לכל כרטיס — לפני כן המגיד לא
+     יכול היה לדעת בכלל אם הקובץ שלו אושר.
+547. **אימות + אפס רגרסיה.** `esbuild --jsx=automatic` + `node
+     --check` עברו נקי על הקובץ המתומלל; בדיקת איזון סוגריים נקייה
+     (83/83 מסולסלים, 80/80 עגולים, 12/12 מרובעים). אומת חי ב-MCP
+     מול `bieebmnm` בתוך `BEGIN...ROLLBACK`: הוקצה זמנית תפקיד
+     `member` לחשבון ה-QA האמיתי `test@more30.com` על הטננט האמיתי
+     `mc-galil`, ואז הורץ בדיוק צורת ה-`insert` שהטופס החדש שולח
+     תחת `set local role authenticated` + `request.jwt.claims` של
+     אותו משתמש (מדמה בקשה אמיתית מהאפליקציה נגד ה-RLS הגנרי
+     `has_tenant_role`) — הצליח, `status` קיבל כברירת מחדל `pending`,
+     וה-`select` של אותו חבר-טננט ראה בדיוק את השורה הזאת. `count(*)`
+     על שם השורה אחרי ה-`ROLLBACK` חזר 0 — אפס שאריות (גם
+     `user_roles` הזמני חזר ל-0). `git diff --stat` מאשר קובץ יחיד;
+     שאר לוגיקת התצוגה הקיימת (`file_url`/`title`/`description`)
+     נשארה בדיוק כפי שהייתה, תוספת בלבד (דיאלוג + badge). נדחף לענף
+     חדש `fix/01-torah-platform-materials-upload-missing-0826`
+     (6728fc8b) — לא מוזג. System 35 KioskFleet לא נגע, per HARD
+     STEERING; מערכות 08/09/bkalut-app/bkalot-admin/`zr_*`/webhook
+     NEDARIM3873/`csj`/`csj_src`/`igud`/15-egod לא נגעו.
