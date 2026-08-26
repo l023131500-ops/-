@@ -80,7 +80,7 @@ export default function Attendance() {
       }));
       const { error } = await supabase
         .from("attendance")
-        .upsert(rows, { onConflict: "tenant_id,lesson_id,participant_id,date" });
+        .upsert(rows, { onConflict: "participant_id,lesson_id,date" });
       if (error) throw error;
     },
     onSuccess: () => {

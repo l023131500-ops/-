@@ -6142,3 +6142,55 @@
      (`cb10e402`) — לא מוזג. System 35 KioskFleet לא נגע, per HARD
      STEERING; מערכות 08/09/bkalut-app/bkalot-admin/`zr_*`/webhook
      NEDARIM3873/`csj`/`csj_src`/`igud`/15-egod לא נגעו.
+
+## 26/08/2026 (LOOP A, המשך אותו יום) — 01-torah-platform: portal/Attendance.tsx ("ניהול נוכחות") — כפתור "שמור נוכחות" נכשל תמיד, בכל שיעור ולכל מגיד
+
+525. **ההקשר.** המשך אותה שיטת חקירה על 01-torah-platform (P3, נבחר על
+     15-egod ברשומה 462): כל build_tasks/core.issues הפתוחים ל-01
+     חסומים על הכרעת משתמש (#138/#172/#201/#203/#257/#259); הופעל סבב
+     חדש של סריקת `.from()`/`.rpc()` בכל דפי `admin/` ו-`portal/` מול
+     הסכימה החיה. רוב הדפים (Content, Forums, MatchingGuru,
+     TenantDetail, Lessons ועוד) נמצאו כבר תואמים לסכימה בקפידה
+     (חלקם עם הערות-קוד המסבירות למה — עדות לתיקון מכוון בסבבים
+     קודמים). רק `TeacherFeaturesDialog.tsx`/`teacher_features`/
+     `teacher_forum_access` (פער מבנה שכבר תועד ברשומה 524, לא נגעתי
+     שוב) ו-`admin/PortalSettings` (#257, כבר חסום) נותרו שבורים —
+     ואז נמצא באג חדש ב-`portal/Attendance.tsx`.
+526. **מה נמצא.** הפעולה `saveAttendance` קוראת
+     `.upsert(rows, { onConflict: "tenant_id,lesson_id,participant_id,date" })`
+     על `public.attendance`. אומת חי מול `pg_constraint`:
+     האילוץ הייחודי האמיתי על הטבלה הוא `UNIQUE (participant_id,
+     lesson_id, date)` — בלי `tenant_id` — כך שיעד ה-4-עמודות שהקוד
+     מבקש לא תואם שום אילוץ קיים. Postgres דוחה כל `ON CONFLICT` שיעדו
+     לא תואם אילוץ ייחודי/exclusion אמיתי (לא ברירת-מחדל שקטה) — כלומר
+     כל לחיצה על "שמור נוכחות" בכל שיעור, לכל מגיד, בכל טננט, נכשלת
+     תמיד בשגיאה. אומת ישירות: הרצת אותו `INSERT ... ON CONFLICT
+     (tenant_id, lesson_id, participant_id, date)` על הטבלה האמיתית
+     (בתוך `BEGIN...ROLLBACK`) החזירה `42P10: there is no unique or
+     exclusion constraint matching the ON CONFLICT specification`.
+527. **מה נבנה.** שינוי שורה אחת: `onConflict` שונה מ-
+     `"tenant_id,lesson_id,participant_id,date"` ל-
+     `"participant_id,lesson_id,date"` — בדיוק האילוץ הייחודי האמיתי.
+     לא נוסף/הוסר עמודה או טבלה; שאר הקובץ (טעינת שיעורים/משתתפים/
+     רשומות-נוכחות-קיימות, סימון-הכל, toggle) לא נגע.
+528. **אימות + אפס רגרסיה.** `esbuild` (מ-
+     `apps/24-galilee-connect-hub/node_modules/.bin/esbuild`, אין
+     node_modules משלו לסביבה — כמו בסבבים קודמים) עבר נקי על הקובץ
+     אחרי השינוי; בדיקת איזון סוגריים נקייה (90/90 עגולים, 72/72
+     מסולסלים, 25/25 מרובעים). אומת חי ב-MCP מול `bieebmnm` בתוך
+     `BEGIN...ROLLBACK`: נוצרו tenant/lesson/participant מינימליים
+     אמיתיים, ואז בוצעו **שני** upserts ברצף עם יעד ה-conflict המתוקן
+     (הראשון = נתיב insert, השני = נתיב update על אותה שורה בדיוק) —
+     שניהם הצליחו, השורה נותרה יחידה (`count=1`) ועם הערך מה-upsert
+     השני (`is_present=false`), מה שמאשר גם את נתיב ה-insert וגם את
+     נתיב ה-update על אותו conflict target שהקוד המתוקן משתמש בו.
+     `count(*)` על שורות הבדיקה אחרי ה-`ROLLBACK` חזר 0 — אפס שאריות.
+     `get_advisors` (security) לאחר הבדיקה: כל האזהרות שחזרו שייכות
+     לטבלאות/פונקציות אחרות (`ads.*`, `pc_*`, `otvedaf.*`, `crm_*`
+     וכו') שלא נגעתי בהן — קדמו לסבב הזה, ואין אזהרה חדשה שקשורה
+     ל-`attendance`/`lessons`/`participants`/`tenants`. `git diff
+     --stat` מאשר קובץ יחיד, שורה יחידה. נדחף לענף חדש
+     `fix/01-torah-platform-portal-attendance-save-broken-0826` — לא
+     מוזג. System 35 KioskFleet לא נגע, per HARD STEERING; מערכות
+     08/09/bkalut-app/bkalot-admin/`zr_*`/webhook NEDARIM3873/`csj`/
+     `csj_src`/`igud`/15-egod לא נגעו.
