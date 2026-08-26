@@ -30,15 +30,20 @@ const AdminTeachers = () => {
   const [form, setForm] = useState({
     full_name: "", email: "", phone: "",
     portal_type: "rabbi", organization_name: "",
-    initial_password: generatePassword(), notes: "",
+    initial_password: generatePassword(),
   });
   const { toast } = useToast();
   const [featuresFor, setFeaturesFor] = useState<any | null>(null);
 
+  // "Teacher"/portal invites run on the real tenant_invites + tenants tables
+  // (the same ones activate-invite and MatchingGuru.tsx use) -- there is no
+  // teacher_invites table and profiles has no is_approved/email/public_token
+  // columns live, so every prior version of this page silently no-op'd on
+  // every action (core.issues #258).
   const fetchAll = async () => {
     const [{ data: p }, { data: i }] = await Promise.all([
-      supabase.from("profiles").select("*").order("created_at", { ascending: false }),
-      supabase.from("teacher_invites").select("*").order("created_at", { ascending: false }),
+      supabase.from("profiles").select("*, tenant:tenants(id, status, type, name, display_name, public_token)").order("created_at", { ascending: false }),
+      supabase.from("tenant_invites").select("*, tenants(id, name, display_name, type)").order("created_at", { ascending: false }),
     ]);
     setProfiles(p || []);
     setInvites(i || []);
@@ -46,12 +51,19 @@ const AdminTeachers = () => {
 
   useEffect(() => { fetchAll(); }, []);
 
-  const toggleApproval = async (id: string, current: boolean) => {
-    const { error } = await supabase.from("profiles").update({ is_approved: !current }).eq("id", id);
+  // "Approval" is expressed by the profile's tenant going active/pending --
+  // same concept admin/MatchingGuru.tsx already relies on for its "מאושר" badge.
+  const toggleApproval = async (p: any) => {
+    if (!p.tenant?.id) {
+      toast({ title: "לפרופיל זה אין פורטל (טננט) מקושר לאשר", variant: "destructive" });
+      return;
+    }
+    const next = p.tenant.status === "active" ? "pending" : "active";
+    const { error } = await supabase.from("tenants").update({ status: next }).eq("id", p.tenant.id);
     if (error) {
       toast({ title: "שגיאה", description: error.message, variant: "destructive" });
     } else {
-      toast({ title: current ? "המגיד הוסר מהאישור" : "המגיד אושר בהצלחה" });
+      toast({ title: next === "active" ? "המגיד אושר בהצלחה" : "המגיד הוסר מהאישור" });
       fetchAll();
     }
   };
@@ -61,35 +73,47 @@ const AdminTeachers = () => {
       toast({ title: "שגיאה", description: "שם, מייל וסיסמה הם שדות חובה", variant: "destructive" });
       return;
     }
-    const { data, error } = await supabase.from("teacher_invites").insert({
-      full_name: form.full_name,
+    const slug = `${form.portal_type}-${crypto.randomUUID().slice(0, 8)}`;
+    const { data: tenant, error: tErr } = await supabase.from("tenants").insert({
+      name: form.organization_name || form.full_name,
+      display_name: form.organization_name || form.full_name,
+      slug,
+      type: form.portal_type,
+      status: "pending",
+    }).select().single();
+    if (tErr) {
+      toast({ title: "שגיאה ביצירת הפורטל", description: tErr.message, variant: "destructive" });
+      return;
+    }
+
+    const { data, error } = await supabase.from("tenant_invites").insert({
+      tenant_id: tenant.id,
       email: form.email.trim().toLowerCase(),
+      full_name: form.full_name,
       phone: form.phone || null,
-      portal_type: form.portal_type,
-      organization_name: form.organization_name || null,
       initial_password: form.initial_password,
-      notes: form.notes || null,
+      role: "tenant_admin",
     }).select().single();
 
     if (error) {
       toast({ title: "שגיאה", description: error.message, variant: "destructive" });
       return;
     }
-    setCreatedInvite(data);
+    setCreatedInvite({ ...data, portal_type: form.portal_type });
     setShowCreate(false);
-    setForm({ full_name: "", email: "", phone: "", portal_type: "rabbi", organization_name: "", initial_password: generatePassword(), notes: "" });
+    setForm({ full_name: "", email: "", phone: "", portal_type: "rabbi", organization_name: "", initial_password: generatePassword() });
     fetchAll();
   };
 
   const copyInviteDetails = (inv: any) => {
     const url = buildInviteUrl(inv.invite_code, inv.email);
-    const raw = `🎓 פורטל ${portalTypeLabel(inv.portal_type)} – איגוד מגידי השיעורים\n\nשלום ${inv.full_name},\nנפתח עבורך פורטל אישי במערכת.\n\n🔗 לחץ להפעלה (הקוד והמייל ימולאו אוטומטית):\n${url}\n\n📧 מייל: ${inv.email}\n🔑 קוד הזמנה: ${inv.invite_code}\n🔒 סיסמה ראשונית: ${inv.initial_password}\n\nניתן לשנות את הסיסמה לאחר הכניסה.`;
+    const raw = `🎓 פורטל ${portalTypeLabel(inv.portal_type || inv.tenants?.type)} – איגוד מגידי השיעורים\n\nשלום ${inv.full_name},\nנפתח עבורך פורטל אישי במערכת.\n\n🔗 לחץ להפעלה (הקוד והמייל ימולאו אוטומטית):\n${url}\n\n📧 מייל: ${inv.email}\n🔑 קוד הזמנה: ${inv.invite_code}\n🔒 סיסמה ראשונית: ${inv.initial_password}\n\nניתן לשנות את הסיסמה לאחר הכניסה.`;
     navigator.clipboard.writeText(sanitizePublicUrls(raw));
     toast({ title: "פרטי ההזמנה הועתקו! ניתן לשלוח בוואטסאפ או במייל" });
   };
 
   const copyLoginForProfile = (p: any) => {
-    const inv = invites.find((i) => i.email?.toLowerCase() === (p.email || "").toLowerCase());
+    const inv = invites.find((i) => i.tenant_id === p.preferred_tenant_id);
     if (!inv) {
       toast({ title: "לא נמצאה הזמנה עבור פרופיל זה. צור הזמנה חדשה.", variant: "destructive" });
       return;
@@ -99,9 +123,12 @@ const AdminTeachers = () => {
     toast({ title: "קישור הפעלה / כניסה הועתק", description: url });
   };
 
-  const filtered = profiles.filter(p =>
-    p.full_name?.includes(search) || p.email?.includes(search) || p.city?.includes(search)
-  );
+  const emailByTenant = Object.fromEntries(invites.map((i) => [i.tenant_id, i.email]));
+
+  const filtered = profiles.filter(p => {
+    const email = emailByTenant[p.preferred_tenant_id] || "";
+    return p.full_name?.includes(search) || email.includes(search) || p.city?.includes(search);
+  });
 
   return (
     <AdminLayout>
@@ -202,18 +229,18 @@ const AdminTeachers = () => {
         </Dialog>
 
         {/* Pending invites */}
-        {invites.filter(i => !i.used).length > 0 && (
+        {invites.filter(i => !i.used_at).length > 0 && (
           <div className="bg-card rounded-2xl border border-border p-4">
-            <h2 className="font-heading font-bold mb-3">הזמנות פתוחות ({invites.filter(i => !i.used).length})</h2>
+            <h2 className="font-heading font-bold mb-3">הזמנות פתוחות ({invites.filter(i => !i.used_at).length})</h2>
             <div className="space-y-2">
-              {invites.filter(i => !i.used).map(inv => {
-                const Icon = portalTypeIcon(inv.portal_type);
+              {invites.filter(i => !i.used_at).map(inv => {
+                const Icon = portalTypeIcon(inv.tenants?.type);
                 return (
                   <div key={inv.id} className="flex items-center justify-between gap-3 p-3 bg-muted/30 rounded-lg">
                     <div className="flex items-center gap-3">
                       <Icon className="w-5 h-5 text-secondary" />
                       <div>
-                        <p className="font-medium">{inv.full_name} <Badge variant="outline" className="mr-1">{portalTypeLabel(inv.portal_type)}</Badge></p>
+                        <p className="font-medium">{inv.full_name} <Badge variant="outline" className="mr-1">{portalTypeLabel(inv.tenants?.type)}</Badge></p>
                         <p className="text-xs text-muted-foreground" dir="ltr">{inv.email}</p>
                       </div>
                     </div>
@@ -249,24 +276,24 @@ const AdminTeachers = () => {
                 {filtered.map(p => (
                   <tr key={p.id} className="border-b border-border last:border-0 hover:bg-muted/10">
                     <td className="p-4 font-medium text-foreground">{p.full_name || "—"}</td>
-                    <td className="p-4"><Badge variant="outline">{portalTypeLabel(p.portal_type || "rabbi")}</Badge></td>
-                    <td className="p-4 text-muted-foreground">{p.email || "—"}</td>
+                    <td className="p-4"><Badge variant="outline">{portalTypeLabel(p.tenant?.type || p.portal_type || "rabbi")}</Badge></td>
+                    <td className="p-4 text-muted-foreground">{emailByTenant[p.preferred_tenant_id] || "—"}</td>
                     <td className="p-4 text-muted-foreground">{p.city || "—"}</td>
                     <td className="p-4">
-                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${p.is_approved ? "bg-green-100 text-green-700" : "bg-orange-100 text-orange-700"}`}>
-                        {p.is_approved ? "מאושר" : "ממתין"}
+                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${p.tenant?.status === "active" ? "bg-green-100 text-green-700" : "bg-orange-100 text-orange-700"}`}>
+                        {p.tenant?.status === "active" ? "מאושר" : "ממתין"}
                       </span>
                     </td>
                     <td className="p-4">
-                      <Button size="sm" variant={p.is_approved ? "outline" : "default"} onClick={() => toggleApproval(p.id, p.is_approved)}>
-                        {p.is_approved ? <><UserX className="w-4 h-4 ml-1" />בטל</> : <><UserCheck className="w-4 h-4 ml-1" />אשר</>}
+                      <Button size="sm" variant={p.tenant?.status === "active" ? "outline" : "default"} onClick={() => toggleApproval(p)}>
+                        {p.tenant?.status === "active" ? <><UserX className="w-4 h-4 ml-1" />בטל</> : <><UserCheck className="w-4 h-4 ml-1" />אשר</>}
                       </Button>
                       <Button size="sm" variant="outline" className="mr-1 gap-1" onClick={() => setFeaturesFor(p)}>
                         <Settings className="w-3 h-3" />הרשאות
                       </Button>
-                      {p.public_token && (
+                      {p.tenant?.public_token && (
                         <Button size="sm" variant="outline" className="mr-1 gap-1" onClick={() => {
-                          navigator.clipboard.writeText(buildRabbiUrl(p.public_token));
+                          navigator.clipboard.writeText(buildRabbiUrl(p.tenant.public_token));
                           toast({ title: "קישור הפרופיל הציבורי הועתק" });
                         }}>
                           <Share2 className="w-3 h-3" />קישור הפצה

@@ -5989,3 +5989,91 @@
      System 35 KioskFleet לא נגע, per HARD STEERING; מערכות
      08/09/bkalut-app/bkalot-admin/`zr_*`/webhook NEDARIM3873/`csj`/
      `csj_src`/`igud` לא נגעו.
+
+## 26/08/2026 (LOOP A, המשך אותו יום) — 01-torah-platform: admin/Teachers.tsx ("ניהול מגידים") שבור לגמרי — טבלה שלא קיימת, שלוש עמודות שלא קיימות ב-profiles
+
+516. **ההקשר.** `core.run_progress` אומת (אחרון `[loop A]`: `b101d23a`,
+     אותה מערכת). `core.build_tasks` ריק ל-01/15 (32/36 כולן `done`,
+     35 אין שורות בכלל — עומד ב-"HARD STEERING" ועדיפות P3). נסרק
+     `core.issues` כמקור עבודה: כל הפריטים הפתוחים בתחום 01-torah
+     חסומים על הכרעת משתמש/גורם חיצוני **מלבד #258**, שסומן כ"דורש
+     מיפוי (לא הכרעת מוצר) לפני שינוי קוד" — בדיוק סוג העבודה
+     שמתאימה לסבב הזה.
+517. **מה נמצא.** `admin/Teachers.tsx` (עמוד "ניהול מגידים, ארגונים
+     ובתי כנסת") שבור בכל פעולה שלו, לא רק בכפתור "אשר" שתועד ב-#258:
+     - `fetchAll()`/`createInvite()` קוראים/כותבים לטבלה
+       `teacher_invites` — אומת חי מול `information_schema.tables`/
+       `columns` על `bieebmnm`: **הטבלה לא קיימת בכלל**. כלומר רשימת
+       "הזמנות פתוחות" תמיד ריקה, וכפתור "צור הזמנה" תמיד נכשל.
+     - `toggleApproval()` מעדכן `profiles.is_approved` — עמודה שלא
+       קיימת ב-17 העמודות האמיתיות של `profiles` (אומת חי) — בדיוק
+       הבאג שתועד ב-#258.
+     - `p.email` ו-`p.public_token` (המוצגים/נקראים בטבלה) — גם הם
+       לא קיימים על `profiles` (אומת חי מול אותה רשימת עמודות): מייל
+       תמיד "—", חיפוש-לפי-מייל תמיד לא-פעיל, וכפתור "קישור הפצה"
+       (`buildRabbiUrl`) אף פעם לא מוצג לאף אחד.
+     טבלת ה-invites האמיתית שכן קיימת חיה, ושכל שאר המערכת (עמוד
+     `/invite` הציבורי, `activate-invite`) כבר משתמשת בה, היא
+     `tenant_invites` (tenant_id, email, full_name, phone,
+     invite_code עם default, initial_password, role, expires_at) —
+     נבנתה במיגרציה `20260519000001_core_tenants.sql` יחד עם
+     `tenants`/`memberships`, עם RLS `invites_admin` שדורש
+     `has_tenant_role(tenant_admin)` (וזה כולל super_admin, אומת
+     בהגדרת הפונקציה). "אישור" מגיד — אותו מושג בדיוק ש-
+     `admin/MatchingGuru.tsx` כבר משתמש בו (`is_approved:
+     row.tenants?.status === "active"`, תוקן בסבב הקודם היום) — הוא
+     `tenants.status` (enum `pending/active/suspended/archived`), לא
+     עמודה על `profiles`.
+518. **מה נבנה.** שוכתב `admin/Teachers.tsx` לעבוד מול הטבלאות
+     האמיתיות בלבד, בלי לגעת ב-`TeacherFeaturesDialog.tsx` (משתמש רק
+     ב-`teacher.id`/`teacher.full_name`, לא הושפע):
+     - `fetchAll()`: `profiles` נטען עם embed `tenant:tenants(id,
+       status, type, name, display_name, public_token)` דרך ה-FK
+       הקיים `profiles.preferred_tenant_id -> tenants.id` (אומת חי
+       ב-`pg_constraint`); `invites` נטען מ-`tenant_invites` עם embed
+       `tenants(id, name, display_name, type)`.
+     - `createInvite()`: "פתיחת פורטל חדש" הפכה לפעולה דו-שלבית
+       אמיתית — יוצרת קודם שורת `tenants` (type=form.portal_type;
+       `PORTAL_TYPES` הקיים כבר תואם 1:1 לערכי ה-enum `rabbi/
+       organization/synagogue` של `tenant_type`, אומת חי) עם
+       status=`pending` (לא `active` — כדי שהאישור/דחייה שלאחר מכן
+       יהיה משמעותי), ואז שורת `tenant_invites` עם `tenant_id`
+       שהתקבל. `invite_code`/`expires_at` מגיעים מ-default של
+       הטבלה כמו בכל שאר המערכת, לא הומצאו בקוד.
+     - `toggleApproval(p)`: מעדכן `tenants.status` (`active`↔`pending`)
+       על `p.tenant.id` (הטננט המקושר לפרופיל), עם הודעת שגיאה ברורה
+       אם לפרופיל אין טננט מקושר בכלל, במקום כשל שקט על עמודה
+       שלא קיימת.
+     - תצוגת מייל/חיפוש: נבנה `emailByTenant` (מיפוי tenant_id→email
+       מתוך `tenant_invites`, שכן `profiles` עצמו לא מאחסן מייל)
+       והוחלף בו `p.email` בכל מקום (תצוגה, חיפוש, `copyLoginForProfile`
+       שעבר להתאמה לפי `tenant_id` במקום מייל). "קישור הפצה" עבר
+       ל-`p.tenant?.public_token`. הוסר שדה `notes` המת מה-form (לא
+       היה מוצג ב-UI מעולם וגם לא קיים בטבלה האמיתית — לא תכונה
+       שנשברה, קוד מת שהצביע לעמודה שלא הייתה קיימת גם בגרסה הקודמת).
+519. **אימות + אפס רגרסיה.** `esbuild` (bin שנמצא ב-
+     `apps/24-galilee-connect-hub/node_modules`, כמו בסבבים קודמים —
+     אין node_modules משלו לסביבה) עבר נקי על הקובץ אחרי; בדיקת
+     איזון סוגריים נקייה (138/138 מסולסלים, 161/161 עגולים, 22/22
+     מרובעים). אומת חי ב-MCP מול `bieebmnm` בשתי טרנזקציות מגולגלות-
+     אחורה: (1) כ-superuser — יצירת tenant+invite עם אותם ערכים
+     בדיוק שה-UI ישלח, JOIN בין השתיים, עדכון status ל-`active` —
+     הכול עבר; (2) **כ-super_admin אמיתי דרך RLS** (`set local role
+     authenticated` + `request.jwt.claims` עם `sub` של משתמש
+     super_admin אמיתי קיים מ-`user_roles`) — אותה שרשרת בדיוק
+     (יצירת tenant, יצירת tenant_invite, אישור status) עברה תחת
+     ה-RLS האמיתי שה-UI יפעל תחתיו, לא רק תחת הרשאת-על של כלי
+     הבדיקה. שתי הטרנזקציות נבדקו אפס-שאריות אחרי `ROLLBACK`
+     (`select count(*)` על שתי שורות ה-QA החזיר 0). `get_advisors`
+     (security) לאחר הבדיקה: אין אזהרה חדשה שקשורה ל-`tenants`/
+     `tenant_invites`/`profiles` (כל האזהרות שחזרו שייכות לסכימות/
+     טבלאות אחרות שלא נגעתי בהן — קדמו לסבב הזה). אפס רגרסיה: כל
+     ארבע הפעולות בעמוד (טעינה, יצירת הזמנה, אישור, קישור-הפצה) היו
+     שבורות/ריקות-תמיד קודם — אין כאן תכונה עובדת שנפגעה, ו-
+     `TeacherFeaturesDialog.tsx` (הדיאלוג המקושר) לא נגע כלל. `core.issues
+     #258` סומן `fixed` (`core.execute_sql`, לא Edge Function/UI —
+     טבלת מעקב פנימית). נדחף לענף חדש
+     `fix/01-torah-platform-admin-teachers-page-broken-0826` — לא
+     מוזג. System 35 KioskFleet לא נגע, per HARD STEERING; מערכות
+     08/09/bkalut-app/bkalot-admin/`zr_*`/webhook NEDARIM3873/`csj`/
+     `csj_src`/`igud` לא נגעו.
