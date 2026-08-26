@@ -16,11 +16,12 @@ const AdminContent = () => {
   const [statusFilter, setStatusFilter] = useState("all");
   const [categoryFilter, setCategoryFilter] = useState("all");
   const [search, setSearch] = useState("");
+  const [busyId, setBusyId] = useState<string | null>(null);
 
   const load = async () => {
     const { data: ms } = await supabase.from("materials").select("*").order("created_at", { ascending: false });
     setMaterials(ms || []);
-    const ids = Array.from(new Set((ms || []).map((m: any) => m.uploader_id)));
+    const ids = Array.from(new Set((ms || []).map((m: any) => m.owner_user_id).filter(Boolean)));
     if (ids.length) {
       const { data: profs } = await supabase.from("profiles").select("id, full_name").in("id", ids);
       const map: Record<string, string> = {};
@@ -32,22 +33,27 @@ const AdminContent = () => {
   useEffect(() => { load(); }, []);
 
   const updateStatus = async (id: string, status: string, notes?: string) => {
-    await supabase.from("materials").update({ status, admin_notes: notes || null }).eq("id", id);
-    toast.success(status === "approved" ? "הקובץ אושר" : status === "rejected" ? "הקובץ נדחה" : "עודכן");
-    load();
+    if (busyId) return;
+    setBusyId(id);
+    const { error } = await supabase.from("materials").update({ status, rejection_reason: notes || null }).eq("id", id);
+    setBusyId(null);
+    if (error) toast.error("שגיאה: " + error.message);
+    else { toast.success(status === "approved" ? "הקובץ אושר" : status === "rejected" ? "הקובץ נדחה" : "עודכן"); load(); }
   };
 
   const remove = async (id: string) => {
-    if (!confirm("למחוק את הקובץ?")) return;
-    await supabase.from("materials").delete().eq("id", id);
-    toast.success("נמחק");
-    load();
+    if (busyId || !confirm("למחוק את הקובץ?")) return;
+    setBusyId(id);
+    const { error } = await supabase.from("materials").delete().eq("id", id);
+    setBusyId(null);
+    if (error) toast.error("שגיאה: " + error.message);
+    else { toast.success("נמחק"); load(); }
   };
 
   const filtered = materials.filter(m =>
     (statusFilter === "all" || m.status === statusFilter) &&
     (categoryFilter === "all" || m.category === categoryFilter) &&
-    (!search || m.title?.includes(search) || profilesMap[m.uploader_id]?.includes(search))
+    (!search || m.title?.includes(search) || profilesMap[m.owner_user_id]?.includes(search))
   );
 
   const counts = {
@@ -114,8 +120,9 @@ const AdminContent = () => {
                       <Badge variant="outline" className="text-xs">{m.category}{m.subcategory ? ` / ${m.subcategory}` : ""}</Badge>
                       <span className={`text-xs flex items-center gap-1 ${color}`}><Icon className="w-3 h-3" />{m.status === "approved" ? "מאושר" : m.status === "rejected" ? "נדחה" : "ממתין"}</span>
                     </div>
-                    <p className="text-xs text-muted-foreground">העלה: {profilesMap[m.uploader_id] || "—"} · {new Date(m.created_at).toLocaleString("he-IL")}</p>
+                    <p className="text-xs text-muted-foreground">העלה: {profilesMap[m.owner_user_id] || "—"} · {new Date(m.created_at).toLocaleString("he-IL")}</p>
                     {m.description && <p className="text-sm text-muted-foreground mt-2">{m.description}</p>}
+                    {m.status === "rejected" && m.rejection_reason && <p className="text-xs text-destructive mt-1">סיבת דחייה: {m.rejection_reason}</p>}
                   </div>
                   <div className="flex items-center gap-1 shrink-0">
                     <a href={m.file_url} target="_blank" rel="noreferrer">
@@ -125,19 +132,19 @@ const AdminContent = () => {
                 </div>
                 <div className="flex gap-2 mt-3">
                   {m.status !== "approved" && (
-                    <Button size="sm" onClick={() => updateStatus(m.id, "approved")} className="bg-green-600 hover:bg-green-700 text-white gap-1">
+                    <Button size="sm" disabled={busyId === m.id} onClick={() => updateStatus(m.id, "approved")} className="bg-green-600 hover:bg-green-700 text-white gap-1">
                       <CheckCircle2 className="w-3 h-3" />אשר
                     </Button>
                   )}
                   {m.status !== "rejected" && (
-                    <Button size="sm" variant="outline" onClick={() => {
+                    <Button size="sm" variant="outline" disabled={busyId === m.id} onClick={() => {
                       const note = prompt("סיבת דחייה (אופציונלי):") || undefined;
                       updateStatus(m.id, "rejected", note);
                     }} className="gap-1">
                       <XCircle className="w-3 h-3" />דחה
                     </Button>
                   )}
-                  <Button size="sm" variant="ghost" onClick={() => remove(m.id)} className="gap-1 mr-auto">
+                  <Button size="sm" variant="ghost" disabled={busyId === m.id} onClick={() => remove(m.id)} className="gap-1 mr-auto">
                     <Trash2 className="w-3 h-3 text-destructive" />מחק
                   </Button>
                 </div>
