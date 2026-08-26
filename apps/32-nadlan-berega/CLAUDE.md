@@ -1,5 +1,40 @@
 # CLAUDE.md — נדל"ן ברגע (קרא אותי בתחילת כל סשן)
 
+## עדכון — 26/08/2026 (Loop A, session 13 — build_tasks id=6 חלק (c) נסגר: "ההיסטוריה שלי")
+`core.build_tasks` id=6 (system 32, priority 60) נשאר `todo` מ-session 9 (ראו
+למטה) בגלל חלק (c) בלבד: "הנתונים האמיתיים נגישים רק מאחורי כפתור כניסה
+למערכת". לנעול את `/report`/`/p/[slug]` מאחורי כניסה כפשוטו היה שובר את
+הדוח-החינמי-בלי-הרשמה-ניתן-לשיתוף-בוואטסאפ המתועד — קונפליקט ממשי מול "אפס
+רגרסיה", לא "עוד לא הגעתי". אותה רשומה הציעה בעצמה את הפתרון שבוצע הסבב הזה:
+לבנות יכולת **נוספת** מאחורי הכניסה המשותפת הקיימת, בלי לגעת בנתיב הציבורי —
+"למשל היסטוריית-חיפושים אישית".
+
+נבנה עמוד "ההיסטוריה שלי" (`/history`) הנעול מאחורי הכניסה המשותפת
+(`auth-button.js`/localStorage `more30-auth`). מיגרציה `0158`:
+`nadlan.report_history` (RLS מופעל בלי policy — service-role בלבד, אותה עמדה
+כמו `saved_reports`/`street_video_cache`). `lib/reporthistory.ts`
+(`recordView`/`listHistory`) + `lib/requireuser.ts` (מאמת JWT מול
+`/auth/v1/user`, אותו דפוס בדיוק כמו `apps/40-gannenet/lib/require-user.ts`
+המוכח) + `lib/session.ts` (קריאת הטוקן בצד הלקוח, אותו דפוס כמו
+`apps/40-gannenet/lib/session.ts`) + `GET`/`POST /api/history`.
+`ReportView.tsx` מקבל `useEffect` שקט שרושם צפייה **רק** כשכבר יש סשן
+מחובר — `sessionToken()` מחזיר `null` מיידית ובלי שום קריאת רשת לצופה
+אנונימי (הרוב המכריע של הביקורים), כך שהנתיב הציבורי לא משתנה כלל.
+
+אומת חי ב-MCP: `BEGIN;...ROLLBACK;` (הכנסה+צירוף מול שורת `saved_reports`
+אמיתית) לפני `apply_migration`, ואז טרנזקציה מגולגלת-לאחור נוספת שכפלה את
+סמנטיקת ה-upsert-על-קונפליקט(`user_id,slug`) של האפליקציה — אישרה שצפייה
+חוזרת מתכווצת לשורה אחת עם `viewed_at` מעודכן. `get_advisors` (security)
+מראה רק `rls_enabled_no_policy` הצפוי, אין אזהרה חדשה. בדיקת איזון-סוגריים
+נקייה על כל 8 הקבצים; לוגיקת `sessionToken`, רג'קס ה-slug, ונפילה-לאחור
+של תווית-ההיסטוריה שוכפלו עצמאית ב-Node טהור מול 20 תרחישים, כולם עברו.
+
+אפס רגרסיה: `/report`/`/p/[slug]` וכל route/RPC/handler קיים אחר לא נגעו —
+תוספת טהורה בלבד. נדחף לענף `feat/32-nadlan-berega-personal-history-0826`
+(b20d7b06) — לא מוזג. `core.build_tasks` id=6 סומן `done` — **כל** שורות
+P2 (32+36) עכשיו `done` (0 `todo`). System 35 KioskFleet לא נגע, לפי
+ה-HARD STEERING.
+
 ## עדכון — 26/08/2026 (Loop A, session 12 — system 36 nadlan-pro, build_tasks id=14: יומן דוחות אמת)
 `core.build_tasks` id=14 (system 36, priority 70): "Management: every search
 and produced report fully visible — full detail, who produced, when, status;
