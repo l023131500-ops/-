@@ -6787,3 +6787,69 @@
      (417e100a) — לא מוזג. System 35 KioskFleet לא נגע, per HARD
      STEERING; מערכות 08/09/bkalut-app/bkalot-admin/`zr_*`/webhook
      NEDARIM3873/`csj`/`csj_src`/`igud`/15-egod לא נגעו.
+
+## 26/08/2026 (LOOP A, המשך אותו יום) — 01-torah-platform: admin/Teachers.tsx "הרשאות" — שתי טבלאות שלא קיימות מעולם, כל שמירה נכשלת
+
+568. **ההקשר.** `core.build_tasks` ל-32/36 עדיין `done` (0 שורות
+     `todo`), ואין שורות כלל ל-01/15 — המשך אותה שיטת חקירה חופשית
+     שכבר נבחרה על 01: גרף גלובלי על כל `.from(...).insert(/.update(/
+     .upsert(` בעץ ה-`src` שטרם נבדק מול הסכימה החיה. שלוש
+     קבוצות-קבצים בעץ `src/pages/legacy/*` (`rabbi_portals`/
+     `org_portals`/`teacher_leads`/`study_day_events`) נסרקו ונמצאו
+     שייכות לאותה מקבץ נטוש שכבר תועד ב-`core.issues` #257 (מסך
+     שלם בנוי מול טבלאות שמעולם לא נוצרו, ממתין להכרעת בעלים) —
+     ולכן, לפי העיקרון "לא להשקיע בפרויקטים שלא התקדמו", לא הושקעה
+     בהם עבודה. המשך סריקה לעמודים החיים (לא-legacy):
+     `admin/TeacherFeaturesDialog.tsx`, שנפתח מכפתור "הרשאות" ב-
+     `admin/Teachers.tsx` (עמוד תפעולי חי ותקין לגמרי — ראה תיקון
+     #258 בהערת הקובץ עצמו).
+569. **מה נמצא.** `TeacherFeaturesDialog.tsx` קורא/כותב לשתי טבלאות,
+     `teacher_features` ו-`teacher_forum_access` (עם `const sb =
+     supabase as any` — כלומר נכתב במודע נגד טיפוסים לא-קיימים).
+     גרף על כל 10+ קבצי המיגרציה ב-`supabase/migrations` מאשר: אפס
+     אזכורים לאף אחד מהשמות בשום מיגרציה — הטבלאות מעולם לא נוצרו.
+     כתוצאה: טעינת הדיאלוג תמיד מחזירה 0 שורות (כל המתגים ברירת
+     מחדל "פעיל", בלי הודעת שגיאה כי השגיאה לא נבדקת בטעינה), אבל
+     לחיצה על "שמור הרשאות" נכשלת תמיד ב-`42P01: relation ... does
+     not exist` — כך שאף הגדרת הרשאה פר-מגיד (לא ברמת "פיצ'ר" ולא
+     ברמת גישה-לפורום) לא נשמרה מעולם מהמסך הזה. שונה מ-#257: כאן
+     יש רק שתי טבלאות חסרות עם עמודות ברורות התואמות בדיוק לשאילתות
+     בקוד (לא 15 עמודות מפוזרות בלי סמנטיקה ברורה), כך שהשלמת
+     המיגרציה החסרה היא תיקון נקי, לא הכרעת-מוצר.
+570. **מה נבנה.** מיגרציה חדשה
+     `20260826100000_teacher_features_tables.sql` על `bieebmnm`:
+     `public.teacher_features` (`teacher_id` FK ל-`profiles(id)`,
+     `feature_key` text, `enabled` boolean, PK מורכב תואם ל-
+     `onConflict: "teacher_id,feature_key"` שכבר בקוד) ו-
+     `public.teacher_forum_access` (`teacher_id`, `category_id` FK
+     ל-`forum_categories(id)`, `can_view`/`can_post`/`can_comment`,
+     PK מורכב תואם ל-`onConflict: "teacher_id,category_id"`). RLS
+     זהה לתבנית הקיימת של `tenant_features` (המקבילה ברמת-טננט):
+     קריאה פומבית (`using (true)` — אותה קונבנציה בדיוק, אלה דגלי
+     תצוגה לא רגישים), כתיבה נעולה ל-`is_super_admin((select
+     auth.uid()))` בלבד (הדיאלוג עצמו נגיש רק מהאדמין).
+571. **אימות + אפס רגרסיה.** `BEGIN...ROLLBACK` יבש לפני ההחלה —
+     עבר נקי. הוחל חי (`apply_migration`). אומת חי ב-MCP: (1)
+     `BEGIN...ROLLBACK` בתפקיד `authenticated` עם `request.jwt.claims`
+     של סופר-אדמין אמיתי (`fafe9db0…`) — `upsert` על שתי הטבלאות עבור
+     מגיד אמיתי (`f25f6e65…`, "רבקה") הצליח בשתיהן, כולל קונפליקט
+     על אותו PK; (2) בדיקה שלילית נפרדת: אותו `upsert` בתור המגיד
+     עצמו (לא סופר-אדמין) נדחה מיידית ב-`42501` על ידי ה-RLS; (3)
+     קריאת `count(*)` בתפקיד `anon` הצליחה (0 שורות, כצפוי מ-RLS
+     קריאה-פומבית). `count(*)` ישיר על שתי הטבלאות אחרי כל הבדיקות
+     חזר 0/0 — אפס שאריות (אף טרנזקציה לא בוצעה עם `COMMIT`).
+     `get_advisors` (security) אחרי ההחלה: אין שום אזהרה חדשה
+     שמזכירה `teacher_features`/`teacher_forum_access` — כל
+     האזהרות הקיימות (RLS-חסרה על טבלאות ישנות אחרות,
+     `security_definer` וכו') זהות למצב שלפני. לא נגעתי בקוד ה-
+     TSX כלל — עמודות השאילתות בקובץ כבר תואמות בדיוק לסכימה
+     החדשה (אומת בקריאה, לא בניחוש). ממצא משני זעיר, לא תוקן כי לא
+     שובר כלום: `c.is_restricted` בתצוגת קטגוריית פורום — עמודה
+     שלא קיימת ב-`forum_categories` (רק `is_active`), כך שהתג
+     "מוגבל" פשוט לעולם לא מוצג; לא פונקציונלי (`undefined` נופל
+     ל-falsy), לא נגעתי. `git diff --stat` מאשר מיגרציה חדשה בלבד,
+     אפס קבצי קוד. נדחף לענף חדש
+     `fix/01-torah-platform-teacher-features-tables-0826` — לא
+     מוזג. System 35 KioskFleet לא נגע, per HARD STEERING; מערכות
+     08/09/bkalut-app/bkalot-admin/`zr_*`/webhook NEDARIM3873/
+     `csj`/`csj_src`/`igud`/15-egod לא נגעו.
