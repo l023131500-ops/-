@@ -68,32 +68,42 @@ export default function DonationPage() {
     if (!donor.name || !donor.phone) { toast.error("נא למלא שם וטלפון"); return; }
     setLoading(true);
     try {
-      // Create donation row first
-      const { data: donation, error: donErr } = await supabase
+      // Generate the id client-side instead of reading it back via
+      // .insert().select(): for an anonymous donor (no user_id) the row fails
+      // the "donations_self_read" RLS policy (user_id = auth.uid() is NULL =
+      // NULL -> not true), and Postgres raises "new row violates row-level
+      // security policy" for any INSERT ... RETURNING whose row isn't
+      // SELECT-visible to the inserting role -- so anonymous donations never
+      // even reached the payment step. Knowing the id upfront needs no
+      // RETURNING. Also: donations has no payment_type/installments columns
+      // (that shape doesn't exist in the schema at all -- every donation
+      // insert was failing outright with "column does not exist"); the real
+      // columns are is_recurring/recurring_months.
+      const donationId = crypto.randomUUID();
+      const { error: donErr } = await supabase
         .from("donations")
         .insert({
+          id: donationId,
           tenant_id: tenant.id,
           campaign_id: campaign?.id || null,
           donor_name: donor.name,
           donor_phone: donor.phone,
           donor_email: donor.email || null,
           amount_ils: finalAmount,
-          payment_type: paymentType,
-          installments: paymentType === "HK" ? installments : 1,
+          is_recurring: paymentType === "HK",
+          recurring_months: paymentType === "HK" ? installments : null,
           dedication_for_name: dedication.enabled ? dedication.for_name : null,
           dedication_type: dedication.enabled ? dedication.type : null,
           user_id: user?.id || null,
           payment_status: "pending",
-        })
-        .select()
-        .single();
+        });
       if (donErr) throw donErr;
 
       const { data: payRes, error: payErr } = await supabase.functions.invoke("nedarim-create-payment", {
         body: {
           purpose: "donation",
           tenant_id: tenant.id,
-          donation_id: donation.id,
+          donation_id: donationId,
           amount: finalAmount,
           payment_type: paymentType,
           installments,

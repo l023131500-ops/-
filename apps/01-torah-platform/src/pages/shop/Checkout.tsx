@@ -37,9 +37,18 @@ export default function Checkout() {
     if (!customer.name || !customer.phone || !customer.address) { toast.error("חסרים פרטים חובה"); return; }
     setLoading(true);
     try {
-      const { data: order, error } = await supabase
+      // Generate the id client-side instead of reading it back via
+      // .insert().select(): for a guest checkout (no user_id) the row fails
+      // the "orders_self_read" RLS policy (user_id = auth.uid() is NULL = NULL
+      // -> not true), and Postgres raises "new row violates row-level
+      // security policy" for any INSERT ... RETURNING whose row isn't
+      // SELECT-visible to the inserting role -- so guest orders never even
+      // reached the payment step. Knowing the id upfront needs no RETURNING.
+      const orderId = crypto.randomUUID();
+      const { error } = await supabase
         .from("orders")
         .insert({
+          id: orderId,
           tenant_id: tenant.id,
           user_id: user?.id || null,
           customer_name: customer.name,
@@ -51,20 +60,19 @@ export default function Checkout() {
           total_ils: total,
           status: "pending",
           payment_status: "pending",
-        })
-        .select()
-        .single();
+        });
       if (error) throw error;
 
       // Insert order_items
       const { error: itemsErr } = await supabase.from("order_items").insert(
         items.map((it) => ({
-          order_id: order.id,
+          order_id: orderId,
+          tenant_id: tenant.id,
           product_id: it.product_id,
           product_name: it.product_name,
           unit_price_ils: it.unit_price_ils,
           quantity: it.quantity,
-          subtotal_ils: it.unit_price_ils * it.quantity,
+          total_ils: it.unit_price_ils * it.quantity,
         })),
       );
       if (itemsErr) throw itemsErr;
@@ -73,7 +81,7 @@ export default function Checkout() {
         body: {
           purpose: "shop_order",
           tenant_id: tenant.id,
-          order_id: order.id,
+          order_id: orderId,
           amount: total,
           payment_type: "Ragil",
           donor_name: customer.name,
