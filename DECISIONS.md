@@ -6908,3 +6908,55 @@
      לא מוזג. System 35 KioskFleet לא נגע, per HARD STEERING; מערכות
      08/09/bkalut-app/bkalot-admin/`zr_*`/webhook NEDARIM3873/
      `csj`/`csj_src`/`igud`/15-egod לא נגעו.
+
+## 26/08/2026 (LOOP A, המשך אותו יום) — 01-torah-platform: public/RabbiPublic.tsx — מקטע "זמני תפילות" מת מלידה (state שאף פעם לא נטען) + שמות עמודות שגויים בתוכו
+
+576. **ההקשר.** דחיפת הענף הקודם (`fix/01-torah-platform-ask-rabbi-is-public-0826`,
+     שלא נדחף בזמנו) הושלמה, ואז המשך אותה שיטת חקירה חופשית על 01 —
+     שני סוכני-חקירה עצמאיים סרקו קבצים שטרם נבדקו בסבבים קודמים.
+     הסוכן הראשון מצא בעיה אמיתית ב-`src/components/admin/MatchingTab.tsx`
+     (שאילתות ל-`teacher_leads`/`seeker_leads`/`nedarim_submissions` —
+     טבלאות שלא קיימות בשום מיגרציה) אך זה קוד שמגיע רק דרך
+     `/legacy/AdminDashboard.tsx`, חלק מאזור ה-legacy המת המתועד כבר
+     כ"תת-מערכת נטושה" בסבבים קודמים — לא טופל, לא דווח מחדש. הסוכן
+     השני, בסריקת 28 קבצי דפים + 5 edge functions נוספים שלא נבדקו,
+     איתר ב-`public/RabbiPublic.tsx` (ראוט ציבורי חי `/rabbi/:id`)
+     שימוש ב-`pt.time` (עמודה לא קיימת; האמיתית `time_hhmm`) והשוואת
+     `pt.day_of_week !== "יומי"` (עמודת `int`/`null` מול מחרוזת קבועה —
+     לעולם לא שווה).
+577. **מה נמצא בפועל, מעבר לדיווח הראשוני.** בדיקה ישירה של הקובץ
+     גילתה בעיה עמוקה יותר: ה-state `synagogues`/`prayerTimes` מוצהר
+     (`useState`) אך **אף קריאת `setSynagogues`/`setPrayerTimes` לא
+     קיימת בכל הקובץ** — כלומר כל מקטע "זמני תפילות" (שורות 154–178)
+     היה קוד מת שלעולם לא נטען, גם ללא הבאג בשמות העמודות
+     (`synagogues.length > 0` תמיד `false`). הערה קודמת בקוד הסבירה
+     במפורש למה: "synagogues has no FK back to a rabbi's profile (only
+     a free-text rabbi_name) ... left empty rather than guessing a name
+     match". ההערה נכונה לגבי rabbi_name, אך פספסה שביל אמין קיים:
+     `profile.preferred_tenant_id` (FK אמיתי ל-`tenants`, כבר בשימוש
+     באותו קובץ שורות נמוכות יותר לצורך טופס יצירת הקשר) — וגם
+     `synagogues` וגם `prayer_times` הן טבלאות tenant-scoped עם מדיניות
+     קריאה ציבורית לטננט פעיל (אותו דפוס בדיוק כמו ש-`public/
+     SynagogueDetail.tsx` כבר תוקן לפני כן).
+578. **מה נבנה.** ב-`fetchRabbi()`: כש-`profile.preferred_tenant_id`
+     קיים, שאילתה ל-`synagogues` ול-`prayer_times` לפי `tenant_id` (שני
+     `select`ים בלבד, אין RPC/מיגרציה חדשים). בתצוגה: `pt.time` →
+     `pt.time_hhmm`; ההשוואה למחרוזת "יומי" הוחלפה בלוגיקה תואמת-סכימה
+     כמו שכבר קיימת באותו קובץ למקטע השיעורים (`l.day_of_week != null
+     ? DAY_NAMES[l.day_of_week] : ...`): `day_of_week != null ?
+     DAY_NAMES[day_of_week] : "(יומי)"`.
+579. **אימות + אפס רגרסיה.** אומת חי ב-MCP על `bieebmnmkffwbqlsfozh`
+     תחת `BEGIN...ROLLBACK` + `set local role anon`: הוכנסו בית-כנסת
+     וזוג זמני-תפילה אמיתיים על טננט פעיל אמיתי, ונקרא בהצלחה על ידי
+     `anon` דרך `tenant_id` (הן `synagogues` והן `prayer_times`); `count(*)`
+     אחרי `rollback` = 0 בשתי הטבלאות, אפס שאריות. לוגיקת התצוגה
+     (כל ענפי `day_of_week`, כולל `0`/ראשון ו-`null`/יומי) שוכפלה
+     ב-Node טהור מול 4 תרחישים — כולם נכונים. `esbuild` (loader=tsx,
+     jsx=automatic) + `node --check` נקיים על הקובץ המהודר; איזון
+     סוגריים נקי (144/144, 100/100, 23/23) על הקובץ המלא. `git diff
+     --stat` מאשר קובץ יחיד, 10 תוספות/3 מחיקות. `get_advisors`
+     (security) — ללא שינוי סכימה, אין ממצא חדש. נדחף לענף חדש
+     `fix/01-torah-platform-rabbi-public-prayer-times-0826` (718eb4b7)
+     — לא מוזג. System 35 KioskFleet לא נגע, per HARD STEERING; מערכות
+     08/09/bkalut-app/bkalot-admin/`zr_*`/webhook NEDARIM3873/
+     `csj`/`csj_src`/`igud`/15-egod לא נגעו.
