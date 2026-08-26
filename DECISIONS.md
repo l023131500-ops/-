@@ -5642,3 +5642,49 @@
      — לא מוזג. system 35 KioskFleet לא נגע, per HARD STEERING; מערכות
      08/09/bkalut-app/bkalot-admin/`zr_*`/webhook NEDARIM3873/`csj`/
      `csj_src`/`igud` לא נגעו.
+
+## 26/08/2026 (LOOP A, המשך אותו יום) — 01-torah-platform: מסך ניהול חומרי עזר (admin/Content) שבור לחלוטין באישור/דחייה, שם מגיד לא מוצג לעולם
+
+491. **ההקשר.** `core.run_progress` אומת (אחרון `[loop A]`: `5a9326b0`, אותה
+     מערכת). `core.build_tasks` עדיין ריק ל-01/15 (רק 32/36 done), אז
+     ממשיך באותה שיטת חקירה חופשית על 01-torah-platform (P3, הנבחר על
+     15-egod ברשומה 462). סוכן Explore נשלח לסרוק דפים/הוקים שעדיין לא
+     נבדקו בסבבים קודמים (Materials/Gallery/Orders/legacy IVR/Commerce
+     וכו') בחיפוש אחר עמודה שגויה נוספת מאותה משפחת באגים שנמצאה שוב
+     ושוב ב-01 (donation/checkout, PrayerTimes, LessonDetail). מצא
+     `src/pages/admin/Content.tsx`.
+492. **מה נמצא.** `updateStatus()` כותב `admin_notes` — עמודה שלא קיימת;
+     העמודה האמיתית ב-`public.materials` (`20260519000002_torah_content.sql`)
+     היא `rejection_reason`. `load()`+חיפוש קוראים `m.uploader_id` — גם
+     היא לא קיימת; העמודה האמיתית היא `owner_user_id`. אומת חי מול הפרויקט
+     האמיתי (`bieebmnm`): הרצת `UPDATE materials SET admin_notes = 'x'
+     WHERE false` מחזירה `42703 undefined_column` אמיתי — כלומר כל לחיצת
+     "אשר"/"דחה" במסך הזה נכשלת בפועל בשרת, אבל `updateStatus()` לא בדק
+     את `error` שחוזר מ-supabase-js, אז ה-`toast.success` עדיין מוצג
+     למנהל כאילו הפעולה הצליחה בעוד שום דבר לא השתנה במסד. באותו אופן,
+     `profilesMap` נבנה תמיד ממערך של `undefined` (כי `m.uploader_id`
+     לא קיים בשורה שחוזרת מ-`select("*")`), כך ששם המגיד שהעלה את הקובץ
+     תמיד מוצג "—" והחיפוש-לפי-שם-מגיד אף פעם לא עובד.
+493. **מה נבנה.** תיקון שני שמות העמודות (`rejection_reason`,
+     `owner_user_id`) בשלוש נקודות הקריאה/כתיבה. הוספת שמירת `busyId` +
+     בדיקת `error`+`toast.error` בדיוק לפי המוסכמה הקיימת כבר בקובץ
+     `AdminDashboard.tsx` (approveStudyDay/rejectStudyDay, רשומה 2a035b20)
+     — גם ל-`updateStatus` וגם ל-`remove`, כולל נטרול הכפתורים בזמן
+     הפעולה. הוספת שורת "סיבת דחייה: ..." שמציגה בחזרה למנהל את
+     `rejection_reason` שהוא עצמו הקליד דרך `prompt()` — שדה שהיה נכתב
+     (אחרי התיקון) אך לעולם לא הוצג בשום מקום.
+494. **אימות + אפס רגרסיה.** `esbuild`+`node --check` נקי על הקובץ.
+     אומת חי ב-MCP מול הפרויקט האמיתי (`bieebmnm`): שוחזר קודם כל
+     שהקוד הישן (`admin_notes`) נכשל ב-`42703` אמיתי; אחר כך, ב-session
+     ללא `COMMIT` מפורש, הוכנסה שורת `materials` אמיתית (tenant אמיתי)
+     ועודכנה עם השמות הנכונים (`status='rejected'`,
+     `rejection_reason='test reason...'`) — חזרה נכון עם ה-`RETURNING`;
+     בדיקה נפרדת לאחר מכן אימתה `count=0` על אותה שורה — אפס שאריות
+     (ה-session נסגר בלי commit, פוסטגרס גילגל אחורה אוטומטית). טבלת
+     `materials` בפרויקט האמיתי ריקה כרגע (0 שורות) — לא נגעתי בנתונים
+     אמיתיים קיימים. שום עמודה/RPC/מדיניות קיימת לא הוסרה, רק תיקון שם
+     עמודה שגוי + הוספת בדיקת שגיאה/מניעת כפל-לחיצה תואמת-מוסכמה. נדחף
+     לענף `fix/01-torah-platform-admin-content-column-mismatch-0826`
+     (`a875b0d7`) — לא מוזג. system 35 KioskFleet לא נגע, per HARD
+     STEERING; מערכות 08/09/bkalut-app/bkalot-admin/`zr_*`/webhook
+     NEDARIM3873/`csj`/`csj_src`/`igud` לא נגעו.
