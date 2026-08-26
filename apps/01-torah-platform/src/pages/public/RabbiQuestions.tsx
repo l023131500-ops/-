@@ -44,7 +44,7 @@ export default function RabbiQuestions() {
         from_name: form.anonymous ? null : form.name,
         from_email: form.email || null,
         is_anonymous: form.anonymous,
-        is_public: true,
+        is_public: false,
       });
       if (error) throw error;
       toast.success("השאלה נשלחה. תקבל מענה בקרוב");
