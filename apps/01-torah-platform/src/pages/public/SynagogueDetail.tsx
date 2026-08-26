@@ -31,8 +31,8 @@ export default function SynagogueDetail() {
         </CardHeader>
         <CardContent className="space-y-3">
           {data.address && <div className="flex items-center gap-2"><MapPin className="h-4 w-4 text-primary" /> {data.address}{data.city ? `, ${data.city}` : ""}</div>}
-          {data.gabai_name && <div className="flex items-center gap-2"><User className="h-4 w-4 text-primary" /> גבאי: {data.gabai_name}</div>}
-          {data.contact_phone && <div className="flex items-center gap-2"><Phone className="h-4 w-4 text-primary" /> {data.contact_phone}</div>}
+          {data.gabbai_name && <div className="flex items-center gap-2"><User className="h-4 w-4 text-primary" /> גבאי: {data.gabbai_name}</div>}
+          {data.gabbai_phone && <div className="flex items-center gap-2"><Phone className="h-4 w-4 text-primary" /> {data.gabbai_phone}</div>}
           {data.description && <p className="text-foreground/85 pt-3">{data.description}</p>}
         </CardContent>
       </Card>
@@ -44,13 +44,13 @@ export default function SynagogueDetail() {
             <div className="grid sm:grid-cols-2 gap-3">
               {data.prayer_times.map((pt: any) => (
                 <div key={pt.id} className="border rounded-md p-3">
-                  <div className="font-medium">{pt.prayer_name}</div>
+                  <div className="font-medium">{pt.prayer_type}</div>
                   <div className="flex items-center gap-2 text-sm text-muted-foreground mt-1">
-                    <Clock className="h-3 w-3" /> {pt.time}
+                    <Clock className="h-3 w-3" /> {pt.time_hhmm}
                   </div>
-                  {Array.isArray(pt.days_of_week) && (
+                  {typeof pt.day_of_week === "number" && (
                     <div className="flex gap-1 mt-2">
-                      {pt.days_of_week.map((d: number) => <Badge key={d} variant="outline" className="text-xs">{DAY_NAMES[d]}</Badge>)}
+                      <Badge variant="outline" className="text-xs">{DAY_NAMES[pt.day_of_week]}</Badge>
                     </div>
                   )}
                 </div>
