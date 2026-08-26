@@ -101,6 +101,12 @@ export default function Checkout() {
       );
       if (itemsErr) throw itemsErr;
 
+      // nedarim-create-payment expects donor as a nested object (see its
+      // PaymentRequest interface) -- it validates on body.donor?.name and
+      // body.donor?.phone, so flat donor_name/donor_phone fields are always
+      // undefined on the function side, which fails its required-field check
+      // and 400s on every single order, before the Nedarim iframe is ever
+      // reached.
       const { data: pay, error: payErr } = await supabase.functions.invoke("nedarim-create-payment", {
         body: {
           purpose: "shop_order",
@@ -108,9 +114,7 @@ export default function Checkout() {
           order_id: orderId,
           amount: total,
           payment_type: "Ragil",
-          donor_name: customer.name,
-          donor_phone: customer.phone,
-          donor_email: customer.email,
+          donor: { name: customer.name, phone: customer.phone, email: customer.email || undefined },
         },
       });
       if (payErr) throw payErr;

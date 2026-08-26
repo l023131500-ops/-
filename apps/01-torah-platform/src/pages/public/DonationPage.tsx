@@ -123,6 +123,13 @@ export default function DonationPage() {
         });
       if (donErr) throw donErr;
 
+      // nedarim-create-payment expects donor/dedication as nested objects
+      // (see its PaymentRequest interface) -- it validates on body.donor?.name
+      // and body.donor?.phone, so flat donor_name/donor_phone fields are
+      // silently ignored by TS at the call site but always undefined on the
+      // function side, which fails its required-field check and 400s on
+      // every single donation attempt, before the Nedarim iframe is ever
+      // reached.
       const { data: payRes, error: payErr } = await supabase.functions.invoke("nedarim-create-payment", {
         body: {
           purpose: "donation",
@@ -130,12 +137,11 @@ export default function DonationPage() {
           donation_id: donationId,
           amount: finalAmount,
           payment_type: paymentType,
-          installments,
-          donor_name: donor.name,
-          donor_phone: donor.phone,
-          donor_email: donor.email,
-          dedication_for_name: dedication.for_name,
-          dedication_type: dedication.type,
+          recurring_months: paymentType === "HK" ? installments : undefined,
+          donor: { name: donor.name, phone: donor.phone, email: donor.email || undefined },
+          dedication: dedication.enabled
+            ? { type: dedication.type, for_name: dedication.for_name }
+            : undefined,
         },
       });
       if (payErr) throw payErr;
