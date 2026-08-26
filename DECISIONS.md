@@ -5813,3 +5813,29 @@
      (`ef783e29`) — לא מוזג. system 35 KioskFleet לא נגע, per HARD
      STEERING; מערכות 08/09/bkalut-app/bkalot-admin/`zr_*`/webhook
      NEDARIM3873/`csj`/`csj_src`/`igud` לא נגעו.
+
+504. **`payment_status = "paid"` — השוואה שאף פעם לא הצליחה.**
+     `public.payment_status` הוא enum ב-Postgres עם החברים
+     `pending`/`authorized`/`captured`/`failed`/`refunded`/`cancelled`
+     בלבד — אין חבר `'paid'`. `admin/Dashboard.tsx` כבר נושא הערה
+     שמתעדת בדיוק את המלכודת הזו ומסנן נכון לפי `'captured'`, אבל 5
+     מקומות נוספים מעולם לא קיבלו את אותו תיקון: `admin/Commerce.tsx`
+     (תגית סטטוס לתרומות ולהזמנות), `admin/Analytics.tsx` (גרף
+     "תרומות לפי יום" — היה מחזיר תמיד ריק), `portal/Dashboard.tsx`
+     (אריחי "תרומות סה״כ"/"הזמנות" בדשבורד השוכר — תמיד ₪0/0),
+     ו-`portal/Orders.tsx`/`portal/Donations.tsx` (תגית "שולם" בעמודי
+     ההזמנות/תרומות של השוכר עצמו). כל אחד מהם הציג הזמנה/תרומה
+     שנתפסה (captured) בפועל כאילו מעולם לא שולמה.
+505. **אימות חי.** בטרנזקציה מגולגלת-אחורה מול הפרויקט האמיתי
+     (`bieebmnm`): `WHERE payment_status = 'paid'` נדחה ישירות על-ידי
+     Postgres (`22P02: invalid input value for enum payment_status:
+     "paid"`) — כלומר זו לא רק תוצאה ריקה אלא שגיאת שאילתה מוחלטת ברגע
+     שיש נתונים אמיתיים. הוספת תרומה+הזמנה אמיתיות עם
+     `payment_status='captured'` ואימות ש-`= 'captured'` תופס אותן
+     (count=1) בעוד `= 'paid'` קורס. אפס שאריות אחרי `ROLLBACK`. אפס
+     רגרסיה — השדות האלה מעולם לא נקראו נכון קודם, כך שאין התנהגות
+     עובדת שנשברה, רק תוקנה. נדחף לענף חדש
+     `fix/01-torah-platform-payment-status-paid-mismatch-0826`
+     (`6a7368a0`) — לא מוזג. system 35 KioskFleet לא נגע, per HARD
+     STEERING; מערכות 08/09/bkalut-app/bkalot-admin/`zr_*`/webhook
+     NEDARIM3873/`csj`/`csj_src`/`igud` לא נגעו.
