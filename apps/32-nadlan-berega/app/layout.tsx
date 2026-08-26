@@ -69,6 +69,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                   שהתקן דורש — נמדד ברוחב 390. */}
               <Link href="/" className="inline-block py-1 hover:text-tealD">חיפוש</Link>
               <Link href="/sources" className="inline-block py-1 hover:text-tealD">מקורות ותמחור</Link>
+              <Link href="/history" className="inline-block py-1 hover:text-tealD">ההיסטוריה שלי</Link>
             </nav>
           </div>
         </header>

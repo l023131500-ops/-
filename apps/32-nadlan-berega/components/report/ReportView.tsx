@@ -36,6 +36,7 @@ import TransitLines from './TransitLines';
 import AreaAlertSignup from './AreaAlertSignup';
 import TabuRequestPanel from './TabuRequestPanel';
 import TikMeidaRequestPanel from './TikMeidaRequestPanel';
+import { sessionToken } from '@/lib/session';
 
 /** שלושת הכפתורים, בשפה של הלקוח. */
 const BUTTONS: { tier: ReportTier; title: string; sub: string }[] = [
@@ -222,6 +223,25 @@ export default function ReportView({
     Object.values(sectionRefs.current).forEach((el) => el && obs.observe(el));
     return () => obs.disconnect();
   }, [data, tier]);
+
+  /**
+   * build_tasks id=6 חלק (c) · "ההיסטוריה שלי" — לא נוגע בנתיב הציבורי עצמו:
+   * `sessionToken()` חוזר `null` מיידית ובלי שום קריאת רשת לצופה אנונימי (הרוב
+   * המכריע של הביקורים כאן), ורק כשיש כבר סשן more30 פעיל נשלחת קריאה שקטה
+   * לרישום הצפייה תחת אותו משתמש. לעולם לא חוסם/משנה את רינדור הדוח עצמו.
+   */
+  useEffect(() => {
+    if (!data) return;
+    const slug = preloadedSlug ?? (data as unknown as { permalink?: string | null }).permalink ?? null;
+    if (!slug) return;
+    const token = sessionToken();
+    if (!token) return;
+    fetch(apiUrl('/api/history'), {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+      body: JSON.stringify({ slug }),
+    }).catch(() => {});
+  }, [data, preloadedSlug]);
 
   const categories = useMemo(() => {
     if (!data) return [];
