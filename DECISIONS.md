@@ -6253,3 +6253,63 @@
      מוזג. System 35 KioskFleet לא נגע, per HARD STEERING; מערכות
      08/09/bkalut-app/bkalot-admin/`zr_*`/webhook NEDARIM3873/`csj`/
      `csj_src`/`igud`/15-egod לא נגעו.
+
+## 26/08/2026 (LOOP A, המשך אותו יום) — 01-torah-platform: portal/Schedule.tsx — כל לחיצה על "שמור" בעמוד לוח-השיעורים בפורטל נכשלה
+
+533. **ההקשר.** המשך אותה שיטת חקירה (P3, 01 נבחר על 15-egod ברשומה
+     462). הרצתי סוכן Explore לסרוק 32 קבצי `public`/`admin`/`portal`
+     שעדיין לא נבדקו בסבבים קודמים, ומיפיתי כל קריאת `.from(table)`
+     מול הסכימה החיה (`information_schema.columns` על `bieebmnm`).
+     נמצאו ארבעה מועמדים אמיתיים (`portal/Schedule.tsx`,
+     `public/Azkarot.tsx`, `public/RabbiQuestions.tsx`,
+     `public/SynagogueDetail.tsx`) — נבחר `portal/Schedule.tsx` לטיפול
+     הסבב הזה כי הוא החמור מבין הארבעה: לא רק תצוגה שבורה אלא נתיב
+     כתיבה שנכשל תמיד, והעמוד מקושר בפועל מה-sidebar לכל תפקידי
+     הפורטל (שלוש תוויות שונות: "הספק לימודי"/"לוח שיעורים"/"לוח
+     פעילות" — כולן לאותו `/portal/schedule`, אומת ב-
+     `components/portal/PortalSidebar.tsx`), בדיוק כמו הדפוס שכבר תועד
+     ברשומות 524-528 (Teachers/Attendance).
+534. **מה נמצא.** `portal/Schedule.tsx` (עמוד "לוח שיעורים" בפורטל,
+     נפרד מ-`portal/Lessons.tsx` התקין) בונה `INSERT` ל-`lessons` עם
+     `teacher_name`, `location`, `time`, `days_of_week` (מערך),
+     `lesson_type`, `is_public` ו-`created_by` — אף אחת מהעמודות האלה
+     לא קיימת בסכימה החיה (אומת מול `information_schema.columns`).
+     כל לחיצה על "שמור" בכל שיעור, לכל חבר פורטל, בכל טננט, נכשלה
+     תמיד בשגיאת PostgREST "column does not exist" — בדיוק אותה
+     משפחת-באג כמו רשומה 526 (Attendance), הפעם על ה-`INSERT` ולא
+     על ה-`ON CONFLICT`. `is_public` היה state מת לחלוטין — לא קיים
+     שום control ב-JSX שקושר אליו, כך שהיה שדה רפאים גם לפני התיקון.
+     ה-DELETE/ה-SELECT כבר השתמשו בעמודות אמיתיות (`id`/`tenant_id`)
+     ולא נגעו.
+535. **מה נבנה.** מיפוי לעמודות האמיתיות, זהה לשינוי-השם ש-
+     `portal/Lessons.tsx` (מסך אחר, כבר תקין) כבר עבר: `teacher_name`
+     → `rabbi_name`, `location` → `address`, `time` → `time_hhmm`,
+     `lesson_type` → `style`. `days_of_week` (מערך) מפוצל עכשיו לשורה
+     אחת לכל יום נבחר (`day_of_week` היא עמודת int בודדת, לא מערך) —
+     אותה קונבנציה בדיוק ש-`portal/Lessons.tsx` כבר משתמש בה לשיעור
+     חוזר על כמה ימים. `is_public`/`created_by` הוסרו לגמרי: לאף אחד
+     אין עמודה אמיתית, ו-`lessons.is_approved` כבר `DEFAULT false`
+     בבסיס הנתונים (אומת מול `information_schema.columns`) — כך
+     ששורה חדשה נופלת נכון ל"ממתין לאישור" בלי לקבוע שום דבר במפורש,
+     בדיוק כמו ש-`portal/Lessons.tsx` כבר עושה. תיקנתי גם את בלוק
+     התצוגה מתחת לטופס שקרא את אותם שמות שגויים
+     (`l.rabbi_name`/`l.address`/`l.time_hhmm`/`l.day_of_week`).
+536. **אימות + אפס רגרסיה.** `esbuild`
+     (מ-`apps/24-galilee-connect-hub/node_modules/.bin/esbuild`) +
+     `node --check` עברו נקי על הקובץ המתומלל; בדיקת איזון סוגריים
+     נקייה (73/73 עגולים, 81/81 מסולסלים, 16/16 מרובעים). אומת חי
+     ב-MCP מול `bieebmnm` בתוך `BEGIN...ROLLBACK`: נוצר טננט אמיתי,
+     ואז בוצע בדיוק אותו `INSERT` רב-שורות שהקוד המתוקן שולח עבור
+     שיעור חוזר על 2 ימים (2 שורות) + שיעור בלי יום (שורה נוספת) —
+     שלושת ה-`INSERT` הצליחו ללא שגיאה; `DELETE ... WHERE day_of_week
+     = 1` (בדיוק מה שכפתור המחיקה שולח) הסיר שורה אחת בלבד (3→2
+     שורות נותרות). `count(*)` על שורות הבדיקה (גם `lessons` וגם
+     `tenants`) אחרי ה-`ROLLBACK` חזר 0 — אפס שאריות. `git diff
+     --stat` מאשר קובץ יחיד. `portal/Lessons.tsx` (המסך התקין האחר)
+     לא נגע. נדחף לענף חדש
+     `fix/01-torah-platform-portal-schedule-column-mismatch-0826`
+     (f157e653) — לא מוזג. שלושת המועמדים הנוספים
+     (`Azkarot`/`RabbiQuestions`/`SynagogueDetail`) נותרו ל-סבב הבא.
+     System 35 KioskFleet לא נגע, per HARD STEERING; מערכות
+     08/09/bkalut-app/bkalot-admin/`zr_*`/webhook NEDARIM3873/`csj`/
+     `csj_src`/`igud`/15-egod לא נגעו.
