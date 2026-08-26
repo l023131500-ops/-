@@ -6077,3 +6077,68 @@
      מוזג. System 35 KioskFleet לא נגע, per HARD STEERING; מערכות
      08/09/bkalut-app/bkalot-admin/`zr_*`/webhook NEDARIM3873/`csj`/
      `csj_src`/`igud` לא נגעו.
+
+## 26/08/2026 (LOOP A, המשך אותו יום) — 01-torah-platform: admin/Messages.tsx ("ניהול פניות") מציג כל פנייה ריקה — עמודות ישנות שלא קיימות ב-portal_messages
+
+520. **ההקשר.** המשך אותה שיטת חקירה חופשית על 01-torah-platform
+     (P3, נבחר על 15-egod ברשומה 462). `core.issues` נבדק תחילה: כל
+     הפריטים הפתוחים בתחום 01 (#138, #257, #259) חסומים על הכרעת
+     משתמש/מוצר, כמו גם #172/#203 (SMTP/אישור-מייל, דורש הרשאה על
+     פרויקט הנושא 08/09). הופעל סוכן לחיפוש חופשי של אותה משפחת באג
+     שחוזרת שוב ושוב בסבבים האחרונים (קוד UI שקורא/כותב לעמודה/טבלה/
+     RPC שלא קיימים חי).
+521. **מה נמצא.** `admin/Messages.tsx` (מסך "ניהול פניות" באדמין) קורא
+     שורות מ-`public.portal_messages` דרך `m.sender_name`,
+     `m.sender_phone`, `m.sender_email`, `m.message` — אומת חי מול
+     `information_schema.columns` על `bieebmnmkffwbqlsfozh`: העמודות
+     האמיתיות הן `from_name, from_phone, from_email, subject, body`
+     (יחד עם `id, tenant_id, to_user_id, status, meta, created_at`).
+     כל שאר הקוראים/כותבים של הטבלה כבר תוקנו לשמות הנכונים —
+     `Footer.tsx`, `ContactSection.tsx`, `public/RabbiPublic.tsx`
+     (כותבים) ו-`portal/Messages.tsx` (קורא) — ורק `admin/Messages.tsx`
+     נשאר עם השמות הישנים. מכיוון שהשאילתה היא `select("*")`,
+     PostgREST מחזיר את השורה בהצלחה בלי שגיאה — הבאג שקט לגמרי:
+     כל כרטיס פנייה במסך האדמין מוצג עם שם פונה ריק, טלפון ריק, מייל
+     ריק וגוף הודעה ריק, מה שהופך את תיבת הפניות של האדמין לחסרת
+     תועלת — אין דרך לדעת מי שלח את הפנייה או מה תוכנה.
+522. **מה נבנה.** הוחלפו ארבעת השדות לשמות העמודה האמיתיים
+     (`from_name`/`from_phone`/`from_email`/`body`) ונוספה שורת תצוגה
+     ל-`subject` (עמודה אמיתית ומאוכלסת שמעולם לא הוצגה ב-UI). לא
+     הומצאה עמודה/טבלה חדשה, ולא נגעו בקובץ אחר. `updateStatus`/
+     `remove`/פילטר הסטטוס נשארו בלי שינוי — כבר השתמשו בעמודת
+     `status` הנכונה (בלי check constraint על הערכים, אז כתיבה
+     חופשית כבר עבדה).
+523. **אימות + אפס רגרסיה.** `esbuild` (מ-
+     `apps/24-galilee-connect-hub/node_modules/.bin/esbuild`) עבר נקי
+     על הקובץ אחרי השינוי; בדיקת איזון סוגריים נקייה (66/66 עגולים,
+     61/61 מסולסלים, 13/13 מרובעים). אומת חי ב-MCP מול `bieebmnm`:
+     הוכנסה שורת בדיקה ל-`portal_messages` באותה צורה בדיוק שנתיבי
+     הכתיבה האמיתיים (Footer/ContactSection) שולחים
+     (`from_name='ישראל ישראלי TESTROW'` + `from_phone/from_email/
+     subject/body`), ואז נקראה בחזרה **תחת RLS אמיתי** כמשתמש
+     super_admin אמיתי (`set local role authenticated` +
+     `request.jwt.claims` עם `sub` של המשתמש מ-`user_roles` שמאשר את
+     נתיב `/admin/messages`) — השדות `from_name/from_phone/from_email/
+     subject/body/status/created_at` (בדיוק מה שהקוד המתוקן קורא)
+     חזרו נכון. שורת הבדיקה נמחקה בסוף (`count(*)` על שם הבדיקה חזר
+     0, והטבלה הייתה ונשארה ריקה — אפס שאריות). `get_advisors`
+     (security) לאחר הבדיקה: כל האזהרות שחזרו שייכות לסכימות/טבלאות
+     אחרות (`ads.*`, `pc_*`, `otvedaf.*`, `crm_*`, `client_*` וכו')
+     שלא נגעתי בהן — קדמו לסבב הזה. אפס רגרסיה: `git diff --stat`
+     מאשר קובץ יחיד שונה; לוגיקת הטעינה/עדכון-סטטוס/מחיקה/פילטר
+     נשארה בלי שינוי.
+524. **מה נבדק ולא תוקן (נכון להישאר חסום).** `admin/
+     TeacherFeaturesDialog.tsx` (מקושר מ-`admin/Teachers.tsx`) קורא
+     לטבלאות `teacher_features`/`teacher_forum_access` שלא קיימות
+     חי, וכל מסכי `/legacy/admin`, `/legacy/nedarim`, `/legacy/ivr`
+     ומסכי טוקן-פורטל (`rabbi_portals`, `org_portals`,
+     `synagogue_portals`, `study_day_events` וכו') בנויים מול סכימה
+     מקבילה שלמה שלא קיימת חי בכלל — פער מבני גדול (מערכת "legacy"
+     שלמה שכנראה ננטשה), לא שם-עמודה יחיד שגוי, ותואם את אותו דפוס
+     "דורש הכרעת נטישה-מול-מיגרציה" כמו #257 החסום כבר. לא תוקן כאן;
+     מועמד טוב לרשומת `core.issues` חדשה בסבב הבא אם עדיין רלוונטי.
+     נדחף לענף חדש
+     `fix/01-torah-platform-admin-messages-column-mismatch-0826`
+     (`cb10e402`) — לא מוזג. System 35 KioskFleet לא נגע, per HARD
+     STEERING; מערכות 08/09/bkalut-app/bkalot-admin/`zr_*`/webhook
+     NEDARIM3873/`csj`/`csj_src`/`igud`/15-egod לא נגעו.
