@@ -26,7 +26,7 @@ export default function Orders() {
               <div className="text-sm text-muted-foreground">{new Date(o.created_at).toLocaleDateString("he-IL")} · {o.shipping_city}</div>
             </div>
             <div className="flex gap-2">
-              <Badge variant={o.payment_status === "paid" ? "success" : "outline"}>{o.payment_status}</Badge>
+              <Badge variant={o.payment_status === "captured" ? "success" : "outline"}>{o.payment_status}</Badge>
               <Badge>{o.status}</Badge>
             </div>
           </CardContent></Card>

@@ -7,7 +7,8 @@ export default function Analytics() {
   const { data } = useQuery({
     queryKey: ["donations-by-day"],
     queryFn: async () => {
-      const { data } = await supabase.from("donations").select("amount_ils, created_at, payment_status").eq("payment_status", "paid");
+      // payment_status enum has no 'paid' member; a captured payment is 'captured' (see admin/Dashboard.tsx).
+      const { data } = await supabase.from("donations").select("amount_ils, created_at, payment_status").eq("payment_status", "captured");
       const buckets: Record<string, number> = {};
       (data || []).forEach((d: any) => {
         const day = new Date(d.created_at).toISOString().slice(0, 10);

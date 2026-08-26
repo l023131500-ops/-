@@ -31,8 +31,9 @@ export default function Dashboard() {
       const [lessons, leads, donations, orders] = await Promise.all([
         supabase.from("lessons").select("id", { count: "exact", head: true }).eq("tenant_id", tenant!.id),
         supabase.from("leads").select("id", { count: "exact", head: true }).eq("tenant_id", tenant!.id).eq("status", "new"),
-        supabase.from("donations").select("amount_ils").eq("tenant_id", tenant!.id).eq("payment_status", "paid"),
-        supabase.from("orders").select("id", { count: "exact", head: true }).eq("tenant_id", tenant!.id).eq("payment_status", "paid"),
+        // payment_status enum has no 'paid' member; a captured payment is 'captured' (see admin/Dashboard.tsx).
+        supabase.from("donations").select("amount_ils").eq("tenant_id", tenant!.id).eq("payment_status", "captured"),
+        supabase.from("orders").select("id", { count: "exact", head: true }).eq("tenant_id", tenant!.id).eq("payment_status", "captured"),
       ]);
       const totalDonations = (donations.data || []).reduce((s, d: any) => s + Number(d.amount_ils || 0), 0);
       return {
