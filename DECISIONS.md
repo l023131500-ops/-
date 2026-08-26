@@ -6313,3 +6313,61 @@
      System 35 KioskFleet לא נגע, per HARD STEERING; מערכות
      08/09/bkalut-app/bkalot-admin/`zr_*`/webhook NEDARIM3873/`csj`/
      `csj_src`/`igud`/15-egod לא נגעו.
+
+## 26/08/2026 (LOOP A, המשך אותו יום) — 01-torah-platform: public/RabbiQuestions.tsx ("שאל את הרב") — שליחת שאלה נכשלה תמיד
+
+537. **ההקשר.** המשך אותה שיטת חקירה (P3, 01 נבחר על 15-egod ברשומה
+     462). משלושת המועמדים שנותרו פתוחים ברשומה 536
+     (`Azkarot`/`RabbiQuestions`/`SynagogueDetail`), נבחר
+     `RabbiQuestions.tsx` לטיפול הסבב הזה: הוא הדף היחיד מבין השלושה
+     שמקושר בפועל מדף הבית (`Home.tsx`, כרטיס "שאל את הרב") ולא רק
+     מנתיב ישיר ב-`App.tsx` — כלומר החשיפה למשתמש אמיתי הגבוהה ביותר
+     — וגם נתיב כתיבה שנכשל תמיד, לא רק תצוגה חסרה (בניגוד ל-
+     `SynagogueDetail`, שהוא read-only ומציג רק שדות ריקים בלי לקרוס).
+     אומתו שלושת המועמדים מול `information_schema.columns` החי לפני
+     הבחירה: גם ב-`Azkarot.tsx` (טופס "אזכרות") וגם ב-`SynagogueDetail.
+     tsx` נמצאו התאמות-שם שגויות אמיתיות (`Azkarot`: `submitter_name`/
+     `submitter_phone`/`hebrew_date`/`relation` מול העמודות האמיתיות
+     `family_contact_name`/`family_contact_phone`/`date_of_death_hebrew`
+     ואין עמודת `relation` כלל; `SynagogueDetail`: `gabai_name`/
+     `contact_phone` מול `gabbai_name`/`gabbai_phone`, ו-`prayer_times`
+     נקרא עם `prayer_name`/`time`/`days_of_week`(מערך) מול העמודות
+     האמיתיות `prayer_type`/`time_hhmm`/`day_of_week`(int בודד, לא
+     מערך)) — שניהם נותרים פתוחים לסבב הבא, לא נשכחו.
+538. **מה נמצא.** `public/RabbiQuestions.tsx` שולח `INSERT` ל-
+     `rabbi_questions` עם `asker_name`/`asker_email` — שתי העמודות
+     האלה לא קיימות בסכימה החיה (אומת מול `information_schema.
+     columns` על `bieebmnm`); השמות האמיתיים הם `from_name`/
+     `from_email`. גם בלוק התצוגה של השאלות-שנענו קרא `q.asker_name`.
+     כל שליחת שאלה — עם שם או אנונימית — נכשלה תמיד בשגיאת PostgREST
+     "column does not exist", בדיוק אותה משפחת-באג כמו רשומות
+     526/534. שאר השדות בטופס (`tenant_id`/`question`/`is_anonymous`/
+     `is_public`) כבר תואמים את הסכימה האמיתית ולא נגעו. שאילתת ה-
+     select של "שאלות ותשובות אחרונות" (`is_public`/`answer`/
+     `answered_at`) כבר הייתה תקינה מלכתחילה — לא נגעה.
+539. **מה נבנה.** שינוי מינימלי בשני מקומות באותו קובץ: ב-`INSERT`,
+     `asker_name`→`from_name` ו-`asker_email`→`from_email`; בבלוק
+     התצוגה, `q.asker_name`→`q.from_name`. שום עמודה/טבלה חדשה, שום
+     קובץ נוסף לא נגע.
+540. **אימות + אפס רגרסיה.** `esbuild`
+     (מ-`apps/24-galilee-connect-hub/node_modules/.bin/esbuild`) +
+     `node --check` עברו נקי על הקובץ המתומלל; בדיקת איזון סוגריים
+     נקייה. אומת חי ב-MCP מול `bieebmnm`: בתוך `BEGIN...ROLLBACK`,
+     `INSERT` עם שמות העמודות **המקוריים** (`asker_name`/`asker_email`)
+     נכשל מיידית ב-`42703: column "asker_name" of relation
+     "rabbi_questions" does not exist` — משחזר במדויק את הבאג המקורי;
+     לעומת זאת `INSERT` עם שמות העמודות **המתוקנים**
+     (`from_name`/`from_email`) מול טננט אמיתי קיים הצליח וה-
+     `RETURNING` הציג בדיוק את הערכים שנשלחו. `count(*)` על שורת
+     הבדיקה אחרי ה-`ROLLBACK` חזר 0 — אפס שאריות (אומת גם בקריאת
+     MCP נפרדת). `get_advisors` (security) לאחר הבדיקה: כל האזהרות
+     שחזרו שייכות לטבלאות/פונקציות אחרות (`ads.*`, `pc_*`, `otvedaf.*`
+     וכו') שלא נגעתי בהן — קדמו לסבב הזה, ואין אזהרה חדשה שקשורה
+     ל-`rabbi_questions`/`tenants`. `git diff --stat` מאשר קובץ יחיד,
+     3 שורות שונו. נדחף לענף חדש
+     `fix/01-torah-platform-rabbi-questions-column-mismatch-0826`
+     (a73dca17) — לא מוזג. שני המועמדים הנוספים
+     (`Azkarot`/`SynagogueDetail`) נותרו ל-סבב הבא. System 35
+     KioskFleet לא נגע, per HARD STEERING; מערכות
+     08/09/bkalut-app/bkalot-admin/`zr_*`/webhook NEDARIM3873/`csj`/
+     `csj_src`/`igud`/15-egod לא נגעו.
