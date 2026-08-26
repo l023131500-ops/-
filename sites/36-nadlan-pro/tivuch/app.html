@@ -510,6 +510,7 @@ const PDOCCAT_HE = {
 const ROLE_HE = { owner: 'בעלים', manager: 'מנהל', agent: 'מתווך' };
 const LSTATUS_HE = { active: 'פעיל', ended: 'הסתיים', cancelled: 'בוטל' };
 const RSTATUS_HE = { due: 'ממתין', paid: 'שולם', waived: 'ויתור' };
+const PULL_STATUS_HE = { success: 'הופק בהצלחה', error: 'נכשל' };
 const FKIND_HE = { has_buyer: 'יש לי קונה', has_property: 'יש לי נכס', question: 'שאלה' };
 const COMM_PAYER_HE = { buyer: 'קונה', seller: 'מוכר', both: 'שני הצדדים' };
 const COMM_STATUS_HE = { pending: 'ממתין', invoiced: 'הופקה חשבונית', collected: 'נגבתה', written_off: 'נמחקה כאבודה' };
@@ -3646,11 +3647,51 @@ async function renderSettings() {
       '</div>';
   }
 
+  // build_tasks id=14: "every search and produced report fully visible —
+  // who produced, when, status; full audit trail." np_property_truth_set
+  // (fetchTruth's save-back call) already overwrote truth_report on every
+  // pull with no history and no requester — np_report_pulls (0157) now logs
+  // every pull. RLS on the underlying table (not a client-side filter) does
+  // the role split: owner/manager get the whole office's log here, a plain
+  // agent gets only their own pulls — same shape as the section below.
+  html += '<h2 class="sec">יומן דוחות אמת</h2>' +
+    '<p class="sub" style="margin:0 0 10px">' +
+    (canManage ? 'כל פעם שמישהו במשרד לחץ על "משוך דוח אמת" בכרטיס נכס — מי, מתי, ועל איזה נכס.'
+                : 'הדוחות שאת/ה עצמך משכת — מי, מתי, ועל איזה נכס.') +
+    '</p><div id="stReportPullsBox"></div>';
+
   body.innerHTML = html;
   renderPublishBox(s, canManage);
   renderLeadIntakeBox(s, canManage);
   renderTemplatesBox(canManage);
+  renderReportPullsBox();
   wireSettingsBody(canManage, s);
+}
+
+async function renderReportPullsBox() {
+  const box = $('stReportPullsBox');
+  if (!box) return;
+  box.innerHTML = '<p class="loading"><span class="spinner"></span>טוען…</p>';
+  let rows;
+  try { rows = await rpc('np_report_pulls', { p_office: OFFICE.id, p_limit: 200 }); }
+  catch (e) { box.innerHTML = '<div class="err">' + esc(e.message) + '</div>'; return; }
+
+  rows = rows || [];
+  if (!rows.length) { box.innerHTML = '<p class="sub">עדיין לא נמשך אף דוח אמת.</p>'; return; }
+
+  box.innerHTML = '<div class="table-scroll"><table><thead><tr>' +
+    '<th>נכס</th><th>מי משך</th><th>מתי</th><th>סטטוס</th><th>פרטים</th>' +
+    '</tr></thead><tbody>' +
+    rows.map((r) => '<tr>' +
+      '<td>' + esc(r.property_title || r.property_address || 'ללא כותרת') + '</td>' +
+      '<td>' + esc(r.requested_by_name || '—') + '</td>' +
+      '<td>' + dtm(r.requested_at) + '</td>' +
+      '<td>' + (r.status === 'success'
+        ? '<span class="pill on">' + esc(PULL_STATUS_HE.success) + '</span>'
+        : '<span class="pill off">' + esc(PULL_STATUS_HE.error) + '</span>') + '</td>' +
+      '<td>' + esc(r.error_text || '') + '</td>' +
+      '</tr>').join('') +
+    '</tbody></table></div>';
 }
 
 async function renderTemplatesBox(canManage) {

@@ -1,5 +1,50 @@
 # CLAUDE.md — נדל"ן ברגע (קרא אותי בתחילת כל סשן)
 
+## עדכון — 26/08/2026 (Loop A, session 12 — system 36 nadlan-pro, build_tasks id=14: יומן דוחות אמת)
+`core.build_tasks` id=14 (system 36, priority 70): "Management: every search
+and produced report fully visible — full detail, who produced, when, status;
+full audit trail." זהו ה-counterpart של id=7 (session הקודם למטה, שסגר את
+אותו פער על 32) — אבל בשונה מ-32 (דוח ציבורי בלי כניסה, "who produced" לא
+ניתן למימוש בכלל), 36 הוא CRM משרדי מאומת — "מי משך" היא שאלה עם תשובה
+אמיתית כאן.
+
+`np_property_truth_set` (0010, נקרא מ-`fetchTruth` בכל לחיצה על "משוך דוח
+אמת") תמיד רק דרס את `properties.truth_report`/`truth_report_at`/
+`truth_report_error` — בלי היסטוריה ובלי לדעת מי משך. מיגרציה `0157`
+מוסיפה `nadlan_pro.report_pulls` (RLS: owner/manager רואים את כל יומן
+המשרד, סוכן רגיל רואה רק את המשיכות שלו — אותו פיצול כמו commissions,
+id=1) ומרחיבה את `np_property_truth_set` (`CREATE OR REPLACE`, אותה חתימה
+והתנהגות בדיוק) להכניס שורת-יומן אחת באותה טרנזקציה של כתיבת הדוח. RPC
+חדש `np_report_pulls(p_office, p_limit)` מחזיר את היומן עם כותרת/כתובת
+הנכס ושם המושך (`office_members.full_name`) — ה-RLS על הטבלה עושה את
+הסינון לפי תפקיד, לא הפונקציה. סקציית "יומן דוחות אמת" חדשה במסך
+"הגדרות" (`renderReportPullsBox`) מרנדרת את זה כטבלה, גלויה לכל תפקיד
+(owner/manager רואים הכול, סוכן רואה את שלו).
+
+אומת חי ב-MCP בטרנזקציה מגולגלת-לאחור מול המשרד האמיתי "משרד בדיקה QA
+18/08" (owner אמיתי + `qa.np.agent@more30.com` שנוסף זמנית כחבר אמיתי):
+owner מושך דוח (הצלחה) + agent מושך דוח (כישלון, עם `error_text`) →
+`np_report_pulls` של owner מחזיר שתיים (`[success,error]`) →
+`np_report_pulls` של agent מחזיר רק את שלו (`[error]`) →
+`np_report_pulls` של זר-לא-חבר מחזיר 0 → `INSERT` ישיר לטבלה בהתחזות
+ל-`requested_by` של מישהו אחר בלי חברות נדחה ע"י מדיניות ה-RLS (`42501`,
+אומת בהרצה נפרדת כי הדחייה מפילה את הטרנזקציה כולה). אפס שיוריות אחרי
+`ROLLBACK`. `get_advisors` (security) אחרי ההחלה — אין אזהרה חדשה שמזכירה
+`report_pulls`/`np_property_truth_set`/`np_report_pulls`. `node --check`
+נקי על ה-`<script type="module">` שחולץ (186,512 תווים); בדיקת
+איזון-סוגריים על הקובץ המלא עברה (906/906, 3200/3200, 240/240). לוגיקת
+רינדור השורות (נפילה-חזרה לכתובת כשאין כותרת, בריחת-XSS, נפילה-חזרה
+לשם-מושך חסר) שוכפלה עצמאית ב-Node מול 5 תרחישים, כולם עברו כולל
+בריחת-HTML נכונה.
+
+אפס רגרסיה: `np_property_truth_set` שומר על אותה חתימה והתנהגות בדיוק
+כמו לפני (0010) — התוספת היחידה היא שורת-היומן, שלא יכולה להיכשל לאף
+קורא שכתיבת ה-`truth_report` שלו כבר הצליחה (RLS על ה-INSERT מסתמכת על
+אותו `can_touch` שכבר נאכף על ה-UPDATE של הטבלה). שום RPC/handler/UI
+קיימים אחרים לא נגעו חוץ מהסקציה החדשה. נדחף לענף
+`fix/36-nadlan-pro-report-pulls-audit-trail-0825` — לא מוזג. System 35
+KioskFleet לא נגע, לפי ה-HARD STEERING.
+
 ## עדכון — 25/08/2026 (Loop A, session 11 — build_tasks id=7: יומן ביקורת מלא במרכז השליטה)
 `core.build_tasks` id=6 (priority 60) נשאר `todo` בכוונה: חלק (c) שלו ("data
 behind Enter-System login") הוא קונפליקט ממשי מתועד מול זכות-קיימת
