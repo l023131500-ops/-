@@ -38,7 +38,31 @@ export default function DonationPage() {
   const [donor, setDonor] = useState({ name: "", phone: "", email: "" });
   const [dedication, setDedication] = useState({ enabled: false, for_name: "", type: "" });
   const [iframeUrl, setIframeUrl] = useState<string | null>(null);
+  const [pendingDonationId, setPendingDonationId] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+
+  // The Nedarim iframe shows its own confirmation screen when the payment
+  // completes, but never tells this page -- nedarim-webhook (the IPN)
+  // flips donations.payment_status server-side, independently of anything
+  // the browser sees. Poll that status while the iframe is up so a
+  // successful/failed payment actually takes the donor to /donate/success
+  // instead of leaving them stuck looking at Nedarim's own page forever.
+  useEffect(() => {
+    if (!pendingDonationId) return;
+    const interval = setInterval(async () => {
+      const { data: status } = await supabase.rpc("donation_payment_status", { _donation_id: pendingDonationId });
+      if (status === "captured") {
+        clearInterval(interval);
+        nav("/donate/success");
+      } else if (status === "failed") {
+        clearInterval(interval);
+        toast.error("התשלום נכשל. נא לנסות שוב.");
+        setIframeUrl(null);
+        setPendingDonationId(null);
+      }
+    }, 3000);
+    return () => clearInterval(interval);
+  }, [pendingDonationId, nav]);
 
   const { data: campaign } = useQuery({
     queryKey: ["campaign", campaignSlug, tenant?.id],
@@ -117,6 +141,7 @@ export default function DonationPage() {
       if (payErr) throw payErr;
       if (!payRes?.iframe_url) throw new Error("לא הצלחנו ליצור עמוד תשלום");
       setIframeUrl(payRes.iframe_url);
+      setPendingDonationId(donationId);
     } catch (err: any) {
       toast.error("שגיאה: " + err.message);
     } finally {
@@ -134,7 +159,7 @@ export default function DonationPage() {
           </CardContent>
         </Card>
         <div className="text-center mt-4">
-          <Button variant="outline" onClick={() => setIframeUrl(null)}>חזור</Button>
+          <Button variant="outline" onClick={() => { setIframeUrl(null); setPendingDonationId(null); }}>חזור</Button>
         </div>
       </div>
     );

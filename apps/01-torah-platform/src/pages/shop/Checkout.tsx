@@ -22,6 +22,7 @@ export default function Checkout() {
 
   const [customer, setCustomer] = useState({ name: "", phone: "", email: "", address: "", city: "", notes: "" });
   const [iframeUrl, setIframeUrl] = useState<string | null>(null);
+  const [pendingOrderId, setPendingOrderId] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -31,6 +32,29 @@ export default function Checkout() {
   useEffect(() => {
     if (user?.email) setCustomer((c) => ({ ...c, email: user.email! }));
   }, [user]);
+
+  // The Nedarim iframe shows its own confirmation screen when the payment
+  // completes, but never tells this page -- nedarim-webhook (the IPN)
+  // flips orders.payment_status server-side, independently of anything the
+  // browser sees. Poll that status while the iframe is up so a
+  // successful/failed payment actually takes the buyer to /order/success
+  // instead of leaving them stuck looking at Nedarim's own page forever.
+  useEffect(() => {
+    if (!pendingOrderId) return;
+    const interval = setInterval(async () => {
+      const { data: status } = await supabase.rpc("order_payment_status", { _order_id: pendingOrderId });
+      if (status === "captured") {
+        clearInterval(interval);
+        nav("/order/success");
+      } else if (status === "failed") {
+        clearInterval(interval);
+        toast.error("התשלום נכשל. נא לנסות שוב.");
+        setIframeUrl(null);
+        setPendingOrderId(null);
+      }
+    }, 3000);
+    return () => clearInterval(interval);
+  }, [pendingOrderId, nav]);
 
   const submit = async () => {
     if (!tenant || items.length === 0) return;
@@ -92,6 +116,7 @@ export default function Checkout() {
       if (payErr) throw payErr;
       if (!pay?.iframe_url) throw new Error("לא ניתן ליצור עמוד תשלום");
       setIframeUrl(pay.iframe_url);
+      setPendingOrderId(orderId);
     } catch (err: any) { toast.error(err.message); } finally { setLoading(false); }
   };
 
