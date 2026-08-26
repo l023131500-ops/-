@@ -5688,3 +5688,46 @@
      (`a875b0d7`) — לא מוזג. system 35 KioskFleet לא נגע, per HARD
      STEERING; מערכות 08/09/bkalut-app/bkalot-admin/`zr_*`/webhook
      NEDARIM3873/`csj`/`csj_src`/`igud` לא נגעו.
+
+## 26/08/2026 (LOOP A, המשך אותו יום) — 01-torah-platform: דף מוצר בחנות תמיד מציג "אזל מהמלאי" ותמונה שבורה, אף מוצר לא ניתן לרכישה
+
+495. **ההקשר.** `core.run_progress` אומת (אחרון `[loop A]`: `55f66e55`, אותה
+     מערכת). `core.build_tasks` עדיין ריק ל-01/15 (רק 32/36 done), אז
+     המשך באותה שיטת חקירה חופשית שכל הסבבים הקודמים על 01 השתמשו בה.
+     סוכן general-purpose קיבל את הסכימה החיה המלאה (via
+     `information_schema.columns` על הפרויקט האמיתי `bieebmnm`) וסרק את
+     כל שאר הקבצים ב-`src` שעדיין לא בוצע להם אודיט (Gallery/Orders/
+     Participants/Attendance/StudySchedule/Forums/Analytics/Commerce/
+     Tenants/legacy/*/public/* וכו') בחיפוש אחר עוד מופע מאותה משפחת
+     באגים (עמודה בקוד שלא קיימת בסכימה האמיתית).
+496. **מה נמצא.** `src/pages/shop/ProductDetail.tsx` קורא
+     `product.stock_quantity` — עמודה שלא קיימת; העמודה האמיתית ב-
+     `public.products` היא `stock`. מכיוון ש-`stock_quantity` תמיד
+     `undefined` (לא `null`), הביטוי `product.stock_quantity === null ||
+     product.stock_quantity > 0` תמיד `false` — כלומר **כל מוצר בכל
+     חנות של כל tenant הוצג תמיד כ"אזל מהמלאי"**, ללא קשר למלאי האמיתי,
+     והסתיר לגמרי את בורר הכמות ואת שני כפתורי הרכישה ("הוסף לעגלה"/
+     "קנייה מהירה") — חוסם רכישה מדף המוצר לחלוטין. אותו קובץ קרא גם
+     `product.image_url` — גם היא לא קיימת; העמודה האמיתית היא `images`
+     (jsonb array). הקובץ השכן `ShopCatalog.tsx` כבר תוקן לזה בעבר
+     (הערה מפורשת בקוד: "products stores a gallery in `images`; there is
+     no image_url") אבל התיקון מעולם לא הוחל על `ProductDetail.tsx`.
+497. **מה נבנה.** `ProductDetail.tsx`: `product.stock_quantity` →
+     `product.stock` (בדיקת המלאי), הוספת `image = product.images?.[0]`
+     ושימוש בו הן לתמונה המוצגת והן ב-`image_url` שנשלח ל-`addItem()`
+     (העגלה עצמה, ב-`useCart.tsx`, כבר משתמשת בשם `image_url` כשדה
+     פנימי של פריט העגלה — לא נגעתי בו, רק בערך שמוזן אליו).
+498. **אימות + אפס רגרסיה.** שוחזר חי ב-MCP מול הפרויקט האמיתי
+     (`bieebmnm`): `SELECT stock_quantity FROM products` ו-`SELECT
+     image_url FROM products` שניהם מחזירים `42703 undefined_column`
+     אמיתי — משחזר בדיוק את הבאג. בטרנזקציה מגולגלת-אחורה (בלי
+     `COMMIT`): הוכנס מוצר אמיתי עם `stock=5` ו-
+     `images=["...a.jpg","...b.jpg"]`, ו-`select("*")` (מדומה) החזיר
+     בדיוק את הצורה שהקוד המתוקן מצפה לה (`stock:5`,
+     `images:[...]` כמערך) — אומת `count=0` על אותה שורה אחרי, אפס
+     שאריות. `esbuild`+`node --check` נקי על הקובץ המתוקן. שום
+     RPC/מדיניות/עמודה קיימת לא הוסרה, רק תיקון שני שמות עמודה שגויים.
+     נדחף לענף `fix/01-torah-platform-shop-product-columns-0826`
+     (`2e5eca89`) — לא מוזג. system 35 KioskFleet לא נגע, per HARD
+     STEERING; מערכות 08/09/bkalut-app/bkalot-admin/`zr_*`/webhook
+     NEDARIM3873/`csj`/`csj_src`/`igud` לא נגעו.
