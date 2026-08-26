@@ -6371,3 +6371,48 @@
      KioskFleet לא נגע, per HARD STEERING; מערכות
      08/09/bkalut-app/bkalot-admin/`zr_*`/webhook NEDARIM3873/`csj`/
      `csj_src`/`igud`/15-egod לא נגעו.
+
+## 26/08/2026 (LOOP A, המשך אותו יום) — 01-torah-platform: public/Azkarot.tsx ("אזכרות") — רישום אזכרה נכשל תמיד
+
+541. **ההקשר.** המשך אותה שיטת חקירה (P3, 01 נבחר על 15-egod ברשומה
+     462). משני המועמדים שנותרו פתוחים ברשומה 537
+     (`Azkarot`/`SynagogueDetail`), נבחר `Azkarot.tsx` הסבב הזה: הוא
+     נתיב כתיבה שנכשל תמיד (כמו 536/539), בעוד `SynagogueDetail` הוא
+     read-only ומציג רק שדות ריקים בלי לקרוס — חומרה נמוכה יותר,
+     נשאר פתוח לסבב הבא.
+542. **מה נמצא + מה נבנה.** `public/Azkarot.tsx` שלח `INSERT` ל-
+     `azkarot` עם `submitter_name`/`submitter_phone`/`hebrew_date`/
+     `relation` — אף אחת מהעמודות האלה לא קיימת בסכימה החיה (אומת מול
+     `information_schema.columns` על `bieebmnm`); השמות האמיתיים הם
+     `family_contact_name`/`family_contact_phone`/`date_of_death_hebrew`,
+     ואין שום עמודת `relation` בטבלה כלל. כל רישום אזכרה — עם או בלי
+     קרבת-משפחה — נכשל תמיד באותה שגיאת PostgREST "column does not
+     exist", בדיוק אותה משפחת-באג כמו רשומות 526/534/538. בניגוד
+     ל-`is_public`/`created_by` ברשומה 535 (state מת לגמרי, בלי קלט
+     משתמש אמיתי), שדה `relation` כאן הוא קלט טקסט חופשי אמיתי
+     שהמשתמש ממלא ("קרבת משפחה") — אין לו עמודה תואמת, אז במקום
+     להשליך אותו (אובדן מידע), מופה אל `notes` (העמודה הקרובה ביותר
+     מבחינה סמנטית, `text` nullable, ריקה בכל שימוש קיים אחר בקובץ
+     הזה). בלוק התצוגה של "אזכרות אחרונות" עודכן באותו אופן:
+     `a.hebrew_date`→`a.date_of_death_hebrew`, `a.relation`→`a.notes`.
+     שאר השדות (`tenant_id`/`deceased_name`) כבר תואמים ולא נגעו.
+543. **אימות + אפס רגרסיה.** `esbuild`
+     (מ-`apps/24-galilee-connect-hub/node_modules/.bin/esbuild`) +
+     `node --check` עברו נקי על הקובץ המתומלל; בדיקת איזון סוגריים
+     נקייה (38/38 עגולים, 49/49 מסולסלים, 5/5 מרובעים). אומת חי
+     ב-MCP מול `bieebmnm` בתוך `BEGIN...ROLLBACK`: `INSERT` עם שמות
+     העמודות **המקוריים** נכשל מיידית ב-`42703: column
+     "submitter_name" of relation "azkarot" does not exist` — משחזר
+     במדויק את הבאג המקורי; `INSERT` עם שמות העמודות **המתוקנים**
+     מול טננט אמיתי קיים הצליח וה-`RETURNING` הציג בדיוק את הערכים
+     שנשלחו כולל `relation`→`notes`. `count(*)` על שורות הבדיקה אחרי
+     ה-`ROLLBACK` חזר 0 בשתי בדיקות נפרדות — אפס שאריות. `get_advisors`
+     (security) לאחר הבדיקה: כל האזהרות שחזרו שייכות לטבלאות/פונקציות
+     אחרות (`ads.*`, `pc_*`, `otvedaf.*` וכו') שלא נגעתי בהן — קדמו
+     לסבב הזה, ואין אזהרה חדשה שקשורה ל-`azkarot`/`tenants`. `git diff
+     --stat` מאשר קובץ יחיד, 9 הוספות/2 מחיקות. נדחף לענף חדש
+     `fix/01-torah-platform-azkarot-column-mismatch-0826` (1ebc01a9)
+     — לא מוזג. המועמד הנוסף (`SynagogueDetail`) נותר ל-סבב הבא.
+     System 35 KioskFleet לא נגע, per HARD STEERING; מערכות
+     08/09/bkalut-app/bkalot-admin/`zr_*`/webhook NEDARIM3873/`csj`/
+     `csj_src`/`igud`/15-egod לא נגעו.
