@@ -5581,3 +5581,64 @@
      — הוחלט להשאיר את זה לסבב נפרד ולא להעריך RLS בחופזה. system 35
      KioskFleet לא נגע, per HARD STEERING; מערכות 08/09/bkalut-app/
      bkalot-admin/`zr_*`/webhook NEDARIM3873/`csj`/`csj_src`/`igud` לא נגעו.
+
+## 26/08/2026 (LOOP A, המשך אותו יום) — 01-torah-platform: תשלום מוצלח/כושל ב-iframe לא ניווט לעולם אל /donate/success או /order/success
+
+486. **ההקשר.** `core.run_progress` אומת (אחרון `[loop A]`: `8c5ad154`, אותה
+     מערכת). `core.build_tasks` עדיין ריק ל-01/15 (רק 32/36 משתמשות
+     בטבלה הזו, שתיהן `done`), אז ממשיכים באותה שיטת חקירה חופשית
+     שהסבב הקודם השתמש בה על 01. הסבב הקודם (רשומה 485) סגר את שני
+     הבאגים שמנעו כל כתיבה, אבל השאיר במפורש פתוח: אחרי שהתשלום עצמו
+     מצליח בתוך ה-iframe של נדרים, שום מסך לא מנווט את התורם/הקונה
+     לעמודי `/donate/success`/`/order/success` — שניהם כבר קיימים
+     ובנויים, פשוט אף אחד לא קורא ל-`navigate` אליהם. הרשומה הקודמת
+     בדיוק ציינה שהפתרון לאורח (לא-מחובר) לא ברור בלי להרחיב RLS בצורה
+     מסוכנת.
+487. **מה נמצא — אין שום ערוץ שהדפדפן מקבל בו אישור.** `nedarim-webhook`
+     (ה-IPN של נדרים פלוס) מעדכן את `payment_status` ל-`captured`/
+     `failed` בצד השרת בלבד ברגע שהתשלום מסתיים — ה-iframe עצמו מציג את
+     מסך האישור **של נדרים**, לא שלנו, ואין שום `postMessage`/redirect
+     חזרה לדף המארח. `nav` (מ-`useNavigate`) יובא בשני הקבצים
+     (`DonationPage.tsx`, `Checkout.tsx`) אך מעולם לא נקרא בפועל אחרי
+     יצירת ה-iframe — אומת בקריאה ישירה של הקוד.
+488. **הפתרון.** לב הבעיה שהרשומה הקודמת נתקעה עליה (RLS חוסם אורח
+     מלקרוא את השורה שלו) הוא בדיוק אותו דפוס שנפתר כבר עבור ה-INSERT
+     (`order_exists`, רשומה 484) — פונקציית `SECURITY DEFINER` צרה
+     שמחזירה נתון בודד ולא שורה שלמה, כך שהיא לא תלויה בכלל במדיניות
+     ה-SELECT של הקורא. מיגרציה `20260826040000_payment_status_polling.sql`
+     מוסיפה `public.donation_payment_status(_donation_id uuid)` /
+     `public.order_payment_status(_order_id uuid)` — כל אחת מחזירה רק
+     את מחרוזת ה-`payment_status` (או `NULL` אם לא נמצא), `GRANT EXECUTE`
+     ל-`anon`+`authenticated` בלבד, אותו דפוס בדיוק כמו `order_exists`/
+     `has_tenant_role`/`is_super_admin`/`user_in_tenant` הקיימות. זה
+     פותר גם אורח וגם משתמש מחובר באותה דרך אחידה — בלי צורך לגעת ב-
+     `donations_self_read`/`orders_self_read` בכלל, בדיוק כפי שהרשומה
+     הקודמת ביקשה להימנע מכך.
+489. **מה נבנה בצד הלקוח.** `DonationPage.tsx`/`Checkout.tsx`: משתני
+     state חדשים `pendingDonationId`/`pendingOrderId` נשמרים ברגע שה-
+     iframe נפתח; `useEffect` פותח `setInterval` של 3 שניות כל עוד
+     יש id ממתין, קורא ל-RPC החדש — `captured` מנווט ל-`/donate/success`
+     או `/order/success` (ה-`nav` הקיים, שהיה מיובא וללא-שימוש), `failed`
+     מציג `toast.error` וחוזר לטופס (`setIframeUrl(null)`) כדי לאפשר
+     ניסיון חוזר; `pending`/`NULL` פשוט ממשיכים לחכות. כפתור "חזור"
+     הידני ב-`DonationPage.tsx` גם הוא מנקה את ה-id הממתין כדי לעצור
+     את ה-polling. אפס נגיעה בזרימת יצירת התשלום/ה-insert הקיימת — רק
+     תוספת מעל ה-iframe שכבר עובד.
+490. **אימות + אפס רגרסיה.** אומת חי ב-MCP: המיגרציה הוחלה (`apply_migration`),
+     ואז בטרנזקציה מגולגלת-אחורה נוצרו תרומה+הזמנה `pending`, אחת סומנה
+     `captured` והשנייה `failed`, ושתי הפונקציות נקראו תחת `set role anon`
+     — הוחזר `captured`/`failed` נכון, ו-`NULL` עבור id לא-קיים; `select`
+     ישיר של `anon` על אותה שורה עדיין מחזיר 0 שורות (RLS לא נגעה בכלל).
+     `get_advisors(security)` אחרי ההחלה: רק אזהרת WARN חדשה אחת מאותה
+     משפחה בדיוק כמו `order_exists`/`has_tenant_role`/`is_super_admin`/
+     `user_in_tenant` הקיימות (`anon`/`authenticated` יכולים להריץ
+     `SECURITY DEFINER`) — אפס ERROR חדש. שני קבצי ה-TSX עברו טרנספילציה
+     נקייה עם `esbuild` (אין `node_modules`/דפדפן בסביבה הזו לריצה חיה
+     מקצה-לקצה, אותה מגבלה כמו כל סבב `apps/01` קודם). מכונת המצבים של
+     ה-polling (captured/failed/pending/NULL) שוכפלה עצמאית ב-Node טהור
+     כנגד 5 תרחישים — כולם עברו. שום RPC/מדיניות/עמודה קיימת לא הוסרה או
+     שונתה מלבד ההוספה. נדחף לענף
+     `fix/01-torah-platform-payment-success-redirect-0826` (`c79592d6`)
+     — לא מוזג. system 35 KioskFleet לא נגע, per HARD STEERING; מערכות
+     08/09/bkalut-app/bkalot-admin/`zr_*`/webhook NEDARIM3873/`csj`/
+     `csj_src`/`igud` לא נגעו.
