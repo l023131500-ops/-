@@ -50,8 +50,15 @@ const RabbiPublic = () => {
     setLessons(lessonsData || []);
 
     // synagogues has no FK back to a rabbi's profile (only a free-text rabbi_name),
-    // so there's no reliable way to list "this rabbi's shuls" here -- left empty
-    // rather than guessing a name match that could show someone else's synagogue.
+    // so a name match could show someone else's synagogue -- but preferred_tenant_id
+    // (already used below for the contact form) is a real FK to this rabbi's own
+    // tenant, and synagogues/prayer_times are tenant-scoped, so that's a reliable join.
+    if (profile.preferred_tenant_id) {
+      const { data: synData } = await supabase.from("synagogues").select("*").eq("tenant_id", profile.preferred_tenant_id);
+      setSynagogues(synData || []);
+      const { data: prayerData } = await supabase.from("prayer_times").select("*").eq("tenant_id", profile.preferred_tenant_id);
+      setPrayerTimes(prayerData || []);
+    }
 
     // public.portal_photos does not exist in the live schema (verified via MCP) --
     // gallery stays empty until that table is added.
@@ -166,7 +173,7 @@ const RabbiPublic = () => {
                     <div className="flex flex-wrap gap-2 mt-3">
                       {synPrayers.map(pt => (
                         <span key={pt.id} className="bg-muted/50 text-foreground text-xs px-3 py-1.5 rounded-lg">
-                          {pt.prayer_type} {pt.time} {pt.day_of_week !== "יומי" && `(${pt.day_of_week})`}
+                          {pt.prayer_type} {pt.time_hhmm} {pt.day_of_week != null ? `(${DAY_NAMES[pt.day_of_week]})` : "(יומי)"}
                         </span>
                       ))}
                     </div>
