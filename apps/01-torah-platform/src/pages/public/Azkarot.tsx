@@ -28,7 +28,14 @@ export default function Azkarot() {
     if (!tenant) return;
     setLoading(true);
     try {
-      const { error } = await supabase.from("azkarot").insert({ tenant_id: tenant.id, ...form });
+      const { error } = await supabase.from("azkarot").insert({
+        tenant_id: tenant.id,
+        deceased_name: form.deceased_name,
+        date_of_death_hebrew: form.hebrew_date,
+        family_contact_name: form.submitter_name,
+        family_contact_phone: form.submitter_phone,
+        notes: form.relation || null,
+      });
       if (error) throw error;
       toast.success("האזכרה נרשמה");
       setForm({ submitter_name: "", submitter_phone: "", deceased_name: "", hebrew_date: "", relation: "" });
@@ -58,7 +65,7 @@ export default function Azkarot() {
       <h2 className="font-heading text-2xl mb-4">אזכרות אחרונות</h2>
       <div className="space-y-2">
         {(upcoming || []).map((a: any) => (
-          <Card key={a.id}><CardContent className="py-3 flex justify-between items-center"><div><div className="font-medium">{a.deceased_name}</div><div className="text-sm text-muted-foreground">{a.hebrew_date}{a.relation ? ` · ${a.relation}` : ""}</div></div></CardContent></Card>
+          <Card key={a.id}><CardContent className="py-3 flex justify-between items-center"><div><div className="font-medium">{a.deceased_name}</div><div className="text-sm text-muted-foreground">{a.date_of_death_hebrew}{a.notes ? ` · ${a.notes}` : ""}</div></div></CardContent></Card>
         ))}
       </div>
     </div>
