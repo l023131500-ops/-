@@ -68,28 +68,32 @@ serve(async (req) => {
       throw new Error("Missing env vars");
     }
 
+    // Columns below match the live `lessons` table (public.lessons has no
+    // synagogue_name/subject/lesson_style/rabbi_role/target_audience/
+    // is_recurring/schedule_days/specific_date/is_recorded/is_live_stream/
+    // schedule_notes — those were carried over from a stale recovered bundle
+    // and made every query here fail with 42703, taking the whole chatbot
+    // search down). title/topic_free_text/style/audience/date_specific are
+    // the real equivalents; the rest have no live equivalent and are dropped.
     const { data: lessons } = await supabase
       .from("lessons")
       .select(
-        "id, city, neighborhood, synagogue_name, subject, lesson_style, rabbi_name, rabbi_role, language, target_audience, is_recurring, schedule_days, specific_date, is_recorded, is_live_stream, contact_phone, contact_email, schedule_notes",
+        "id, city, neighborhood, title, topic_free_text, style, rabbi_name, language, audience, day_of_week, date_specific, recording_url, stream_url, contact_phone, contact_email",
       )
       .eq("is_approved", true)
       .order("created_at", { ascending: false });
 
-    // public_token is the capability that opens a portal — it must never enter
-    // the prompt, because a steered answer can read the prompt back out.
-    const { data: synagogues } = await supabase
-      .from("synagogue_portals")
-      .select("id, synagogue_name, city, neighborhood, contact_phone, contact_email")
-      .order("created_at", { ascending: false });
-    const { data: orgs } = await supabase
-      .from("org_portals")
-      .select("id, org_name, contact_phone, contact_email")
-      .order("created_at", { ascending: false });
+    // synagogue_portals and org_portals do not exist in the live schema (the
+    // legacy self-service portal subsystem was never backed by real tables);
+    // querying them here threw 42703 on every request. There is no live
+    // replacement source for these two prompt sections, so they are left
+    // empty rather than querying tables that don't exist.
+    const synagogues: unknown[] = [];
+    const orgs: unknown[] = [];
 
     const lessonsJson = JSON.stringify(lessons || [], null, 1);
-    const synagoguesJson = JSON.stringify(synagogues || [], null, 1);
-    const orgsJson = JSON.stringify(orgs || [], null, 1);
+    const synagoguesJson = JSON.stringify(synagogues, null, 1);
+    const orgsJson = JSON.stringify(orgs, null, 1);
 
     const systemPrompt =
       `אתה סוכן של "איגוד השיעורים" - פלטפורמה ארצית לחיפוש שיעורי תורה.\n\nשיעורים:\n${lessonsJson}\n\nבתי כנסת:\n${synagoguesJson}\n\nארגונים:\n${orgsJson}\n\nכללים:\n1. ענה בעברית בלשון תורנית מכבדת.\n2. הצג 1-3 תוצאות רלוונטיות בלבד מתוך המאגר.\n3. לכל תוצאה: שם הרב, נושא, מיקום, זמנים.\n4. תשובות קצרות וממוקדות.\n5. אם המשתמש רוצה להוסיף שיעור או להצטרף כמגיד, אסוף פרטים (שם, טלפון, עיר, נושא) והוסף בסוף:\n   - להוספת שיעור: [ACTION:submit_lesson]{"rabbi_name":"...","subject":"...","city":"...","phone":"..."}\n   - לבקשת מגיד שיעור: [ACTION:submit_seeker]{"contact_name":"...","phone":"...","city":"...","subject":"..."}\n   - להצטרפות כמגיד: [ACTION:submit_teacher]{"full_name":"...","phone":"...","city":"...","subjects":"..."}\n6. אחרי ACTION, כתוב: "הפרטים נשמרו בהצלחה!"`;
