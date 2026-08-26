@@ -5731,3 +5731,85 @@
      (`2e5eca89`) — לא מוזג. system 35 KioskFleet לא נגע, per HARD
      STEERING; מערכות 08/09/bkalut-app/bkalot-admin/`zr_*`/webhook
      NEDARIM3873/`csj`/`csj_src`/`igud` לא נגעו.
+
+## 26/08/2026 (LOOP A, המשך אותו יום) — 01-torah-platform: מלאי מוצר אף פעם לא יורד אחרי מכירה אמיתית + ממצא-אגב: כל תת-המערכת "פורטל בית כנסת עצמאי" (legacy) חסרת גיבוי DB לגמרי מאז ומעולם
+
+499. **ההקשר.** `core.run_progress` אומת (אחרון `[loop A]`: `e63cb1af`,
+     אותה מערכת). `core.build_tasks` עדיין ריק ל-01/15. סוכן
+     general-purpose סרק את `src/components` (לא `src/pages`, שכבר
+     נסרק במלואו בסבבים קודמים) בחיפוש עוד מופעים של משפחת-הבאג
+     "עמודה/טבלה שלא קיימת" — מצא כמה מועמדים.
+500. **ממצא-אגב חשוב לסבבים הבאים — לא טופל השבוע, רק תועד.** אומת חי
+     מול `information_schema` על הפרויקט האמיתי (`bieebmnm`) ש-**כל**
+     תת-המערכת legacy "פורטל בית כנסת/רב/ארגון עצמאי דרך access_token"
+     (`src/pages/legacy/{SynagoguePortal,RabbiPortal,OrgPortal,
+     PublicSynagoguePage,PublicRabbiPage,PublicOrgPage,StudyDayUpload,
+     AdminDashboard,IndexLegacy,...}.tsx` + `src/components/{portal,
+     studyday,synagogue}/*` + `FeaturedLessons.tsx`/`SynagogueShowcase.tsx`/
+     `FloatingChatBot.tsx`/`MatchingTab.tsx`/`FullAccessRequestsTab.tsx`
+     ברמת השורש) שואבים/כותבים לטבלאות `synagogue_portals`,
+     `rabbi_portals`, `org_portals`, `study_day_events`, `teacher_leads`,
+     `seeker_leads`, `synagogue_full_access_requests` — **אף אחת מהן לא
+     קיימת בפרויקט האמיתי, ולא נראה שהתקיימה אי-פעם** (נבדק מול רשימת
+     ה-135 הטבלאות המלאה ב-`public`). המסלולים עצמם עדיין רשומים חי ב-
+     `App.tsx` (`/shul/:accessToken`, `/portal/rabbi/:token`,
+     `/portal/org/:token`, `/study-days/:token`), אבל שום קישור/כפתור
+     בשום עמוד מודרני (לא ב-`Home.tsx`, לא באדמין המודרני) לא מפנה
+     אליהם — נבדק בגריפ ישיר. כלומר: מדובר בפרוטוטיפ דור-ראשון (כנראה
+     Lovable מוקדם) שהוחלף לגמרי במערכת tenant/portal המודרנית
+     (`pages/{public,portal,admin}/*`, שמאומתת עובדת נכון מול הסכימה
+     האמיתית — ראו `LeadsGuru.tsx`/`MatchingGuru.tsx` שמשתמשים נכון
+     ב-`leads`), אבל מעולם לא נמחק ומעולם לא קיבל מיגרציית DB תואמת.
+     `MatchingTab.tsx` (בתוך `legacy/AdminDashboard.tsx`, מסלול
+     `/legacy/admin`) הוא בפועל כפילות שבורה-לגמרי של `MatchingGuru.tsx`
+     המודרני שכן עובד תקין. בהתאם למדיניות הבעלים ("never invest
+     work/credits in projects that never progressed") — **לא** בניתי
+     כאן מיגרציה חדשה: זה חוזה סכימה שלם (4+ טבלאות, RLS, 3 סוגי
+     פורטל) בלי ספק אמיתי, סיכון גבוה לבנות צורה לא נכונה בלי שהיה לו
+     ולו יום אחד תקין להשוות אליו — לא מתאים ל"שיפור אחד שלם ומאומת"
+     בסבב יחיד. מתועד כאן כדי שסבב עתידי לא יבזבז זמן על גילוי מחדש.
+501. **הבאג שבאמת טופל.** בדקתי את מסלול הקנייה המודרני (Checkout.tsx,
+     שנבדק ותקין) והמשכתי הלאה ל-`nedarim-webhook` (ה-IPN שמסמן הזמנה
+     כ-`captured`). אומת חי: אין שום טריגר על `orders`/`order_items`/
+     `products` מלבד `set_updated_at`, ואין שום מקום בקוד שנוגע ב-
+     `products.stock` אחרי הזמנה. כלומר גם אחרי התיקון של היום ל-
+     `ProductDetail.tsx` (רשומה 496-498, שקורא נכון את `stock`),
+     **המלאי עצמו אף פעם לא ירד אחרי מכירה אמיתית** — מוצר עם מלאי
+     מוגבל ניתן למכירה עד אינסוף, והתגית "אזל מהמלאי" לעולם לא תתחלף
+     נכון גם אחרי שהמוצר נמכר בפועל.
+502. **מה נבנה.** מיגרציה חדשה (`20260826060000`):
+     `public.decrement_product_stock(_product_id, _qty)` — `UPDATE`
+     אטומי בודד (`stock = GREATEST(stock - qty, 0)`), לא read-then-write
+     (אין צורך בלולאת CAS כמו ל-`donation_campaigns.raised_ils` באותו
+     webhook עצמו כי "החסר N, רצפה ב-0" קומוטטיבי בין קריאות
+     מקבילות). `WHERE stock IS NOT NULL` הוא לא קוסמטי: ב-Postgres
+     `GREATEST(NULL - n, 0) = 0`, כך שבלי התנאי הזה מוצר עם מלאי לא-
+     מנוהל (`stock=NULL`, כמות בלתי מוגבלת) היה הופך ל"אזל מהמלאי"
+     בטעות. הפונקציה נעולה ל-service_role בלבד (`revoke ... from
+     public/anon/authenticated` — אותה מוסכמה בדיוק כמו `order_exists`/
+     `ai_rate_limit_hit` בקובצי מיגרציה קודמים בפרויקט הזה). ב-
+     `nedarim-webhook/index.ts`, ענף `shop_order` קיבל את אותו guard
+     אידמפוטנטי-ללכידה שכבר קיים לענף התרומות (`.neq("payment_status",
+     "captured")`) — כדי שמסירה חוזרת (redelivery) של אותו IPN לא
+     תוריד מלאי פעם שנייה על הזמנה שכבר נלכדה — ואז שולפת את `order_items`
+     של אותה הזמנה וקוראת לפונקציה על כל שורה.
+503. **אימות + אפס רגרסיה.** `esbuild`+`node --check`/bracket-balance
+     נקי על ה-edge function. בטרנזקציה מגולגלת-אחורה מול הפרויקט
+     האמיתי (`bieebmnm`): מוצר עם `stock=5` → החסרת 2 → 3, מוצר עם
+     `stock=NULL` → החסרת 2 → נשאר `NULL` (לא הפך ל-0), מוצר עם
+     `stock=3` (אחרי ההחסרה הקודמת) → החסרת 10 → `0` בדיוק (לא שלילי).
+     טרנזקציה שנייה שיחזרה את המסלול המלא כמו שה-webhook עושה בפועל:
+     `order`+`order_items` אמיתיים (כמות 3, מלאי 10) → capture עם ה-
+     guard → מלאי `7` בדיוק; סימולציה של redelivery (אותו UPDATE שוב)
+     החזירה 0 שורות מושפעות — כלומר לא הייתה מוריד מלאי פעם שנייה.
+     `get_advisors` (security) לאחר ה-apply האמיתי: אין אזהרה חדשה
+     (`decrement_product_stock` לא מופיע ברשימה, בניגוד ל-
+     `order_payment_status`/`donation_payment_status` שכן מותרות לקריאה
+     מ-`anon`/`authenticated` בכוונה — נבדק גם ה-grants ישירות:
+     `service_role`+`postgres` בלבד). אפס שאריות בשתי הטרנזקציות
+     (`ROLLBACK` בלי `COMMIT`, כל השורות שנבדקו לא קיימות אחר-כך). אפס
+     רגרסיה: רק ענף `shop_order` ב-webhook השתנה, ענף התרומות לא נגע.
+     נדחף לענף חדש `fix/01-torah-platform-stock-decrement-on-order-0826`
+     (`ef783e29`) — לא מוזג. system 35 KioskFleet לא נגע, per HARD
+     STEERING; מערכות 08/09/bkalut-app/bkalot-admin/`zr_*`/webhook
+     NEDARIM3873/`csj`/`csj_src`/`igud` לא נגעו.
