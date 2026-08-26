@@ -6591,3 +6591,57 @@
      כעת. System 35 KioskFleet לא נגע, per HARD STEERING; מערכות
      08/09/bkalut-app/bkalot-admin/`zr_*`/webhook NEDARIM3873/`csj`/
      `csj_src`/`igud`/15-egod לא נגעו.
+
+## 26/08/2026 (LOOP A, המשך אותו יום) — 01-torah-platform: תרומות ו-checkout חנות — כל קריאת תשלום נכשלה תמיד, צורת payload שגויה ל-nedarim-create-payment
+
+555. **ההקשר.** ארבעת מועמדי-הבדיקה שזוהו ברשומה 536 נסגרו כולם
+     ברשומה 554; `core.build_tasks` ל-32/36 עדיין `done` (0 שורות
+     `todo`) ואין שורות כלל ל-01/15; `core.issues` הפתוחים ל-01
+     (#138/#257/#259) ול-15 (#167/#168/#201/#208) כולם חסומים על
+     הכרעת משתמש/מוצר או פריסה חיצונית (Lovable, דשבורד Supabase
+     חיצוני). המשך שיטת החקירה החופשית שכבר נבחרה: סריקת מסכי
+     כתיבה/RPC נוספים ב-01 (הפרויקט היחיד מבין 01/15 שנגיש כאן דרך
+     MCP) שטרם נבדקו ברשומות הקודמות.
+556. **מה נמצא.** `public/DonationPage.tsx` ו-`shop/Checkout.tsx`
+     שולחים ל-`supabase.functions.invoke("nedarim-create-payment")`
+     שדות שטוחים — `donor_name`/`donor_phone`/`donor_email`
+     (ועוד `installments`/`dedication_for_name`/`dedication_type`
+     ב-DonationPage) — בעוד ה-edge function עצמה
+     (`supabase/functions/nedarim-create-payment/index.ts`, ה-
+     interface `PaymentRequest`) דורשת אובייקט מקונן: `donor:
+     {name, phone, email}` ו-`dedication: {type, for_name}`, ובודקת
+     שדות-חובה בדיוק על `body.donor?.name`/`body.donor?.phone`.
+     כתוצאה מכך `body.donor` תמיד `undefined` בשני הצרכנים היחידים
+     של הפונקציה הזו בכל הקוד, הפונקציה מחזירה תמיד 400 "missing
+     required fields" עוד לפני שה-iframe של נדרים נבנה בכלל —
+     כלומר כל תרומה וכל הזמנת-חנות בפרויקט 01 נכשלת תמיד, ללא יוצא
+     מן הכלל. אומת ש-3 טננטים אמיתיים מחזיקים `nedarim_configs`
+     תקין (`mosad_id`+`api_valid` לא ריקים) — כלומר זה באג חי על
+     תשתית מוכנה, לא נתיב תיאורטי.
+557. **מה נבנה.** בשני הקבצים: עטיפת שדות התורם באובייקט `donor`
+     (`name`/`phone`/`email`), ב-DonationPage גם `dedication`
+     כאובייקט (`type`/`for_name`, רק כש-`dedication.enabled`) ו-
+     `recurring_months` (לא `installments`) רק עבור `payment_type
+     === "HK"` — תואם בדיוק את החוזה שה-edge function כבר קוראת
+     (`body.recurring_months`/`body.payments||1` לפי `paymentType`).
+     שום שדה לא נוסף שלא נשלח קודם (למשל כתובת/עיר לא נשלחו קודם
+     ולא נוספו כעת) — תיקון צורת-payload בלבד, לא הרחבת תכונה.
+558. **אימות + אפס רגרסיה.** `esbuild --jsx=automatic` (מ-
+     `apps/24-galilee-connect-hub/node_modules/.bin/esbuild`) +
+     `node --check` עברו נקי על שני הקבצים המתומללים; בדיקת איזון
+     סוגריים נקייה על שניהם (118/118+112/112+15/15 ב-DonationPage,
+     90/90+71/71+7/7 ב-Checkout). מכיוון שזו קריאת תשלום אמיתית
+     ל-matara.pro (אסור לחייב אמיתית אפילו בטסט לפי כלל "test mode
+     only" — אין מצב טסט ל-iframe עצמו), האימות נעשה בהדמיה מקומית
+     של לוגיקת ה-validation וה-param-building המדויקת מתוך
+     `index.ts` (הועתקה מילה-במילה לקובץ מבודד והורצה ב-Node):
+     ה-payload הישן (שטוח) נכשל עם בדיוק אותה שגיאת 400 שהמשתמשים
+     האמיתיים חוו; ה-payload החדש (מקונן) עובר את הבדיקה ובונה את
+     כל שדות ה-iframe (Amount/Phone/FirstName/LastName/Tashlumim)
+     נכון בשלושה תרחישים: תרומה חד-פעמית, הוראת-קבע עם הקדשה,
+     והזמנת-חנות. `git diff --stat` מאשר שני קבצים, 19 הוספות/9
+     מחיקות, ללא נגיעה בשום שדה/רכיב אחר. נדחף לענף חדש
+     `fix/01-torah-platform-nedarim-donor-payload-mismatch-0826`
+     (74d56d6b) — לא מוזג. System 35 KioskFleet לא נגע, per HARD
+     STEERING; מערכות 08/09/bkalut-app/bkalot-admin/`zr_*`/webhook
+     NEDARIM3873/`csj`/`csj_src`/`igud`/15-egod לא נגעו.
