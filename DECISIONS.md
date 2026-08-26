@@ -6479,3 +6479,61 @@
      (6728fc8b) — לא מוזג. System 35 KioskFleet לא נגע, per HARD
      STEERING; מערכות 08/09/bkalut-app/bkalot-admin/`zr_*`/webhook
      NEDARIM3873/`csj`/`csj_src`/`igud`/15-egod לא נגעו.
+
+## 26/08/2026 (LOOP A, המשך אותו יום) — 01-torah-platform: רישום "משתתפים" (portal/Participants.tsx) לא היה קיים בכלל — בדיוק כמו חומרי-עזר
+
+548. **ההקשר.** המשך אותה שיטת חקירה שנבחרה ברשומה 544: המשך סריקת
+     עמודי `portal/` שעדיין לא נבדקו (`Gallery`/`Forums`/
+     `Participants`/`StudySchedule`/`Tips`) מול הסכימה החיה על
+     `bieebmnm`. `Gallery`/`Forums` הם מסכי תצוגה בלבד (SELECT בלבד,
+     בלי שום `insert`), ו-`StudySchedule`/`Tips` כבר תואמים במדויק את
+     הסכימה (יש להם אפילו הערת-סכימה בראש הקובץ) — שלושתם נבדקו מול
+     `information_schema.columns` ולא נמצא פער.
+549. **מה נמצא.** `public.participants` (tenant_id/lesson_id/
+     full_name/phone/whatsapp/email/notes) עם RLS זהה בדיוק ל-
+     `lessons` (INSERT/UPDATE/DELETE ל-member/moderator/tenant_admin/
+     super_admin). `portal/Participants.tsx` רק קרא ממנה
+     (`select("*, lessons(title)")`). גרפ גלובלי על `.from("participants")`
+     בכל העץ הראה שלושה צרכנים נוספים בלבד: `App.tsx` (ראוטינג),
+     `TeacherFeaturesDialog.tsx` (דגל הרשאה בלבד, לא כתיבה), ו-
+     `portal/Attendance.tsx` — שקורא את `participants` כדי לבנות את
+     רשימת הנוכחות לשיעור נבחר. אין אף מקום בכל האפליקציה (פורטל או
+     אדמין) שכותב שורה ל-`participants`. התוצאה בפועל: לעולם אי אפשר
+     לרשום משתתף לשיעור, ולכן `Attendance.tsx` מציג תמיד "אין
+     משתתפים רשומים לשיעור זה" ותכונת הנוכחות לא ניתנת להפעלה במאה
+     אחוז — אותו דפוס בדיוק כמו חומרי-עזר ברשומה 545/546 (צינור קיים
+     במלואו, נקודת הכניסה היחידה חסרה).
+550. **מה נבנה + אימות + אפס רגרסיה.** הוספתי דיאלוג יצירה/עריכה +
+     מחיקה ל-`portal/Participants.tsx`: שם מלא (חובה) + טלפון/
+     וואטסאפ/אימייל + בורר שיעור אופציונלי (מ-`lessons` של אותו
+     tenant) + הערות — מראה קוד זהה לדפוסי `Materials.tsx`/`Tips.tsx`
+     הקיימים (`useMutation`+`toast`, `Dialog`/`Select`/`Textarea`
+     מ-`components/ui`). ניתנה גם עריכה/מחיקה מלאה (בניגוד ל-Materials
+     שיש לו מסך אישור נפרד באדמין) כי אין שום מסך ניהול אחר ל-
+     `participants` בכל העץ — בדיוק אותו נימוק כמו `Tips.tsx`.
+     `esbuild --jsx=automatic` (מ-`apps/24-galilee-connect-hub/
+     node_modules/.bin/esbuild`) + `node --check` עברו נקי על הקובץ
+     המתומלל; בדיקת איזון סוגריים נקייה (87/87 מסולסלים, 96/96
+     עגולים, 12/12 מרובעים). אומת חי ב-MCP מול `bieebmnm` בתוך
+     `BEGIN...ROLLBACK` יחיד: הוקצה זמנית תפקיד `member` לחשבון ה-QA
+     האמיתי `test@more30.com` על `mc-galil` + שיעור-בדיקה זמני, ואז
+     הורצו תחת `set local role authenticated` + `request.jwt.claims`
+     של אותו משתמש (מדמה בקשה אמיתית מהאפליקציה נגד ה-RLS הגנרי)
+     בדיוק ארבע הפעולות שהרכיב מבצע לפי הסדר — יצירה (עם `lesson_id`
+     שנבחר), קריאה עם ה-JOIN ל-`lessons(title)` (בדיוק כפי ש-
+     `Participants.tsx` וגם `Attendance.tsx` קוראים), עריכה, ומחיקה —
+     כל הארבע הצליחו ללא שגיאה. `ROLLBACK` סגר את הטרנזקציה כולה,
+     כולל שורת ה-`user_roles`/`lessons` הזמניות. בדיקה שלילית נפרדת
+     (`BEGIN...ROLLBACK` נוסף): אותו משתמש **בלי** תפקיד על הטננט
+     (טרנזקציה טרייה, לפני הענקת ה-`member`) ניסה להכניס `participants`
+     ונדחה מיידית ב-`42501: new row violates row-level security
+     policy` — מוכיח שה-RLS אכן אוכף ולא רק עובר-דרך. `count(*)` על
+     שמות שורות הבדיקה אחרי שתי הבדיקות חזר 0 — אפס שאריות (אומת
+     בקריאת MCP נפרדת). `git diff --stat` מאשר קובץ יחיד, 190
+     הוספות/3 מחיקות; שאר לוגיקת התצוגה הקיימת (רשימת המשתתפים,
+     `p.lessons?.title`/`p.phone`) נשארה כפי שהייתה, תוספת בלבד
+     (דיאלוג + כפתורי עריכה/מחיקה). נדחף לענף חדש
+     `fix/01-torah-platform-participants-write-path-0826` (f796daa0)
+     — לא מוזג. System 35 KioskFleet לא נגע, per HARD STEERING;
+     מערכות 08/09/bkalut-app/bkalot-admin/`zr_*`/webhook NEDARIM3873/
+     `csj`/`csj_src`/`igud`/15-egod לא נגעו.
