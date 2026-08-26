@@ -6853,3 +6853,58 @@
      מוזג. System 35 KioskFleet לא נגע, per HARD STEERING; מערכות
      08/09/bkalut-app/bkalot-admin/`zr_*`/webhook NEDARIM3873/
      `csj`/`csj_src`/`igud`/15-egod לא נגעו.
+
+## 26/08/2026 (LOOP A, המשך אותו יום) — 01-torah-platform: public/RabbiQuestions.tsx ("שאל את הרב") — is_public: true שולח, RLS דורש false, כל שאלה ציבורית נדחתה
+
+572. **ההקשר.** המשך אותה שיטת חקירה חופשית על 01 — גרף גלובלי על כל
+     `.from(...).insert(/.update(/.upsert(/.select(` בעץ ה-`src`
+     שטרם נבדק, מול הסכימה החיה על `bieebmnmkffwbqlsfozh`. סוכן-חקירה
+     בדק שורת מסכים שלא הוזכרו בעבר (`admin/TeacherFeatures.tsx`,
+     `admin/Analytics.tsx`, `admin/Forums.tsx`, `admin/Tenants.tsx`,
+     `admin/TenantDetail.tsx`, `admin/Commerce.tsx`, `admin/Leads.tsx`,
+     `admin/LeadsGuru.tsx`, `admin/Users.tsx`, `admin/Matching.tsx`,
+     `portal/Tips.tsx`, `portal/StudySchedule.tsx`,
+     `portal/PortalSettings.tsx`, `public/LessonsDirectory.tsx`) ולא
+     מצא שם באגים חדשים — אך איתר ב-`public/RabbiQuestions.tsx`
+     (ראוט חי `/ask-rabbi`, ללא שער-אימות, נטען ישירות מדף הבית) בעיה
+     עצמאית שנייה בתוך אותו קובץ שכבר תוקן פעם אחת קודם לכן
+     (a73dca17, "fix public שאל את הרב page" — תיקן אז רק אי-התאמת
+     שמות עמודות `asker_name`/`asker_email` → `from_name`/
+     `from_email`). התיקון ההוא לא נבדק עד הסוף מול נתיב ה-RLS
+     האנונימי בפועל, והשאיר חוסם שני, בלתי-תלוי.
+573. **מה נמצא.** ה-`insert` ל-`rabbi_questions` ב-`submit()` שולח
+     `is_public: true` באופן קבוע. אך מדיניות ה-RLS החיה
+     `rabbi_questions_insert` (`with_check`) מתירה למשתמש
+     אנונימי/לא-מזוהה לכתוב רק דרך הענף:
+     `tenant_accepts_public_intake(tenant_id) AND answer IS NULL AND
+     COALESCE(is_public, false) = false` — כלומר שאלה חדשה חייבת
+     להיכתב כ-`is_public = false` (התואם גם לברירת המחדל של העמודה
+     עצמה בסכימה, `column_default: false`); `is_public` הופך `true`
+     רק כשהרב/מנהל עונה (תואם למדיניות הקריאה הנפרדת
+     `rabbi_questions_tenant_read`, שחושפת שורות ציבוריות רק כש-
+     `is_public = true AND answer IS NOT NULL` — בדיוק מה שהשאילתה
+     `answered` באותו קובץ כבר מצפה לו). כתוצאה: כל שליחה אמיתית של
+     שאלה מהדף הציבורי (שאין לו כלל שער-כניסה — `useTenant` בלבד, לא
+     `useAuth`) נדחתה תמיד ב-RLS, עם הודעת שגיאה גנרית בלבד ל-toast
+     במקום "השאלה נשלחה".
+574. **מה נבנה.** תיקון קוד יחיד ב-`RabbiQuestions.tsx`: `is_public:
+     true` → `is_public: false` בפיילוד ה-`insert`. אין קטע קוד ולא
+     מסך אחר כותב `rabbi_questions.is_public`; אין UI אדמין קיים
+     כרגע ל"מענה+פרסום" (רק המיגרציות וה-RLS מתייחסות אליו) — פער
+     נפרד, לא-שבור (תכונה חסרה, לא נתיב שבור), לא טופל כאן.
+575. **אימות + אפס רגרסיה.** אומת חי ב-MCP על `bieebmnmkffwbqlsfozh`
+     תחת `BEGIN...ROLLBACK` + `set local role anon` מול טננט אמיתי
+     (`is_public=true, status='active'`): שחזור מדויק של הפיילוד
+     הישן (`is_public: true`) נכשל ב-`42501 permission denied for
+     table rabbi_questions`; אותו `insert` עם `is_public: false`
+     הצליח (`count(*)` בתפקיד סופר-משתמש אחרי `reset role` = 1 בתוך
+     הטרנזקציה) ואז `rollback` — `count(*)` אחרי חזר 0, אפס שאריות.
+     `esbuild --bundle --packages=external --jsx=automatic` +
+     `node --check` נקיים על הקובץ המהודר (רק אזהרות `import.meta`
+     לא-קשורות מקבצי תשתית משותפים). אין שינוי סכימה/מיגרציה —
+     `get_advisors` (security) זהה למצב שלפני, אין אזהרה חדשה. `git
+     diff --stat` מאשר קובץ קוד יחיד, שורה אחת. נדחף לענף חדש
+     `fix/01-torah-platform-ask-rabbi-is-public-0826` (cf11b96c) —
+     לא מוזג. System 35 KioskFleet לא נגע, per HARD STEERING; מערכות
+     08/09/bkalut-app/bkalot-admin/`zr_*`/webhook NEDARIM3873/
+     `csj`/`csj_src`/`igud`/15-egod לא נגעו.
