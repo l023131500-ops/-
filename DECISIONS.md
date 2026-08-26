@@ -5882,3 +5882,110 @@
      (`cea37a30`) — לא מוזג. system 35 KioskFleet לא נגע, per HARD
      STEERING; מערכות 08/09/bkalut-app/bkalot-admin/`zr_*`/webhook
      NEDARIM3873/`csj`/`csj_src`/`igud` לא נגעו.
+
+## 26/08/2026 (LOOP A, המשך אותו יום) — 01-torah-platform: עמוד ניהול ההתאמה ב-AI (`/admin/matching-guru`) שבור בכל אחת משלוש הפעולות שלו, כולל הפונקציה עצמה בצד השרת
+
+510. **ההקשר.** `core.run_progress` אומת (אחרון `[loop A]`: `d286bf5c`,
+     אותה מערכת). `core.build_tasks` ריק ל-01/15 (רק 32/36 יש להם
+     שורות, וכולן `done`); `core.issues` נסרק כאלטרנטיבה למקור עבודה —
+     נמצאו כמה כרטיסים פתוחים, אבל כולם חסומים במפורש על הכרעת בעלים
+     (SMTP מותאם ל-01, מספרי טלפון בפוטר, כיבוי Confirm-email בפרויקטים
+     שה-PAT לא מכסה) חוץ מ-#257 (PortalSettings.tsx, חסום על הכרעת
+     "תכונה נטושה או מיגרציה חדשה" — לא נגעתי, כמתועד שם). סוכן
+     general-purpose חיפש חופשי אחר באג חדש מעבר לאלה, וסוכן Explore
+     נפרד אימת מראש שארבע פונקציות ה-edge שעוד לא נבדקו (`chat`,
+     `ai-match-teacher`, `admin-users`, `create-admin`) נקיות מהתאמת-
+     עמודות-שגויה מול הסכימה החיה — למעט ממצא אחד אמיתי שנמצא תוך כדי
+     אימות ידני נוסף אחריו.
+511. **הממצא הראשון (הסוכן).** `admin/MatchingGuru.tsx:80` (עמוד
+     "התאמת שיעורים" בניהול) שלח `fetch` ישיר עם URL קשיח ל-
+     `https://hkkkynyoigzlttpynoeo.supabase.co/functions/v1/ai-match-teacher`
+     — **פרויקט Supabase אחר לגמרי** (זה של 15-egod, לא של 01-torah
+     שהוא `bieebmnmkffwbqlsfozh`), בלי שום כותרת `Authorization`/`apikey`
+     (בניגוד לכל קריאה אחרת בקובץ הזה). גם אם הכתובת הייתה נכונה, גוף
+     הבקשה (`{prompt}`) לא תואם את החוזה האמיתי של הפונקציה (`{lead_id}`).
+     תוצאה: לחיצה על "התאם ב-AI לליד הנבחר" נכשלת תמיד.
+512. **מה שנמצא באימות הידני שאחרי.** בדקתי את `load()` באותו קובץ
+     (שממלא את עמודת "מגידי שיעור פנויים") ואת `assign()` (שיוך ידני
+     ליד למגיד) — שניהם התבררו שבורים גם הם, כל אחד בבאג מהמשפחה
+     שכבר מוכרת מהסבב הקודם היום (עמודה/יעד שלא קיימים):
+     - `load()`: `.from("profiles").eq("available_for_matching", true)`
+       — אומת חי מול `information_schema.columns` על `bieebmnm`: עמודה
+       כזו **לא קיימת** ב-17 העמודות האמיתיות של `profiles`. כלומר
+       עמודת "מגידי שיעור" תמיד ריקה (מלבד מועמדים מטופס ההצטרפות),
+       וגם השיוך הידני — לא רק ה-AI — היה חסום בפועל כי אין ממי לבחור.
+     - `assign()`: `.update({assigned_teacher_id: ...})` — אומת מול
+       `information_schema.columns` על `leads`: העמודה האמיתית היא
+       `assigned_teacher_user_id`. כל לחיצה על "שייך" הייתה נכשלת ב-
+       `42703` בשקט (רק toast שגיאה, שום שיוך לא נשמר).
+     - **ואז נמצא הבאג העמוק ביותר:** גם הפונקציה הפרוסה `ai-match-teacher`
+       עצמה (לא רק הקוראים לה) שאלה `.from("memberships").select(...,
+       profiles(full_name, phone, city, bio))` — embed מקונן של
+       PostgREST. אומת ישירות מול ה-Data API האמיתי (`curl` עם מפתח
+       ה-anon האמיתי של `bieebmnm`, לא ניחוש): `PGRST200 — Could not
+       find a relationship between 'memberships' and 'profiles'`.
+       הסיבה: `memberships.user_id` הוא FK ל-`auth.users`, לא ל-
+       `public.profiles` (יש ל-`profiles` FK נפרד משלה ל-`auth.users`,
+       אבל PostgREST לא בונה יחס עקיף בין שתי טבלאות שרק שתיהן מצביעות
+       על אותה טבלה שלישית). מכיוון שהקוד לא בדק את שדה ה-`error`
+       בקריאה הזו, הפונקציה לא קרסה — היא פשוט המשיכה עם רשימת מגידים
+       **ריקה תמיד**, בלי קשר לתיקון הקוראים. כלומר גם קורא נכון
+       לפונקציה הזו (למשל `Matching.tsx` הפורטלי, ראו #259 למטה) היה
+       מקבל 0 התאמות תמיד, ללא שגיאה גלויה.
+513. **מה נבנה.** בשני המקומות (הפונקציה + `MatchingGuru.tsx`) פוצלה
+     השאילתה לשני שלבים: `memberships` embedded עם `tenants` בלבד
+     (FK תקין, אומת), סינון `tenants.type === "maggid"`, ואז שליפת
+     `profiles` בנפרד לפי `user_id` דרך `.in("id", userIds)` ומיזוג ב-
+     JS — אותה טכניקה בדיוק בשני המקומות כדי שרשימת ה"מגידים" שה-UI
+     מציג תואמת בדיוק את מה שה-AI בפועל מקבל לניקוד. `load()` גם
+     מחליף `is_approved`/`subjects` הריקים (לא קיימים על membership)
+     ב-`tenants.status === "active"` כתחליף סביר לאישור (אותו מושג
+     enum שכבר קיים חי, `pending/active/suspended/archived`). `assign()`
+     תוקן ל-`assigned_teacher_user_id`. קריאת ה-AI ב-`MatchingGuru.tsx`
+     הוחלפה מ-`fetch` גולמי ל-`supabase.functions.invoke("ai-match-teacher",
+     {body:{lead_id: selectedLead.id}})` — אותו SDK/פרויקט/JWT שכל שאר
+     האפליקציה משתמשת בו, ומיפוי תוצאות `{matches:[{user_id,score,reason}]}`
+     לשמות אמיתיים דרך רשימת המגידים הטעונה.
+514. **אימות + אפס רגרסיה.** `esbuild` (עם bin שנמצא ב-
+     `apps/24-galilee-connect-hub/node_modules`, אין node_modules
+     משלו לסביבה הזו) נקי על שני הקבצים לפני ואחרי; בדיקת איזון
+     סוגריים נקייה. שרשרת שלמה אומתה בטרנזקציה מגולגלת-אחורה מול
+     `bieebmnm`: `tenant` (type=maggid) + `membership` (tenant_admin,
+     משתמש בדיקה אמיתי) + `lead` (lesson_request) → השאילתה החדשה
+     (memberships⋈tenants מסונן maggid) מחזירה את המגיד → `profiles`
+     `.in()` מחזיר את הפרופיל הנכון → `UPDATE...assigned_teacher_user_id`
+     מצליח ומחזיר את הערך הנכון — אפס שאריות אחרי `ROLLBACK`. בנוסף,
+     אחרי הפריסה (`ai-match-teacher` v3→v4), הורצה בדיקה **חיה בפועל**
+     (לא בטרנזקציה): tenant/membership/lead אמיתיים נוצרו (לא
+     ROLLBACK הפעם, כי קריאת HTTP לפונקציה צריכה לראות שורות
+     שבאמת commit-ו), `curl` לפונקציה הפרוסה עם מפתח ה-anon האמיתי
+     החזיר `200 {"ok":true,...}` (לא `500`/`PGRST200`), והשאילתה
+     המקבילה ב-SQL ישירות מול הנתונים שנוצרו אישרה שהיא מחזירה את
+     המגיד/פרופיל הנכונים — ואז כל שלוש השורות נמחקו ואומת אפס שאריות.
+     שים לב: תוכן `matches` בפועל עדיין ריק כי `LOVABLE_API_KEY` כנראה
+     לא מוגדר בפריסה הזו (אותה משפחת "מלכודת רדומה" כמו #195) — זה
+     **לא** משהו שהתיקון הזה אמור לפתור, ומתועד כאן כדי שסבב עתידי לא
+     יבלבל בין "אין תוצאות כי אין מפתח AI" ל"התיקון לא עבד". `get_advisors`
+     (security) לאחר הפריסה: אין אזהרה חדשה שקשורה ל-`memberships`/
+     `profiles`/`tenants`/`ai-match-teacher` (כל האזהרות שחזרו שייכות
+     לסכימות/פונקציות אחרות שלא נגעתי בהן). אפס רגרסיה: `load()`/
+     `assign()`/הקריאה ל-AI היו שבורים לגמרי קודם (0 מגידים תמיד, כל
+     שיוך נכשל, כל קריאת AI נכשלת) — אין כאן תכונה עובדת שנשברה, רק
+     תוקנה. נדחף לענף חדש
+     `fix/01-torah-platform-ai-teacher-matching-broken-0826` (`b101d23a`)
+     — לא מוזג.
+515. **שני ממצאים נוספים תועדו כ-`core.issues` ולא תוקנו** (דורשים
+     הכרעה/מיפוי נוסף לפני קוד, בהתאם למדיניות "לא לנחש סכימה"):
+     - **#258** — `admin/Teachers.tsx` כותב/קורא `profiles.is_approved`
+       שגם הוא לא קיים (אומת חי) — כפתור "אשר מגיד" בעמוד ניהול
+       המגידים הראשי (לא זה שתוקן כאן) נכשל בשקט תמיד. המושג האמיתי
+       של אישור בסכימה הזו הוא כנראה `tenants.status`, אבל זה דורש
+       מיפוי של זרימת ה-invite לפני שינוי קוד — לא תוקן כאן.
+     - **#259** — `portal/Matching.tsx` (חיפוש AI מהפורטל, לא מהאדמין)
+       שולח חוזה חופשי-טקסט (`{topic,location,time_pref,notes}`) שלא
+       תואם בכלל את `{lead_id}` של הפונקציה האמיתית — פער ארכיטקטורה,
+       לא טעות שם עמודה; דורש הכרעת מוצר (לבנות נתיב חדש / להסב
+       ל-lead_id / להסיר כפילות נטושה), לא תוקן כאן.
+     System 35 KioskFleet לא נגע, per HARD STEERING; מערכות
+     08/09/bkalut-app/bkalot-admin/`zr_*`/webhook NEDARIM3873/`csj`/
+     `csj_src`/`igud` לא נגעו.
