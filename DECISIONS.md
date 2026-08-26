@@ -6645,3 +6645,65 @@
      (74d56d6b) — לא מוזג. System 35 KioskFleet לא נגע, per HARD
      STEERING; מערכות 08/09/bkalut-app/bkalot-admin/`zr_*`/webhook
      NEDARIM3873/`csj`/`csj_src`/`igud`/15-egod לא נגעו.
+
+## 26/08/2026 (LOOP A, המשך אותו יום) — 01-torah-platform: portal/PrayerTimes.tsx ("בתי כנסת וזמני תפילות") — קריאה וכתיבה נכשלו תמיד, `synagogues.teacher_id` לא קיימת
+
+559. **ההקשר.** `core.build_tasks` ל-32/36 עדיין `done` (0 שורות
+     `todo`), ואין שורות כלל ל-01/15 — המשך אותה שיטת חקירה חופשית
+     שכבר נבחרה על 01 (רשומה 462): סריקת מסכי כתיבה/RPC נוספים
+     שטרם נבדקו מול הסכימה החיה. גרפ גלובלי על כל `.insert(`/
+     `.update(`/`.upsert(` בעץ ה-`src` איתר את `portal/PrayerTimes.tsx`
+     (הראוט החי `/portal/prayer-times` ב-`App.tsx`) כמועמד שלא נבדק.
+560. **מה נמצא.** אומת מול `information_schema.columns` החי על
+     `bieebmnmkffwbqlsfozh`: הטבלה `synagogues` **אין לה בכלל** עמודת
+     `teacher_id` — ה-FK האמיתי הוא `tenant_id` — אבל הרכיב סינן/כתב
+     לפיה בכל מקום (`fetchData`/`handleAddSyn`), כך שכל קריאת
+     `select` נכשלת מיידית ב-`42703` ורשימת בתי-הכנסת נשארת ריקה
+     תמיד, לכל מגיד, ללא יוצא מן הכלל — לא רק תופעת-לוואי כמו
+     ב-`SynagogueDetail` (רשומה 552) אלא כשל מוחלט של המסך כולו,
+     כתיבה וקריאה. בנוסף `synForm` שלח `phone`/`notes` — אין עמודות
+     כאלה בכלל ב-`synagogues` (יש `gabbai_phone`/`description` בלבד).
+     ב-`prayer_times`: הרכיב שלח `time` (העמודה האמיתית `time_hhmm`,
+     בדיוק אותו באג כמו ברשומה 552) ו-`day_of_week` כמחרוזת מתוך
+     `PRAYER_DAY_OPTIONS` (10 ערכים כולל "יומי"/"חול"/"שבת וחג") —
+     בעוד העמודה האמיתית היא `integer` בודד `nullable` (`NULL`
+     נבדק כאן כ"יומי", השורה היחידה בטבלה ריקה לגמרי אז אין קונבנציה
+     קיימת לסתור) שלא יכול לייצג עשרה ערכי-מחרוזת שונים — כל שליחה
+     הייתה נכשלת ב-type coercion.
+561. **מה נבנה.** `useAuth`+שליפת `profiles.id` הוחלפו ב-`useTenant()`
+     (אותו דפוס בדיוק כמו `Participants.tsx`/`Materials.tsx`) —
+     סינון/כתיבה עכשיו לפי `tenant.id` האמיתי. `synForm.phone`→
+     `gabbai_phone`, `synForm.notes`→`description` (מיפוי לעמודה
+     הסמנטית הקרובה ביותר, אותה שיטה שכבר נבחרה ברשומה 542 עבור
+     `Azkarot.relation`→`notes`). `prayerForm.time`→`time_hhmm`.
+     בורר היום הוחלף מ-`PRAYER_DAY_OPTIONS` (10 מחרוזות) לרשימה חדשה
+     `DAY_OF_WEEK_OPTIONS` — "יומי" (`day_of_week: null`) + שבעת ימי
+     `DAY_NAMES` (0-6, אותה קונבנציה בדיוק כמו `SynagogueDetail.tsx`
+     שכבר תוקן ברשומה 553) — "חול"/"שבת וחג" הושמטו כי אין להם עמודה
+     תואמת ולא הומצאה סמנטיקה חדשה בשם המשתמש. בלוק התצוגה עודכן
+     באותו אופן (`pt.time`→`pt.time_hhmm`, `typeof pt.day_of_week ===
+     "number"` במקום השוואת-מחרוזת).
+562. **אימות + אפס רגרסיה.** `esbuild --jsx=automatic` (מ-
+     `apps/24-galilee-connect-hub/node_modules/.bin/esbuild`) + `node
+     --check` עברו נקי על הקובץ המתומלל; בדיקת איזון סוגריים נקייה
+     (108/108 עגולים, 110/110 מסולסלים, 15/15 מרובעים). אומת חי
+     ב-MCP מול `bieebmnm`: קודם שוחזר במדויק באג-הקוד-הישן
+     (`SELECT ... WHERE teacher_id = ...` על `synagogues` נכשל
+     ב-`42703: column "teacher_id" does not exist`); ואז, בתוך
+     `BEGIN...ROLLBACK` יחיד, הוקצה זמנית תפקיד `member` לחשבון ה-QA
+     האמיתי `test@more30.com` על `mc-galil`, ותחת `set local role
+     authenticated`+`request.jwt.claims` (מדמה בקשה אמיתית נגד ה-RLS
+     הגנרי `has_tenant_role`) הורצה צורת ה-`insert` המתוקנת המדויקת
+     לבית-כנסת (עם `gabbai_phone`/`description`) ואז שני מופעי
+     `insert` לזמני-תפילה — "יומי" (`day_of_week: NULL`) ויום ספציפי
+     (רביעי=3) — כל השלושה הצליחו, וקריאת ה-`select` המתוקנת (לפי
+     `tenant_id`) החזירה בדיוק את הערכים שנשלחו. בדיקה שלילית נפרדת
+     (`BEGIN...ROLLBACK` נוסף, ללא הענקת תפקיד): אותו משתמש נדחה
+     מיידית ב-`42501` — מוכיח שה-RLS אוכף. `count(*)` על שם השורות
+     אחרי שתי הבדיקות חזר 0 בשלושת הטבלאות (`synagogues`/
+     `prayer_times`/`user_roles`) — אפס שאריות. `git diff --stat`
+     מאשר קובץ יחיד, 34 הוספות/20 מחיקות. נדחף לענף חדש
+     `fix/01-torah-platform-prayer-times-column-mismatch-0826`
+     (a1162975). System 35 KioskFleet לא נגע, per HARD STEERING;
+     מערכות 08/09/bkalut-app/bkalot-admin/`zr_*`/webhook NEDARIM3873/
+     `csj`/`csj_src`/`igud`/15-egod לא נגעו.
