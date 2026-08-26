@@ -6537,3 +6537,57 @@
      — לא מוזג. System 35 KioskFleet לא נגע, per HARD STEERING;
      מערכות 08/09/bkalut-app/bkalot-admin/`zr_*`/webhook NEDARIM3873/
      `csj`/`csj_src`/`igud`/15-egod לא נגעו.
+
+## 26/08/2026 (LOOP A, המשך אותו יום) — 01-torah-platform: public/SynagogueDetail.tsx קרא עמודות שלא קיימות — כרטיס בית-כנסת ציבורי הציג שדות ריקים בלי לקרוס
+
+551. **ההקשר.** המועמד האחרון מתוך רביעיית העמודים שזוהו מול הסכימה
+     החיה עוד ברשומה 536 (`Azkarot`/`RabbiQuestions`/`SynagogueDetail`)
+     ונדחה שלוש פעמים ברציפות (536/537/541) לטובת נתיבי-כתיבה
+     שנכשלים באופן חד-משמעי — `SynagogueDetail` הוא read-only ולא
+     קורס, ולכן חומרתו נמוכה יותר. בדיקת `core.build_tasks` ל-32/36
+     עדיין `done` ו-`core.issues` הפתוחים ל-01 (#138/#257/#259) כולם
+     חסומים על הכרעת משתמש/מוצר, כמו ברשומה 544 — אז זה הפריט
+     הבא בתור מתוך שיטת החקירה החופשית שכבר נבחרה.
+552. **מה נמצא.** אומת מול `information_schema.columns` החי על
+     `bieebmnmkffwbqlsfozh`: `synagogues` מחזיקה `gabbai_name`/
+     `gabbai_phone` (לא `gabai_name`/`contact_phone` כפי שהקוד קרא),
+     ו-`prayer_times` מחזיקה `prayer_type`/`time_hhmm`/`day_of_week`
+     (`integer` בודד) — לא `prayer_name`/`time`/`days_of_week`
+     (מערך) כפי שהקוד ציפה. ה-FK `prayer_times.synagogue_id →
+     synagogues.id` קיים, כך שה-embed `select("*, prayer_times(*)")`
+     עצמו תקין ומחזיר שורות — רק שמות השדות בתוך כל שורה שגויים.
+     כתוצאה מכך `data.gabai_name`/`data.contact_phone` תמיד
+     `undefined` (הבלוק המותנה פשוט לא מצטייר, בלי שגיאה), ובלוק
+     "זמני תפילה" תמיד הציג כותרת ריקה, שעה ריקה, ובלי תגית יום
+     בכלל (`Array.isArray(pt.days_of_week)` תמיד `false` על ערך
+     `integer` בודד) — למרות שהשורות עצמן קיימות ומוחזרות.
+553. **מה נבנה.** שינוי מינימלי באותו קובץ: `data.gabai_name`→
+     `data.gabbai_name`, `data.contact_phone`→`data.gabbai_phone`,
+     `pt.prayer_name`→`pt.prayer_type`, `pt.time`→`pt.time_hhmm`,
+     ובלוק תגית-היום: `Array.isArray(pt.days_of_week)`+`.map` הוחלף
+     ב-`typeof pt.day_of_week === "number"` שמצייר תגית יום בודדת
+     (העמודה האמיתית היא ערך יחיד, לא רשימה). שום שדה/רכיב אחר לא
+     נגע.
+554. **אימות + אפס רגרסיה.** `esbuild --jsx=automatic`
+     (מ-`apps/24-galilee-connect-hub/node_modules/.bin/esbuild`) +
+     `node --check` עברו נקי על הקובץ המתומלל; בדיקת איזון סוגריים
+     נקייה (16/16 עגולים, 33/33 מסולסלים, 3/3 מרובעים). אומת חי
+     ב-MCP מול `bieebmnm` בתוך `BEGIN...ROLLBACK`: נוצרו טננט-אמיתי
+     (נבחר קיים, לא חדש) + שורת `synagogues` בדיקה עם `gabbai_name`/
+     `gabbai_phone` אמיתיים + שורת `prayer_times` מקושרת עם
+     `prayer_type`/`day_of_week`/`time_hhmm`, ואז שוחזר בדיוק ה-JSON
+     שה-`select("*, prayer_times(*)")` של הרכיב היה מקבל — כל
+     השדות המתוקנים הופיעו עם הערכים האמיתיים (`gabbai_name`:
+     "ראובן גבאי", `prayer_times[0].prayer_type`: "שחרית",
+     `time_hhmm`: "06:30", `day_of_week`: 1), בעוד שמות העמודות
+     הישנים (`gabai_name`/`contact_phone`/`prayer_name`/`time`/
+     `days_of_week`) פשוט לא היו קיימים בתשובה כלל — משחזר במדויק
+     את התנהגות-השקט של הבאג המקורי (לא שגיאה, רק שדה חסר).
+     `count(*)` על שם השורות אחרי ה-`ROLLBACK` חזר 0 — אפס שאריות.
+     `git diff --stat` מאשר קובץ יחיד, 6 הוספות/6 מחיקות. נדחף לענף
+     חדש `fix/01-torah-platform-synagogue-detail-column-mismatch-0826`
+     (393dea4d) — לא מוזג. כל ארבעת המועמדים שזוהו ברשומה 536
+     (`Schedule`/`RabbiQuestions`/`Azkarot`/`SynagogueDetail`) סגורים
+     כעת. System 35 KioskFleet לא נגע, per HARD STEERING; מערכות
+     08/09/bkalut-app/bkalot-admin/`zr_*`/webhook NEDARIM3873/`csj`/
+     `csj_src`/`igud`/15-egod לא נגעו.
