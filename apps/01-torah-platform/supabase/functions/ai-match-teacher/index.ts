@@ -62,22 +62,33 @@ Deno.serve(async (req) => {
 
     if (!lead) return jr({ ok: false, error: "lead not found" }, 404);
 
-    // Fetch available maggidim
-    const { data: teachers } = await supabase
+    // Fetch available maggidim. memberships.user_id references auth.users, not
+    // public.profiles directly, so a single embedded select (memberships ->
+    // tenants -> profiles) has no FK path PostgREST can resolve and always
+    // fails with PGRST200 — fetch profiles separately and merge in JS.
+    const { data: memberships } = await supabase
       .from("memberships")
-      .select("user_id, tenant_id, tenants(name, city, region, type), profiles(full_name, phone, city, bio)")
+      .select("user_id, tenant_id, tenants(name, city, region, type)")
       .eq("role", "tenant_admin")
       .limit(50);
 
-    const teacherList = (teachers ?? [])
-      .filter((t: any) => t.tenants?.type === "maggid")
-      .map((t: any) => ({
-        user_id: t.user_id,
-        name: t.profiles?.full_name || t.tenants?.name,
-        city: t.profiles?.city || t.tenants?.city,
-        region: t.tenants?.region,
-        bio: t.profiles?.bio,
-      }));
+    const maggidMemberships = (memberships ?? []).filter((m: any) => m.tenants?.type === "maggid");
+    const userIds = maggidMemberships.map((m: any) => m.user_id);
+    const { data: teacherProfiles } = userIds.length
+      ? await supabase.from("profiles").select("id, full_name, phone, city, bio").in("id", userIds)
+      : { data: [] as any[] };
+    const profileById = new Map((teacherProfiles ?? []).map((p: any) => [p.id, p]));
+
+    const teacherList = maggidMemberships.map((m: any) => {
+      const p = profileById.get(m.user_id);
+      return {
+        user_id: m.user_id,
+        name: p?.full_name || m.tenants?.name,
+        city: p?.city || m.tenants?.city,
+        region: m.tenants?.region,
+        bio: p?.bio,
+      };
+    });
 
     const prompt = `אתה עוזר התאמה במערכת איגוד השיעורים. בקשת ליד:
 - שם: ${lead.full_name}

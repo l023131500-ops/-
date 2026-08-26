@@ -18,17 +18,38 @@ const AdminMatching = () => {
   const [aiSuggestions, setAiSuggestions] = useState<string[]>([]);
 
   const load = async () => {
-    const [{ data: l }, { data: t }] = await Promise.all([
+    const [{ data: l }, { data: m }] = await Promise.all([
       supabase.from("leads").select("*").order("created_at", { ascending: false }),
+      // profiles has no available_for_matching column — a maggid is really a
+      // tenant_admin membership on a type="maggid" tenant (same source the
+      // ai-match-teacher edge function scores against). memberships.user_id
+      // points at auth.users, not public.profiles, so profiles can't be
+      // embedded in this select (no FK path) — fetched separately below.
       supabase
-        .from("profiles")
-        .select("*")
-        .eq("available_for_matching", true)
-        .order("created_at", { ascending: false }),
+        .from("memberships")
+        .select("user_id, tenant_id, tenants(name, city, region, type, status)")
+        .eq("role", "tenant_admin"),
     ]);
     // Lesson-request leads on the left
     setLeads((l || []).filter((x: any) => (x.kind || "lesson_request") === "lesson_request"));
-    // Teachers on the right = opted-in profiles + teacher_offer leads (people from JoinTeacher form)
+    // Teachers on the right = maggid-tenant admins + teacher_offer leads (people from JoinTeacher form)
+    const maggidMemberships = (m || []).filter((row: any) => row.tenants?.type === "maggid");
+    const userIds = maggidMemberships.map((row: any) => row.user_id);
+    const { data: p } = userIds.length
+      ? await supabase.from("profiles").select("id, full_name, phone, city, bio").in("id", userIds)
+      : { data: [] as any[] };
+    const profileById = new Map((p || []).map((row: any) => [row.id, row]));
+    const maggidim = maggidMemberships.map((row: any) => {
+      const profile = profileById.get(row.user_id);
+      return {
+        id: row.user_id,
+        full_name: profile?.full_name || row.tenants?.name,
+        city: profile?.city || row.tenants?.city,
+        organization_name: row.tenants?.name,
+        is_approved: row.tenants?.status === "active",
+        _phone: profile?.phone,
+      };
+    });
     const offerLeads = (l || [])
       .filter((x: any) => x.kind === "teacher_offer")
       .map((x: any) => ({
@@ -41,7 +62,7 @@ const AdminMatching = () => {
         _isLead: true,
         _phone: x.phone,
       }));
-    setTeachers([...(t || []), ...offerLeads]);
+    setTeachers([...maggidim, ...offerLeads]);
   };
   useEffect(() => { load(); }, []);
 
@@ -61,7 +82,7 @@ const AdminMatching = () => {
       toast.error("מועמד זה הגיע מטופס ההצטרפות ועדיין לא נפתח לו פורטל. יש ליצור עבורו פורטל קודם.");
       return;
     }
-    const { error } = await supabase.from("leads").update({ assigned_teacher_id: teacherId, status: "assigned" }).eq("id", leadId);
+    const { error } = await supabase.from("leads").update({ assigned_teacher_user_id: teacherId, status: "assigned" }).eq("id", leadId);
     if (error) return toast.error(error.message);
     toast.success("הליד שויך למגיד שיעור");
     load();
@@ -73,21 +94,21 @@ const AdminMatching = () => {
     setAiLoading(true);
     setAiSuggestions([]);
     try {
-      const teacherSummary = teachers.slice(0, 50).map(t =>
-        `[${t.id}] ${t.full_name} | עיר: ${t.city || "—"} | נושאים: ${(t.subjects || []).join(", ") || "—"} | קהל: ${(t.target_audience || []).join(", ") || "—"}`
-      ).join("\n");
-      const prompt = `אני מחפש להתאים מבקש שיעור למגיד שיעור.\n\nמבקש:\nשם: ${selectedLead.full_name}\nאזור: ${selectedLead.area || "—"}\nנושא מועדף: ${selectedLead.preferred_subject || "—"}\nהערות: ${selectedLead.notes || "—"}\n\nרשימת מגידי שיעור:\n${teacherSummary}\n\nהחזר 3 מומלצים בפורמט: שם — נימוק קצר (משפט אחד). אל תוסיף הקדמות.`;
-      const res = await fetch(`https://hkkkynyoigzlttpynoeo.supabase.co/functions/v1/ai-match-teacher`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ prompt }),
+      const { data, error } = await supabase.functions.invoke("ai-match-teacher", {
+        body: { lead_id: selectedLead.id },
       });
-      const json = await res.json();
-      if (json.error) throw new Error(json.error);
-      const lines = (json.text || "").split("\n").filter((s: string) => s.trim());
+      if (error) throw error;
+      if (data?.error) throw new Error(data.error);
+      const matches = data?.matches || [];
+      if (!matches.length) toast.info("לא נמצאו התאמות");
+      const lines = matches.map((m: any) => {
+        const t = teachers.find((x: any) => x.id === m.user_id);
+        const name = t?.full_name || m.user_id;
+        return `${name}${m.score != null ? ` (${m.score}%)` : ""} — ${m.reason || ""}`;
+      });
       setAiSuggestions(lines);
     } catch (e: any) {
-      toast.error("שגיאה ב‑AI: " + e.message);
+      toast.error("שגיאה ב‑AI: " + (e.message || String(e)));
     } finally {
       setAiLoading(false);
     }
