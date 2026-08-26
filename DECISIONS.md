@@ -5516,3 +5516,68 @@
      — לא מוזג. system 35 KioskFleet לא נגע, per HARD STEERING; מערכות
      08/09/bkalut-app/bkalot-admin/`zr_*`/webhook NEDARIM3873/`csj`/
      `csj_src`/`igud` לא נגעו.
+
+## 26/08/2026 (LOOP A) — 01-torah-platform: תרומות + קופה חנות היו שבורות ב-100% בכתיבה
+
+481. **הקשר.** `core.run_progress` אומת (אחרון `[loop A]`: `e149f90a`, 32
+     nadlan-berega). GLOBAL PRIORITY ORDER + HARD STEERING (25/08): system
+     35 "DONE for now", לעבור ל-P2. נבדק `core.build_tasks` — כל 14 השורות
+     של 32/36 כבר `status='done'` (אפס `todo`), אז לפי חוזה ההתקדמות עוברים
+     הלאה בתוך היד: P3 = "בנה רק את המוצר הטוב מבין 01/15" — הכרעה קודמת
+     (25/08, רשומה 462) כבר בחרה ב-01-torah-platform כיעד הפעיל (15-egod
+     יושב על פרויקט Supabase שלא נגיש מה-MCP הזה כלל) ולא נגעה ב-15. לא
+     נמצאו שורות `core.project_bugs` פתוחות ל-01/15. סבב חקירה ראשון (סוכן
+     Explore) הציע 3 "פונקציות edge חסרות" — כולן התבררו שגויות: הסוכן חיפש
+     ב-`supabase/functions/` השורש במקום `apps/01-torah-platform/supabase/
+     functions/`; `list_edge_functions` אימת ששלושתן פרוסות וחיות.
+482. **מה נמצא — קופה חנות ותרומות שבורות ב-100%.** `DonationPage.tsx`
+     שולח ל-`.insert()` על `public.donations` את `payment_type`/
+     `installments` — עמודות שלא קיימות בטבלה בכלל (העמודות האמיתיות:
+     `is_recurring`/`recurring_months`/`recurring_charge_day`, אומת חי מול
+     `information_schema.columns` + `types.ts` המיוצר). כל ניסיון תרומה,
+     אורח או מחובר, נכשל מיד עם "column does not exist" — עוד לפני שהגיע
+     בכלל ל-iframe של נדרים. `Checkout.tsx` שולח ל-`order_items` את
+     `subtotal_ils` (אין עמודה כזו; השם האמיתי `total_ils`) וגם משמיט את
+     `tenant_id` (NOT NULL, בלי ברירת מחדל) — כל הזמנת חנות נכשלת באותו אופן.
+     שני הבאגים שוחזרו חי ב-MCP (טרנזקציה מגולגלת-אחורה, `insert ... returning`
+     כנציג ל-`.insert().select()` של supabase-js).
+483. **מה נמצא — פער נוסף, ייחודי לאורח (לא-מחובר).** אחרי תיקון שמות
+     העמודות, שחזור חי גילה שכבה שנייה: `.insert().select().single()` על
+     `orders`/`donations` נכשל ב-`"new row violates row-level security
+     policy"` באורח (RETURNING תחת RLS מציב את השורה מול מדיניות ה-SELECT —
+     `orders_self_read`/`donations_self_read` דורשות `user_id = auth.uid()`,
+     ואצל אורח שניהם `NULL`, ו-`NULL = NULL` הוא `NULL` לא `TRUE`). שכבה
+     שלישית: גם אחרי תיקון זה, `oi_insert` (INSERT policy על `order_items`)
+     נכשלת גם היא לאורח — ה-`with_check` שלה בודק קיום ה-order האב דרך
+     `EXISTS` רגיל על `orders`, שגם הוא מסונן תחת RLS לפי `orders_self_read`
+     — ההזמנה של האורח עצמו, שהוכנסה רגע קודם באותו request, בלתי-נראית
+     לבדיקה הזו.
+484. **מה נבנה.** (1) `DonationPage.tsx`: `payment_type`/`installments` →
+     `is_recurring`/`recurring_months`. (2) `Checkout.tsx`: הוספת `tenant_id`
+     ל-`order_items`, `subtotal_ils` → `total_ils`. (3) בשני הקבצים: יצירת
+     ה-`id` בצד הלקוח (`crypto.randomUUID()`) והסרת שרשור `.select().single()`
+     אחרי ה-`insert` — כך גם אורח וגם משתמש מחובר לא תלויים במדיניות ה-SELECT
+     בכלל כדי לקבל את ה-id להמשך (הזמנת פריטים / קריאה ל-`nedarim-create-
+     payment`). (4) מיגרציה `20260826002853_guest_order_items_insert_fix.sql`:
+     פונקציית עזר צרה `public.order_exists(_order_id uuid)` (`SECURITY
+     DEFINER`, מחזירה בוליאני בלבד — אין דליפת נתונים, בדיוק אותה תבנית כמו
+     `has_tenant_role`/`is_super_admin`/`user_in_tenant` הקיימות), ועדכון
+     `oi_insert` לקרוא לה במקום ה-`EXISTS` הישיר.
+485. **אימות + אפס רגרסיה.** שוחזר חי ב-MCP בטרנזקציה מגולגלת-אחורה:
+     insert של `orders`+`order_items`+`donations` כאורח (`set local role
+     anon`, בלי `auth.uid()`) — שלושתם מצליחים עם הצורה המתוקנת (אומת
+     `count=1` לכל אחד אחרי `reset role`, ואז `rollback` — אפס שאריות).
+     `get_advisors(security)` אחרי המיגרציה: אזהרת WARN חדשה אחת בלבד —
+     `order_exists` ניתן להפעלה ע"י `anon` — מאותה משפחה בדיוק כמו האזהרות
+     הקיימות על `has_tenant_role`/`is_super_admin`, אפס ERROR חדש. איזון
+     סוגריים/מאמרות תקין בשני קבצי ה-TSX. שום עמודה/RPC/מדיניות קיימת לא
+     הוסרה — רק תוספת ותיקון שם עמודה שגוי. נדחף לענף `fix/01-torah-
+     platform-donation-checkout-broken-0826` (`4546ea91`) — לא מוזג. הערה
+     להמשך (לא בוצע כאן): עמודי `/donate/success`/`/order/success` כבר
+     בנויים אך שום מסך לא מנווט אליהם אחרי תשלום ב-iframe — לזהות הצלחה
+     ללקוח מחובר אפשר בבדיקת `payment_status` (המדיניות `_self_read` כבר
+     מתירה), אבל לאורח אין דרך בטוחה לכך בלי להרחיב RLS בצורה שתחשוף רשימת
+     כל הזמנות/תרומות האורחים (`user_id is null` בלי סינון לפי `id` ספציפי)
+     — הוחלט להשאיר את זה לסבב נפרד ולא להעריך RLS בחופזה. system 35
+     KioskFleet לא נגע, per HARD STEERING; מערכות 08/09/bkalut-app/
+     bkalot-admin/`zr_*`/webhook NEDARIM3873/`csj`/`csj_src`/`igud` לא נגעו.
