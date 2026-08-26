@@ -5839,3 +5839,46 @@
      (`6a7368a0`) — לא מוזג. system 35 KioskFleet לא נגע, per HARD
      STEERING; מערכות 08/09/bkalut-app/bkalot-admin/`zr_*`/webhook
      NEDARIM3873/`csj`/`csj_src`/`igud` לא נגעו.
+
+## 26/08/2026 (LOOP A, המשך אותו יום) — 01-torah-platform: `search-lessons` (הבוט/צ'אט-AI) קורס על כל בקשה — שאילתות ל-2 עמודות/2 טבלאות שלא קיימות בסכימה החיה
+
+506. **ההקשר.** `core.run_progress` אומת (אחרון `[loop A]`: `55f66e55`,
+     אותה מערכת). `core.build_tasks` עדיין ריק ל-01/15. סוכן
+     general-purpose המשיך את אותה שיטת חקירה חופשית לאזורים שעוד לא
+     נסרקו: `src/hooks`, `src/lib`, `src/integrations`, שאריות
+     `src/components`, ופונקציות edge שעוד לא בוצע להן אודיט.
+507. **מה נמצא.** `supabase/functions/search-lessons/index.ts` (הבקאנד
+     של `FloatingChatBot.tsx`, `verify_jwt=false`, ציבורי) — קובץ
+     שבסבב #195 (12/08) שוחזר במלואו מ-ESZIP חי בלי מקור מקומי קודם,
+     ומעולם לא הושווה לסכימה החיה. שאילתת `lessons` בחרה עמודות שלא
+     קיימות (`synagogue_name, subject, lesson_style, rabbi_role,
+     target_audience, is_recurring, schedule_days, specific_date,
+     is_recorded, is_live_stream, schedule_notes`) — העמודות האמיתיות
+     הן `title, topic_free_text, style, audience, day_of_week,
+     date_specific, recording_url, stream_url` (לחלק אין מקבילה חיה
+     כלל). בנוסף, הקובץ שאל את `synagogue_portals` ו-`org_portals` —
+     טבלאות שלא קיימות בכלל בסכימה החיה (אותה תת-מערכת legacy מתה
+     שתועדה ברשומות 500/501, אך הקריאה הספציפית הזו אליה לא אותרה
+     קודם). מכיוון ש-`OPENAI_API_KEY` עדיין לא מוגדר בפרויקט, כל בקשה
+     נכשלת מוקדם יותר ("Missing env vars") — לכן הבאג לא נחשף בייצור
+     עד כה, אבל ברגע שהמפתח יוגדר, **כל** בקשה לחיפוש-AI תיכשל מיד
+     עם `42703` לפני שמודל ה-AI בכלל נקרא.
+508. **מה נבנה.** רשימת העמודות ב-`lessons` תוקנה לעמודות האמיתיות;
+     שאילתות `synagogue_portals`/`org_portals` הוסרו (אין מקור חי
+     חלופי) והוחלפו במערכים ריקים כדי שתבנית ה-prompt עדיין תיבנה בלי
+     קריסה. שום שינוי בהרשאות/rate-limiting/לוגיקת ה-streaming.
+509. **אימות + אפס רגרסיה.** שוחזר חי ב-MCP מול הפרויקט האמיתי
+     (`bieebmnm`): השאילתה הישנה נכשלת ב-`42703 column "synagogue_name"
+     does not exist`; `information_schema.tables` מאשר ש-
+     `synagogue_portals`/`org_portals` לא קיימות; השאילתה המתוקנת
+     רצה בהצלחה ומחזירה 5 שורות שיעור אמיתיות (בטרנזקציה מגולגלת-
+     אחורה, אפס שאריות). הפונקציה נפרסה מחדש לייצור (`search-lessons`
+     v3→v4) ונבדקה חי ב-HTTP: אותה תגובת `500 Missing env vars` כמו
+     לפני התיקון (זהה, כי `OPENAI_API_KEY` עדיין חסר) — מאשר שהשומר
+     המוקדם לא נפגע. `get_advisors` (security) נקי מאזהרות חדשות.
+     אפס רגרסיה: לא הוסרה שום תכונה קיימת שעבדה (השאילתות הישנות
+     תמיד קרסו). נדחף לענף חדש
+     `fix/01-torah-platform-search-lessons-bad-columns-0826`
+     (`cea37a30`) — לא מוזג. system 35 KioskFleet לא נגע, per HARD
+     STEERING; מערכות 08/09/bkalut-app/bkalot-admin/`zr_*`/webhook
+     NEDARIM3873/`csj`/`csj_src`/`igud` לא נגעו.
