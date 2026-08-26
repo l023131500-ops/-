@@ -6194,3 +6194,62 @@
      מוזג. System 35 KioskFleet לא נגע, per HARD STEERING; מערכות
      08/09/bkalut-app/bkalot-admin/`zr_*`/webhook NEDARIM3873/`csj`/
      `csj_src`/`igud`/15-egod לא נגעו.
+
+## 26/08/2026 (LOOP A, המשך אותו יום) — 01-torah-platform: public/Mikvaot.tsx ו-public/Kashrut.tsx קוראים עמודות שלא קיימות (`name`/`phone`/`certification_level`)
+
+529. **ההקשר.** המשך אותה שיטת חקירה על 01-torah-platform (P3, נבחר
+     על 15-egod ברשומה 462): `core.issues`/`core.build_tasks`/
+     `core.project_tasks` הפתוחים ל-01 כולם חסומים על הכרעת משתמש
+     (#138/#172/#203/#257/#259). הרצתי שני סבבי סוכן Explore
+     בזה-אחר-זה כדי לאתר עוד מופע של אותה משפחת באג חוזרת
+     (UI קורא/כותב עמודה/טבלה שלא קיימת בסכימה החיה), תוך אימות כל
+     ממצא בעצמי מול `information_schema` לפני שינוי קוד — סבב ראשון
+     החזיר רק ממצאים שכבר בתחום החסום (`components/portal/
+     PortalSettingsTab.tsx` מול `rabbi_portals`/`org_portals`, אותה
+     סכימת "פורטל legacy" נטושה כמו #257) או קוד מת (`components/bulk/
+     BulkLessonForm.tsx`/`ExcelImportExport.tsx` — מיובאים אך ורק
+     מ-`src/pages/legacy/*`, שהן עצמן כבר חסומות). סבב שני החזיר שלושה
+     מועמדים; שניים מהם אומתו כשגויים בבדיקה ישירה (`lesson_bookmarks`
+     כן קיימת חי — פער drift בין המיגרציות לסכימה החיה, לא באג קוד;
+     ה-RPC/RLS ל-`ai-match-teacher` וכו' כבר נסגרו) ואחד אומת כנכון.
+530. **מה נמצא.** שני עמודים ציבוריים חיים (מקושרים ב-`App.tsx`
+     בנתיבים `/mikvaot` ו-`/kashrut`) קוראים שמות עמודה שלא קיימים:
+     - `public/Mikvaot.tsx` קורא `m.name` ו-`m.phone` על תוצאת
+       `select("*")` מ-`community_services` — העמודות האמיתיות הן
+       `title` ו-`contact_phone` (אומת מול `information_schema.columns`
+       החי). התוצאה: כרטיס מקווה תמיד הציג כותרת ריקה וטלפון ריק (רק
+       הכתובת/שעות, ששמן כן תואם, הוצגו).
+     - `public/Kashrut.tsx` קורא `k.certification_level` על תוצאת
+       `select("*")` מ-`kashrut_certifications` — העמודה האמיתית היא
+       `hechsher_level`. התוצאה: תג רמת הכשרות תמיד נפל ל-fallback
+       הגנרי "כשרות" במקום להציג את הרמה האמיתית (מהדרין/רגיל/וכו').
+     שתי הטבלאות ריקות בפרודקשן (0 שורות) ואין להן שום נתיב כתיבה
+     באדמין בכל הריפו (`grep` מקיף על `src/pages/admin` ו-
+     `src/components/admin` לא מצא אף כתיבה ל-`community_services` או
+     ל-`kashrut_certifications`) — כלומר הבאג לא השפיע על משתמש אמיתי
+     עד היום, אך יתבטא מיד ברגע שתיווסף שורה בכל דרך שהיא (הזנה ידנית
+     ב-DB, מיגרציית seed עתידית, או פאנל אדמין עתידי). לא נגעתי בערכי
+     הסינון `service_type="mikveh"`/`status="active"` — אין שום כותב
+     שקובע איזה מחרוזת "נכונה" (אין CHECK constraint, אין שורה קיימת),
+     כך שכל שינוי שם היה ניחוש בלי ראיה, בניגוד למדיניות "לא לבנות בלי
+     ספק אמיתי"; רק שמות העמודות שיש להן ראיה ישירה ב-`information_
+     schema` תוקנו.
+531. **מה נבנה.** שינוי מינימלי בשני קבצים: `Mikvaot.tsx` —
+     `m.name`→`m.title`, `m.phone`→`m.contact_phone`; `Kashrut.tsx` —
+     `k.certification_level`→`k.hechsher_level`. שום עמודה/טבלה חדשה,
+     שום קובץ נוסף לא נגע.
+532. **אימות + אפס רגרסיה.** `esbuild` (מ-
+     `apps/24-galilee-connect-hub/node_modules/.bin/esbuild`) עבר נקי
+     על שני הקבצים אחרי השינוי; בדיקת איזון סוגריים נקייה בשניהם
+     (16/16 ו-15/15 עגולים, 21/21 ו-22/22 מסולסלים, 3/3 ו-3/3
+     מרובעים). אומת חי ב-MCP מול `bieebmnm` בתוך `BEGIN...ROLLBACK`:
+     הוכנסו שורת מקווה אמיתית (עם `title`/`contact_phone`) ושורת
+     כשרות אמיתית (עם `hechsher_level`) על טננט אמיתי — שני ה-`INSERT`
+     הצליחו בדיוק עם שמות העמודות שהקוד המתוקן קורא, מה שמאשר שהתיקון
+     יציג נתונים נכונים ברגע שתהיה שורה אמיתית. `count(*)` על שתי
+     שורות הבדיקה אחרי ה-`ROLLBACK` חזר 0 — אפס שאריות. `git diff
+     --stat` מאשר שני קבצים, 3 שורות שונו בסך הכל. נדחף לענף חדש
+     `fix/01-torah-platform-mikvaot-kashrut-column-mismatch-0826` — לא
+     מוזג. System 35 KioskFleet לא נגע, per HARD STEERING; מערכות
+     08/09/bkalut-app/bkalot-admin/`zr_*`/webhook NEDARIM3873/`csj`/
+     `csj_src`/`igud`/15-egod לא נגעו.
