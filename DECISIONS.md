@@ -6707,3 +6707,83 @@
      (a1162975). System 35 KioskFleet לא נגע, per HARD STEERING;
      מערכות 08/09/bkalut-app/bkalot-admin/`zr_*`/webhook NEDARIM3873/
      `csj`/`csj_src`/`igud`/15-egod לא נגעו.
+
+## 26/08/2026 (LOOP A, המשך אותו יום) — 01-torah-platform: רגרסיה חיה בנעילת-האבטחה הקודמת שברה שלושה נתיבי-קלט ציבוריים + leads.kind שגוי ב-Questionnaire
+
+563. **ההקשר.** `core.build_tasks` ל-32/36 עדיין `done` (0 שורות
+     `todo`), ואין שורות כלל ל-01/15 — המשך אותה שיטת חקירה חופשית
+     על 01: גרף גלובלי על כל `.insert(`/`.update(`/`.upsert(` בעץ
+     ה-`src` שטרם נבדק. סוכן-חקירה איתר תחילה `study_day_events`
+     (`StudyDayEventForm.tsx`) ו-`rabbi_portals`/`org_portals`/
+     `portal_photos` (`PortalSettingsTab.tsx`) כטבלאות שאינן קיימות
+     כלל בסכימה החיה — אך אלה התבררו כאותו גוש-הישן-הנטוש שכבר
+     תועד ונחסם ב-`core.issues` #257 ("PortalSettings.tsx נבנה מול
+     סכימה שאינה קיימת... צריך הכרעת משתמש") ולא הושקעה בהם עבודה
+     נוספת, לפי העיקרון "לא להשקיע בפרויקטים שלא התקדמו". המשך
+     סריקה לטבלאות קיימות (`leads`/`portal_messages`/`lessons`/
+     `forum_*`/`tips`/`tenants`/`nedarim_*`) מול
+     `information_schema.columns` החי על `bieebmnmkffwbqlsfozh`.
+564. **מה נמצא (Questionnaire).** `pages/public/Questionnaire.tsx`
+     (ראוט חי `/questionnaire`) כתב ל-`leads.kind` את הערך הגולמי
+     `form.role` ("seeker"/"teacher"), בעוד `admin/MatchingGuru.tsx`
+     מסנן בדיוק לפי `kind === "lesson_request"` / `kind ===
+     "teacher_offer"` (אותה קונבנציה שכבר נקבעה בתיקון ה-leads
+     הקודם, רשומה ~b954c4c9). ה-`insert` עצמו הצליח (אין אי-התאמת
+     עמודות), אך כל שליחה מהשאלון הציבורי — גם "מחפש שיעור" וגם
+     "מורה" — הייתה נשמרת ונעלמת לצמיתות מתור ההתאמה-האוטומטית של
+     האדמין, ללא שגיאה גלויה למשתמש או למנהל.
+565. **מה נמצא (רגרסיה חמורה יותר).** תוך כדי אימות-חי של תיקון
+     Questionnaire ב-MCP תחת `set local role anon`, ה-`insert`
+     ל-`leads` נכשל לגמרי (עוד לפני שהגעתי לבדיקת ה-`kind`) עם
+     `42501: permission denied for function
+     tenant_accepts_public_intake`. חקירה גילתה: מיגרציה קודמת
+     מאותו יום, `20260825220000_legacy_admin_rpc_lockdown.sql`
+     (6ebf333c, נועדה לנעול תשע פונקציות של תבנית-"bkalut" ישנה
+     שנקבע ש"אין שום הפניה אליהן בשום מקום בקוד"), ביטלה גם EXECUTE
+     על `tenant_accepts_public_intake` — אך הבדיקה ההיא גרפה רק את
+     קוד-האפליקציה, ופספסה שהפונקציה הזו נקראת ישירות בתוך שלוש
+     מדיניויות RLS **חיות**: `leads_insert`, `rabbi_questions_insert`
+     ו-`portal_messages_insert` (`pg_get_expr` על `pg_policy` מאשר
+     את שלושתן). תפקיד צריך הרשאת EXECUTE כדי להפעיל פונקציה גם אם
+     היא `SECURITY DEFINER` (זה קובע רק את ההרשאות *בתוך* הפונקציה,
+     לא מי רשאי לקרוא לה) — כך שכל קריאת `insert` אנונימית/מאומתת
+     לשלוש הטבלאות האלה, לכל טננט, נכשלה מאותו רגע בדיוק: כל טפסי
+     ליד-ציבוריים (Contact/FindLesson/RequestLesson/JoinTeacher/
+     Questionnaire), הטופס הציבורי "שאל את הרב", וכל טופס-יצירת-קשר
+     ציבורי בפורטל. חמור במיוחד כי התיקון הקודם לאותו יום ל-"שאל את
+     הרב" (a73dca17, 26/08 02:54) בוצע *אחרי* הרגרסיה הזו (25/08
+     20:47) ותוקן רק את צורת ה-payload — בלי לדעת שהוא עדיין שבור
+     ברמת ה-RLS.
+566. **מה נבנה.** מיגרציה חדשה
+     `20260826080000_restore_public_intake_execute_grant.sql`:
+     `grant execute on function public.tenant_accepts_public_intake(uuid)
+     to anon, authenticated;` — משחזרת אך ורק את הפונקציה הזו (שמחזירה
+     בוליאני בלבד, ללא חשיפת נתונים — בניגוד לשמונה הפונקציות
+     האחרות שנשארות נעולות כראוי). ב-`Questionnaire.tsx`: `kind:
+     form.role === "seeker" ? "lesson_request" : "teacher_offer"`
+     במקום `kind: form.role` — שדות אחרים לא שונו.
+567. **אימות + אפס רגרסיה.** המיגרציה הוחלה חי (`apply_migration`).
+     אומת חי ב-MCP תחת `BEGIN...ROLLBACK` + `set local role anon`
+     מול טננט אמיתי (`is_public=true, status='active'`): לפני
+     התיקון `tenant_accepts_public_intake` נכשל ב-`42501
+     permission denied`; אחרי התיקון הפונקציה מחזירה `true`,
+     וה-`insert` (ללא `.select()`, בדיוק כמו קריאת ה-JS האמיתית
+     בקוד) הצליח ושלושתם — `leads`/`rabbi_questions`/
+     `portal_messages` — נכתבו בהצלחה כ-`anon` (אומת עם `reset
+     role` + `select count(*)` לפני ה-`rollback`; `count(*)` אחרי
+     ה-`rollback` חזר 0 בשלושתן — אפס שאריות). נבדק בנפרד ששמונת
+     הפונקציות האחרות (`verify_super_admin` וכו') נשארות
+     `has_function_privilege=false` לגמרי כמו שהיו. `get_advisors`
+     (security) אחרי ההחלה: `tenant_accepts_public_intake` מופיע כ-
+     `anon_security_definer_function_executable` (WARN) — בדיוק
+     אותה קטגוריה/רמה כמו `has_tenant_role`/`is_super_admin`/
+     `user_in_tenant`/`order_exists`/`order_payment_status` שכבר
+     מקובלים במכוון כפונקציות-שער ציבוריות דומות; אין אזהרת ERROR
+     חדשה. `esbuild --jsx=automatic` + `node --check` נקיים על
+     `Questionnaire.tsx` המתומלל; איזון סוגריים נקי (91/91 עגולים,
+     96/96 מסולסלים, 20/20 מרובעים). `git diff --stat` מאשר קובץ
+     קוד יחיד (6 שורות) + מיגרציה חדשה. נדחף לענף חדש
+     `fix/01-torah-platform-public-intake-execute-grant-0826`
+     (417e100a) — לא מוזג. System 35 KioskFleet לא נגע, per HARD
+     STEERING; מערכות 08/09/bkalut-app/bkalot-admin/`zr_*`/webhook
+     NEDARIM3873/`csj`/`csj_src`/`igud`/15-egod לא נגעו.
