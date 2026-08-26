@@ -237,7 +237,12 @@ Deno.serve(async (req) => {
           }
         }
       } else if (purpose === "shop_order" || foundOrderId) {
-        await supabase
+        // Same idempotent-capture guard as the donation branch above: only
+        // the delivery that actually flips payment_status away from
+        // "captured" gets the row back, so a redelivered IPN for an
+        // already-captured order falls through without decrementing stock
+        // a second time for the same paid order.
+        const { data: ord } = await supabase
           .from("orders")
           .update({
             payment_status: "captured",
@@ -246,7 +251,24 @@ Deno.serve(async (req) => {
             payment_meta: payload,
             paid_at: new Date().toISOString(),
           })
-          .eq("id", foundOrderId || refId);
+          .eq("id", foundOrderId || refId)
+          .neq("payment_status", "captured")
+          .select("id")
+          .maybeSingle();
+
+        if (ord?.id) {
+          const { data: orderItems } = await supabase
+            .from("order_items")
+            .select("product_id, quantity")
+            .eq("order_id", ord.id);
+          for (const item of orderItems || []) {
+            if (!item.product_id) continue;
+            await supabase.rpc("decrement_product_stock", {
+              _product_id: item.product_id,
+              _qty: item.quantity,
+            });
+          }
+        }
       }
     } else if (!isSuccess && refId) {
       // Mark as failed
