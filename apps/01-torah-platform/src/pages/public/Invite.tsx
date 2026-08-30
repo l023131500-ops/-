@@ -5,6 +5,7 @@ import { KeyRound } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { PasswordInput } from "@/components/ui/password-input";
 import { toast } from "sonner";
 import Footer from "@/components/Footer";
 import { PUBLIC_SITE_URL } from "@/lib/site";
@@ -14,6 +15,8 @@ const Invite = () => {
   const [params] = useSearchParams();
   const [email, setEmail] = useState("");
   const [code, setCode] = useState("");
+  const [initialPassword, setInitialPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -41,19 +44,26 @@ const Invite = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email || !code) { toast.error("נא למלא מייל וקוד הזמנה"); return; }
+    if (!email || !code || !initialPassword || !newPassword) {
+      toast.error("נא למלא את כל השדות");
+      return;
+    }
     setLoading(true);
     try {
       // Activate via secure backend (creates user, confirms email, upserts profile, marks used)
       const { data, error } = await supabase.functions.invoke("activate-invite", {
-        body: { code: code.trim(), email: email.trim() },
+        body: {
+          invite_code: code.trim(),
+          email: email.trim(),
+          password_input: initialPassword,
+          new_password: newPassword,
+        },
       });
       if (error) throw error;
       if ((data as any)?.error) throw new Error((data as any).error);
-      const { email: e2, password } = data as { email: string; password: string };
 
-      // Sign the user in immediately
-      const { error: siErr } = await supabase.auth.signInWithPassword({ email: e2, password });
+      // Sign the user in with the password they just chose
+      const { error: siErr } = await supabase.auth.signInWithPassword({ email: email.trim(), password: newPassword });
       if (siErr) throw siErr;
 
       toast.success("הפורטל שלך נפתח בהצלחה!");
@@ -88,13 +98,21 @@ const Invite = () => {
               <label className="text-sm font-medium mb-1 block">קוד הזמנה</label>
               <Input value={code} onChange={(e) => setCode(e.target.value)} placeholder="קוד שקיבלת מהניהול" dir="ltr" />
             </div>
+            <div>
+              <label className="text-sm font-medium mb-1 block">סיסמה ראשונית (שקיבלת מהניהול)</label>
+              <PasswordInput value={initialPassword} onChange={(e) => setInitialPassword(e.target.value)} dir="ltr" autoComplete="current-password" />
+            </div>
+            <div>
+              <label className="text-sm font-medium mb-1 block">סיסמה חדשה משלך</label>
+              <PasswordInput value={newPassword} onChange={(e) => setNewPassword(e.target.value)} dir="ltr" autoComplete="new-password" />
+            </div>
             <Button type="submit" disabled={loading} className="w-full bg-secondary text-secondary-foreground hover:bg-gold-dark">
               {loading ? "מפעיל..." : "הפעל פורטל"}
             </Button>
           </form>
 
           <p className="text-xs text-muted-foreground text-center mt-6">
-            הסיסמה הראשונית הוגדרה לך על ידי הניהול. תוכל לשנות אותה אחרי הכניסה.
+            הסיסמה הראשונית הוגדרה לך על ידי הניהול. בחר סיסמה חדשה משלך — היא זו שתשמש אותך מעכשיו.
           </p>
         </motion.div>
       </div>
