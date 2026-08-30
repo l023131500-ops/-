@@ -33,7 +33,7 @@ export default function HalachaDaily() {
           <Card key={h.id}>
             <CardHeader>
               <div className="flex items-center gap-2 text-xs text-muted-foreground mb-1">
-                <Calendar className="h-3 w-3" /> {h.publish_date}
+                <Calendar className="h-3 w-3" /> {new Date(h.date).toLocaleDateString("he-IL")}
               </div>
               <CardTitle className="text-xl">{h.title}</CardTitle>
             </CardHeader>
