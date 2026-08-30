@@ -7759,3 +7759,49 @@
      `build_tasks` נשאר 0 todo; מערכות/סכימות מוגנות (08/09/bkalut-app/
      bkalot-admin/`zr_*`/webhook NEDARIM3873/`csj`/`csj_src`/`igud`/
      15-egod) לא נגעו. אין שליחה/חיוב אמיתיים בסבב זה.
+
+## 30/08/2026 (LOOP A, סבב נוסף) — `public/Synagogues.tsx`: שדות `gabai_name`/`contact_phone` (שגויים) במקום `gabbai_name`/`gabbai_phone` האמיתיים
+
+637. **ההקשר.** נעילת ה-P0 (מערכת 14) אומתה שוב כמסולקת (`core.build_tasks`
+     id=15, `status='done'`). P1 (35) אסור per HARD STEERING. P2 (32/36)
+     אומת שוב כ-0 שורות `todo`. המשך ל-P3: `core.build_tasks` אין שורות
+     בכלל עבור 01/15 — כמו בסבבים הקודמים, ממשיכים בביקורת ad-hoc על
+     01-torah-platform (15-egod עדיין לא נגיש דרך ה-MCP הזה, והוכרע
+     בסבבים קודמים כי 01 הוא המוצר השלם-יותר מבין השניים).
+
+638. **הממצא.** `src/pages/public/Synagogues.tsx` (`/synagogues`, נתיב
+     ציבורי חי, רשימת בתי הכנסת) שולף `select("*")` מ-`synagogues` אך
+     קורא את השדות בשמות שגויים: שורה 35 `s.gabai_name` (טעות הקלדה —
+     חסר `b` אחד) ושורה 36 `s.contact_phone` (שם שדה שגוי לגמרי). השמות
+     האמיתיים בטבלה, כפי שאומתו ישירות מול
+     `information_schema.columns` על `bieebmnmkffwbqlsfozh`, הם
+     `gabbai_name`/`gabbai_phone`/`gabbai_email` — אין בכלל עמודה
+     `contact_phone` בטבלת `synagogues`. שני השדות היו תמיד `undefined`
+     בשקט, כך שכרטיס בית-הכנסת ברשימה הציבורית מעולם לא הציג שם/טלפון
+     גבאי. אומת שזו הטעות היחידה מסוגה בקובץ: `SynagogueDetail.tsx`
+     (שורות 34-35, דף הפרטים של אותו בית כנסת) ו-`portal/PrayerTimes.tsx`
+     (שורות 46/134) כבר משתמשים נכון ב-`gabbai_name`/`gabbai_phone`,
+     כלומר `Synagogues.tsx` הוא החריג היחיד. סוכן חקירה (Explore) איתר
+     את הפער; אומת ישירות מול הסכמה החיה לפני התיקון.
+
+639. **מה נעשה.** שינוי שתי השורות ל-`s.gabbai_name`/`s.gabbai_phone`
+     (התאמה מדויקת לשמות העמודות האמיתיים ולתבנית הקיימת כבר ב-
+     `SynagogueDetail.tsx`). ללא שינוי בשאילתה עצמה (`select("*")` כבר
+     מחזיר את כל השדות) — אך ורק תיקון שם-הגישה בקוד התצוגה.
+
+640. **אימות.** `esbuild` נקי על הקובץ המלא (`--loader:.tsx=tsx`). טבלת
+     `synagogues` על `bieebmnmkffwbqlsfozh` ריקה כרגע (0 שורות) — כמו
+     בתיקון ה-`neighborhood` הקודם, אין עדיין השפעה נראית על מסך חי,
+     אך זה סוגר פער אמיתי בקוד שכבר קיים. אומת התנהגות-בזמן-ריצה בבלוק
+     `DO $$...$$` **יחיד** (לקח מהתקרית בסעיף 629): נוצרה שורת
+     `synagogues` זמנית עם `gabbai_name`/`gabbai_phone` ממולאים על
+     טננט אמיתי-קיים, `RETURNING *` אומת ששני השדות חוזרים בדיוק בשם
+     ובערך שהקוד המתוקן קורא, ואז נמחקה באותו הבלוק. `SELECT count(*)`
+     נפרד אחרי הריצה אימת 0 שורות עם השם הזמני — ניקוי מלא, ללא נזק
+     לנתונים אמיתיים (בשונה מהתקרית בסעיף 629, כאן לא נגעתי בטננט/שורה
+     קיימים כלל). `git diff --stat`: קובץ אחד, 2+/2-, אין שינוי בשאילתה.
+     נדחף ל-`fix/01-torah-platform-audit-0830b` (`3c6917cd`). System 35
+     KioskFleet לא נגע, per HARD STEERING; P2 (32/36) `build_tasks` נשאר
+     0 todo; מערכות/סכימות מוגנות (08/09/bkalut-app/bkalot-admin/`zr_*`/
+     webhook NEDARIM3873/`csj`/`csj_src`/`igud`/15-egod) לא נגעו. אין
+     שליחה/חיוב אמיתיים בסבב זה.
