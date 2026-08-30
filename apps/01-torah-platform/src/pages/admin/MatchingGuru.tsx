@@ -70,7 +70,7 @@ const AdminMatching = () => {
     !s || fields.filter(Boolean).join(" ").toLowerCase().includes(s.toLowerCase());
 
   const filteredLeads = useMemo(() => leads.filter(l =>
-    matches(search, l.full_name, l.area, l.preferred_subject, l.notes)
+    matches(search, l.full_name, l.area, l.preferred_subject, l.message)
   ), [leads, search]);
 
   const filteredTeachers = useMemo(() => teachers.filter(t =>
@@ -167,8 +167,7 @@ const AdminMatching = () => {
                   </div>
                   {selectedLead?.id === l.id && (
                     <div className="mt-3 pt-3 border-t border-border space-y-1 text-xs">
-                      {l.preferred_times && <p><strong>זמנים מועדפים:</strong> {l.preferred_times}</p>}
-                      {l.notes && <p><strong>הערות:</strong> {l.notes}</p>}
+                      {l.message && <p><strong>הודעה:</strong> {l.message}</p>}
                       {selectedTeacher && (
                         <Button size="sm" className="w-full mt-2 bg-gradient-to-l from-secondary to-gold-dark text-secondary-foreground gap-1"
                           onClick={(e) => { e.stopPropagation(); assign(l.id, selectedTeacher.id); }}>
