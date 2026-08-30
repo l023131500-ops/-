@@ -36,7 +36,7 @@ const AdminMatching = () => {
     const maggidMemberships = (m || []).filter((row: any) => row.tenants?.type === "maggid");
     const userIds = maggidMemberships.map((row: any) => row.user_id);
     const { data: p } = userIds.length
-      ? await supabase.from("profiles").select("id, full_name, phone, city, bio").in("id", userIds)
+      ? await supabase.from("profiles").select("id, full_name, phone, city, neighborhood, bio").in("id", userIds)
       : { data: [] as any[] };
     const profileById = new Map((p || []).map((row: any) => [row.id, row]));
     const maggidim = maggidMemberships.map((row: any) => {
@@ -45,6 +45,7 @@ const AdminMatching = () => {
         id: row.user_id,
         full_name: profile?.full_name || row.tenants?.name,
         city: profile?.city || row.tenants?.city,
+        neighborhood: profile?.neighborhood,
         organization_name: row.tenants?.name,
         is_approved: row.tenants?.status === "active",
         _phone: profile?.phone,
