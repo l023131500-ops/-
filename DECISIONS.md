@@ -7805,3 +7805,60 @@
      0 todo; מערכות/סכימות מוגנות (08/09/bkalut-app/bkalot-admin/`zr_*`/
      webhook NEDARIM3873/`csj`/`csj_src`/`igud`/15-egod) לא נגעו. אין
      שליחה/חיוב אמיתיים בסבב זה.
+
+## 30/08/2026 (LOOP A, סבב נוסף) — `pages/legacy/UpdateLesson.tsx`: ראוט ציבורי חי שכל שליחה בו נכשלת (תיעוד, לא תיקון-ניחוש)
+
+641. **ההקשר.** נעילת ה-P0 (מערכת 14) אומתה שוב כמסולקת. P1 (35) אסור
+     per HARD STEERING. P2 (32/36) אומת שוב כ-0 שורות `todo`. המשך ל-P3
+     (15-egod עדיין לא נגיש דרך ה-MCP). סוכן Explore סרק קבצים
+     שטרם בוקרו במפורש בסבבים קודמים (components/admin,auth,branding,
+     layout,portal,synagogue; lib/lessonExcel*,studyDay*,site,tenant;
+     hooks) — לא מצא באג חדש בקוד חי-ומחובר (הכל או קוד-מת מתועד
+     (issue #260) או כבר תוקן בסבבים קודמים). המשך בחיפוש עצמאי לפי
+     class חדש: השוואת רשימת `storage.from("<bucket>")` בקוד מול
+     `storage.buckets` האמיתי בפרויקט.
+
+642. **הממצא.** `pages/legacy/UpdateLesson.tsx` נטען בנתיב **חי**
+     `/update-lesson` (`App.tsx:280`, מחוץ לכל שער-אימות/עטיפת-אדמין —
+     נבדל מ-7 הקבצים שכבר תועדו ב-issue #260, ש-**כן** בדוק שאינם
+     ברשימה ההיא). זהו טופס ציבורי בן 13 שלבים ("עדכון שיעור קיים
+     לפרסום") שמסתיים ב-`INSERT` ישיר ל-`lessons` עם 19 שדות — אך
+     **בלי** `tenant_id` ו**בלי** `title` בכלל. אומת ישירות מול
+     `information_schema.columns` על `bieebmnmkffwbqlsfozh`: שתי
+     העמודות `tenant_id uuid NOT NULL` ו-`title text NOT NULL`. גם אם
+     היו נשלחות, `pg_policies` על `lessons` מאשרים `INSERT`
+     (`lessons_tenant_write_ins`) רק ל-`is_super_admin()` או
+     `has_tenant_role(auth.uid(), tenant_id, ...)` — מבקר אנונימי בעמוד
+     הזה (`auth.uid()` תמיד null, אין session) **תמיד** נכשל. בנוסף,
+     `uploadLogo()` מעלה ל-bucket `"lesson-logos"` שלא קיים כלל
+     (אומת: 12 buckets אמיתיים ב-`storage.buckets`, `lesson-logos` לא
+     ביניהם). ה-`catch` מציג רק toast גנרי — משתמש שממלא 13 שלבים לא
+     מקבל שום הסבר. גם אם הכתיבה הייתה מצליחה, **אין שום מסך-ניהול
+     שצורך שורות ממתינות** מהטבלה הזו (נבדק `admin/Content.tsx` —
+     שייך ל-`materials`, לא ל-`lessons`; אין טבלת
+     `lesson_submissions`/`pending_lessons` בסכימה) — למרות שמסך
+     ההצלחה מבטיח "לאחר אישור, השיעור יופיע באתר".
+
+643. **למה לא תוקן ישירות.** זהה מבחינת מחלקה ל-issue #260 (7 ראוטים
+     מול טבלאות חסרות) ו-#257/#259 (חוזה/סכימה שדורשים הכרעת מוצר, לא
+     רק שינוי שם-שדה): אין כאן טעות-הקלדה בשם עמודה, אלא **יעד-כתיבה
+     שלם חסר** (אין תור-אישור, אין קישור-טננט ב-UI, אין bucket).
+     תיקון-ניחוש (למשל לצרף `tenant_id` שרירותי או להסב ל-`lessons`
+     ישירות ללא אישור) עלול ליצור שיעורים "רפאים" תחת טננט לא-נכון —
+     בדיוק סוג הנזק שדפוסי הסבבים הקודמים (#629 incident) לימדו להימנע
+     ממנו. נפתח `core.issues` **#261** (אותו פורמט/סגנון כמו #257/#259/
+     #260: `title`/`detail`/`severity=high`/`status=open`/`blocked_on`
+     עם 3 אופציות למשתמש: לנטוש-ולהסתיר, לבנות תור-אישור אמיתי, או
+     לחבר לזרימת ה-public-intake הקיימת שכבר עובדת כמו `RequestLesson.tsx`).
+
+644. **אימות.** `information_schema.columns` (tenant_id/title NOT
+     NULL), `pg_policies` (INSERT policy דורש תפקיד-טננט), ו-
+     `storage.buckets` (12 buckets אמיתיים, `lesson-logos` חסר) — כולם
+     נבדקו ישירות מול `bieebmnmkffwbqlsfozh` החי, לא ניחוש. נבדק גם
+     שאין טבלת-תור מתאימה (`information_schema.tables` סרוק ל-
+     `%submission%`/`%pending%`/`%request%`/`%lesson%`) ושאין צרכן-אדמין
+     קיים. תיעוד בלבד בסבב זה — אין שינוי קוד/סכימה, אין שליחה/חיוב
+     אמיתיים. System 35 KioskFleet לא נגע, per HARD STEERING; P2
+     (32/36) `build_tasks` נשאר 0 todo; מערכות/סכימות מוגנות (08/09/
+     bkalut-app/bkalot-admin/`zr_*`/webhook NEDARIM3873/`csj`/`csj_src`/
+     `igud`/15-egod) לא נגעו.
