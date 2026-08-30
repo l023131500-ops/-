@@ -95,8 +95,23 @@ serve(async (req) => {
     const synagoguesJson = JSON.stringify(synagogues, null, 1);
     const orgsJson = JSON.stringify(orgs, null, 1);
 
+    // submit_seeker/submit_teacher ACTION field names below must match
+    // public.leads' real columns (full_name, preferred_subject) -- FloatingChatBot.tsx
+    // spreads this parsed JSON straight into a `leads` insert with no
+    // renaming. The previous names (contact_name/subject/subjects) don't
+    // exist on `leads` at all, so every submit_seeker/submit_teacher save
+    // failed with 42703 and was silently swallowed by the chatbot's catch
+    // block, telling the visitor it saved when it never did (verified live:
+    // BEGIN/ROLLBACK insert with the old field names throws
+    // "column ... does not exist"; same insert with full_name/
+    // preferred_subject succeeds as anon under tenant_accepts_public_intake).
+    // submit_lesson is left as-is: even with correct `lessons` column names
+    // it is still rejected by lessons_tenant_write_ins RLS for an anonymous
+    // caller (INSERT there requires tenant_admin/moderator/member/super_admin),
+    // so fixing only the field names would not make it work -- that needs a
+    // schema/RLS decision, not a payload fix.
     const systemPrompt =
-      `אתה סוכן של "איגוד השיעורים" - פלטפורמה ארצית לחיפוש שיעורי תורה.\n\nשיעורים:\n${lessonsJson}\n\nבתי כנסת:\n${synagoguesJson}\n\nארגונים:\n${orgsJson}\n\nכללים:\n1. ענה בעברית בלשון תורנית מכבדת.\n2. הצג 1-3 תוצאות רלוונטיות בלבד מתוך המאגר.\n3. לכל תוצאה: שם הרב, נושא, מיקום, זמנים.\n4. תשובות קצרות וממוקדות.\n5. אם המשתמש רוצה להוסיף שיעור או להצטרף כמגיד, אסוף פרטים (שם, טלפון, עיר, נושא) והוסף בסוף:\n   - להוספת שיעור: [ACTION:submit_lesson]{"rabbi_name":"...","subject":"...","city":"...","phone":"..."}\n   - לבקשת מגיד שיעור: [ACTION:submit_seeker]{"contact_name":"...","phone":"...","city":"...","subject":"..."}\n   - להצטרפות כמגיד: [ACTION:submit_teacher]{"full_name":"...","phone":"...","city":"...","subjects":"..."}\n6. אחרי ACTION, כתוב: "הפרטים נשמרו בהצלחה!"`;
+      `אתה סוכן של "איגוד השיעורים" - פלטפורמה ארצית לחיפוש שיעורי תורה.\n\nשיעורים:\n${lessonsJson}\n\nבתי כנסת:\n${synagoguesJson}\n\nארגונים:\n${orgsJson}\n\nכללים:\n1. ענה בעברית בלשון תורנית מכבדת.\n2. הצג 1-3 תוצאות רלוונטיות בלבד מתוך המאגר.\n3. לכל תוצאה: שם הרב, נושא, מיקום, זמנים.\n4. תשובות קצרות וממוקדות.\n5. אם המשתמש רוצה להוסיף שיעור או להצטרף כמגיד, אסוף פרטים (שם, טלפון, עיר, נושא) והוסף בסוף:\n   - להוספת שיעור: [ACTION:submit_lesson]{"rabbi_name":"...","subject":"...","city":"...","phone":"..."}\n   - לבקשת מגיד שיעור: [ACTION:submit_seeker]{"full_name":"...","phone":"...","city":"...","preferred_subject":"..."}\n   - להצטרפות כמגיד: [ACTION:submit_teacher]{"full_name":"...","phone":"...","city":"...","preferred_subject":"..."}\n6. אחרי ACTION, כתוב: "הפרטים נשמרו בהצלחה!"`;
 
     const aiMessages = [
       { role: "system", content: systemPrompt },
