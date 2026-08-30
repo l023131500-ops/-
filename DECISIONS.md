@@ -7556,3 +7556,51 @@
      מוגנות (08/09/bkalut-app/bkalot-admin/`zr_*`/webhook NEDARIM3873/
      `csj`/`csj_src`/`igud`/15-egod) לא נגעו. אין שליחה/חיוב אמיתיים
      בסבב זה.
+
+## 30/08/2026 (LOOP A, סבב נוסף אותו יום) — `portal/Tips.tsx` כתב לטבלה שאין לו אליה גישת-כתיבה ב-RLS, והציג הודעת-הצלחה כוזבת
+
+622. **ההקשר.** נעילת ה-P0 (system-14 screenshot scan) סופקה שוב היום
+     (`ToolSearch` לכלי דפדפן — ריק). `core.build_tasks` ל-32/36 עומד על
+     0 todo, ואין שורות ל-01/15; `core.issues` הפתוחות היחידות למערכת 01
+     (#138/#172/#201/#203/#257/#259/#260) כולן חסומות במפורש על הכרעת
+     בעלים/מוצר, כפי שהמדיניות דורשת (לא לנחש מיפוי סכימה). המשכתי בזווית
+     טרייה: קבצים שטרם נסרקו (`src/hooks`, `src/lib`, `src/types`,
+     `src/integrations/supabase`) ומדיניות RLS על `UPDATE`/`DELETE` מול
+     נקודות-קריאה אמיתיות (בסבבים קודמים היום נבדקו רק מדיניות `INSERT`).
+623. **הממצא.** `portal/Tips.tsx` (`/portal/tips`, נתיב חי בתוך
+     `PortalLayout`, מקושר גם מהתפריט הצדדי) הריץ קונסולת CRUD מלאה על
+     טבלת `tips` — אך `tips` אין לה עמודת `tenant_id` כלל, ומדיניות
+     הכתיבה שלה (`tips_write_ins`/`upd`/`del`) דורשות `is_super_admin
+     (auth.uid())` בלבד, ללא נפילה ל-`has_tenant_role` כפי שכל טבלה
+     tenant-scoped אחרת בסכימה הזו כן עושה. אומת ב-`pg_policies` וב-עסקת
+     `BEGIN...ROLLBACK` אמיתית (ללא `COMMIT`) על `bieebmnmkffwbqlsfozh`
+     בהתחזות למשתמש פורטל אמיתי שאינו super-admin: `INSERT` זרק `42501`
+     גלוי, אך `UPDATE`/`DELETE` (מדיניות מבוססות-`USING` בלבד) השפיעו על
+     0 שורות בשקט ללא שגיאה — בעוד הקוד עדיין הציג טוסט הצלחה ("עודכן"/
+     "נמחק"). כלומר: לכל משתמש פורטל שאינו super-admin, כל פעולה במסך
+     הזה או נכשלה בגלוי או שיקרה על הצלחה.
+624. **מה נעשה.** הוסרה לוגיקת ה-mutation כולה (`save`/`del`/
+     `toggleActive`, דיאלוגים ליצירה/עריכה/מחיקה, כפתורי הפעולה) מ-
+     `portal/Tips.tsx`; המסך נשאר קריאה-בלבד (תואם בדיוק את מה ש-RLS
+     בפועל מתיר לצופה: `tips_read` — `is_active OR is_super_admin`).
+     קונסולת ה-CRUD האמיתית לטבלה הזו כבר קיימת ב-`admin/Tips.tsx`,
+     חסומה מאחורי `is_super_admin` דרך `AdminLayout`. יבוא לא-בשימוש
+     הוסר בהתאם.
+625. **אימות.** `esbuild --bundle=false --format=esm` נקי על הקובץ המלא.
+     איזון סוגריים נקי (53/53). `grep` אישר שאין הפניה תלויה בסמל
+     שהוסר. `App.tsx`/`PortalLayout.tsx` עדיין מפנים רק ל-default export
+     של הקובץ, ללא שינוי. הטענה על RLS אומתה ישירות מול
+     `bieebmnmkffwbqlsfozh` דרך `pg_policies` וטרנזקציית `BEGIN` יחידה
+     שנסגרה בסגירת החיבור (ללא `COMMIT`) בהתחזות למשתמש אמיתי שאינו
+     super-admin (מאומת חסרונו מ-`user_roles`) — 0 שורות הושפעו ב-UPDATE/
+     DELETE, 42501 ב-INSERT, ספירת שורות `tips` נשארה 5 לפני ואחרי.
+     סבב-רוחב נוסף על כל 63 מדיניות `pg_policies` (UPDATE/DELETE, סכמת
+     `public`) מול נקודות `.update(`/`.delete(` בקוד לא העלה פער נוסף
+     (`tenants_admin_update_own`, `forum_posts` ALL-policy, ו-
+     `with_check IS NULL` על `donations_admin_update`/`orders_admin_update`
+     כולם נבדקו ונמצאו תקינים/לא-נצילים). `git diff --stat`: קובץ אחד,
+     19+/209-. נדחף לענף `fix/01-torah-platform-audit-0830` (`155be00f`).
+     System 35 KioskFleet לא נגע, per HARD STEERING; P2 (32/36)
+     `build_tasks` נשאר 0 todo; מערכות/סכימות מוגנות (08/09/bkalut-app/
+     bkalot-admin/`zr_*`/webhook NEDARIM3873/`csj`/`csj_src`/`igud`/
+     15-egod) לא נגעו. אין שליחה/חיוב אמיתיים בסבב זה.
