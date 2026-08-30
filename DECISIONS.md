@@ -7063,3 +7063,47 @@
      לא מוזג. System 35 KioskFleet לא נגע, per HARD STEERING; מערכות
      08/09/bkalut-app/bkalot-admin/`zr_*`/webhook NEDARIM3873/`csj`/
      `csj_src`/`igud`/15-egod לא נגעו. אין שליחה/חיוב בסבב זה.
+
+## 30/08/2026 (LOOP A, המשך אותו יום) — 01-torah-platform: `auth/ActivateInvite.tsx` — אותה משפחת-באג, ותיקון הערה שגויה מהסבב הקודם
+
+588. **ההקשר.** המשך ישיר של אותו קו-חקירה. הערת סבב קודם (פריט 587)
+     קבעה ש-"`auth/ActivateInvite.tsx` (ראוט `/auth/activate`) מיישם
+     את אותו חוזה בדיוק נכון, ושימש כדוגמת-ייחוס" ל-`public/Invite.tsx`.
+     סוכן-חקירה (Explore, read-only) שנשלח לסרוק קבצים שטרם נבדקו
+     קרא בפועל את `auth/ActivateInvite.tsx` והשווה מילה-במילה מול
+     `supabase/functions/activate-invite/index.ts` — וגילה שההערה
+     הקודמת **שגויה**: לדף התאום יש בדיוק אותו באג שתוקן ב-`Invite.tsx`,
+     הוא פשוט לא נבדק בפועל קודם (רק הונח כתקין כי "נראה דומה").
+589. **מה נמצא בפועל.** `submit()` (שורה 23, לפני התיקון) שלח את כל
+     אובייקט ה-`form` כמות שהוא — `{invite_code, email,
+     initial_password, new_password}` — ל-`activate-invite`. הפונקציה
+     האמיתית (מאומת גם מול הגרסה **החיה שנפרסה בפועל** דרך
+     `get_edge_function` על `bieebmnmkffwbqlsfozh`, זהה בית-לבית
+     למקור ב-repo) קוראת `const { invite_code, password_input,
+     new_password } = await req.json()` — כלומר `password_input`
+     תמיד `undefined`, וכל ניסיון הפעלה דרך `/auth/activate` נכשל
+     תמיד ב-400 "חסרים פרטים" (שורה 32), עוד לפני שקוד ההזמנה נבדק.
+     בנוסף, שדה "סיסמה חדשה" תויג כ-"(אופציונלי)" וללא `required`,
+     בעוד הפונקציה דוחה בקשה עם `new_password` ריק באותה בדיקה בדיוק
+     — תיוג מטעה שהיה גורם לכשל גם אחרי תיקון שם השדה.
+590. **מה נבנה.** תוקן ה-payload הנשלח ל-`{invite_code, email,
+     password_input: form.initial_password, new_password}` (זהה
+     בדיוק לתבנית שכבר עובדת ב-`public/Invite.tsx`). תווית "סיסמה
+     חדשה" עודכנה (הוסר "(אופציונלי)") והשדה סומן `required`
+     בקליינט, כך שהטופס לא ישלח בקשה שהשרת ידחה ממילא.
+591. **אימות.** נקרא קוד ה-edge function הן מה-repo והן ישירות
+     מהפרויקט החי (`get_edge_function` על `bieebmnmkffwbqlsfozh`) —
+     שני המקורות זהים בית-לבית (`ezbr_sha256` יציב, תוכן זהה מילה
+     במילה), כך שהחוזה שאומת הוא החוזה שבאמת רץ בפרודקשן. `esbuild
+     --bundle --packages=external --jsx=automatic` + `node --check`
+     נקיים על הקובץ (רק אזהרות `import.meta`/iife הרגילות מ-
+     `integrations/supabase/client.ts`, קיימות בכל קובץ בפרויקט). איזון
+     סוגריים נקי (37/37, 29/29, 2/2). לא בוצעה קריאה אמיתית לפונקציה
+     (הייתה יוצרת משתמש Auth אמיתי); כמו בפריט 587, אין דרך "יבשה"
+     להריץ Edge Function דרך ה-DB, אז הווידוא הוא התאמת-חוזה מלאה
+     מול המקור החי, לא סימולציית-רולבק. `git diff --stat` מאשר קובץ
+     יחיד, 9 תוספות/2 מחיקות. אין שינוי סכימה. נדחף לענף חדש
+     `fix/01-torah-platform-activate-invite-payload-0830` (71587e7f)
+     — לא מוזג. System 35 KioskFleet לא נגע, per HARD STEERING;
+     מערכות 08/09/bkalut-app/bkalot-admin/`zr_*`/webhook NEDARIM3873/
+     `csj`/`csj_src`/`igud`/15-egod לא נגעו. אין שליחה/חיוב בסבב זה.
