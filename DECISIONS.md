@@ -7011,3 +7011,55 @@
      STEERING; מערכות 08/09/bkalut-app/bkalot-admin/`zr_*`/webhook
      NEDARIM3873/`csj`/`csj_src`/`igud`/15-egod לא נגעו. אין שליחה/חיוב
      בסבב זה.
+
+## 30/08/2026 (LOOP A, המשך אותו יום) — 01-torah-platform: `public/Invite.tsx` — אותה משפחת-באג שלישית: חוזה שגוי מול `activate-invite`
+
+584. **ההקשר.** המשך אותו קו-חקירה (חוזה UI מול edge function אמיתי,
+     כמו ב-`FindLesson.tsx`/`ai-match-teacher` קודם לכן היום). סוכן-חקירה
+     סרק קבצים ציבוריים/פורטל/חנות/אדמין שטרם נבדקו בסבבים קודמים
+     (`public/Invite.tsx`, `public/Azkarot.tsx`, `public/Kashrut.tsx`,
+     `portal/*`, `shop/*`, `admin/Analytics.tsx`/`Content.tsx`/`Teachers.tsx`
+     ועוד) ואיתר ב-`public/Invite.tsx` (ראוט ציבורי חי `/invite`, מגיע
+     מקישור-הזמנה שהניהול שולח למשתמש חדש) אי-התאמה מלאה מול הפונקציה
+     האמיתית שהוא קורא לה.
+585. **מה נמצא בפועל.** `handleSubmit` שלח ל-`activate-invite`
+     `{ code, email }` וציפה בתשובה ל-`{ email, password }`. הפונקציה
+     האמיתית (`supabase/functions/activate-invite/index.ts` שורה 30)
+     קוראת `const { invite_code, password_input, new_password } = await
+     req.json()` ומחזירה מיד `{ error: "חסרים פרטים" }` (400) אם אחד
+     מהשלושה חסר — כלומר כל ניסיון הפעלה אמיתי דרך העמוד הציבורי נכשל
+     תמיד, עוד לפני שהגיע לבדיקת קוד ההזמנה עצמו. גם אילו הבקשה הצליחה,
+     הפונקציה לעולם לא מחזירה `email`/`password` (רק `{ok, user_id,
+     tenant_id}`, שורה 104) — כך שה-`signInWithPassword` שאחריה גם הוא
+     היה נכשל על ערכי `undefined`. בנוסף, הטופס מעולם לא אסף סיסמה
+     כלשהי מהמשתמש — לא את הסיסמה הראשונית שהניהול נתן ולא סיסמה חדשה —
+     כך שלא הייתה כל דרך לשלוח את השדות הדרושים גם לו רצו. הדף התאום
+     `auth/ActivateInvite.tsx` (ראוט `/auth/activate`) מיישם את אותו
+     חוזה בדיוק נכון, ושימש כדוגמת-ייחוס.
+586. **מה נבנה.** ב-`Invite.tsx`: נוספו שני שדות `PasswordInput` (סיסמה
+     ראשונית שקיבל מהניהול + סיסמה חדשה משלו, כמו ב-`ActivateInvite.tsx`),
+     ותוקן ה-payload ל-`{invite_code, email, password_input, new_password}`.
+     ה-`signInWithPassword` שאחרי ההצלחה משתמש עכשיו ב-`email`/
+     `newPassword` המקומיים (הפונקציה לא מחזירה סיסמה) במקום בשדות
+     שלא קיימים בתשובה. טקסט ההסבר התחתון עודכן כך שיתאר נכון שהמשתמש
+     בוחר סיסמה חדשה בטופס עצמו.
+587. **אימות.** נקרא ישירות קוד ה-edge function האמיתי (מקור-אמת, לא
+     הנחה) והושוותה חתימת ה-payload/response מילה-במילה. `information_schema.columns`
+     על הפרויקט האמיתי (`bieebmnmkffwbqlsfozh`) אישר שכל עמודות
+     `tenant_invites` שהפונקציה קוראת/כותבת קיימות בפועל (`invite_code`,
+     `initial_password`, `expires_at`, `used_at`, `role`, `tenant_id`,
+     `email`, `full_name`, `phone`, `user_id`); `pg_proc` אישר ש-
+     `invite_rate_limit_hit` (ה-RPC שהפונקציה קוראת לו לפני יצירת
+     המשתמש) קיים. לא בוצעה קריאה אמיתית לפונקציה עצמה (הייתה יוצרת
+     משתמש Auth אמיתי) — הווידוא הוא התאמת-חוזה מלאה מול המקור, לא
+     סימולציית-רולבק, כי אין דרך "יבשה" להריץ Edge Function דרך ה-DB.
+     `esbuild --bundle --packages=external --jsx=automatic` + `node
+     --check` נקיים על הקובץ המהודר (רק אזהרות `import.meta` הרגילות
+     מקבצי תשתית משותפים). איזון סוגריים נקי (40/40, 55/55, 7/7) על
+     הקובץ המלא. `get_advisors` (security) נבדק — אין שינוי סכימה בסבב
+     זה, כל האזהרות שהופיעו קיימות-מראש בשכמות אחרות. `git diff --stat`
+     מאשר קובץ יחיד. נדחף לענף חדש
+     `fix/01-torah-platform-invite-activate-contract-0830` (3f5a5db1) —
+     לא מוזג. System 35 KioskFleet לא נגע, per HARD STEERING; מערכות
+     08/09/bkalut-app/bkalot-admin/`zr_*`/webhook NEDARIM3873/`csj`/
+     `csj_src`/`igud`/15-egod לא נגעו. אין שליחה/חיוב בסבב זה.
