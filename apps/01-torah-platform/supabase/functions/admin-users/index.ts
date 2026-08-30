@@ -176,8 +176,17 @@ Deno.serve(async (req) => {
           return jr({ ok: false, error: "אין הרשאה לטננט זה" }, 403);
         if (role === "super_admin") return jr({ ok: false, error: "אסור" }, 403);
       }
-      await admin.from("user_roles").delete().eq("user_id", user_id).eq("tenant_id", tenant_id || null);
-      await admin.from("user_roles").insert({ user_id, tenant_id: tenant_id || null, role, permissions: {} });
+      // .eq("tenant_id", null) sends "tenant_id=eq.null" to PostgREST, which
+      // 400s (22P02: invalid input syntax for type uuid) instead of matching
+      // NULL rows -- a global (tenant_id null) role could never be replaced.
+      // .is() is required for a NULL comparison.
+      const delQuery = admin.from("user_roles").delete().eq("user_id", user_id);
+      const { error: delErr } = tenant_id
+        ? await delQuery.eq("tenant_id", tenant_id)
+        : await delQuery.is("tenant_id", null);
+      if (delErr) return jr({ ok: false, error: delErr.message }, 500);
+      const { error: insErr } = await admin.from("user_roles").insert({ user_id, tenant_id: tenant_id || null, role, permissions: {} });
+      if (insErr) return jr({ ok: false, error: insErr.message }, 500);
       return jr({ ok: true });
     }
 
