@@ -7504,3 +7504,55 @@
      webhook NEDARIM3873/`csj`/`csj_src`/`igud`/15-egod) לא נגעו. אין
      שליחה/חיוב אמיתיים בסבב זה (הפעלת RPC על נתונים מדומים בתוך עסקה
      שנסגרה בלי commit בלבד).
+
+## 30/08/2026 (LOOP A, סבב נוסף אותו יום) — `admin/MatchingGuru.tsx` (`/admin/matching-guru`) קרא שדות `leads.notes`/`leads.preferred_times` שאינם קיימים
+
+618. **ההקשר.** נעילת ה-P0 (system-14 screenshot scan) כבר סופקה היום
+     (`run_progress`/`CANNOT_SCREENSHOT` חוזר, `ToolSearch` לכלי דפדפן
+     ריק שוב הבוקר). `core.build_tasks` ל-32/36 עומד על 0 todo, ואין
+     שורות ל-01/15. המשכתי את הזווית שנפתחה בסבב הקודם (השוואת קוד
+     שנפרס בפועל מול `origin`) על שאר פונקציות ה-Edge של 01: השוויתי
+     בית-לבית את `nedarim-create-payment`, `nedarim-admin`,
+     `create-admin`, `chat`, `ai-match-teacher`, `activate-invite` בין
+     `get_edge_function` (בפועל, `bieebmnmkffwbqlsfozh`) לקוד המקומי —
+     כולן זהות, אין פער-פריסה נוסף. עברתי לזווית נוספת: כל מדיניות
+     `INSERT` על סכמת `public` (`pg_policies`) מול כל טופס ציבורי שכותב
+     ללידים/הודעות — כל הטפסים הציבוריים (`leads`/`portal_messages`/
+     `rabbi_questions`/`azkarot`) כבר מכוסים ע"י `tenant_accepts_public_intake`,
+     שום פער נוסף מסוג האזכרות (סבב קודם) לא נמצא.
+
+619. **הממצא.** בדף `/admin/matching-guru` (מסך "התאמת שיעורים" השני,
+     ל-מנהל-על, נתיב חי ב-`App.tsx` לצד `/admin/matching` שתוקן בסבב
+     קודם `fa85afc8`) — פונקציית החיפוש (שורה 73 המקורית) סיננה לפי
+     `l.notes`, ותצוגת-הפירוט בבחירת ליד (שורות 170-171 המקוריות) הציגה
+     `l.preferred_times` ו-`l.notes`. אימתתי מול `information_schema` על
+     `bieebmnmkffwbqlsfozh` ש-`public.leads` **אין לה בכלל** עמודות
+     `notes` או `preferred_times` — העמודה האמיתית היחידה לטקסט חופשי
+     היא `message`, וזו בדיוק העמודה שכל טופס יצירת-ליד באתר כותב אליה
+     (`Contact.tsx`, `FindLesson.tsx`, `RequestLesson.tsx`,
+     `Questionnaire.tsx`, `admin/Matching.tsx` — כולם מאשרים בהערות
+     קוד קיימות). המשמעות: `l.notes`/`l.preferred_times` היו תמיד
+     `undefined`, כך שמנהל שבוחר ליד במסך הזה **מעולם לא ראה** את
+     ההודעה החופשית האמיתית של הפונה (מה הוא בעצם מבקש/מתי נוח לו) —
+     בדיוק המידע הדרוש כדי לבצע התאמה נכונה — וחיפוש טקסט חופשי בעמודת
+     החיפוש המשותפת מעולם לא התאים לפי תוכן ההודעה.
+
+620. **מה נעשה.** הוחלף `l.notes`/`l.preferred_times` ב-`l.message` בשני
+     המקומות (שורת החיפוש המשותפת + בלוק הפירוט בבחירת ליד), עם תווית
+     אחת מאוחדת ("הודעה") במקום שני הבלוקים המתים.
+
+621. **אימות.** `esbuild --bundle=false --format=esm` עבר נקי על הקובץ
+     המלא; בדיקת איזון סוגריים ידנית (100/100 מסולסלים, 139/139 עגולים,
+     35/35 מרובעים). עסקת `BEGIN` יחידה (ללא `COMMIT`, נסגרה ע"י סגירת
+     החיבור) על `bieebmnmkffwbqlsfozh`: הוכנס ליד אמיתי תחת טננט אמיתי
+     קיים עם `message` מלא — שוחזרה לוגיקת הרינדור הישנה מול החדשה
+     בפועל ב-Node: הישנה (`l.notes`/`l.preferred_times`) לא הציגה כלום
+     על השורה האמיתית, החדשה (`l.message`) הציגה את הטקסט המלא כצפוי.
+     `SELECT count(*)` על הליד המדומה אחרי סגירת החיבור מחזיר 0 — אפס
+     שאריות. `git diff --stat`: קובץ אחד, 2+/3-. נדחף לענף
+     `fix/01-torah-platform-audit-0830` (`410c1d9b`), נדחף ל-`origin`,
+     לא מוזג, `main` לא נגע. System 35 KioskFleet לא נגע, per HARD
+     STEERING; P2 (32/36) `build_tasks` נשאר 0 todo; מערכות/סכימות
+     מוגנות (08/09/bkalut-app/bkalot-admin/`zr_*`/webhook NEDARIM3873/
+     `csj`/`csj_src`/`igud`/15-egod) לא נגעו. אין שליחה/חיוב אמיתיים
+     בסבב זה.
