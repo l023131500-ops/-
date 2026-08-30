@@ -6960,3 +6960,54 @@
      — לא מוזג. System 35 KioskFleet לא נגע, per HARD STEERING; מערכות
      08/09/bkalut-app/bkalot-admin/`zr_*`/webhook NEDARIM3873/
      `csj`/`csj_src`/`igud`/15-egod לא נגעו.
+
+## 30/08/2026 (LOOP A) — תיקון תקלת-השהיה שגויה בת 4 ימים + 01-torah-platform: `public/FindLesson.tsx` — חצי-תיקון תקוע לחוזה `ai-match-teacher`
+
+580. **תיקון תקלת ה-loop.** לפני עבודה כלשהי, קריאה טרייה של הערת
+     project 33 המלאה גילתה שאין בה שום הוראת "GLOBAL PAUSE" ל-loop A —
+     מקטע ה-LOOP CONTROL עוצר רק `[loop B]`/`[loop C]` ("Only loop A
+     may do work"). למרות זאת, 9 איטרציות רצופות של loop A עצמו
+     (`core.run_progress` ids 2712–2737, מ-26/08 10:45 ועד 30/08
+     11:33) השהו את עצמן תוך ציטוט "GLOBAL PAUSE active in project 33
+     note" — ציטוט שלא נתמך בתוכן ההערה בפועל (`updated_at`=20/08,
+     ללא שינוי מאז). זו ככל הנראה טעות של איטרציה בודדת ב-26/08 שהתפשטה
+     כי כל איטרציה הבאה העתיקה את ה-heartbeat הקודם במקום לקרוא את
+     ההערה מחדש. תוקן ע"י חזרה לעבודה בפועל הסבב הזה; ההוראה בפרומפט של
+     סבב זה גם מציינת מפורש `Heartbeat tag: [loop A]` ללא אזכור השהיה.
+581. **הממצא.** `apps/01-torah-platform/src/pages/public/FindLesson.tsx`
+     היה עם שינוי `staged`-אבל-לא-`committed` משאריות סשן קודם (כנראה
+     מאותה תקופת ה-pause השגוי) שתיקן חצי מהבעיה: הטופס הציבורי "אתר
+     לי שיעור" שלח ל-`ai-match-teacher` את שדות הטופס הגולמיים
+     (`topic`/`location`/...), אך הפונקציה האמיתית (`supabase/
+     functions/ai-match-teacher/index.ts`) מצפה אך ורק ל-`{lead_id}` —
+     בדיוק אותה משפחת-באג כמו issue #259 הפתוח (`admin/Matching.tsx`,
+     חסום על הכרעת-מוצר, לא נגעתי בו). השינוי המבוים כבר יצר `leadId`
+     בצד הלקוח והכניס אותו ל-`leads` (כי ל-anon אין `leads_tenant_read`
+     ו-`.insert().select()` היה נכשל על ה-RLS של ה-`RETURNING`, גם אם
+     ה-insert הפשוט מצליח) — אך **הצד השני נשאר שבור**: הפונקציה
+     האמיתית מחזירה `matches` בצורת `{user_id, score, reason}`, ואילו
+     בלוק התצוגה עדיין ציפה ל-`{id, title, teacher_name, location}` —
+     כלומר גם התאמה מוצלחת הייתה מציגה כרטיסים ריקים.
+582. **מה תוקן.** לאחר קבלת ה-`matches` מהפונקציה, שליפת פרופילי
+     המורים המותאמים בצד הלקוח (`profiles_read_basic` מעניקה ל-anon
+     `SELECT` על `public.profiles`) ומיפוי `user_id -> profile`,
+     בדיוק כפי שהפונקציה עצמה עושה בצד השרת. בלוק התצוגה עודכן להציג
+     `profile.full_name`/`profile.city`/`reason` האמיתיים במקום
+     שדות שלא קיימים בתשובה בפועל.
+583. **אימות.** ב-MCP מול `bieebmnmkffwbqlsfozh`, בתוך `BEGIN...
+     ROLLBACK` + `set local role anon`: insert פשוט (ללא `RETURNING`)
+     ל-`leads` על טננט עם `tenant_accepts_public_intake=true` הצליח
+     בדיוק כמו שהקוד המתוקן עושה (בעוד insert עם `RETURNING` נכשל
+     כצפוי — מאשר את הערת הקוד); קריאת `public.profiles` לפי `id`
+     כ-anon הצליחה. לוגיקת ה-client (מיפוי פרופילים + רינדור) שוכפלה
+     ב-Node טהור מול תרחיש עם פרופיל תואם ותרחיש בלי — שניהם נכונים.
+     `esbuild` (jsx=automatic) + `node --check` נקיים; איזון סוגריים
+     נקי (69/69, 65/65, 11/11). אין `tenants.type='maggid'` בנתונים
+     החיים כרגע, ולכן `ai-match-teacher` תחזיר 0 התאמות בפועל בכל
+     מקרה — פער אכלוס-נתונים קיים-מראש, לא הבאג הזה. אפס שינוי סכימה,
+     קובץ יחיד. נדחף לענף חדש
+     `fix/01-torah-platform-find-lesson-ai-match-contract-0830`
+     (90c50375) — לא מוזג. System 35 KioskFleet לא נגע, per HARD
+     STEERING; מערכות 08/09/bkalut-app/bkalot-admin/`zr_*`/webhook
+     NEDARIM3873/`csj`/`csj_src`/`igud`/15-egod לא נגעו. אין שליחה/חיוב
+     בסבב זה.
