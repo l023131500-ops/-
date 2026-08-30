@@ -7378,3 +7378,72 @@
      מוגנות (08/09/bkalut-app/bkalot-admin/`zr_*`/webhook NEDARIM3873/
      `csj`/`csj_src`/`igud`/15-egod) לא נגעו. אין שליחה/חיוב אמיתיים בסבב
      זה.
+
+## 30/08/2026 (LOOP A, סבב נוסף אותו יום) — `admin/Matching.tsx`: כפתור "מצא התאמות" נכשל תמיד — payload שגוי ל-`ai-match-teacher` וגם שכבת-תצוגה שלא תואמת את התשובה האמיתית
+
+610. **ההקשר.** לפני המשך עבודה אומת מחדש שאין נעילת-P0 פעילה: הערת פרויקט
+     33 מתעדת ש-`run_progress#2741` (סבב קודם, אותו יום UTC) כבר כתב את
+     הטוקן `CANNOT_SCREENSHOT` לאחר בדיקה יסודית (`ToolSearch` לכלי דפדפן/
+     screenshot — ריק, אין Chromium/Playwright, אין sudo) — נבדק שוב באותו
+     אופן בסשן הזה (`ToolSearch` עם `"browser screenshot playwright
+     puppeteer navigate"` — אפס תוצאות), אז שער היציאה של הנעילה כבר
+     מסופק לאותו יום UTC, per אותו תקדים מ-`#2742`/`#2743`/סעיפים 601/604.
+     `core.build_tasks` ל-32/36 עומד על 0 todo, אין שורות ל-01/15 (P3) —
+     המשיך באותה שיטת חקירה חופשית שנקבעה בסבבים קודמים (01-torah-platform
+     נבחר על 15-egod כי אין גישת MCP לפרויקט שלו כלל, `hkkkynyoigzlttpynoeo`
+     מסומן ❌ ב-`CONNECTIONS.md`). סוכן `general-purpose` נשלח לסרוק קבצים
+     שטרם נבדקו בסבבים קודמים (`admin/Content`, `Messages`, `Matching`,
+     `MatchingGuru`, `TeacherFeatures*`, `Teachers`, `portal/Attendance`,
+     `BulkUpload`, `PortalSettings`, `public/Kashrut`, `Mikvaot`,
+     `RabbiQuestions`, `RabbiPublic` ועוד) מול הסכימה החיה של
+     `bieebmnmkffwbqlsfozh`.
+611. **הממצא.** `src/pages/admin/Matching.tsx` (`/admin/matching`, מסך
+     "התאמת AI" תחת הקונסולה החוצה-טננטים של super-admin, מאחורי
+     `RequireSuperAdmin` — מאומת גם ב-`App.tsx` וגם בכך ש-`AdminLeads.tsx`
+     קורא `leads` בלי שום סינון-טננט, אותה תבנית) שלח ל-edge function
+     `ai-match-teacher` את הגוף `{topic, location, time_pref, notes,
+     tenant_id}` — אבל `get_edge_function` על הפונקציה החיה
+     (`bieebmnmkffwbqlsfozh`) מראה שהיא דורשת `lead_id` ומחזירה מיידית
+     `400 {ok:false, error:"missing lead_id"}` בלעדיו; היא אף פעם לא קוראת
+     את `topic`/`location`/`time_pref`/`notes`/`tenant_id`, אלא מאתרת שורת
+     `leads` קיימת לפי `id` ובונה ממנה את הפרומפט (`area`/`preferred_subject`/
+     `message`/`full_name`). כיוון שהקוד עשה `const {data} = await
+     ...invoke(...)` בלי לבדוק `error`, כל לחיצה נכשלה בשקט ל-`setResults([])`
+     — "לא נמצאו התאמות" הסווה 400 אמיתי כ"אין תוצאות". גם לו הבקשה
+     הצליחה, שכבת התצוגה ציפתה ל-`{title, teacher_name, location}` בעוד
+     שהתשובה האמיתית היא `{user_id, score, reason}` (מאומת מקריאת קוד
+     הפונקציה) — כרטיסים ריקים. בנוסף, `if (!tenant) return` (מ-`useTenant()`,
+     שמפענח טננט מה-URL/subdomain הציבורי) הפך את הכפתור ל-no-op שקט
+     בקונסולת super-admin, שאינה נטענת בדומיין טננט כלשהו — פער נפרד
+     מאותה סיבת-שורש (בלבול בין קונסולה חוצת-טננטים לבין דף טננט יחיד).
+612. **מה נבנה.** `run()` נבנה מחדש: יוצר שורת `leads` אמיתית
+     (`kind='lesson_request'`, `tenant_id=null`, `area`/`preferred_subject`/
+     `message` ממופים מהטופס, `source='admin_matching_search'`) מהקריטריונים
+     שהוזנו, קורא ל-`ai-match-teacher` עם ה-`lead_id` שהתקבל, בודק `error`
+     בפועל, ואז שולף `profiles` עבור ה-`user_id`ים שהוחזרו כדי להציג שם/עיר
+     אמיתיים — בדיוק כמו ש-`MatchingGuru.tsx` הקיים כבר עושה לאותה פונקציה.
+     שכבת התצוגה שוכתבה להתאים לצורה האמיתית (`full_name`/`city`/`score`/
+     `reason`). הוסרה התלות ב-`useTenant()`/`tenant.id` — הקונסולה
+     חוצת-טננטים, אין טננט "נוכחי" רלוונטי.
+613. **אימות.** `esbuild --bundle --packages=external --jsx=automatic` +
+     `node --check` נקיים (רק אזהרות `import.meta`/iife הרגילות). איזון
+     סוגריים נקי (50/50, 55/55, 11/11). עסקת `BEGIN...ROLLBACK` על
+     `bieebmnmkffwbqlsfozh` עם `INSERT` אמיתי לתוך `leads` בדיוק בצורת
+     ה-payload החדשה (`tenant_id=null`, `kind='lesson_request'` וכו') —
+     מתקבל בהצלחה (`status` ברירת-מחדל `'new'`), אפס שאריות אחרי
+     `ROLLBACK`. נקרא `pg_proc.prosrc` של `is_super_admin()` לאימות שהוא
+     בודק `user_roles` עבור `role='super_admin' AND tenant_id IS NULL` —
+     תואם בדיוק את ה-RLS `with_check` על `leads` (`is_super_admin(...) OR
+     has_tenant_role(...)`), כלומר INSERT עם `tenant_id=null` יעבור RLS
+     עבור המשתמשים שכבר עוברים את שער `RequireSuperAdmin` בראוט. לא בוצעה
+     קריאה אמיתית ל-edge function (הייתה צורכת קרדיט אמיתי של
+     `LOVABLE_API_KEY`) — כמו בסבבים קודמים על פונקציות edge, האימות הוא
+     התאמת-חוזה מלאה מול קוד הפונקציה החי, לא dry run. לוגיקת מיפוי
+     התשובה (`matches`→`results`, כולל fallback כש-`profiles` לא מכיל
+     שורה תואמת) שוכפלה ונבדקה ב-Node מול payload סינתטי תואם-מציאות.
+     `git diff --stat`: קובץ אחד, 50+/7-. נדחף לענף `fix/01-torah-platform-audit-0830`
+     (`fa85afc8`, נדחף ל-`origin`). System 35 KioskFleet לא נגע, per HARD
+     STEERING; P2 (32/36) `build_tasks` נשאר 0 todo; מערכות/סכימות מוגנות
+     (08/09/bkalut-app/bkalot-admin/`zr_*`/webhook NEDARIM3873/
+     `csj`/`csj_src`/`igud`/15-egod) לא נגעו. אין שליחה/חיוב אמיתיים בסבב
+     זה.
