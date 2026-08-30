@@ -7107,3 +7107,62 @@
      — לא מוזג. System 35 KioskFleet לא נגע, per HARD STEERING;
      מערכות 08/09/bkalut-app/bkalot-admin/`zr_*`/webhook NEDARIM3873/
      `csj`/`csj_src`/`igud`/15-egod לא נגעו. אין שליחה/חיוב בסבב זה.
+
+## 30/08/2026 (LOOP A, המשך אותו יום) — 01-torah-platform: `FloatingChatBot` — שדות `ACTION` שלא תואמים לעמודות `leads` האמיתיות
+
+592. **ההקשר.** לפני המשך העבודה, אומת מחדש שאין נעילת-P0 פעילה: הערת
+     פרויקט 33 מתעדת `run_progress#2741` (סבב קודם, אותו יום) ש-
+     כתב את הטוקן `CANNOT_SCREENSHOT` לאחר בדיקה יסודית (ToolSearch,
+     `npx playwright`, בינארי Chromium חסר-תלויות, אין sudo) — כלומר
+     תנאי-היציאה של ה-anti-drift lock על מערכת 14 (בשמחות פלוס)
+     כבר התקיים והנעילה שוחררה; לא בוצעה עבודה על מערכת 14 בסבב זה.
+     `core.build_tasks` למערכות 32/36 עומד על 0 todo ולמערכות 01/15
+     אין שורות כלל — נמשך אותו דפוס ביקורת-חוזים חופשי על 01
+     (נבחר על 15-egod, כפי שסבבים קודמים כבר קבעו).
+593. **מה נמצא בפועל.** `search-lessons/index.ts` מנחה את ה-AI להפיק
+     `[ACTION:submit_seeker]{"contact_name","phone","city","subject"}`
+     ו-`[ACTION:submit_teacher]{"full_name","phone","city","subjects"}`.
+     `FloatingChatBot.tsx` מפרסר את ה-JSON הזה ופורס אותו
+     (`...actionData`) ישירות לתוך `insert` על `public.leads` ללא כל
+     שינוי-שם. עמודות `leads` האמיתיות (`information_schema.columns`,
+     `bieebmnmkffwbqlsfozh`) הן `full_name`/`preferred_subject` —
+     אין בכלל `contact_name`/`subject`/`subjects`. כל שמירת
+     `submit_seeker`/`submit_teacher` מהצ'אטבוט הציבורי נכשלה אפוא
+     תמיד ב-`42703` ("column ... does not exist"). זו אותה משפחת-באג
+     בדיוק כמו תיקוני ה-`activate-invite`/`ai-match-teacher` — צורת
+     תגובה/פעולה של AI/edge function שלא תואמת את מה שהלקוח (ובהמשך,
+     הטבלה האמיתית) בפועל דורשים.
+     בנוסף נמצא (ותועד, לא תוקן): `submit_lesson` (כתיבה ל-`lessons`)
+     שבור מסיבה עמוקה יותר — גם עם שמות עמודות נכונים הוא נדחה על
+     ידי `lessons_tenant_write_ins` RLS (דורש תפקיד tenant שמבקר
+     אנונימי בצ'אטבוט לעולם לא מחזיק) ו-`lessons.title` הוא NOT NULL
+     בלי שנאסף לו ערך אף פעם — החלטת סכימה/RLS, לא באג של צורת-payload,
+     ולכן נותר כפי שהוא (כמו הפער המכוון ב-`Matching.tsx`), אך תועד
+     בבירור בשני הקבצים כדי שלא ייחשב בטעות כמתוקן.
+594. **מה נבנה.** שונה סכמת ה-JSON של ה-ACTION בפרומפט-המערכת של
+     `search-lessons/index.ts` כך ש-`submit_seeker` ו-`submit_teacher`
+     שניהם משתמשים ב-`full_name`/`preferred_subject` (תואם לעמודות
+     האמיתיות של `leads`). `FloatingChatBot.tsx` לא דרש שינוי לוגיקה
+     (הוא כבר פורס `actionData` כמות שהוא) — נוספה רק הערה מסבירה
+     מה תוקן לעומת המגבלה הנפרדת של `submit_lesson`.
+595. **אימות.** `get_edge_function` על `bieebmnmkffwbqlsfozh` אישר
+     שה-`search-lessons` החי זהה לעותק ב-repo לפני העריכה. בעסקאות
+     `BEGIN...ROLLBACK` על אותו פרויקט: הכנסה עם שמות השדות הישנים
+     זורקת `42703` עבור שתי הפעולות; אותה הכנסה עם
+     `full_name`/`preferred_subject` תחת `set local role anon` מצליחה
+     עבור שתיהן (`seeker` ו-`teacher`) תחת `tenant_accepts_public_intake`,
+     עם שורות נראות דרך `SELECT` בתפקיד-שירות בתוך אותה עסקה לפני
+     ה-rollback — מאשר שדפוס ה-insert הפשוט (ללא `.select()`) שבו
+     `FloatingChatBot.tsx` בפועל משתמש אכן "נוחת". אין CHECK constraint
+     על `leads.kind` שמגביל. `esbuild`+`node --check` נקיים על שני
+     הקבצים; איזון סוגריים נקי (68/68,49/49,11/11 ו-174/174,172/172,54/54).
+     הפונקציה המתוקנת נפרסה בפועל ל-`bieebmnmkffwbqlsfozh`
+     (`deploy_edge_function`, v4→v5, `verify_jwt=false` נשמר) ואומתה
+     שוב עם `get_edge_function` שהתוכן החי זהה בית-לבית לקובץ ב-repo.
+     `get_advisors` (security) נבדק אחרי הפריסה — אין ממצא חדש רלוונטי.
+     `git diff --stat` מאשר שני קבצים בלבד. אין שינוי סכימה. נדחף
+     לענף חדש `fix/01-torah-platform-chatbot-leads-action-fields-0830`
+     (af1daa6a) — לא מוזג. System 35 KioskFleet לא נגע, per HARD
+     STEERING; מערכות 08/09/bkalut-app/bkalot-admin/`zr_*`/webhook
+     NEDARIM3873/`csj`/`csj_src`/`igud`/15-egod לא נגעו. אין שליחה/חיוב
+     אמיתיים בסבב זה (רק פריסת קוד לפונקציה קיימת).
