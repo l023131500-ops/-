@@ -7349,3 +7349,32 @@
      (08/09/bkalut-app/bkalot-admin/`zr_*`/webhook NEDARIM3873/
      `csj`/`csj_src`/`igud`/15-egod) לא נגעו. אין שליחה/חיוב אמיתיים
      בסבב זה (רק פריסת edge function, לא שינוי כספי/הודעתי).
+
+608. **מה נמצא.** `portal/Messages.tsx` (`/portal/messages`, מסך הודעות-פורטל
+     חי לכל טננט) קרא `m.read_at` כדי להחליט אם להציג תג "חדש" —
+     אבל הטבלה החיה `public.portal_messages` (`bieebmnmkffwbqlsfozh`) אין לה
+     עמודה כזו כלל (`information_schema` + ניסיון `SELECT read_at` החזיר
+     `42703`); העמודה האמיתית היא `status` (`text`, ערכים `new`/`handled`/
+     `not_handled`), בדיוק כמו שכבר משתמש בה `components/portal/
+     PortalMessagesTab.tsx` הקיים. מכיוון ש-`select("*")` פשוט לא מחזיר
+     מפתח `read_at` בכלל, `m.read_at` הוא תמיד `undefined`, כלומר `!m.read_at`
+     היה תמיד `true` — התג "חדש" הוצג על **כל** הודעה בפורטל, בלי קשר לסטטוס
+     האמיתי שלה (גם הודעות שכבר טופלו).
+609. **מה נבנה + אימות.** תוקן שורה אחת: `m.status === "new"` במקום
+     `!m.read_at`, תואם למוסכמה הקיימת ב-`PortalMessagesTab.tsx`. אומת מול
+     הסכימה האמיתית של `bieebmnmkffwbqlsfozh` (לא של פרויקט ה-hub
+     `uhnrgujbdxhhmoxcjria`, שיש בו טבלת `portal_messages` שונה לגמרי —
+     שגיאת ניתוב ראשונית שתוקנה תוך כדי הבדיקה): עסקת `BEGIN...ROLLBACK`
+     עם `INSERT` אמיתי לטננט אמיתי — שורה עם `status='new'` מחזירה
+     `true` (תג מוצג), שורה עם `status='handled'` מחזירה `false` (תג
+     מוסתר), ואפס שאריות אחרי `ROLLBACK`. `esbuild` + `node --check` נקיים.
+     `git diff --stat`: קובץ אחד, 1+/1-. אפס שינוי לכל לוגיקה אחרת במסך.
+     נבדק ש-`FeaturedLessons.tsx`/`LessonDetailModal.tsx` (מועמדים דומים
+     שנמצאו באותו סבב סריקה) הם קוד מת לחלוטין — מיובאים רק מ-
+     `pages/legacy/IndexLegacy.tsx`, שאינו מיובא בשום מקום ב-`App.tsx` —
+     ולכן לא נגעו בהם, כדי לא לבזבז עבודה על נתיב לא-חי. נדחף לענף חדש
+     `fix/01-torah-platform-audit-0830`. System 35 KioskFleet לא נגע, per
+     HARD STEERING; P2 (32/36) `build_tasks` נשאר 0 todo; מערכות/סכימות
+     מוגנות (08/09/bkalut-app/bkalot-admin/`zr_*`/webhook NEDARIM3873/
+     `csj`/`csj_src`/`igud`/15-egod) לא נגעו. אין שליחה/חיוב אמיתיים בסבב
+     זה.
