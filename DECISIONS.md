@@ -7237,3 +7237,49 @@
      08/09/bkalut-app/bkalot-admin/`zr_*`/webhook NEDARIM3873/
      `csj`/`csj_src`/`igud`/15-egod לא נגעו. אין שליחה/חיוב אמיתיים
      בסבב זה.
+
+## 30/08/2026 (LOOP A, סבב נוסף אותו יום) — 01-torah-platform: `public/HalachaDaily.tsx` קורא עמודה שלא קיימת (`publish_date`), תאריך כל הלכה תמיד ריק
+
+601. **ההקשר.** P0 (system 14 bsmachot-plus screenshot scan) כבר סומן
+     `CANNOT_SCREENSHOT` היום (`run_progress#2741`) — נבדק מחדש: אין
+     כלי דפדפן/screenshot זמינים גם בסשן הזה (`ToolSearch` ריק), אז
+     השער כבר מסופק לאותו יום UTC per התקדים מ-`#2742`/`#2743`. `core.build_tasks`
+     ל-32/36 נשאר 0 todo, אין שורות ל-01/15 — המשיך באותה שיטת
+     חקירה חופשית על 01-torah-platform (P3, הנבחר על 15-egod כי אין
+     גישת MCP אליו כלל — `hkkkynyoigzlttpynoeo` מסומן ❌ ב-`CONNECTIONS.md`).
+     סוכן Explore נשלח על 34 קבצים שטרם נבדקו (admin/Dashboard,
+     Forums, LeadsGuru, Leads, TenantDetail, Tenants, Tips, Users,
+     Analytics, Commerce; portal/Dashboard, Donations, Forums,
+     Gallery, Lessons, Orders, Profile, StudySchedule, Tips, Settings;
+     public/Contact, DonationPage, HalachaDaily, JoinTeacher,
+     LessonDetail, LessonsDirectory, Mourning, RequestLesson,
+     Synagogues; shop/Cart, Checkout, OrderSuccess, ShopCatalog) —
+     כמעט כולם כבר תקינים (הערות-קוד מאשרות תיקונים קודמים). שני
+     המועמדים שהסוכן דירג הכי גבוה (`forum_categories.sort_order`,
+     `donations.donor_name`) התבררו כשגויים בבדיקה ישירה מול הסכימה
+     החיה (`information_schema` על `bieebmnmkffwbqlsfozh`) — שתי
+     העמודות קיימות במציאות, לא היה שם באג.
+602. **הממצא האמיתי.** `apps/01-torah-platform/src/pages/public/HalachaDaily.tsx`
+     (עמוד ציבורי `/halacha`, ללא התחברות) שולף `.from("halacha_daily").select("*")`
+     ומרנדר `{h.publish_date}` בתגית התאריך של כל הלכה — אבל הטבלה
+     החיה `halacha_daily` (מאומת גם ב-`information_schema` וגם
+     ב-`src/integrations/supabase/types.ts` המחולל) כוללת עמודת
+     `date`, לא `publish_date`. כל כרטיס הלכה תמיד הציג תאריך ריק
+     (`undefined`). `Home.tsx` (הקטע "הלכה יומית" בעמוד הבית) שולף
+     מאותה טבלה אך מעולם לא קרא `publish_date` — הבאג מוגבל לעמוד
+     הרשימה המלאה בלבד. תוקן ל-`h.date`, מעוצב עם
+     `toLocaleDateString("he-IL")` תואם למוסכמה הקיימת כבר
+     ב-`portal/Donations.tsx`.
+603. **אימות.** `esbuild`+`node --check` נקיים על הקובץ המתוקן. עסקת
+     `BEGIN...ROLLBACK` על `bieebmnmkffwbqlsfozh`: `INSERT` אמיתי
+     ל-`halacha_daily` (דייר אמיתי, `date=current_date`) מאשר שהשורה
+     החוזרת כוללת מפתח `date`, לא `publish_date` — אפס שאריות אחרי
+     `ROLLBACK`. לוגיקת-רינדור ישנה מול חדשה שוכפלה ב-Node מול צורת
+     השורה האמיתית: הישנה מחזירה `undefined`, החדשה מחזירה
+     `"30.8.2026"` תקין. שינוי שורה יחידה, אפס רגרסיה. נדחף לענף חדש
+     `fix/01-torah-platform-halacha-daily-publish-date-0830` (`b78cddb7`).
+     System 35 KioskFleet לא נגע, per HARD STEERING; P2 (32/36)
+     `build_tasks` נשאר 0 todo; מערכות/סכימות מוגנות
+     (08/09/bkalut-app/bkalot-admin/`zr_*`/webhook NEDARIM3873/
+     `csj`/`csj_src`/`igud`/15-egod) לא נגעו. אין שליחה/חיוב אמיתיים
+     בסבב זה.
