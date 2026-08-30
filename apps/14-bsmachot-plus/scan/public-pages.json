@@ -1,0 +1,275 @@
+[
+  {
+    "name": "home",
+    "path": "/",
+    "url": "https://beshmachot-plus.co.il/",
+    "title": "בשמחות פלוס - מערכת ניהול מתנות ואירועים",
+    "buttons": [
+      "להצטרפות ←"
+    ],
+    "forms": [
+      {
+        "action": "https://beshmachot-plus.co.il/",
+        "method": "get",
+        "fields": [
+          {
+            "name": "",
+            "type": "text"
+          },
+          {
+            "name": "",
+            "type": "email"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "how-it-works",
+    "path": "/how-it-works",
+    "url": "https://beshmachot-plus.co.il/how-it-works",
+    "title": "בשמחות פלוס - מערכת ניהול מתנות ואירועים",
+    "buttons": [
+      "להצטרפות ←"
+    ],
+    "forms": [
+      {
+        "action": "https://beshmachot-plus.co.il/how-it-works",
+        "method": "get",
+        "fields": [
+          {
+            "name": "",
+            "type": "text"
+          },
+          {
+            "name": "",
+            "type": "email"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "why-us",
+    "path": "/why-us",
+    "url": "https://beshmachot-plus.co.il/why-us",
+    "title": "בשמחות פלוס - מערכת ניהול מתנות ואירועים",
+    "buttons": [
+      "להצטרפות ←"
+    ],
+    "forms": [
+      {
+        "action": "https://beshmachot-plus.co.il/why-us",
+        "method": "get",
+        "fields": [
+          {
+            "name": "",
+            "type": "text"
+          },
+          {
+            "name": "",
+            "type": "email"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "pricing",
+    "path": "/pricing",
+    "url": "https://beshmachot-plus.co.il/pricing",
+    "title": "בשמחות פלוס - מערכת ניהול מתנות ואירועים",
+    "buttons": [
+      "להצטרפות ←"
+    ],
+    "forms": [
+      {
+        "action": "https://beshmachot-plus.co.il/pricing",
+        "method": "get",
+        "fields": [
+          {
+            "name": "",
+            "type": "text"
+          },
+          {
+            "name": "",
+            "type": "email"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "faq",
+    "path": "/faq",
+    "url": "https://beshmachot-plus.co.il/faq",
+    "title": "בשמחות פלוס - מערכת ניהול מתנות ואירועים",
+    "buttons": [
+      "מה זה בשמחות פלוס?",
+      "לאילו סוגי אירועים זה מתאים?",
+      "כמה זמן לוקח להקים אירוע?",
+      "כמה זה עולה?",
+      "יש עמלות נוספות?",
+      "מתי ואיך הכסף מגיע אליי?",
+      "האורחים צריכים להוריד אפליקציה?",
+      "האורח יכול לתת מתנה מרחוק?",
+      "מה קורה אם האורח לא רוצה תשלום דיגיטלי?",
+      "איך אני יודע/ת כמה מתנות קיבלתי?",
+      "האם המידע שלי מאובטח?",
+      "אפשר לבטל אירוע ולקבל החזר?",
+      "להצטרפות ←"
+    ],
+    "forms": [
+      {
+        "action": "https://beshmachot-plus.co.il/faq",
+        "method": "get",
+        "fields": [
+          {
+            "name": "",
+            "type": "text"
+          },
+          {
+            "name": "",
+            "type": "email"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "about",
+    "path": "/about",
+    "url": "https://beshmachot-plus.co.il/about",
+    "title": "בשמחות פלוס - מערכת ניהול מתנות ואירועים",
+    "buttons": [
+      "להצטרפות ←"
+    ],
+    "forms": [
+      {
+        "action": "https://beshmachot-plus.co.il/about",
+        "method": "get",
+        "fields": [
+          {
+            "name": "",
+            "type": "text"
+          },
+          {
+            "name": "",
+            "type": "email"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "contact",
+    "path": "/contact",
+    "url": "https://beshmachot-plus.co.il/contact",
+    "title": "בשמחות פלוס - מערכת ניהול מתנות ואירועים",
+    "buttons": [
+      "שליחה ←",
+      "להצטרפות ←"
+    ],
+    "forms": [
+      {
+        "action": "https://beshmachot-plus.co.il/contact",
+        "method": "get",
+        "fields": [
+          {
+            "name": "full_name",
+            "type": "text"
+          },
+          {
+            "name": "email",
+            "type": "email"
+          },
+          {
+            "name": "phone",
+            "type": "text"
+          },
+          {
+            "name": "message",
+            "type": "textarea"
+          }
+        ]
+      },
+      {
+        "action": "https://beshmachot-plus.co.il/contact",
+        "method": "get",
+        "fields": [
+          {
+            "name": "",
+            "type": "text"
+          },
+          {
+            "name": "",
+            "type": "email"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "access-login",
+    "path": "/access",
+    "url": "https://beshmachot-plus.co.il/access",
+    "title": "בשמחות פלוס - מערכת ניהול מתנות ואירועים",
+    "buttons": [],
+    "forms": []
+  },
+  {
+    "name": "signup",
+    "path": "/signup",
+    "url": "https://beshmachot-plus.co.il/signup",
+    "title": "בשמחות פלוס - מערכת ניהול מתנות ואירועים",
+    "buttons": [
+      "מתנות באשראיקבלת מתנות באשראי, קישור אישי, צפייה בעסקאות וברכות₪199",
+      "הזמנות + אישורי הגעהשליחה מרוכזת בוואטסאפ ובמייל, מעקב אישורים₪199",
+      "השכרת עמדת מתנות לאירועמומלץעמדת טאץ' באולם להגדלת כמות המתנות₪99",
+      "הפעל",
+      "המשך לפרטים אישיים"
+    ],
+    "forms": []
+  },
+  {
+    "name": "accessibility",
+    "path": "/accessibility",
+    "url": "https://beshmachot-plus.co.il/accessibility",
+    "title": "הצהרת נגישות | בשמחות פלוס",
+    "buttons": [
+      "להצטרפות ←"
+    ],
+    "forms": [
+      {
+        "action": "https://beshmachot-plus.co.il/accessibility",
+        "method": "get",
+        "fields": [
+          {
+            "name": "",
+            "type": "text"
+          },
+          {
+            "name": "",
+            "type": "email"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "terms",
+    "path": "/terms",
+    "url": "https://beshmachot-plus.co.il/terms",
+    "title": "בשמחות פלוס - מערכת ניהול מתנות ואירועים",
+    "buttons": [],
+    "forms": []
+  },
+  {
+    "name": "privacy",
+    "path": "/privacy",
+    "url": "https://beshmachot-plus.co.il/privacy",
+    "title": "בשמחות פלוס - מערכת ניהול מתנות ואירועים",
+    "buttons": [],
+    "forms": []
+  }
+]

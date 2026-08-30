@@ -1,0 +1,5 @@
+# Contains real customer PII (names, phones, emails) captured live from
+# https://beshmachot-plus.co.il admin panel during the 2026-08-30 scan.
+# This monorepo is public (see root README.md) -- never commit these.
+screenshots/admin-local/
+network-local/

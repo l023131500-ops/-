@@ -1,0 +1,54 @@
+[
+  {
+    "href": "/admin",
+    "text": "דשבורד"
+  },
+  {
+    "href": "/admin/customers",
+    "text": "לקוחות"
+  },
+  {
+    "href": "/admin/transactions",
+    "text": "עסקאות"
+  },
+  {
+    "href": "/admin/wallets",
+    "text": "ארנקים"
+  },
+  {
+    "href": "/admin/event-owners",
+    "text": "בעלי אירועים3"
+  },
+  {
+    "href": "/admin/leads",
+    "text": "לידים"
+  },
+  {
+    "href": "/admin/settings",
+    "text": "הגדרות"
+  },
+  {
+    "href": "/admin/halls-devices",
+    "text": "אולמות ומכשירים"
+  },
+  {
+    "href": "/admin/reports",
+    "text": "דוחות"
+  },
+  {
+    "href": "/admin/billing",
+    "text": "חיוב לקוחות"
+  },
+  {
+    "href": "/admin/coupons",
+    "text": "קופונים"
+  },
+  {
+    "href": "/admin/support",
+    "text": "פניות ותקלות"
+  },
+  {
+    "href": "/admin/newsletter",
+    "text": "רשימת תפוצה"
+  }
+]

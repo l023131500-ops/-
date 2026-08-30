@@ -1,0 +1,383 @@
+Partner API Documentation
+Try it (Swagger)
+העתק קישור
+הורד .md
+בשמחות פלוס – מסמך API לשותפים
+
+גרסה: 1.1 עודכן: יולי 2026 כתובת בסיס: https://xadihaigjkbvphzphxxk.supabase.co/functions/v1/public-api Swagger אינטראקטיבי: /docs/partner-api-explorer תמיכה: support@beshmachot-plus.co.il
+
+1. סקירה כללית
+
+ה-API של בשמחות פלוס לשותפים מאפשר למערכת שלכם:
+
+ליצור משתמשי קצה (בעלי אירוע, בעלי אולם) בתוך בשמחות פלוס.
+ליצור ולנהל אירועים, מוזמנים, אישורי הגעה, תשלומים, אולמות, אולמות אירועים ומכשירי קיוסק בשמם.
+להגיש בקשה לפתיחת חשבון סליקה לאירוע — כולל KYC (סעיף 5). האישור ידני על ידי בשמחות פלוס.
+לקבל התראות webhook בזמן אמת כשמתבצעים תשלומים, כשחשבון הסליקה של אירוע מאושר וכשמסתיימות משיכות כספים.
+
+שותף הוא זהות מבודדת בשמחות פלוס. כל מפתח API משויך למזהה השותף שלכם, ולכן:
+
+כל קריאת קריאה/רשימה מסוננת אוטומטית — תוכלו לראות רק אירועים, משתמשים ונתונים שהמפתח שלכם יצר.
+כל קריאת יצירה מתויגת אוטומטית במזהה השותף שלכם.
+ניסיון גישה למשאב של שותף אחר יחזיר 403 או 404.
+2. אימות (Authentication)
+
+בכל בקשה יש לכלול את מפתח ה-API בכותרת:
+
+x-api-key: <YOUR_API_KEY>
+Content-Type: application/json
+
+
+בקשות ללא מפתח תקין ופעיל יחזירו 401 Unauthorized.
+
+🔐 שמרו את מפתח ה-API בצד השרת בלבד. אל תטמיעו אותו בדפדפן, באפליקציית מובייל או במאגר קוד ציבורי.
+
+3. פורמט בקשות ומוסכמות
+
+כל ה-endpoints עוברים דרך כתובת אחת. שם ה-action מועבר כ-query, וגוף הבקשה כ-JSON:
+
+POST /?action=CreateEvent
+x-api-key: sk_live_xxxxxxxxxxxxxxxx
+Content-Type: application/json
+
+{ "owner_id": "6f1b...", "event_date": "2026-11-05" }
+
+
+פעולות קריאה בלבד תומכות גם ב-GET עם query params.
+
+מבנה תשובה
+הצלחה: { "responseStatus": "OK", ... }
+שגיאה: { "responseStatus": "ERROR", "error": "<msg>", "code": 400 }
+מוסכמות שדות
+מוסכמה	פורמט
+מזהים	UUID (6f1b1e40-...)
+תאריכים	ISO 8601 UTC (2026-11-05T12:00:00Z)
+תאריך בלבד	YYYY-MM-DD
+טלפון ישראלי	+972XXXXXXXXX או 0XXXXXXXXX (9 ספרות אחרי)
+ת״ז	9 ספרות בדיוק
+טקסט	UTF-8 (עברית מותרת)
+מטבע	ILS, שברי אגורות מותרים
+קודי HTTP
+
+200 הצלחה · 400 בקשה שגויה · 401 לא מאומת · 403 אין הרשאה · 404 לא נמצא · 500 שגיאת שרת.
+
+4. פעולות עם שדות מלאים
+
+💡 לכל endpoint מופיע כאן טופס אינטראקטיבי ב-Swagger UI: /docs/partner-api-explorer.
+
+4.1 משתמשים – CreateEventOwner
+
+יוצר משתמש חדש עם תפקיד event_owner ואופציונלית אירוע התחלתי.
+
+שדה	טיפוס	חובה	הערות
+email	string (email)	✅	ייחודי במערכת.
+password	string	✅	8+ תווים. מומלץ 16+ אקראי.
+full_name	string	✅	עברית מותרת.
+phone	string	⬜	פורמט טלפון ישראלי.
+event	object	⬜	אירוע התחלתי (ראו CreateEvent).
+event.event_type	enum	⬜	חתונה | בר מצווה | בת מצווה | ברית | חינה | אירוסין | אחר
+event.event_date	date	⬜ (חובה אם יש event)	YYYY-MM-DD
+event.groom_name / bride_name / child_name / family_name	string	⬜	לפי סוג האירוע.
+
+מחזיר: { user: { id, email, full_name }, event: { ... } | null }
+
+4.2 משתמשים – CreateVenueOwner
+
+זהה ל-CreateEventOwner אבל יוצר בעל אולם. במקום event ניתן להעביר venue עם { name, address, phone?, email?, monthly_subscription? }.
+
+4.3 משתמשים – שאר הפעולות
+Action	שדות
+ListProfiles (GET)	ללא. מחזיר את כל הפרופילים של השותף שלכם.
+GetProfile (GET)	user_id (חובה).
+UpdateProfile (POST)	user_id (חובה) + כל שילוב של full_name, phone, avatar_url.
+ListUsers (GET)	ללא. כמו ListProfiles + מערך roles לכל משתמש.
+4.4 אירועים – CreateEvent
+שדה	טיפוס	חובה	הערות
+owner_id	uuid	✅	user_id של בעל האירוע. חייב להיות שייך לשותף שלכם.
+event_date	date	✅	YYYY-MM-DD
+event_type	enum	⬜	ברירת מחדל חתונה.
+groom_name / bride_name / child_name / family_name	string	⬜	
+venue_id / hall_id	uuid	⬜	
+custom_venue_name / custom_venue_location	string	⬜	מיקום חופשי כשאין אולם.
+reception_time / ceremony_time	string	⬜	HH:MM
+4.5 אירועים – שאר הפעולות
+Action	שדות עיקריים
+GetEvent (GET)	event_id (חובה).
+ListEvents (GET)	סינון אופציונלי: venue_id, owner_id.
+UpdateEvent (POST)	event_id (חובה) + כל שדה עדכון.
+GetEventStats (GET)	event_id. מחזיר סיכומי מוזמנים ותשלומים.
+4.6 מוזמנים – AddGuest
+שדה	טיפוס	חובה	הערות
+event_id	uuid	✅	
+full_name	string	✅	
+phone	string	⬜	טלפון ישראלי.
+email	string	⬜	
+side	enum	⬜	groom | bride | general
+relationship	string	⬜	חופשי.
+number_of_guests	integer	⬜	ברירת מחדל 1.
+
+BulkAddGuests: Body { event_id, guests: [ { full_name, phone, ... }, ... ] }.
+
+4.7 מוזמנים – אישורי הגעה
+Action	שדות
+ListGuests (GET)	event_id + status? (approved/declined/pending).
+UpdateGuest (POST)	guest_id + כל שדה.
+UpdateRSVP (POST)	guest_id, rsvp_status, number_of_guests?.
+BulkUpdateRSVP (POST)	updates: [{ guest_id, rsvp_status, number_of_guests }].
+DeleteGuest (DELETE/GET)	guest_id.
+4.8 תשלומים
+Action	שדות
+GetTransactions (GET)	event_id.
+GetTransaction (GET)	transaction_id.
+CreateTransaction (POST)	event_id, amount, payer_name?, payment_method?, notes? — נדרש רק לתשלומים ידניים.
+4.9 אולמות ומכשירים
+
+CreateVenue/UpdateVenue: name, address, phone?, email?, monthly_subscription?, logo_url?. CreateDevice: venue_id, serial_number, hall_id?, nickname?. IdentifyDevice (GET): serial_number או hall_id. מחזיר את האירוע הפעיל היום + קישור למסך המתנות.
+
+4.10 שאר המשאבים
+
+CRUD סטנדרטי (ראו Swagger): ListLeads / CreateLead / UpdateLead / DeleteLead, ListLandingLeads, ListTickets / CreateTicket / UpdateTicket, ListInvoices / CreateInvoice / UpdateInvoice, ListDocuments / AddDocument / DeleteDocument, ListNotes, ListTasks, GetSystemSettings, GetRequiredDocuments, GetSystemStats.
+
+5. הקמת חשבון סליקה (Payment Account Onboarding)
+
+בסוף התהליך הזה האירוע יכול לקבל תשלומי מתנות. כל האינטגרציה עם ספק הסליקה מתבצעת בתוך בשמחות פלוס — אתם רק שולחים את פרטי ה-KYC, ואנחנו פותחים את החשבון ומעדכנים אתכם כשהוא פעיל.
+
+סדר קריאות חובה:
+
+1. CreateEventOwner         →  יצירת בעל האירוע (סעיף 4.1)
+2. CreateEvent              →  יצירת האירוע (סעיף 4.4)
+3. UploadPaymentDocument ×2 →  ת"ז + אישור ניהול חשבון בנק
+4. SubmitPaymentAccount     →  שליחת פרטי ה-KYC. סטטוס → pending_review
+                                (הבקשה עולה ל-בשמחות פלוס לבדיקה ידנית)
+5. אישור על ידי צוות בשמחות פלוס   →  אנחנו פותחים את חשבון הסליקה
+6. Webhook: seller-approve  →  החשבון פעיל. האירוע יכול לקבל תשלומים.
+
+
+⚠️ בין שלב 4 לשלב 6 עוברת בדיקת עמידה בדרישות (KYC) של בשמחות פלוס. הבדיקה ידנית ולא מיידית — צפו לעד 24 שעות עסקים. סטטוס הבקשה זמין בכל רגע דרך GetPaymentAccountStatus.
+
+5.1 UploadPaymentDocument
+
+מעלה מסמך KYC. מומלץ להעלות את שני המסמכים לפני קריאת SubmitPaymentAccount.
+
+שדה	טיפוס	הערות
+event_id	uuid	חובה. אירוע של השותף שלכם.
+document_type	enum	חובה. social_id (ת״ז) או bank_approval (אישור ניהול חשבון בנק).
+file_name	string	חובה. למשל id.pdf.
+mime_type	string	application/pdf (ברירת מחדל), image/jpeg, image/png.
+file_base64	string	חובה. תוכן הקובץ ב-Base64 בלי data:...;base64,.
+
+תשובה:
+
+{
+  "responseStatus": "OK",
+  "uploaded": true,
+  "document_type": "social_id",
+  "documents_uploaded": { "social_id": true, "bank_approval": false }
+}
+
+5.2 SubmitPaymentAccount
+
+שולח את פרטי ה-KYC לבדיקה. הבקשה עולה לתור אישורים ידני אצל בשמחות פלוס.
+
+שדות חובה — פרטים אישיים
+
+שדה	טיפוס	הערות
+event_id	uuid	אירוע קיים של השותף.
+first_name	string	
+last_name	string	
+social_id	string	9 ספרות בדיוק (ת״ז ישראלית).
+birthdate	string	DD/MM/YYYY
+email	string	
+phone	string	טלפון ישראלי.
+
+שדות חובה — פרטי בנק
+
+שדה	טיפוס	הערות
+bank_code	integer	קוד בנק ישראלי (טבלה למטה).
+bank_branch	string	מספר סניף (1–4 ספרות).
+bank_account_number	string	מספר חשבון (4–12 ספרות).
+
+שדות חובה — פרטי עסק וכתובת
+
+שדה	טיפוס	הערות
+inc_type	integer	1 = עוסק פטור · 2 = עוסק מורשה · 3 = חברה בע״מ.
+merchant_name	string	שם העסק/האירוע.
+city	string	
+street	string	
+street_number	string	
+
+שדות אופציונליים
+
+שדה	טיפוס	ברירת מחדל
+social_id_date	DD/MM/YYYY	תאריך הנפקת ת״ז (מומלץ).
+gender	0 | 1	0 = זכר, 1 = נקבה. ברירת מחדל 0.
+contact_email / contact_phone	string	ברירת מחדל = email/phone.
+inc_code	string	ח.פ. / עוסק מורשה. חובה ל-inc_type 2 או 3.
+merchant_name_en	string	תעתיק לאנגלית.
+description	string	
+site_url	string (uri)	
+
+קודי בנק ישראליים נפוצים:
+
+קוד	בנק		קוד	בנק
+10	לאומי		4	יהב
+11	דיסקונט		9	דואר
+12	הפועלים		13	איגוד
+20	מזרחי טפחות		14	אוצה״ח
+31	הבינלאומי		17	מרכנתיל
+46	מסד		52	פאגי
+54	ירושלים			
+
+דוגמה:
+
+POST ?action=SubmitPaymentAccount
+{
+  "event_id": "a12b...",
+  "first_name": "דוד",
+  "last_name": "כהן",
+  "social_id": "123456789",
+  "social_id_date": "01/01/2015",
+  "birthdate": "01/01/1990",
+  "gender": 0,
+  "email": "chatan@example.com",
+  "phone": "+972501234567",
+  "bank_code": 12,
+  "bank_branch": "123",
+  "bank_account_number": "12345678",
+  "inc_type": 1,
+  "merchant_name": "חתונת דוד ושרה",
+  "city": "תל אביב",
+  "street": "דיזנגוף",
+  "street_number": "50"
+}
+
+
+תשובה:
+
+{
+  "responseStatus": "OK",
+  "status": "pending_review",
+  "message": "Payment account submitted. A בשמחות פלוס administrator will review it...",
+  "documents_uploaded": { "social_id": true, "bank_approval": true }
+}
+
+5.3 GetPaymentAccountStatus
+
+בודק את סטטוס הבקשה.
+
+GET ?action=GetPaymentAccountStatus&event_id=a12b...
+
+
+סטטוסים אפשריים:
+
+status	משמעות
+not_submitted	עדיין לא נקראה SubmitPaymentAccount.
+pending_review	ממתין לאישור ידני של בשמחות פלוס.
+rejected	בשמחות פלוס דחתה את הבקשה. פנו לתמיכה לפרטים.
+processing	בשמחות פלוס אישרה, החשבון בהקמה מול ספק הסליקה.
+approved	פעיל. האירוע יכול לקבל תשלומים.
+
+תשובה:
+
+{
+  "responseStatus": "OK",
+  "status": "pending_review",
+  "can_receive_payments": false,
+  "documents_uploaded": { "social_id": true, "bank_approval": true }
+}
+
+
+השדה can_receive_payments הופך ל-true ברגע שהחשבון פעיל. באותו רגע נשלח גם webhook seller-approve (סעיף 6).
+
+5.4 סביבת בדיקות בלי חיוב אמיתי
+
+בשמחות פלוס יכולה להנפיק שותף עם דגל sandbox שמדלג על תהליך ה-KYC וקופון GIFTKAL-TEST שמדמה תשלום מלא. פנו לתמיכה.
+
+6. Webhooks
+
+אם סיפקתם webhook_url בעת יצירת השותף, בשמחות פלוס תשלח POST לכתובת הזו כשמתרחשים אירועים באירועים שלכם.
+
+6.1 סוגי אירועים
+event_type	מתי נשלח
+payment-account-approved	חשבון הסליקה של האירוע אושר על ידי בשמחות פלוס והופעל — האירוע יכול לקבל תשלומים.
+sale-paid	תשלום מתנה הצליח.
+sale-failure	תשלום מתנה נכשל.
+refund	מתנה זוכתה חזרה.
+withdrawal-complete	משיכת כספים לחשבון הבנק של בעל האירוע הושלמה.
+
+השארה ריקה של webhook_events = "כל האירועים".
+
+6.2 פורמט משלוח
+POST <ה-webhook_url שלכם>
+Content-Type: application/json
+X-Giftkal-Event: sale-paid
+X-Giftkal-Signature: <hex HMAC-SHA256>
+
+{
+  "event_type": "sale-paid",
+  "delivered_at": "2026-07-01T12:34:56.789Z",
+  "data": { ... }
+}
+
+
+Payload לפי סוג:
+
+sale-paid / sale-failure / refund: { transaction_id, event_id, payment_status, amount, gift_amount, fee_amount, payer_name }
+payment-account-approved: { event_id, status: "approved" }
+withdrawal-complete: { event_id, payout_reference, amount }
+6.3 אימות חתימה (חובה)
+
+כל משלוח חתום ב-HMAC-SHA256 מעל גוף הבקשה הגולמי, עם ה-webhook_secret שקיבלתם פעם אחת.
+
+Node.js:
+
+import crypto from "crypto";
+app.post("/webhooks/בשמחות פלוס", express.raw({ type: "application/json" }), (req, res) => {
+  const expected = crypto.createHmac("sha256", process.env.GIFTKAL_WEBHOOK_SECRET)
+    .update(req.body).digest("hex");
+  if (req.header("X-Giftkal-Signature") !== expected) return res.status(401).send("bad signature");
+  const payload = JSON.parse(req.body.toString());
+  res.status(200).send("ok");
+});
+
+
+PHP:
+
+$secret = getenv('GIFTKAL_WEBHOOK_SECRET');
+$body = file_get_contents('php://input');
+$expected = hash_hmac('sha256', $body, $secret);
+if (!hash_equals($expected, $_SERVER['HTTP_X_GIFTKAL_SIGNATURE'] ?? '')) {
+    http_response_code(401); exit;
+}
+
+6.4 ניסיונות חוזרים ויומן משלוחים
+החזירו HTTP 2xx תוך 10 שניות. כל תשובה שאינה 2xx או timeout נרשמת ככשלון.
+כרגע אין ניסיונות חוזרים אוטומטיים. בשמחות פלוס שומרת כל ניסיון (סטטוס + גוף התשובה) ומנהל המערכת יכול לשלוח מחדש משלוחים שנכשלו.
+דאגו לביטול כפילויות לפי transaction_id — התייחסו ל-webhooks כ-at-least-once.
+7. Best Practices
+צד שרת בלבד — מפתח ה-API אינו מוגן ב-CORS, אך לעולם אל תחשפו אותו לדפדפן.
+Idempotency ב-CreateEventOwner — טפלו בשגיאת email already registered כאילו המשתמש קיים.
+סיסמאות — שלחו סיסמה אקראית ארוכה ואל תשמרו אותה. המשתמש יאפס דרך בשמחות פלוס.
+קבצי KYC — השתמשו ב-PDF < 5MB. שלחו רק Base64 של המידע (בלי data:...;base64,).
+תאריכים — בכל ה-API בפורמט ISO 8601. חריגים: ב-SubmitPaymentAccount השדות birthdate ו-social_id_date בפורמט DD/MM/YYYY.
+טקסט בעברית — UTF-8 בלבד.
+8. Checklist להעלאה לאוויר
+
+בשמחות פלוס תספק:
+
+ שם השותף
+ ערך x-api-key (מוצג פעם אחת)
+ ערך webhook_secret (מוצג פעם אחת)
+ רשימת webhook_events הרלוונטיים
+
+אתם צריכים להיות מסוגלים:
+
+ לבצע CreateEventOwner ולראות ב-ListProfiles.
+ לבצע CreateEvent ולראות ב-ListEvents.
+ לבצע UploadPaymentDocument × 2 + SubmitPaymentAccount ולראות status = pending_review ב-GetPaymentAccountStatus.
+ לקבל webhook payment-account-approved אחרי אישור ידני של בשמחות פלוס.
+ לקבל webhook sale-paid ולאמת חתימה.
+
+© בשמחות פלוס · beshmachot-plus.co.il
+
+© בשמחות פלוס · support@beshmachot-plus.co.il

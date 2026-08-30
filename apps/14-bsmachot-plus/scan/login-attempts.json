@@ -1,0 +1,12 @@
+[
+  {
+    "pathSlug": "venue",
+    "resultUrl": "https://beshmachot-plus.co.il/admin",
+    "success": true
+  },
+  {
+    "pathSlug": "event",
+    "resultUrl": "https://beshmachot-plus.co.il/admin",
+    "success": true
+  }
+]
