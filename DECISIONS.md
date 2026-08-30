@@ -7283,3 +7283,69 @@
      (08/09/bkalut-app/bkalot-admin/`zr_*`/webhook NEDARIM3873/
      `csj`/`csj_src`/`igud`/15-egod) לא נגעו. אין שליחה/חיוב אמיתיים
      בסבב זה.
+
+## 30/08/2026 (LOOP A, סבב נוסף אותו יום) — 01-torah-platform: `admin/Users.tsx` לא חשף שינוי תפקיד למשתמש קיים; ה-RPC שכן קיים נכשל תמיד עבור תפקיד גלובלי (`tenant_id` ריק)
+
+604. **ההקשר.** P0 (system 14) עדיין `CANNOT_SCREENSHOT` לאותו יום UTC (נבדק
+     שוב: `ToolSearch` לא מחזיר שום כלי דפדפן/screenshot). `core.build_tasks`
+     ל-32/36 נשאר 0 todo, אין שורות ל-01/15 — המשיך בשיטת החקירה החופשית.
+     סוכן Explore שנשלח על 15 קבצים שטרם נבדקו (auth/SignIn,SignUp,
+     ResetPassword; public/About,Accessibility,Privacy,DonationSuccess;
+     questionnaire/SeekerForm,TeacherForm,RoleSelection,MultiSelect,
+     RadioSelect; portal/PortalLessonForm; bulk/BulkLessonForm,
+     ExcelImportExport) העלה שני "ממצאים" (`BulkLessonForm`/`ExcelImportExport`
+     ו-`PortalLessonForm` כותבים עמודות שלא קיימות בטבלת `lessons` החיה) —
+     נבדק ישירות ונמצא **שגוי**: שלושת הקבצים מיובאים אך ורק דרך
+     `legacy/OrgPortal.tsx`/`RabbiPortal.tsx`/`SynagoguePortal.tsx`, כלומר
+     חלק מתת-המערכת "פורטל-אישי-עם-טוקן" שכבר תועדה כמתה לגמרי (issue #260,
+     ראו סעיף 597) — אין רגרסיה אמיתית, לא תוקן. שאר 12 הקבצים בבדיקה ישירה:
+     שלושת מסכי ה-auth וארבעת עמודי ה-public הסטטיים תקינים; `SeekerForm`/
+     `TeacherForm`/`RoleSelection`/`MultiSelect`/`RadioSelect`/`AIChatBot`
+     (עם `chat` edge function) מתגלים כקוד מת לגמרי — לא מיובאים משום
+     Route חי (וגם `Questionnaire.tsx` החי, שכבר תוקן בסבב קודם, לא
+     משתמש בהם כלל, יש לו את כל הלוגיקה שלו inline).
+605. **הממצא האמיתי.** `admin/Users.tsx` (מסך `/admin/users`, super-admin
+     בלבד — מאומת ב-`App.tsx` שהראוט הזה תחת `<Route path="/admin">`)
+     מייבא את האייקון `UserCog` (שורה 14) אבל **אף פעם לא משתמש בו** —
+     אין שום כפתור/דיאלוג לשינוי תפקיד למשתמש קיים; היחיד ה-mutation
+     הקיימות הן `create`/`delete`/`update_password`. בצד ה-edge function
+     (`admin-users/index.ts`) פעולת `update_role` כן קיימת ועובדת חלקית,
+     אבל: `await admin.from("user_roles").delete().eq("user_id", user_id)
+     .eq("tenant_id", tenant_id || null)` — `.eq("tenant_id", null)`
+     שולח ל-PostgREST `tenant_id=eq.null`, שמנסה לפרש את המחרוזת
+     `"null"` כערך `uuid` ונכשל (`22P02`), במקום להתאים שורות `NULL`
+     בפועל (`.is()` נדרש). כלומר תפקיד גלובלי (`tenant_id` ריק, כמו
+     `super_admin`) לעולם לא היה ניתן להחלפה דרך הפעולה הזו — גם לו הייתה
+     חשופה ב-UI. בנוסף, שגיאת ה-`delete` (וגם ה-`insert`) לא נבדקה כלל —
+     `delete` שנכשל היה ממשיך בשקט ל-`insert`, ועלול להשאיר שורת-תפקיד
+     כפולה.
+606. **מה נבנה.** ב-`admin-users/index.ts`: `update_role` הוחלף כך
+     שמשתמש ב-`.is("tenant_id", null)` כש-`tenant_id` ריק ובאחרת
+     ב-`.eq("tenant_id", tenant_id)`, ובודק שגיאה גם על ה-`delete` וגם
+     על ה-`insert` ומחזיר `500` עם הודעה אמיתית במקום להמשיך בשקט.
+     ב-`admin/Users.tsx`: נוסף כפתור "תפקיד" (עם `UserCog`, שסוף־סוף
+     בשימוש) שפותח `RoleDialog` חדש — עריכת תפקיד לשורה קיימת (הטננט
+     נשאר קבוע לאותה שורה, כי ה-RPC מוחק-ואז-מכניס לפי ה-`tenant_id`
+     שנשלח, לא לפי מה שהיה בשורה המקורית — אחרת "עריכה" הייתה משאירה
+     את השורה הישנה ומוסיפה שורה חדשה בטננט הנבחר בלי למחוק את הישנה)
+     או הוספת שורת-תפקיד חדשה (טננט נבחר חופשית). אפס שינוי לפעולות
+     `list`/`create`/`update_password`/`delete` הקיימות.
+607. **אימות.** קריאת REST חיה ישירה (GET, `anon` key, ללא כתיבה) מול
+     `bieebmnmkffwbqlsfozh`: `user_roles?tenant_id=eq.null` מחזירה בפועל
+     `HTTP 400 {"code":"22P02","message":"invalid input syntax for type
+     uuid: \"null\""}` — משחזר את הבאג באופן ישיר מול PostgREST האמיתי,
+     לא רק ניחוש. `get_edge_function` על הפונקציה החיה אישר שהקוד הפרוס
+     תואם בדיוק את הגרסה שלפני התיקון (כולל הבאג). עסקת
+     `BEGIN...ROLLBACK` שכפלה את שתי צורות ה-SQL (`tenant_id IS NULL`
+     מול `tenant_id = <uuid>`) על שורות מדומות — שתיהן רצות ללא שגיאה,
+     כצפוי מהתיקון. הפונקציה החדשה נפרסה בפועל (`deploy_edge_function`,
+     v1→v2) ואומתה זהה-בית לקוד המקור לאחר הפריסה. `esbuild --bundle
+     --packages=external` + `node --check` נקיים על שני הקבצים; איזון
+     סוגריים נקי (160/160, 160/160, 28/28 ב-`Users.tsx`). `git diff
+     --stat`: 2 קבצים, 119+/2- , אפס שינוי לפעולות קיימות. נדחף לענף
+     חדש `fix/01-torah-platform-admin-users-role-change-0830`
+     (`d706f3ec`). System 35 KioskFleet לא נגע, per HARD STEERING; P2
+     (32/36) `build_tasks` נשאר 0 todo; מערכות/סכימות מוגנות
+     (08/09/bkalut-app/bkalot-admin/`zr_*`/webhook NEDARIM3873/
+     `csj`/`csj_src`/`igud`/15-egod) לא נגעו. אין שליחה/חיוב אמיתיים
+     בסבב זה (רק פריסת edge function, לא שינוי כספי/הודעתי).
