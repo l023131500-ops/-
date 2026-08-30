@@ -7709,3 +7709,53 @@
      שליחה/חיוב אמיתיים בסבב זה (0 תרומות לטננט הנוגע בדבר, ואף פעולת
      בדיקה לא כללה חיוב אמיתי מול Nedarim Plus עצמו — רק כתיבה/קריאה
      ל-DB).
+
+## 30/08/2026 (LOOP A, סבב נוסף) — `admin/MatchingGuru.tsx`: שדה `neighborhood` נכתב בקוד התצוגה/סינון אך מעולם לא נשלף מהפרופיל
+
+633. **ההקשר.** נעילת ה-P0 אומתה כמסולקת: `core.build_tasks` id=15
+     (מערכת 14) עומד על `status='done'` (הסריקה+התיעוד הושלמו ונדחפו
+     ב-`1a36c77d`). P1 (35) סגור per HARD STEERING. P2 (32/36) אומת
+     שוב כ-0 שורות `todo` (14 שורות, כולן `done`). המשך ל-P3: המשך
+     ביקורת 01-torah-platform (15-egod עדיין לא נגיש דרך ה-MCP הזה).
+
+634. **הממצא.** `admin/MatchingGuru.tsx` (`/admin/matching-guru`, נתיב
+     חי) כבר בונה מזמן קוד תצוגה (שורה 198, תג עיר+שכונה) וקוד סינון
+     משותף (שורה 77, `matches(search, ..., t.neighborhood, ...)`) שמצפים
+     לשדה `neighborhood` על אובייקט ה"מגיד". בפועל, שאילתת ה-`profiles`
+     שממנה נבנים אובייקטי המגידים (שורה 39, המקור היחיד למגידי-תנאנט,
+     `offerLeads` מגיעים ממקור אחר-`leads` וללא שכונה מלכתחילה) בחרה
+     רק `id, full_name, phone, city, bio` — בלי `neighborhood` — כך
+     ש-`t.neighborhood` היה תמיד `undefined` עבור כל מגיד, בשקט וללא
+     שגיאה. `neighborhood` הוא שדה אמיתי וקיים בטבלת `profiles`
+     (`information_schema.columns` אומת), ניתן לעריכה על-ידי המשתמש
+     גם בטופס ההצטרפות של מגיד (`questionnaire/TeacherForm.tsx:120`)
+     וגם ב-`portal/PortalSettings.tsx` (שורות 17/28/61/134/209) — כלומר
+     שדה-מוצר אמיתי שנועד בדיוק לזה, לא שדה מת. סוכן חקירה (Explore)
+     איתר את הפער; אומת ישירות מול `bieebmnmkffwbqlsfozh` (לא נלקח
+     כמובן מאליו).
+
+635. **מה נעשה.** הוספת `neighborhood` ל-`select` של `profiles` (שורה
+     39) והעברתו לאובייקט `maggidim` (שורה 46-49, אותו דפוס בדיוק כמו
+     `city`/`_phone` הקיימים) — כך שגם התצוגה וגם הסינון המשותף שכבר
+     כתובים בקובץ יתחילו לעבוד כפי שתמיד נועדו.
+
+636. **אימות.** `esbuild --bundle=false --format=esm` נקי על הקובץ
+     המלא. `information_schema.columns` אימת ש-`neighborhood` קיים על
+     `profiles`, אך `count(*) FILTER (WHERE neighborhood IS NOT NULL...)`
+     על הנתונים החיים החזיר `0` מתוך 7 — כלומר אין כרגע פרופיל אמיתי
+     עם שכונה ממולאת, אז לתיקון הזה **אין השפעה נראית עדיין** על
+     המסך החי; הוא סוגר פער-סמוי בקוד שכבר הניח (ב-2 מקומות שונים)
+     שהנתון יגיע. אומת התנהגות-בזמן-ריצה בעסקת `BEGIN...ROLLBACK`
+     **יחידה** (לקח מהתקרית בסעיף 629 — כל ה-statements במחרוזת אחת,
+     לא מפוצלים בין קריאות MCP נפרדות): נוצר טננט-מגיד זמני +
+     חברות `tenant_admin` על פרופיל אמיתי-קיים, נקבע `neighborhood`
+     זמנית על אותו פרופיל, והורצה בדיוק צורת השאילתה שהקוד המתוקן
+     מריץ (`memberships` ⋈ `tenants` ⋈ `profiles`) — הערך חזר נכון
+     (`"רמות-בדיקה-זמנית"`). `ROLLBACK` אומת כניקוי מלא: 0 טננטים
+     זמניים, `neighborhood` חזר ל-`NULL` על הפרופיל האמיתי. `git diff
+     --stat`: קובץ אחד, 2+/1-, תוספתי בלבד. נדחף לענף
+     `fix/01-torah-platform-matchingguru-neighborhood-0830` (`3f85501c`).
+     System 35 KioskFleet לא נגע, per HARD STEERING; P2 (32/36)
+     `build_tasks` נשאר 0 todo; מערכות/סכימות מוגנות (08/09/bkalut-app/
+     bkalot-admin/`zr_*`/webhook NEDARIM3873/`csj`/`csj_src`/`igud`/
+     15-egod) לא נגעו. אין שליחה/חיוב אמיתיים בסבב זה.
