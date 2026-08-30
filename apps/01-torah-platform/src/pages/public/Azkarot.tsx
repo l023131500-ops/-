@@ -28,6 +28,11 @@ export default function Azkarot() {
     if (!tenant) return;
     setLoading(true);
     try {
+      // azkarot_tenant_write_ins RLS previously required a real tenant role
+      // (tenant_admin/moderator/member), same gap leads/portal_messages/
+      // rabbi_questions already had -- fixed live via
+      // tenant_accepts_public_intake(tenant_id) OR ... so an anonymous
+      // visitor on this public page can actually submit.
       const { error } = await supabase.from("azkarot").insert({
         tenant_id: tenant.id,
         deceased_name: form.deceased_name,

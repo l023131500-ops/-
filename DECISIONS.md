@@ -7166,3 +7166,74 @@
      STEERING; מערכות 08/09/bkalut-app/bkalot-admin/`zr_*`/webhook
      NEDARIM3873/`csj`/`csj_src`/`igud`/15-egod לא נגעו. אין שליחה/חיוב
      אמיתיים בסבב זה (רק פריסת קוד לפונקציה קיימת).
+
+## 30/08/2026 (LOOP A, סבב נוסף אותו יום) — 01-torah-platform: `azkarot` RLS INSERT חסר את סעיף ה-public-intake + תיעוד תת-מערכת legacy/*-portal נטושה
+
+596. **ההקשר.** אומת שוב שאין נעילת-P0 פעילה (run_progress#2741/2742 כבר
+     סגרו את שער מערכת 14). `core.build_tasks` למערכות 32/36 עדיין
+     0 todo, ל-01/15 אין שורות — נמשך הדפוס החופשי. נשלח סוכן-Explore
+     (read-only) לסרוק מסכים שטרם נבדקו (shop/*, portal/BulkUpload,
+     Materials, Attendance, public/Questionnaire, JoinTeacher,
+     RequestLesson, DonationPage, admin/Content, Messages, MatchingGuru
+     ועוד) בחיפוש אחרי אותה משפחת-באג (payload/RPC לא תואם לסכימה
+     האמיתית). רוב הקבצים האלה כבר תוקנו בסבבים קודמים (הערות-קוד
+     מפורשות מאשרות זאת) — הסוכן העלה מועמד יחיד (`PublicContactForm.tsx`)
+     שהתברר, בבדיקה ישירה, שייך לתת-מערכת `legacy/*` שכלל אינה בת-הפעלה
+     (ראה סעיף הבא) ולכן לא היה שווה תיקון מבודד.
+597. **מה נמצא בפועל (חלק א — נטוש, תועד בלבד).** בעקבות המועמד של
+     הסוכן נבדק `src/pages/legacy/PublicRabbiPage.tsx` (`/view/rabbi/:token`)
+     וכל תת-המערכת `legacy/*-portal` סביבו. `information_schema.columns`
+     על `bieebmnmkffwbqlsfozh` אישר: `rabbi_portals`, `org_portals`,
+     `org_rabbis`, `synagogue_portals`, `portal_photos`, `study_day_events`,
+     `synagogue_full_access_requests` — **אף אחת מ-7 הטבלאות האלה לא
+     קיימת בכלל** ב-public schema (0 שורות בכל שאילתה). 7 קבצים
+     (`RabbiPortal`, `OrgPortal`, `SynagoguePortal`, `StudyDayUpload`,
+     `PublicRabbiPage`, `PublicOrgPage`, `PublicSynagoguePage`,
+     ו-`components/admin/FullAccessRequestsTab.tsx` דרך `legacy/AdminDashboard`)
+     קוראים/כותבים לטבלאות האלה, וכולם מורכבים בפועל ב-`App.tsx` תחת
+     7 ראוטים חיים (`/portal/rabbi/:token`, `/portal/org/:token`,
+     `/shul/:accessToken`, `/study-days/:token`, `/view/rabbi/:publicToken`,
+     `/view/org/:publicToken`, `/view/shul/:publicToken`) — כל אחד מהם
+     מציג תמיד "not found"/ריק לכל מבקר אמיתי. זו הרחבה של פערים
+     שכבר תועדו נקודתית (issue #257 — PortalSettings.tsx; issue #259 —
+     Matching.tsx) לתמונה מלאה: תת-מוצר "פורטל-אישי-עם-טוקן" שלם שמעולם
+     לא הושלם בצד ה-DB. תיקון מבודד של `PublicContactForm.tsx` (שהסוכן
+     הציע) לא היה משנה כלום בפועל — הדף שמכיל אותו נכשל עוד לפני
+     שהטופס נטען. **לא תוקן**, נרשם כ-issue #260 חדש ב-`core.issues`
+     (severity=high, blocked_on=הכרעת מוצר: לבנות סכימה חדשה / להכריז
+     נטוש ולהסיר-בהסכמת-בעלים / להשאיר מתועד) כדי שסבב עתידי לא יגלה
+     את זה מחדש קובץ-קובץ.
+598. **מה נמצא בפועל (חלק ב — אמיתי, תוקן).** בעקבות אותה שיטת-בדיקה
+     (השוואת payload/RLS מול סכימה חיה) על קבצים שטרם נבדקו: `public/Azkarot.tsx`
+     (`/azkarot`, דף ציבורי ללא התחברות) שולח insert נכון לגמרי מבחינת
+     שמות עמודות ל-`azkarot`, אבל מדיניות ה-RLS `azkarot_tenant_write_ins`
+     (מהלולאה הגנרית ב-`20260519000002_torah_content.sql`) מעולם לא קיבלה
+     את אותו סעיף `tenant_accepts_public_intake(tenant_id) OR` שכבר נוסף
+     בעבר ל-`leads_insert`/`portal_messages_insert`/`rabbi_questions_insert`
+     (מיגרציות `20260825220000`/`20260826080000`) — נשאר רק עם תנאי
+     תפקיד-דייר, ש-anon אף פעם לא מחזיק. כל שליחה אמיתית של "רישום
+     אזכרה חדשה" מבקר אנונימי נדחתה תמיד ב-RLS (`42501`).
+599. **מה נבנה.** `azkarot_tenant_write_ins` הוחלפה (DROP+CREATE) כדי
+     לכלול את אותו סעיף `tenant_accepts_public_intake(tenant_id) OR`
+     בדיוק כמו שלוש המדיניות התאומות. נוספה מיגרציה חדשה בקוד
+     (`20260830120000_azkarot_public_intake_insert.sql`) שמתעדת את
+     ה-DDL שכבר הוחל בפועל — אין שינוי לוגיקת-קליינט ב-`Azkarot.tsx`
+     מעבר להערה מסבירה.
+600. **אימות.** בעסקת `BEGIN...ROLLBACK` על `bieebmnmkffwbqlsfozh`:
+     לפני התיקון, `INSERT` תחת `set local role anon` על דייר
+     פעיל+ציבורי אמיתי נכשל ב-`42501`. אחרי החלת המדיניות החדשה
+     (עדיין באותה עסקה): אותו insert (בלי `.select()`/`RETURNING`,
+     תואם בדיוק את דפוס-הקריאה האמיתי של הקליינט) הצליח, ואומת
+     שהשורה אכן נחתה דרך `RESET ROLE` + `SELECT` נפרד באותה עסקה;
+     מקרה-שלילה עם `tenant_id` בדוי (`00000000-...`) עדיין נדחה
+     כראוי. `ROLLBACK` בכל בדיקה — אפס שאריות. `get_advisors`
+     (security) אחרי `apply_migration` בפועל: אין ממצא חדש שמזכיר
+     `azkarot`. `esbuild --bundle --packages=external --jsx=automatic`
+     + `node --check` נקיים על `Azkarot.tsx` (רק אזהרות `import.meta`
+     הרגילות); איזון סוגריים נקי (49/49, 40/40, 5/5). `git diff --stat`
+     מאשר קובץ קליינט יחיד + מיגרציה חדשה. נדחף לענף חדש
+     `fix/01-torah-platform-azkarot-public-intake-0830`. System 35
+     KioskFleet לא נגע, per HARD STEERING; מערכות
+     08/09/bkalut-app/bkalot-admin/`zr_*`/webhook NEDARIM3873/
+     `csj`/`csj_src`/`igud`/15-egod לא נגעו. אין שליחה/חיוב אמיתיים
+     בסבב זה.
