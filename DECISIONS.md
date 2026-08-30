@@ -7709,3 +7709,58 @@
      שליחה/חיוב אמיתיים בסבב זה (0 תרומות לטננט הנוגע בדבר, ואף פעולת
      בדיקה לא כללה חיוב אמיתי מול Nedarim Plus עצמו — רק כתיבה/קריאה
      ל-DB).
+
+633. **[30/08/2026 Loop A] סבב שלילי-אך-ממצה על 01-torah-platform —
+     לתיעוד, כדי שסבב עתידי לא יחזור על אותה עבודה.** לאחר ש-P0 (סריקת
+     14-bsmachot-plus) סומן `done` וה-anti-drift שוחרר (build_tasks
+     id=15, `run_progress`#2753), P1 (35, middleware משותף כבר קיים,
+     `fe81bea8`) ו-P2 (32/36, `build_tasks` 0 todo) אומתו סגורים, המשכתי
+     ל-P3. נשלח סוכן general-purpose לסריקת כל קובץ שלא בוקר עדיין
+     (~35 קבצים: `admin/{Content,Messages,TeacherFeatures,
+     TeacherFeaturesDialog,Teachers}`, `auth/ActivateInvite`,
+     `portal/{Attendance,BulkUpload,Materials}`,
+     `public/{Azkarot,Invite,Questionnaire,RabbiPublic,RabbiQuestions,
+     SynagogueDetail}`, `components/portal/*`, `components/admin/
+     {FullAccessRequestsTab,MatchingTab,AdminLayout}`,
+     `components/synagogue/*`, `components/{branding,auth,forms}/*`,
+     `components/{FloatingChatBot,BrandLogo,Navbar,Footer,HeroSection}`,
+     `components/layout/*`) מול הסכימה/RLS החיים של `bieebmnmkffwbqlsfozh`
+     — אפס באג חדש; כל המועמדים נבדקו ונדחו (הרשאת-על מגנה על מסכי
+     admin, קומפוננטות שקוראות עמודות/טבלאות לא-קיימות מתבררות כמיובאות
+     אך ורק מ-`legacy/*` המת (issue #260) ולא מכל ראוט חי).
+
+     המשכתי בעקבות ליד פתוח מסבב קודם (`run_progress`#2748: "check other
+     bieebmnmkffwbqlsfozh edge functions' updated_at against their git
+     history") — בדקתי את כל 8 ה-edge functions המקוננים בריפו
+     (activate-invite, admin-users, ai-match-teacher, chat, create-admin,
+     nedarim-admin, nedarim-create-payment, search-lessons; nedarim-webhook
+     כבר תוקן בסבב הקודם) מול הגרסה החיה (`get_edge_function`) —
+     **כולם זהים בית-לבית** לקוד ב-git HEAD. אין פער-פריסה נוסף.
+
+     לבסוף הרצתי `get_advisors` (security+performance) על
+     `bieebmnmkffwbqlsfozh` וסיננתי ל-schema `public`: כל שורת ERROR
+     (`rls_disabled_in_public` על `pc_*`/`hf_*`/`crm_*`/`client_*`/
+     `yemot_right_config`/`rc_gabbaim`/`reminder_log`) שייכת לטבלאות
+     שמערכת 01 **אינה** נוגעת בהן כלל (`grep` על שם הטבלה בקוד/מיגרציות
+     של 01 — אפס תוצאות מעבר ל-`types.ts` הגנרי) — כלומר מערכות אחרות
+     ששותפות באותו פרויקט Supabase (`bkalut-production`) ומחוץ ל-SLICE
+     הזה, לא נגעתי. שורות ה-INFO `rls_enabled_no_policy` על
+     `admin_sessions`/`app_users`/`knowledge_chunks` הן בדיוק המצב
+     הנכון-אחרי-תיקון מ-25/08 (סעיפים הקודמים באותו עמוד ב-
+     `core.projects.note` #01) — לא רגרסיה, לא צריך פעולה. אזהרות
+     ה-WARN `*_security_definer_function_executable` על
+     `has_tenant_role`/`is_super_admin`/`order_exists`/
+     `donation_payment_status`/`order_payment_status`/
+     `tenant_accepts_public_intake`/`user_in_tenant`/`user_tenants`
+     כבר תועדו ואומתו by-design בעשרות סעיפים קודמים (חיפוש בקובץ הזה).
+
+     **מסקנה:** 01-torah-platform מוצה לעת עתה בשלוש זוויות-באג נפרדות
+     בסבב הזה (אי-התאמת סכימה/RLS, פער-פריסה של edge functions,
+     אדוויזורים). 15-egod עדיין חסום — `list_projects` בסשן הזה עדיין
+     לא כולל את `hkkkynyoigzlttpynoeo` בכלל (אומת ישירות, לא רק ניחוש
+     מסבב קודם). לא בוצע שינוי קוד/מיגרציה/פריסה בסבב הזה — רק תיעוד.
+     שום מערכת אחרת בפרויקט `bieebmnmkffwbqlsfozh` (CRM/health-funds/
+     price-compare/rights, כולן מחוץ ל-SLICE) לא נגעה. System 35
+     KioskFleet לא נגע; P2 (32/36) `build_tasks` נשאר 0 todo; מערכות/
+     סכימות מוגנות לא נגעו. אין שליחה/חיוב אמיתיים בסבב זה (רק שאילתות
+     קריאה בלבד, ללא שום כתיבה ל-DB).
