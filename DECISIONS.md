@@ -7447,3 +7447,60 @@
      (08/09/bkalut-app/bkalot-admin/`zr_*`/webhook NEDARIM3873/
      `csj`/`csj_src`/`igud`/15-egod) לא נגעו. אין שליחה/חיוב אמיתיים בסבב
      זה.
+
+## 30/08/2026 (LOOP A, סבב נוסף אותו יום) — `nedarim-webhook` הפרוס בפועל נשאר גרסה ישנה מ-20/08: תיקון decrement-stock מ-26/08 היה בקוד ומעולם לא נפרס
+
+614. **ההקשר.** אחרי אימות מחדש שנעילת ה-P0 (system-14 screenshot scan)
+     כבר סופקה היום (`ToolSearch` לכלי דפדפן/screenshot — ריק; אין
+     Chromium/Playwright; `sudo -n` דורש סיסמה — תואם `run_progress#2741`
+     והתקדימים שאחריו), ו-`core.build_tasks` ל-32/36 עומד על 0 todo ואין
+     שורות ל-01/15: שני סוכני `general-purpose` נשלחו ברצף לסרוק את כל
+     שאר קבצי ה-`src` של `01-torah-platform` שטרם נבדקו בשום סבב קודם
+     (component/page-by-page מול הסכימה החיה של `bieebmnmkffwbqlsfozh`) —
+     שני הסבבים חזרו נקיים לגמרי: כל קובץ חי תואם את הסכימה בפועל, וכל
+     הפערים שנותרו הם קוד מת שאינו מנותב מ-`App.tsx` (מתועד כבר כ-קוד מת
+     בסבבים קודמים). המשכתי לבדוק זווית שונה: פונקציות ה-DB עצמן
+     (`pg_proc`, סכמת `public`) מול השימוש בפועל בקוד, כדי לאתר "נתיב
+     כתיבה שנבנה אך מעולם לא חובר" (אותה מחלקת-באג כמו `admin-users`
+     ו-`Matching.tsx` בסבבים הקודמים היום).
+615. **הממצא.** `public.decrement_product_stock(_product_id, _qty)` קיימת
+     בפועל ב-DB (מיגרציית `20260826011456_decrement_stock_on_order_capture`
+     כבר `list_migrations`-מאושרת, `revoke` מ-`anon`/`authenticated` תואם).
+     הקוד המקומי (`apps/01-torah-platform/supabase/functions/
+     nedarim-webhook/index.ts`, בהיסטוריית git עד ומכיל את `ef783e29`
+     מ-26/08 — "01 torah-platform: decrement product stock on paid shop
+     orders") קורא ל-RPC הזה על כל `order_items` בענף `shop_order` אחרי
+     שההזמנה נתפסת, וגם מוסיף שער `.neq("payment_status","captured")`
+     שלא היה קודם. אבל `get_edge_function` על הפונקציה **הפרוסה בפועל**
+     ב-`bieebmnmkffwbqlsfozh` הראה קוד ישן לגמרי — בלי קריאת ה-RPC, בלי
+     השער — עם `updated_at` שמתאים בדיוק ל-20/08 (התאריך של
+     `63ceee03`/`b180a974`, שני התיקונים שלפני `ef783e29`). כלומר: המיגרציה
+     של ה-DB יושמה בפועל, ה-commit נדחף ל-`origin`, אבל אף אחד מהסבבים
+     שבין 26/08 ל-30/08 לא הריץ בפועל `deploy_edge_function` על השינוי
+     הזה — פער בין קוד-שנכתב-ואומת ל-קוד-שרץ-בפרודקשן. המשמעות בפועל: כל
+     הזמנת חנות אמיתית שנתפסה (`payment_status='captured'`) בין 26/08
+     ל-30/08 מעולם לא הורידה מלאי בפועל, בדיוק כמו לפני התיקון המקורי.
+616. **מה נעשה.** נפרסה מחדש הגרסה הנוכחית של `nedarim-webhook` בדיוק
+     (`deploy_edge_function`, v4→v5→v6 — v5 הכיל טעות-הקלדה קוסמטית שלי
+     במילה בתגובה ורווח מוביל, v6 תוקן להיות זהה בית-לבית לקובץ ב-git).
+     אין שינוי קוד מקומי — זו פריסה בלבד של קוד שכבר קיים ב-`origin`.
+617. **אימות.** `diff` בין הקובץ המקומי לתוכן שהוחזר מ-`get_edge_function`
+     אחרי הפריסה — זהה בית-לבית. עסקת `BEGIN` יחידה (ללא `COMMIT`, נסגרת
+     ע"י סגירת החיבור) על `bieebmnmkffwbqlsfozh`: נוצרו מוצר אמיתי
+     (`stock=10`) והזמנה אמיתית עם `order_items` (`quantity=3`) תחת
+     טננט אמיתי, סומלץ בדיוק את לוגיקת ה-webhook — `UPDATE orders SET
+     payment_status='captured' ... WHERE payment_status <> 'captured'`
+     ואז `decrement_product_stock` על כל שורת `order_items` — `stock`
+     ירד 10→7 כצפוי. הרצה חוזרת של אותו `UPDATE` (סימולציית redelivery
+     של אותו webhook) לא עדכנה אף שורה (השער האנטי-כפילות תפס), כלומר
+     קריאה שנייה לא הייתה מגיעה לשלב ה-decrement כלל — תואם בדיוק את
+     ה-`if (ord?.id)` guard בקוד האמיתי. `SELECT count(*)` על המוצר/
+     ההזמנה המדומים אחרי סגירת השאילתה מחזיר 0 — אפס שאריות. `list_migrations`
+     ו-`get_advisors` (security) לא הראו שום דבר חדש. אין שינוי קוד git
+     נוסף בסבב זה — התיקון כבר קיים ב-`origin/fix/01-torah-platform-audit-0830`
+     דרך `ef783e29`; הפעולה היחידה הייתה השלמת הפריסה החסרה. System 35
+     KioskFleet לא נגע, per HARD STEERING; P2 (32/36) `build_tasks` נשאר 0
+     todo; מערכות/סכימות מוגנות (08/09/bkalut-app/bkalot-admin/`zr_*`/
+     webhook NEDARIM3873/`csj`/`csj_src`/`igud`/15-egod) לא נגעו. אין
+     שליחה/חיוב אמיתיים בסבב זה (הפעלת RPC על נתונים מדומים בתוך עסקה
+     שנסגרה בלי commit בלבד).
