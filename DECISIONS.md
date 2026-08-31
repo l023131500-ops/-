@@ -8137,3 +8137,66 @@
      (32/36) `build_tasks` נשאר 0 todo; מערכות/סכימות מוגנות (08/09/
      bkalut-app/bkalot-admin/`zr_*`/webhook NEDARIM3873/`csj`/`csj_src`/
      `igud`/15-egod) לא נגעו. אין שליחה/חיוב אמיתיים בסבב זה.
+
+## 31/08/2026 (LOOP A, סבב נוסף ה') — `portal/BulkUpload.tsx` (`/portal/bulk-upload`): פרסר ה-CSV נשבר על כל פסיק בתוך שדה מצוטט וערבב עמודות בשקט
+
+660. **ההקשר.** P0 (מערכת 14) אומת שוב `done` (`core.build_tasks`
+     id=15). P1 (35) אסור per HARD STEERING. P2 (32/36) אומת שוב כ-0
+     שורות `todo`. `15-egod` עדיין לא נגיש דרך ה-MCP הזה. סוכן Explore
+     נשלח לסרוק את רשימת הקבצים שמעולם לא שונו באף קומיט קודם באפליקציה
+     זו (לפי `git log --diff-filter=M --name-only`): `admin/
+     TeacherFeatures{,Dialog}.tsx`, `portal/BulkUpload.tsx`, `bulk/*`,
+     `studyday/*`, `synagogue/*`, `admin/{ApiReferenceSection,
+     FullAccessRequestsTab,MatchingTab}.tsx`, `portal/{PortalLessonForm,
+     PortalMessagesTab,PortalSidebar,PublicContactForm}.tsx`, ומספר
+     עמודים ציבוריים סטטיים. המועמד הראשון שהסוכן החזיר
+     (`PortalMessagesTab.tsx` קורא `msg.sender_name`/`sender_phone`/
+     `sender_email`/`message` שאינם קיימים — השמות האמיתיים הם
+     `from_name`/`from_phone`/`from_email`/`body`) אומת כ**כפול** לפער
+     כבר-מתועד ופתוח (`core.issues#260`): `information_schema` חי מול
+     `bieebmnmkffwbqlsfozh` אישר ש-`rabbi_portals`/`org_portals`/
+     `synagogue_portals`/`org_rabbis` **אינן קיימות בכלל** — שלושת
+     דפי-האב היחידים שמרנדרים את `PortalMessagesTab` (`legacy/
+     {RabbiPortal,OrgPortal,SynagoguePortal}.tsx`, מנותבים ב-`/portal/
+     rabbi/:token` וכו') נכשלים כבר בשליפה הראשונה שלהם, לפני שמגיעים
+     לרכיב הזה בכלל — כלומר לא ניתן להגיע אליו בפועל. נכון-שלא-נגעו
+     בזה, תואם את ההחלטה הקודמת.
+
+661. **הממצא.** `pages/portal/BulkUpload.tsx` (מנותב חי ב-`/portal/
+     bulk-upload` בתוך `PortalLayout` המחייב-אימות-טננט, `App.tsx:243`)
+     מאפשר לחבר טננט להעלות קובץ CSV של שיעורים בעלה-אחת ל-`lessons`
+     האמיתית. `parseCSV()` המקורי פיצל כל שורה לפי `line.split(",")`
+     גולמי — **בלי שום מודעות לציטוט**. Excel ו-Google Sheets שניהם
+     מצטטים אוטומטית כל שדה שמכיל פסיק בעת ייצוא ל-CSV (למשל כתובת כמו
+     `"רחוב הרצל 5, ירושלים"` או תיאור עם פסיק) — קובץ כזה, שמקורו
+     בייצוא-גיליון סטנדרטי לגמרי, גרם לכל העמודות שאחרי השדה המצוטט
+     באותה שורה **לזוז בשקט** ולהיכתב ישירות ל-`lessons` האמיתית ללא
+     שום שגיאה למשתמש (למשל ה"כתובת" הנכונה נכנסת ל"תיאור" והתיאור
+     האמיתי נעלם/זז הלאה). אומתו עמודות/RLS של `lessons` מול הסכמה
+     החיה: `tenant_id, title, rabbi_name, time_hhmm, day_of_week,
+     description, address, is_active, meta` כולן קיימות בדיוק כפי
+     שהקוד שולח (**לא** באג שם-עמודה), ו-`lessons_tenant_write_ins`
+     מתירה INSERT ל-`member`/`moderator`/`tenant_admin`/`super_admin` —
+     כלומר הבאג האמיתי היחיד כאן הוא פרסור ה-CSV עצמו, לא הסכמה/RLS.
+
+662. **מה נעשה + אימות.** הוחלף הפיצול הגולמי בטוקנייזר בסגנון
+     RFC4180 (`tokenizeCSV`) שמכבד שדות מצוטטים (כולל גרש כפול בורח
+     `""`), ומטפל גם בשורה אחרונה בלי `\n` סופי. `parseCSV` עצמו נשאר
+     כמעט זהה (רק המקור לשורות/עמודות משתנה מ-`split` גולמי לתוצאת
+     הטוקנייזר). `esbuild --bundle --packages=external --jsx=automatic`
+     על הקובץ המלא נקי (רק אזהרות `import.meta` הרגילות). אומת ב-5
+     מקרי-בדיקה ב-Node על הפונקציה המחולצת: (1) שדה מצוטט עם פסיק
+     פנימי (כתובת עברית) נשמר שלם ולא מזיז עמודות; (2) גרש כפול בורח
+     (`""`) בתוך שדה מצוטט הופך לגרש בודד נכון; (3) קובץ CSV רגיל
+     בלי ציטוטים מפורש **זהה בדיוק** להתנהגות הישנה (אפס רגרסיה
+     למקרה הנפוץ); (4) שורות ריקות עדיין מסוננות, תואם ל-`.filter((l)
+     => l.trim())` הישן; (5) קובץ בלי `\n` בסוף עדיין מפרסר את השורה
+     האחרונה. `git diff --stat`: קובץ אחד, 42+/6-, תוספתי בעיקרו (רק
+     `parseCSV` שונה, שאר הקובץ — כולל ה-`useMutation`/ה-UI — לא נגע).
+     נדחף לענף חדש `fix/01-torah-platform-bulkupload-csv-quote-
+     parsing-0831` (`2d885bcb`) — לא מוזג. System 35 KioskFleet לא נגע,
+     per HARD STEERING; P2 (32/36) `build_tasks` נשאר 0 todo; מערכות/
+     סכימות מוגנות (08/09/bkalut-app/bkalot-admin/`zr_*`/webhook
+     NEDARIM3873/`csj`/`csj_src`/`igud`/15-egod) לא נגעו. אין
+     שליחה/חיוב אמיתיים בסבב זה (רק כתיבת שורות CSV-בדיקה, לא הורץ
+     מול הדאטהבייס האמיתי כי מדובר בבאג לוגיקת-לקוח טהור).
