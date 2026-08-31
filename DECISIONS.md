@@ -8690,3 +8690,63 @@
      NEDARIM3873/`csj`/`csj_src`/`igud`/15-egod) לא נגעו. 21-3=18 הענפים
      שנשארו (`fix/a-01-torah-platform-*` הישנים + `audit-0830`) אפשר
      כעת למחוק בבטחה כשהבעלים יאשר — התוכן שלהם חי בשרשרת הנוכחית.
+
+## 31/08/2026 (LOOP A, סבב נוסף) — `public.portal_photos` חסרה לגמרי; גלריית הפורטל הציבורי לא עבדה מעולם
+
+688. **ההקשר.** P0 (מערכת 14) `done`. P1 (35) אסור per HARD STEERING. P2
+     (32/36) `build_tasks` נשאר 0 todo. `15-egod` נבדק מחדש חי דרך
+     `list_projects` — עדיין לא מופיע ברשימת הפרויקטים (`hkkkynyoigzlttpynoeo`
+     נעדר). המשכתי ב-01-torah-platform דרך `core.issues` (High/Critical
+     `open`): #257 ("PortalSettings.tsx נבנה מול סכימה שאינה קיימת") ו-#259
+     ("Matching.tsx שולח חוזה שגוי ל-ai-match-teacher").
+
+689. **גילוי: שני הפריטים כבר תוקנו חלקית/לגמרי בסבבים קודמים, לא סומנו.**
+     קריאה מלאה של `PortalSettings.tsx` הראתה שכל 13 השדות הבעייתיים כבר
+     עברו ל-`profiles.meta` jsonb (הקיים) או לעמודות אמיתיות
+     (`full_name/phone/whatsapp/city/neighborhood/bio/avatar_url/language`),
+     ו-`.eq("user_id"...)` כבר תוקן ל-`.eq("id"...)`. `git log --follow` על
+     `Matching.tsx`/`FindLesson.tsx` הראה שהקומיט `90c50375` כבר תיקן את
+     חוזה ה-AI-search לפני סבב זה; אין יותר `src/pages/portal/Matching.tsx`
+     בעץ (הוחלף ב-`src/pages/public/FindLesson.tsx`, שכבר יוצר `leads` row
+     ואז קורא ל-`ai-match-teacher` עם `{lead_id}` בדיוק כמו `MatchingGuru.tsx`
+     ו-`admin/Matching.tsx`). עדכנתי את שני הרשומות ל-`status='fixed'`
+     ב-`core.issues` עם ראיות (היו `open` בטעות).
+
+690. **הפער האמיתי שנשאר: `public.portal_photos` מעולם לא נוצרה.** גם
+     `PortalSettings.tsx` (טאב גלריה, `/portal/portal-settings`) וגם
+     `RabbiPublic.tsx` (עמוד ציבורי, `/rabbi/:id`) קוראים/כותבים
+     ל-`portal_photos` לפי `teacher_id` — שני הקבצים כבר נשאו הערה
+     שמתעדת בדיוק את החוסר הזה. `grep` על כל 20+ קבצי המיגרציה: 0 תוצאות.
+     כל `addPhoto()`/`deletePhoto()` נכשל תמיד; הגלריה הציבורית תמיד ריקה.
+     (שני קוראים נוספים ל-`portal_photos` — `legacy/PublicOrgPage.tsx`
+     ו-`legacy/PublicRabbiPage.tsx` — משתמשים ב-`portal_type`/`portal_id`
+     נגד תת-המערכת הנטושה `rabbi_portals`/`org_portals` המתועדת בנפרד
+     ב-`core.issues` #260; לא נגעתי בהם — שינוי סכימה שם דורש החלטת-ארכיטקטורה
+     שאינה בהיקף הסבב הזה.)
+
+691. **מה נעשה.** מיגרציה חדשה `20260831030000_portal_photos_table.sql`
+     על `bieebmnmkffwbqlsfozh`: טבלה `portal_photos` (`teacher_id` FK ל-
+     `profiles(id)`, `image_url`, `caption`, `created_at`) + RLS: קריאה
+     ציבורית (`using (true)` — העמוד הציבורי מציג לכל מבקר, וכל URL כבר
+     מצביע ל-bucket הציבורי `portal-assets`), כתיבה/מחיקה רק לבעל
+     ה-`teacher_id` או super-admin — אותו דפוס בדיוק כמו כל טבלה
+     owner-scoped אחרת בסכימה. עדכנתי גם את שתי ההערות המיושנות בקוד
+     (״לא קיימת״ → מפנה למיגרציה).
+
+692. **אימות.** הרצתי חי מול `bieebmnmkffwbqlsfozh` בטרנזקציות
+     rolled-back (עם משתמשי-אמת לא-בדיקה): הכנסה עצמית מצליחה; הכנסה
+     בשם משתמש אחר נכשלת ל-non-admin (בדקתי גם עם משתמש שהתברר
+     super-admin בטעות בניסיון ראשון — וזה עבד *נכון*, לא חור-אבטחה, כי
+     המדיניות מתירה גם ל-super-admin, בדיוק כמו `leads_insert`; חזרתי עם
+     שני משתמשים לא-אדמין ואז זה נחסם כראוי); קריאה אנונימית ציבורית
+     מצליחה (1 שורה); כתיבה אנונימית נחסמת; מחיקה חוצת-משתמש היא no-op
+     (0 שורות); מחיקה עצמית מצליחה. `select count(*)` אחרי ה-rollback
+     = 0 — אין שאריות. `get_advisors(security)` — 0 אזהרות חדשות על
+     הטבלה. `esbuild --bundle --packages=external --jsx=automatic` נקי
+     על שני קבצי ה-`.tsx` שנערכו (רק אזהרות `import.meta`/`iife`
+     הרגילות). נדחף לענף חדש
+     `fix/01-torah-platform-portal-photos-table-0831` (`de6d258b`) — לא
+     מוזג, main לא נגע. System 35 KioskFleet לא נגע, per HARD STEERING;
+     P2 (32/36) `build_tasks` נשאר 0 todo; מערכות/סכימות מוגנות
+     (08/09/bkalut-app/bkalot-admin/`zr_*`/webhook NEDARIM3873/`csj`/
+     `csj_src`/`igud`/15-egod) לא נגעו.
