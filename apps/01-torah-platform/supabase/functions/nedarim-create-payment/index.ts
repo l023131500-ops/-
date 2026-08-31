@@ -135,8 +135,8 @@ Deno.serve(async (req) => {
       if (items?.length) {
         const productIds = [...new Set(items.map((i) => i.product_id).filter(Boolean))];
         const { data: products } = productIds.length
-          ? await supabase.from("products").select("id, price_ils").in("id", productIds)
-          : { data: [] as { id: string; price_ils: number }[] };
+          ? await supabase.from("products").select("id, price_ils, stock").in("id", productIds)
+          : { data: [] as { id: string; price_ils: number; stock: number | null }[] };
         const priceMap = new Map((products ?? []).map((p) => [p.id, Number(p.price_ils)]));
         const realTotal = items.reduce((sum, it) => {
           const realPrice = it.product_id && priceMap.has(it.product_id)
@@ -146,6 +146,30 @@ Deno.serve(async (req) => {
         }, 0);
         if (Math.abs(realTotal - Number(body.amount)) > 0.01) {
           return json({ ok: false, error: "order total does not match live product prices" }, 400);
+        }
+
+        // Nothing before this point ever checked a limited-stock product's
+        // requested quantity against products.stock -- decrement_product_stock
+        // (called from nedarim-webhook after a real charge succeeds) floors at
+        // 0 silently, it never blocks the sale. ProductDetail.tsx/useCart.tsx
+        // only floor quantity at 1 client-side, no upper bound, so a single
+        // order could request e.g. qty=500 of a product with stock=1 and this
+        // endpoint would still hand back a real, payable Nedarim iframe for
+        // it. Reject here, before real money moves, the same way the price
+        // check just above rejects a tampered total. stock=null (untracked
+        // inventory) is intentionally never capped, matching
+        // decrement_product_stock's own `stock is not null` guard.
+        const stockMap = new Map((products ?? []).map((p) => [p.id, p.stock]));
+        const requestedQtyByProduct = new Map<string, number>();
+        for (const it of items) {
+          if (!it.product_id) continue;
+          requestedQtyByProduct.set(it.product_id, (requestedQtyByProduct.get(it.product_id) || 0) + it.quantity);
+        }
+        for (const [productId, requestedQty] of requestedQtyByProduct) {
+          const stock = stockMap.get(productId);
+          if (stock !== null && stock !== undefined && requestedQty > stock) {
+            return json({ ok: false, error: "requested quantity exceeds available stock for one or more items" }, 400);
+          }
         }
       }
     }
