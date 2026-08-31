@@ -10842,3 +10842,55 @@
      main לא נגע. System 35 KioskFleet לא נגע, per HARD STEERING;
      מערכות/סכימות מוגנות (08/09/bkalut-app/bkalot-admin/`zr_*`/webhook
      NEDARIM3873/`csj`/`csj_src`/`igud`/15-egod) לא נגעו.
+
+## 31/08/2026 (LOOP A, סבב נוסף ט') — `activate-invite` (Edge Function פרוסה חי): לא בדק את המייל שהלקוח שלח — הזמנה נשרפת בשקט על חוסר-התאמה, בלי אפשרות ניסיון-חוזר
+
+771. **ההקשר.** המשך סבב P3 01-torah-platform (STEP 1 מאושר: P0 sys14
+     `done`, P1(35) אסור per HARD STEERING, P2(32/36) `core.build_tasks`
+     נשאר 0 `todo`, 15-egod עדיין לא נגיש דרך `list_projects`). `core.issues`
+     נבדק תחילה — השורות הפתוחות היחידות על 01-torah-platform (#138/#172/
+     #201/#203/#260) כולן חסומות במפורש על הכרעת-בעלים (SMTP/confirm-email
+     בפרויקט מוגן, טלפון בפוטר, טבלאות legacy-portal חסרות) ולא זמינות
+     לתיקון סבב-בודד. הופעל סוכן general-purpose עם רשימת-הדרה עצמאית
+     שנבנתה מזנב DECISIONS.md (כל מחלקות הבאגים שכבר נסגרו היום) כדי
+     למצוא פער אמיתי וטרי.
+
+772. **הממצא.** `supabase/functions/activate-invite/index.ts` (Edge Function
+     פרוסה חי, `verify_jwt=false`, פרויקט `bieebmnmkffwbqlsfozh`) — שני
+     ראוטים ציבוריים חיים, `/invite` (`Invite.tsx`) ו-`/auth/activate`
+     (`ActivateInvite.tsx`), אוספים שדה מייל הניתן לעריכה ומשתמשים בו
+     client-side ל-`signInWithPassword` שאחרי ההפעלה. הפונקציה מעולם לא
+     אימתה את המייל הזה מול ההזמנה — חיפשה לפי `invite_code` בלבד ויצרה
+     את משתמש ה-Auth תחת `invite.email` (מה-DB), בלי קשר למה שהלקוח שלח.
+     מייל מוקלד-לא-נכון/ישן/שגוי גרם לחשבון להיווצר תחת כתובת שונה ממה
+     שהלקוח מיד ניסה להתחבר איתה — כישלון מובטח — בעוד `tenant_invites.
+     used_at` כבר מסומן, נועל את המוזמן לצמיתות בלי אפשרות ניסיון-חוזר
+     עצמי.
+
+     **התיקון.** קובץ אחד. הוספת בדיקה מיד אחרי שערי `expires_at`/
+     `used_at`: אם שדה `email` שנשלח קיים ואינו תואם (case-insensitive)
+     את `invite.email`, מוחזרת שגיאה `{"ok":false,"error":"כתובת המייל אינה
+     תואמת את ההזמנה"}` (400) *לפני* שההזמנה נצרכת או שמשתמש ה-Auth
+     נוצר. אין שינוי סכימה/RLS/מיגרציה.
+
+     **האימות.** חי, על שורות אמיתיות, עם ניקוי מלא אחרי: נוצרה שורת
+     `tenant_invites` אמיתית (טננט `mehubarim`). שחזור-קדם-תיקון: קריאת
+     `curl` לפונקציה הפרוסה (v3) עם מייל לא-תואם → `{"ok":true,...}`,
+     ו-`used_at`/`user_id` כבר מסומנים למרות המייל השגוי — מאשר את הבאג
+     בדיוק כפי שנותח. נמחק משתמש ה-Auth השגוי, אופסו `used_at`/`user_id`.
+     נפרסה הפונקציה המתוקנת (v4) דרך `deploy_edge_function`. אחרי-תיקון,
+     מייל לא-תואם → `{"ok":false,"error":"כתובת המייל אינה תואמת את ההזמנה"}`,
+     וההזמנה נשארה `used_at: null` (לא נשרפה). אחרי-תיקון, מייל תואם
+     (case שונה) → `{"ok":true,...}` הצלחה מלאה — `memberships`/
+     `user_roles`/`profiles.portal_type` כולם נוצרו נכון (ללא רגרסיה).
+     נוקו שני משתמשי הבדיקה (מחיקה קאסקדית של memberships/user_roles/
+     profiles) ושורת ה-`tenant_invites` — `COUNT` סופי על כל הטבלאות
+     הרלוונטיות = אפס. `esbuild --bundle --packages=external` נקי.
+     אין שינוי RLS/סכימה בסבב זה — `get_advisors(security)`: 74 לינטים,
+     זהה לבסיס המתועד (סבב #762), אין לינט חדש הקשור ל-`activate-invite`/
+     `tenant_invites`. אין שליחה/חיוב אמיתיים. נדחף לענף חדש
+     `fix/01-torah-platform-invite-email-mismatch-0831` (`09df084e`) —
+     לא מוזג, main לא נגע (אומת `HEAD` ללא שינוי). System 35 KioskFleet
+     לא נגע, per HARD STEERING; מערכות/סכימות מוגנות (08/09/bkalut-app/
+     bkalot-admin/`zr_*`/webhook NEDARIM3873/`csj`/`csj_src`/`igud`/
+     15-egod) לא נגעו.
