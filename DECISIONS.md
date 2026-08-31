@@ -10512,3 +10512,73 @@
      נגע, per HARD STEERING; מערכות/סכימות מוגנות (08/09/bkalut-app/
      bkalot-admin/`zr_*`/webhook NEDARIM3873/`csj`/`csj_src`/`igud`/
      15-egod) לא נגעו.
+
+## 31/08/2026 (LOOP A) — 01-torah-platform: `profiles.portal_type` מעולם לא נכתב — כל משתמש רואה תפריט "רב" גם כשהטננט שלו הוא בית-כנסת/ארגון
+
+761. **ההקשר.** המשך סבב P3 01-torah-platform (STEP 1 מאושר: P0 sys14
+     `done` מ-30/08, P1(35) אסור per HARD STEERING, P2(32/36)
+     `core.build_tasks` נשאר 0 `todo`, 15-egod עדיין לא ב-
+     `list_projects`). הפעלתי סוכן `general-purpose` עם רשימת-החרגה
+     מפורשת (#700-#760, בעיקר RLS/בעלות על materials/forum_posts/lessons,
+     storage tenant-scope, ותקלת leads/nedarim_submissions) שהתבקש
+     במפורש לחפש מחלקת-פער אחרת — שדה שנאסף ולא נשלח, שאילתה שבורה,
+     פיצ'ר חצי-מחובר — לא עוד grep על `pg_policies`.
+
+762. **הממצא.** `components/portal/PortalSidebar.tsx` (שורות 22-62) בונה
+     את כל תפריט הניווט הפורטלי + כותרת הפורטל לפי `profiles.portal_type`
+     שנקרא ב-`useEffect` (שורה 53), עם `menuByType` שמכיל רק שלושה
+     מפתחות: `rabbi`/`synagogue`/`organization`, ונופל בחזרה ל-`rabbi`
+     כשאין התאמה (שורה 61). אבל שום קוד בפלטפורמה לא כותב אף פעם ל-
+     `profiles.portal_type` — `supabase/functions/activate-invite/
+     index.ts` (מסלול היצירה היחיד של משתמש-פורטל אמיתי) מעדכן
+     `preferred_tenant_id` בלבד (שורות 99-102 לפני התיקון), למרות
+     שהוא כבר קורא `invite.tenant_id` ויכול לדעת בקלות את סוג הטננט.
+     אימתתי חי מול `bieebmnmkffwbqlsfozh`: לעמודה `profiles.portal_type`
+     יש `column_default='standard'` — ערך שאינו מפתח ב-`menuByType`
+     כלל — וכל שבעת הפרופילים האמיתיים הקיימים אכן `portal_type=
+     'standard'`. `admin/Teachers.tsx` (מסך יצירת ההזמנה) כן כותב
+     `tenants.type` נכון מתוך `PORTAL_TYPES` (בדיוק `rabbi`/
+     `organization`/`synagogue`, אותם מפתחות בדיוק כמו `menuByType`) —
+     אבל `PortalSidebar.tsx` קורא מ-`profiles.portal_type`, עמודה
+     נפרדת לגמרי בטבלה נפרדת, שאף שדה בטופס לא מזין. `memberships`/
+     `tenant_invites`/`user_roles` ריקים לגמרי כרגע בייצור (אף הזמנה
+     אמיתית לא הופעלה עדיין) — כלומר הבאג עוד לא פגע במשתמש אמיתי, אבל
+     יפגע בוודאות בהפעלת ההזמנה האמיתית הראשונה של בית-כנסת/ארגון (רוב
+     שלושת הטננטים החיים כבר מוגדרים `organization`/`religious_council`,
+     לא `rabbi`). לא חופף לשום ממצא קודם (#700-#760): לא RLS/בעלות, לא
+     טבלה/עמודה לא-קיימת (העמודה קיימת ותקפה תחבירית), אלא פיצ'ר
+     חצי-מחובר — עמודה שנקראת במקום אחד ולא נכתבת אף פעם באף מקום.
+
+     **התיקון.** `activate-invite/index.ts`: הרחבתי את ה-`select` על
+     `tenant_invites` להביא גם `tenants(type)` (embed דרך ה-FK הקיים,
+     שום שינוי סכימה), ועדכון ה-`profiles` היחיד בפונקציה (שורות
+     99-107) כותב עכשיו גם `portal_type: invite.tenants?.type ||
+     "rabbi"` לצד `preferred_tenant_id` הקיים — אותה קריאת `update`
+     בודדת, שדה נוסף אחד בלבד.
+
+     **אימות.** `esbuild --bundle` נקי על הפונקציה המעודכנת. פרסתי
+     בפועל ל-`bieebmnmkffwbqlsfozh` (`deploy_edge_function`, גרסה 3)
+     ובניתי תרחיש-קצה-לקצה אמיתי כי זו Edge Function ולא ניתן
+     ל-`BEGIN/ROLLBACK`: יצרתי טננט-בדיקה אמיתי (`type='synagogue'`)
+     + שורת `tenant_invites` אמיתית, קראתי ל-endpoint החי דרך `curl`
+     עם `invite_code`/`password_input`/`new_password` אמיתיים —
+     התקבל `{"ok":true,...}`, ו-`SELECT` מיד אחרי אישר
+     `profiles.portal_type='synagogue'` (לא `'standard'`) יחד עם
+     `preferred_tenant_id`/`memberships`/`user_roles` נכונים — התיקון
+     עובד קצה-לקצה על ה-endpoint החי בפועל, לא רק בקריאת קוד. ניקיתי
+     אחרי עצמי: `DELETE FROM auth.users` (קסקייד מוחק
+     `profiles`/`memberships`/`user_roles` אוטומטית — אומתי מראש דרך
+     `pg_constraint`, כל השלושה עם `confdeltype='c'`) + מחיקת שורות
+     `tenant_invites`/`tenants` הזמניות; `COUNT` נפרד אחרי כל מחיקה
+     אישר אפס שאריות בכל שש הטבלאות. `get_advisors(security)`: 74
+     לינטים — זהה לבייסליין התיעוד הקודם, ללא אזכור חדש. אין שינוי
+     סכימה/RLS. אין שליחה/חיוב/מייל אמיתיים (המשתמש שנוצר היה
+     `@example.com` זמני ונמחק). אפס רגרסיה — קובץ אחד, שינוי תוסף
+     (שדה אחד ב-`select`, שדה אחד ב-`update` קיים); שום שדה/מסלול אחר
+     בפונקציה לא נגע (ה-rate-limiting הקיים מ-#104-106 נשאר זהה
+     לגמרי). נדחף לענף חדש
+     `fix/01-torah-platform-portal-type-never-written-0831` — לא
+     מוזג, main לא נגע. System 35 KioskFleet לא נגע, per HARD
+     STEERING; מערכות/סכימות מוגנות (08/09/bkalut-app/bkalot-admin/
+     `zr_*`/webhook NEDARIM3873/`csj`/`csj_src`/`igud`/15-egod) לא
+     נגעו.

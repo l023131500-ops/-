@@ -60,7 +60,7 @@ Deno.serve(async (req) => {
 
     const { data: invite, error: invErr } = await admin
       .from("tenant_invites")
-      .select("id, tenant_id, email, full_name, phone, initial_password, role, used_at, expires_at")
+      .select("id, tenant_id, email, full_name, phone, initial_password, role, used_at, expires_at, tenants(type)")
       .eq("invite_code", invite_code)
       .maybeSingle();
 
@@ -96,9 +96,14 @@ Deno.serve(async (req) => {
       role: invite.role,
     });
 
-    // Set preferred tenant
+    // Set preferred tenant + the portal_type PortalSidebar.tsx reads to pick
+    // the menu (rabbi/synagogue/organization) -- previously left at its
+    // 'standard' column default forever, since nothing wrote it here.
     await admin.from("profiles")
-      .update({ preferred_tenant_id: invite.tenant_id })
+      .update({
+        preferred_tenant_id: invite.tenant_id,
+        portal_type: invite.tenants?.type || "rabbi",
+      })
       .eq("id", created.user.id);
 
     return jr({ ok: true, user_id: created.user.id, tenant_id: invite.tenant_id });
