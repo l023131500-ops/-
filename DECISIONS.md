@@ -8499,3 +8499,68 @@
      per HARD STEERING; P2 (32/36) `build_tasks` נשאר 0 todo; מערכות/
      סכימות מוגנות (08/09/bkalut-app/bkalot-admin/`zr_*`/webhook
      NEDARIM3873/`csj`/`csj_src`/`igud`/15-egod) לא נגעו.
+
+## 31/08/2026 (LOOP A, סבב נוסף) — `/azkarot`: העמוד הציבורי הציג תמיד רשימה ריקה למבקר אנונימי
+
+678. **ההקשר.** P0 (מערכת 14) מאומת `done`. P1 (35) אסור per HARD
+     STEERING. P2 (32/36) `build_tasks` נשאר 0 todo. `15-egod`
+     (`hkkkynyoigzlttpynoeo`) עדיין לא מופיע ב-`list_projects` — נבדק
+     מחדש חי, עדיין לא נגיש (וגם הסכימה `egod` על פרויקט ה-hub
+     `uhnrgujb` מתועדת כ-out-of-scope, לא קשורה למספר-15). שני סבבי
+     חיפוש עצמאיים (general-purpose agent) על 01-torah-platform לא
+     מצאו באג חדש שניתן לתקן ללא הכרעת בעלים — כולם או כפילות של
+     `admin/TeacherFeatures.tsx` (נבדק וסומן כבר בסבב קודם כטעון-הכרעת-
+     מוצר, לא תוקן שוב) או ממצאים שאומתו כתקינים/קיימים-כבר. חיפוש
+     שלישי, עצמי, ב-`get_advisors`(security) על `bieebmnm` סינן רק
+     שורות סכימת `public` ואיתר `service_submission_rows` (VIEW
+     SECURITY DEFINER) — אך אומת (grep על `01-functions-views-triggers.sql`)
+     שזו VIEW תחת סכימת `igud` (מוגנת), המשותפת ל-10-bkalot-rights/
+     27-bkalut-price, לא שייכת ל-01 ולא נוגעת.
+
+679. **הממצא.** `src/pages/public/Azkarot.tsx` (ראוט חי `/azkarot`,
+     ללא שער-הרשאה כלל — נמצא ברשימת הראוטים הציבוריים ב-`App.tsx`
+     לצד `/lessons`/`/synagogues`/`/shop`) שולף `select("*")` מטבלת
+     `azkarot` כדי להציג "אזכרות אחרונות". אבל מדיניות ה-RLS היחידה
+     ל-SELECT (`azkarot_tenant_read`) בודקת רק `user_in_tenant(tenant_id)`
+     (חבר-טננט/סופר-אדמין בלבד) — שונה במפורש ממדיניות ה-INSERT על
+     אותה טבלה (`azkarot_tenant_write_ins`), שכבר תוקנה בסבב קודם
+     (30/08) להוסיף `tenant_accepts_public_intake(tenant_id)` כדי
+     שמבקר אנונימי יוכל בכלל *לשלוח* אזכרה. כלומר: מבקר אנונימי יכול
+     לשלוח אזכרה חדשה, אבל לעולם לא רואה שום אזכרה ברשימה — ה-RLS
+     חוסם בשקט (0 שורות, בלי שגיאה) בלי קשר לכמות הנתונים האמיתיים.
+     אומת חי מול `bieebmnm`: `pg_policies` על `azkarot` מאשרת את
+     המדיניות המדויקת הזו; `pg_get_functiondef(user_in_tenant)` מאשר
+     שהיא תלויה לגמרי ב-`auth.uid()` (ריק אצל אנונימי) ולא כוללת את
+     הביטוי `tenant_accepts_public_intake` בכלל. כרגע `count(*)=0`
+     בטבלה האמיתית (תכונה חדשה, מיגרציית ה-INSERT מ-30/08), כך שהבאג
+     טרם נצפה בפועל ע"י אף לקוח אמיתי — אבל מבני, לא תלוי-נתונים.
+
+680. **מה נעשה ואומת.** לא הורחבה מדיניות SELECT גורפת על הטבלה עצמה
+     (שהיא בכוונה כוללת `family_contact_name`/`family_contact_phone` —
+     PII שאסור לחשוף לאנונימי). במקום זה: מיגרציה חדשה
+     `20260831020000_azkarot_public_read_fn.sql` מוסיפה פונקציית
+     `SECURITY DEFINER` צרה `public.azkarot_upcoming(_tenant_id uuid)`
+     שמחזירה רק את העמודות שהעמוד הציבורי באמת מציג (`id`,
+     `deceased_name`, `date_of_death_hebrew`, `notes`, `created_at`),
+     מסוננת ל-`tenant_accepts_public_intake(_tenant_id) OR
+     user_in_tenant(_tenant_id)` — אותו שער בדיוק כמו ה-INSERT, פלוס
+     תמיכה בחברי-טננט כמו קודם. `GRANT EXECUTE` ל-`anon`/`authenticated`.
+     `Azkarot.tsx` עבר מ-`.from("azkarot").select("*")` ל-
+     `.rpc("azkarot_upcoming", { _tenant_id: tenant!.id })` — שינוי
+     קובץ יחיד, ללא שינוי ב-RLS/במדיניות של הטבלה עצמה. יושם חי דרך
+     `apply_migration` על הפרויקט האמיתי (`bieebmnmkffwbqlsfozh`).
+     אימות: (א) `npx esbuild --bundle --packages=external --jsx=automatic`
+     נקי (רק אזהרות `import.meta`/`iife` הרגילות). (ב) הוכנסה שורת-
+     בדיקה אמיתית וזמנית לטננט אמיתי (`מחוברים`,
+     `141bfe2f-3e22-4990-a46c-94d394f08a08` — טננט אחר מזה שנפגע
+     בתקרית #629, בכוונה), ואומת חי דרך REST עם מפתח `anon` הציבורי:
+     `GET /rest/v1/azkarot?...&select=*` החזיר `[]` (הטבלה עצמה נשארת
+     פרטית), בעוד `POST /rest/v1/rpc/azkarot_upcoming` החזיר את השורה
+     האמיתית עם העמודות הבטוחות בלבד (בלי טלפון/שם-איש-קשר). (ג) שורת
+     הבדיקה נמחקה מיד לאחר, `count(*)=0` שוב באותו טננט. אין שינוי
+     במדיניות/גישה קיימת, אין שליחה/חיוב אמיתיים. נדחף לענף חדש
+     `fix/01-torah-platform-azkarot-public-read-0831` (`d6707adb`) —
+     לא מוזג, main לא נגע. System 35 KioskFleet לא נגע, per HARD
+     STEERING; P2 (32/36) `build_tasks` נשאר 0 todo; מערכות/סכימות
+     מוגנות (08/09/bkalut-app/bkalot-admin/`zr_*`/webhook NEDARIM3873/
+     `csj`/`csj_src`/`igud`/15-egod) לא נגעו.
