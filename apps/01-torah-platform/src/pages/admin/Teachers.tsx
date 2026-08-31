@@ -42,7 +42,7 @@ const AdminTeachers = () => {
   // every action (core.issues #258).
   const fetchAll = async () => {
     const [{ data: p }, { data: i }] = await Promise.all([
-      supabase.from("profiles").select("*, tenant:tenants(id, status, type, name, display_name, public_token)").order("created_at", { ascending: false }),
+      supabase.from("profiles").select("*, tenant:tenants(id, status, type, name, display_name)").order("created_at", { ascending: false }),
       supabase.from("tenant_invites").select("*, tenants(id, name, display_name, type)").order("created_at", { ascending: false }),
     ]);
     setProfiles(p || []);
@@ -291,9 +291,9 @@ const AdminTeachers = () => {
                       <Button size="sm" variant="outline" className="mr-1 gap-1" onClick={() => setFeaturesFor(p)}>
                         <Settings className="w-3 h-3" />הרשאות
                       </Button>
-                      {p.tenant?.public_token && (
+                      {p.tenant?.id && (
                         <Button size="sm" variant="outline" className="mr-1 gap-1" onClick={() => {
-                          navigator.clipboard.writeText(buildRabbiUrl(p.tenant.public_token));
+                          navigator.clipboard.writeText(buildRabbiUrl(p.id));
                           toast({ title: "קישור הפרופיל הציבורי הועתק" });
                         }}>
                           <Share2 className="w-3 h-3" />קישור הפצה
