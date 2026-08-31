@@ -8750,3 +8750,65 @@
      P2 (32/36) `build_tasks` נשאר 0 todo; מערכות/סכימות מוגנות
      (08/09/bkalut-app/bkalot-admin/`zr_*`/webhook NEDARIM3873/`csj`/
      `csj_src`/`igud`/15-egod) לא נגעו.
+
+## 31/08/2026 (LOOP A, סבב נוסף) — `admin-users` ו-`create-admin`: תיקוני-pagination ל-`listUsers()` שכבר אושרו וסופקו ל-`origin` מ-24/08 מעולם לא נפרסו בפועל
+
+693. **ההקשר.** המשך אותה שיטת חקירה חופשית על 01-torah-platform
+     (`core.issues` הפתוחים היחידים — #260/#261/#138/#201/#203/#172 —
+     חסומים כולם על החלטת-בעלים, לא נגעתי בהם). הפעלתי שני סוכנים
+     במקביל: אחד השווה בית-לבית את כל 9 פונקציות ה-Edge של המערכת
+     (`activate-invite`, `admin-users`, `ai-match-teacher`, `chat`,
+     `create-admin`, `nedarim-admin`, `nedarim-create-payment`,
+     `nedarim-webhook`, `search-lessons`) בין `get_edge_function` (חי,
+     `bieebmnmkffwbqlsfozh`) לקוד המקומי; שני חיפש מחדש התאמות-עמודות
+     שגויות ב-8 קבצי `.tsx` שטרם תועדו ב-DECISIONS.md
+     (`admin/Analytics.tsx`, `admin/Commerce.tsx`, `admin/Forums.tsx`,
+     `admin/LeadsGuru.tsx`, `admin/TeacherFeaturesDialog.tsx`,
+     `portal/Forums.tsx`, `portal/StudySchedule.tsx`,
+     `public/Questionnaire.tsx`). הסבב השני חזר נקי כמעט לגמרי — כל
+     8 הקבצים תואמים לסכימה החיה; הממצא היחיד (`TeacherFeaturesDialog.tsx`
+     קורא `c.is_restricted` שלא קיים ב-`forum_categories`) הוא תג
+     קוסמטי-בלבד שלעולם לא מוצג, לא נתיב-כתיבה/קריאה שבור — לא נבחר
+     כתיקון הסבב.
+
+694. **הממצא האמיתי.** הסבב הראשון מצא **פער-פריסה** באותה משפחה בדיוק
+     שכבר תועדה פעמיים היום (רשומות 615-617, `nedarim-webhook`): שתי
+     פונקציות — `admin-users` (`git log`: קומיט `7097f6df`, "paginate
+     listUsers() in admin-users list action", 24/08) ו-`create-admin`
+     (קומיט `3c821d7a`, "paginate listUsers() in create-admin bootstrap
+     function", אותו תאריך) — תיקנו את אותו באג בדיוק: `auth.admin.
+     listUsers()` מחזירה עמוד יחיד (ברירת מחדל/`perPage` שהוגדר), ובלי
+     לולאת-pagination עד תום, משתמשים שמעבר לעמוד הראשון נעלמים בשקט.
+     שני הקומיטים כבר `git merge-base --is-ancestor`-מאושרים כאבות-קדמון
+     של ה-HEAD הנוכחי (כלומר כבר נדחפו ל-`origin` לפני הסבב הזה) — אבל
+     `get_edge_function` על שתיהן הראה את הקוד **הישן** בפועל:
+     `admin-users` (v2) עדיין עם `listUsers({ perPage: 500 })` קריאה
+     בודדת (מדלג על משתמשים 501+); `create-admin` (v2) עדיין עם
+     `listUsers()` ברירת-מחדל (50/עמוד, מדלג על מיילים בעמוד 2+ כשמנסים
+     לאתר משתמש קיים לצורך איפוס-סיסמה בבוט-סטרפ). `SELECT count(*) FROM
+     auth.users` על `bieebmnmkffwbqlsfozh` מחזיר 7 היום — כלומר הבאג
+     לא פוגע כרגע בפועל, אבל התיקון המאושר-ומאומת פשוט לא הגיע לייצור.
+
+695. **מה נעשה.** אין שינוי קוד מקומי — הקוד הנכון כבר קיים ב-`origin`
+     תחת שני הקומיטים הנ"ל. `npx esbuild --bundle --packages=external
+     --jsx=automatic` על שני קבצי ה-`index.ts` (ומאזן-סוגריים ידני:
+     81/81 מסולסלים + 161/161 עגולים ב-`admin-users`, 34/34 + 47/47
+     ב-`create-admin`) — נקי. פרסתי מחדש את שני הקבצים כפי שהם ב-git
+     (`deploy_edge_function`, אותם `verify_jwt` כמו בפועל: `admin-users`
+     `false`, `create-admin` `true`) — `admin-users` v2→v3,
+     `create-admin` v2→v3.
+
+696. **אימות.** `get_edge_function` אחרי הפריסה על שתי הפונקציות —
+     השוואת התוכן המוחזר מול הקבצים המקומיים זהה בית-לבית (כולל לולאת
+     ה-`for (let page = 1; ...)` עד `length < 1000`). לא בוצע שינוי
+     סכימה/DDL בסבב זה, ולכן `get_advisors(security)` לא נדרש לפי
+     הכללים — הרצתי בכל זאת כבדיקת-שפיות כללית ולא נמצאה שום אזהרה
+     חדשה הקשורה ל-`admin-users`/`create-admin`/`user_roles`/`profiles`.
+     אין שינוי-קוד git נוסף בסבב זה — התיקון עצמו כבר קיים ב-`origin`
+     דרך `7097f6df`/`3c821d7a`; הפעולה היחידה הייתה השלמת הפריסה
+     החסרה, אותו דפוס בדיוק כמו רשומות 615-617 (`nedarim-webhook`). אין
+     שליחה/חיוב/מייל אמיתיים בסבב זה. נדחף לענף חדש
+     `fix/01-torah-platform-admin-users-create-admin-deploy-lag-0831b`.
+     לא מוזג, main לא נגע. System 35 KioskFleet לא נגע, per HARD
+     STEERING; מערכות/סכימות מוגנות (08/09/bkalut-app/bkalot-admin/
+     `zr_*`/webhook NEDARIM3873/`csj`/`csj_src`/`igud`/15-egod) לא נגעו.
