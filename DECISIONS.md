@@ -9899,3 +9899,62 @@
      per HARD STEERING; מערכות/סכימות מוגנות (08/09/bkalut-app/
      bkalot-admin/`zr_*`/webhook NEDARIM3873/`csj`/`csj_src`/`igud`/
      15-egod) לא נגעו.
+
+## 31/08/2026 (LOOP A) — 01-torah-platform: `nedarim-admin` `GetHistoryJson` חשף היסטוריית-תרומות של טננט שכן על חשבון Mosad משותף
+
+743. **ההקשר.** המשך ישיר לסבב הקודם (#741-742), שהוסיף בדיקת-בעלות
+     ל-`transaction_id` ב-`nedarim-admin` אך תיעד במפורש פער פתוח: "the
+     actions with no `transaction_id` (e.g. `GetHistoryJson` with just
+     `from_date`/`to_date`) are not affected by the new ownership check."
+     P0 (מערכת 14) `done`. P1 (35) אסור per HARD STEERING. P2 (32/36)
+     `core.build_tasks` נשאר 0 `todo`. `15-egod` עדיין לא נגיש. הפעלתי
+     סוכן `general-purpose` שקרא תחילה את 15-20 הרשומות האחרונות
+     ב-`DECISIONS.md` כדי לא לחזור על תיקון קיים, ואז נסגר בדיוק על
+     הפער שסבב 741-742 השאיר פתוח בכוונה.
+
+744. **הממצא.** `nedarim-admin/index.ts` טוען `MosadId`/`ApiPassword`
+     לפי טננט מ-`nedarim_configs`; טננט בלי שורת-תצורה משלו נופל
+     בשקט לחשבון ברירת-המחדל הפלטפורמי המשותף
+     (`NEDARIM_MOSAD_ID`/`NEDARIM_API_PASSWORD`). אימות חי מול
+     `bieebmnmkffwbqlsfozh`: **2 מתוך 5 טננטים** (מרכז תורה ותפילה,
+     קהילת נצח ישראל) חסרי `nedarim_configs` משלהם וחולקים בפועל את
+     אותו חשבון ברירת-מחדל. בדיקת-הבעלות שהוספה בסבב 742 רצה רק
+     `if (body.transaction_id)` — הפעולה `GetHistoryJson` מקבלת רק
+     `from_date`/`to_date` בלי `transaction_id`, ולכן דילגה על הבדיקה
+     לגמרי. ה-API של Nedarim Plus ל-`GetHistoryJson` מסונן רק לפי
+     `MosadId`, לא לפי טננט-קורא, כך שהוא מחזיר **את כל התנועות בחשבון
+     המשותף** (שמות תורמים, טלפונים, סכומים, טקסט הקדשה) — כל
+     `tenant_admin` של אחד משני הטננטים החולקים חשבון יכול לבקש
+     `GetHistoryJson` ולקבל בחזרה גם את היסטוריית התרומות של הטננט
+     השני. אין כרגע שורות `tenant_admin` בפועל לשני הטננטים האלה
+     (`user_roles` ריק), כך שאין ניצול חי של משתמש-לא-סופר-אדמין היום
+     — אך זהו נתיב-קוד פרוס, בר-הגעה, ללא הגנה, עם תנאי מוקדם (2/5
+     טננטים חולקים חשבון) שכבר קיים בפרודקשן, לא תרחיש היפותטי.
+     בדיקת `pg_policy` על `nedarim_transactions` אישרה RLS תקין ומוגן
+     כראוי — הפער הוא אך ורק ב-edge function, לא ב-RLS.
+
+     **מה נבנה ואומת.** ענף `else if (!cfg?.mosad_id)` נוסף מיד אחרי
+     בדיקת-הבעלות הקיימת: כשאין `transaction_id` (כלומר `GetHistoryJson`)
+     **וגם** לטננט הקורא אין `mosad_id` ייעודי משלו (כלומר הוא על חשבון
+     ברירת-המחדל המשותף) — מוחזר `403` לפני שהבקשה נבנית/נשלחת ל-Nedarim
+     Plus. טננטים עם תצורת Mosad ייעודית משלהם ממשיכים לעבוד בדיוק כמו
+     קודם. קובץ אחד בלבד שונה, 13 שורות נוספו, שום שורה לא הוסרה. אומת:
+     `esbuild --bundle --packages=external` נקי, מאזן-סוגריים 61/61
+     מסולסלים, 95/95 עגולים, 8/8 מרובעים. לוגיקת ההחלטה שוכפלה ב-Node
+     מול 6 תרחישים (עסקה בבעלות, עסקה זרה, `GetHistoryJson` עם תצורה
+     ייעודית, `GetHistoryJson` על חשבון משותף, זיכוי-עם-עסקה-בבעלות על
+     חשבון משותף, זיכוי-עם-עסקה-זרה על חשבון משותף) — כל 6 עברו כצפוי,
+     כולל מקרה-האי-רגרסיה הקריטי (זיכוי לגיטימי על עסקה בבעלות ממשיך
+     לעבוד גם על חשבון משותף). משכתי `get_edge_function` החי (v3) לפני
+     העריכה ואישרתי זהות-בית לקובץ המקומי. נפרס מחדש דרך
+     `deploy_edge_function` (`nedarim-admin` v3→v4) ואומת שהתוכן הפרוס
+     זהה לקובץ המקומי. `get_advisors(security)` לפני ואחרי — 70 lints
+     בשני המקרים, אף אזהרה חדשה, אף אחת נוגעת ל-nedarim. אין
+     שליחה/חיוב/מייל אמיתיים — זו אך ורק שער-הרשאה, מעולם לא הופעל
+     ה-API האמיתי של Nedarim. אפס רגרסיה — קובץ אחד, ענף תוסף בלבד.
+     נדחף לענף חדש
+     `fix/01-torah-platform-nedarim-admin-gethistoryjson-shared-account-0831`
+     (`541756d8`). לא מוזג, main לא נגע. System 35 KioskFleet לא נגע,
+     per HARD STEERING; מערכות/סכימות מוגנות (08/09/bkalut-app/
+     bkalot-admin/`zr_*`/webhook NEDARIM3873/`csj`/`csj_src`/`igud`/
+     15-egod) לא נגעו.
