@@ -20,6 +20,7 @@ interface Props {
   maxDisplayWidth?: number;
   stageRef?: React.MutableRefObject<Konva.Stage | null>;
   interactive?: boolean;
+  editingId?: string | null; // שכבת טקסט שנמצאת כרגע בעריכה inline על הקנבס — מוסתרת כאן, ה-textarea של Editor.tsx מציגה אותה במקומה
 }
 
 // רקע: solid / gradient / pattern / image
@@ -225,7 +226,7 @@ function DecorationNode({ layer }: { layer: DecorationLayer }) {
   );
 }
 
-export default function CanvasStage({ doc, selectedId, onSelect, onChangeLayer, onEditText, maxDisplayWidth = 520, stageRef, interactive = true }: Props) {
+export default function CanvasStage({ doc, selectedId, onSelect, onChangeLayer, onEditText, maxDisplayWidth = 520, stageRef, interactive = true, editingId = null }: Props) {
   const localRef = useRef<Konva.Stage | null>(null);
   const setRef = (n: Konva.Stage | null) => { localRef.current = n; if (stageRef) stageRef.current = n; };
   const scale = Math.min(1, maxDisplayWidth / doc.width);
@@ -252,6 +253,7 @@ export default function CanvasStage({ doc, selectedId, onSelect, onChangeLayer, 
         <Background doc={doc} />
         {sorted.map((l) => {
           if (l.visible === false) return null;
+          if (l.id === editingId) return null; // שכבה בעריכה inline — ה-textarea השקופה של Editor.tsx מציגה אותה במקום ה-Text של Konva
           if (l.type === "text") return <TextNode key={l.id} layer={l as TextLayer} selected={selectedId === l.id} interactive={interactive} onSelect={() => onSelect?.(l.id)} onChange={(p) => onChangeLayer?.(l.id, p)} onEdit={() => onEditText?.(l.id)} />;
           if (l.type === "image") return <ImageNode key={l.id} layer={l as ImageLayer} interactive={interactive} onSelect={() => onSelect?.(l.id)} onChange={(p) => onChangeLayer?.(l.id, p)} />;
           if (l.type === "shape") return <ShapeNode key={l.id} layer={l as ShapeLayer} />;
