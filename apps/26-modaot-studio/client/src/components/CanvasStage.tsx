@@ -7,7 +7,7 @@ import { Stage, Layer, Rect, Text, Group, Path, Image as KImage, Circle, Line } 
 import useImage from "use-image";
 import type Konva from "konva";
 import { Text as KonvaTextShape } from "konva/lib/shapes/Text";
-import type { TemplateDoc, AnyLayer, TextLayer, ImageLayer, ShapeLayer, DecorationLayer } from "@shared/layers";
+import type { TemplateDoc, AnyLayer, TextLayer, ImageLayer, ShapeLayer, DecorationLayer, TemplateBackground } from "@shared/layers";
 import { fitText, wrapText } from "@/lib/autofit";
 import { ORNAMENTS, CORNER_ORNAMENT_PATH } from "@/lib/ornaments";
 
@@ -16,6 +16,7 @@ interface Props {
   selectedId?: string | null;
   onSelect?: (id: string | null) => void;
   onChangeLayer?: (id: string, patch: Partial<AnyLayer>) => void;
+  onChangeBackground?: (patch: Partial<TemplateBackground>) => void; // גרירת תמונת הרקע עצמה
   onEditText?: (id: string) => void; // דאבל-קליק על שכבת טקסט — עריכה inline
   maxDisplayWidth?: number;
   stageRef?: React.MutableRefObject<Konva.Stage | null>;
@@ -24,11 +25,27 @@ interface Props {
 }
 
 // רקע: solid / gradient / pattern / image
-function Background({ doc }: { doc: TemplateDoc }) {
+function Background({ doc, interactive, onSelect, onChangeBackground }: {
+  doc: TemplateDoc; interactive?: boolean; onSelect?: () => void; onChangeBackground?: (patch: Partial<TemplateBackground>) => void;
+}) {
   const bg = doc.background;
   const [img] = useImage(bg.type === "image" && bg.src ? bg.src : "", "anonymous");
   if (bg.type === "image" && img) {
-    return <KImage image={img} x={0} y={0} width={doc.width} height={doc.height} listening={false} />;
+    // offsetX/offsetY נגררים ע"י המשתמש; לא מוגדר = 0,0, זהה בדיוק להתנהגות הקודמת (רקע קבוע ב-0,0)
+    return (
+      <KImage
+        image={img}
+        x={bg.offsetX ?? 0}
+        y={bg.offsetY ?? 0}
+        width={doc.width}
+        height={doc.height}
+        listening={!!interactive}
+        draggable={!!interactive}
+        onClick={onSelect}
+        onTap={onSelect}
+        onDragEnd={(e) => onChangeBackground?.({ offsetX: e.target.x(), offsetY: e.target.y() })}
+      />
+    );
   }
   if (bg.type === "gradient" && bg.gradient) {
     const angle = ((bg.gradient.angle ?? 135) * Math.PI) / 180;
@@ -226,7 +243,7 @@ function DecorationNode({ layer }: { layer: DecorationLayer }) {
   );
 }
 
-export default function CanvasStage({ doc, selectedId, onSelect, onChangeLayer, onEditText, maxDisplayWidth = 520, stageRef, interactive = true, editingId = null }: Props) {
+export default function CanvasStage({ doc, selectedId, onSelect, onChangeLayer, onChangeBackground, onEditText, maxDisplayWidth = 520, stageRef, interactive = true, editingId = null }: Props) {
   const localRef = useRef<Konva.Stage | null>(null);
   const setRef = (n: Konva.Stage | null) => { localRef.current = n; if (stageRef) stageRef.current = n; };
   const scale = Math.min(1, maxDisplayWidth / doc.width);
@@ -250,7 +267,7 @@ export default function CanvasStage({ doc, selectedId, onSelect, onChangeLayer, 
       style={{ background: "#fff", borderRadius: 8, boxShadow: "0 8px 40px rgba(0,0,0,0.18)" }}
     >
       <Layer>
-        <Background doc={doc} />
+        <Background doc={doc} interactive={interactive} onSelect={() => onSelect?.(null)} onChangeBackground={onChangeBackground} />
         {sorted.map((l) => {
           if (l.visible === false) return null;
           if (l.id === editingId) return null; // שכבה בעריכה inline — ה-textarea השקופה של Editor.tsx מציגה אותה במקום ה-Text של Konva

@@ -108,6 +108,8 @@ export interface TemplateBackground {
   pattern?: "subtle_damask" | "linen" | "radial_glow" | "vignette" | "none";
   patternColor?: string;
   src?: string | null; // image / AI background (data URL)
+  offsetX?: number; // מיקום התמונה, נגרר ע"י המשתמש — 0 = מקורי (מלא את הקנבס מ-0,0, כמו בעבר)
+  offsetY?: number;
 }
 
 export interface TemplateDoc {

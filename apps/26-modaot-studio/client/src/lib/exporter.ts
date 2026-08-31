@@ -125,7 +125,9 @@ function decorationNodeToSVG(l: DecorationLayer): string {
 function backgroundToSVG(doc: TemplateDoc): string {
   const bg = doc.background;
   if (bg.type === "image" && bg.src) {
-    return `<image href="${esc(bg.src)}" x="0" y="0" width="${doc.width}" height="${doc.height}" preserveAspectRatio="xMidYMid slice"/>`;
+    // offsetX/offsetY = מיקום שנגרר ע"י המשתמש בעורך (CanvasStage) — אותה נוסחה בדיוק,
+    // כדי שהרקע ב-Figma ייצא במיקום שהמשתמש בפועל ראה, לא תמיד ב-0,0
+    return `<image href="${esc(bg.src)}" x="${bg.offsetX ?? 0}" y="${bg.offsetY ?? 0}" width="${doc.width}" height="${doc.height}" preserveAspectRatio="xMidYMid slice"/>`;
   }
   if (bg.type === "gradient" && bg.gradient) {
     const angle = ((bg.gradient.angle ?? 135) * Math.PI) / 180;
