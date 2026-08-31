@@ -71,7 +71,12 @@ const AdminDashboard = () => {
       supabase.from("contact_messages").select("*").order("created_at", { ascending: false }),
       supabase.from("rabbi_portals").select("*").order("created_at", { ascending: false }),
       supabase.from("org_portals").select("*").order("created_at", { ascending: false }),
-      supabase.from("nedarim_submissions").select("*").order("created_at", { ascending: false }),
+      // nedarim_submissions is a shared table fed by the org-wide Nedarim Plus
+      // webhook and carries a mosad_id per row -- other institutions' forms land
+      // here too (their raw_json can hold real ID numbers / health / income
+      // data), so this app must only ever read its own Mosad's rows (7016674,
+      // matching nedarim_configs.mosad_id for every tenant of this platform).
+      supabase.from("nedarim_submissions").select("*").eq("mosad_id", "7016674").order("created_at", { ascending: false }),
       supabase.from("study_day_events").select("*").order("created_at", { ascending: false }),
       supabase.from("synagogues").select("*").order("created_at", { ascending: false }),
       supabase.from("synagogue_portals").select("*").order("created_at", { ascending: false }),

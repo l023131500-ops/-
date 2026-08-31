@@ -33,9 +33,15 @@ const NedarimManagement = () => {
 
   const fetchSubmissions = async () => {
     setLoading(true);
+    // nedarim_submissions is a shared table fed by the org-wide Nedarim Plus
+    // webhook and carries a mosad_id per row -- other institutions' forms land
+    // here too (their raw_json can hold real ID numbers / health / income
+    // data), so this app must only ever read its own Mosad's rows (7016674,
+    // matching nedarim_configs.mosad_id for every tenant of this platform).
     const { data } = await supabase
       .from("nedarim_submissions")
       .select("*")
+      .eq("mosad_id", "7016674")
       .order("created_at", { ascending: false });
     if (data) setSubmissions(data);
     setLoading(false);
