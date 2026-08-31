@@ -14,6 +14,7 @@ import { toast } from "sonner";
 import Navbar from "@/components/Navbar";
 import ChipSelect from "@/components/forms/ChipSelect";
 import ProgressiveFormStep from "@/components/forms/ProgressiveFormStep";
+import { useTenant } from "@/hooks/useTenant";
 
 const SUBJECTS = [
   "גמרא עיון", "גמרא בקיאות", "משניות", "דף יומי", "עמוד היומי", "עין יעקב",
@@ -62,6 +63,7 @@ const benefits = [
 ];
 
 const TeachersLanding = () => {
+  const { tenant } = useTenant();
   const [showForm, setShowForm] = useState(false);
   const [step, setStep] = useState(0);
   const [submitted, setSubmitted] = useState(false);
@@ -126,13 +128,29 @@ const TeachersLanding = () => {
       toast.error("נא למלא מייל או לסמן 'אין לי מייל'");
       return;
     }
+    if (!tenant) {
+      toast.error("שגיאה בטעינת המערכת, נסו לרענן את הדף");
+      return;
+    }
     setSubmitting(true);
-    const { error } = await supabase.from("teacher_leads").insert({
+    // `teacher_leads` never existed in the DB (every submit 42P01'd, silently
+    // swallowed by the catch below). The real, live target for "become a
+    // teacher" leads is `leads` with kind="teacher_offer" — see
+    // JoinTeacher.tsx and FloatingChatBot.tsx's submit_teacher branch, and
+    // admin/Leads.tsx + admin/LeadsGuru.tsx which already read+render it.
+    const { error } = await supabase.from("leads").insert({
+      tenant_id: tenant.id,
+      kind: "teacher_offer",
       full_name: `${firstName} ${lastName}`,
       phone, email: noEmail ? "" : email,
-      subjects,
-      experience: `רקע: ${background}, סטטוס: ${workStatus}, מצב אישי: ${maritalStatus}, ת.לידה: ${birthDate}`,
-      notes: `שפה: ${language}, מגדר: ${gender}, ניסיון ציבורי: ${publicSpeaking}, קהל: ${audienceType.join(",")}, סגנון שיעור: ${lessonStyle.join(",")}, סגנון דיבור: ${speakingStyle.join(",")}, מקומות: ${locations.join(",")}, ימים: ${availableDays.join(",")}, שעות: ${availableHours.join(",")}, מרחק: ${distance}, הגעה: ${transport}, תשלום: ${payment}, ממליץ1: ${rec1Title} ${rec1Name} ${rec1Phone}, ממליץ2: ${rec2Title} ${rec2Name} ${rec2Phone}`,
+      source: "teachers-landing",
+      raw_data: {
+        subjects, background, workStatus, maritalStatus, birthDate,
+        language, gender, publicSpeaking, audienceType, lessonStyle, speakingStyle,
+        locations, availableDays, availableHours, distance, transport, payment,
+        rec1: { title: rec1Title, name: rec1Name, phone: rec1Phone },
+        rec2: { title: rec2Title, name: rec2Name, phone: rec2Phone },
+      },
     });
     setSubmitting(false);
     if (error) toast.error("שגיאה בשליחה");
