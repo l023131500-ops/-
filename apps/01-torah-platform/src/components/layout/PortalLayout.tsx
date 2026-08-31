@@ -29,6 +29,7 @@ import {
   UserCog,
   GraduationCap,
   Bell,
+  ScrollText,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Navbar } from "./Navbar";
@@ -91,14 +92,19 @@ export function PortalLayout() {
         ]
       : [];
 
-  // רב / מורה הוראה (architecture.md §5.2): "שאל את הרב" – ניהול שאלות ותשובות.
-  // rabbi_questions RLS already scopes moderator/tenant_admin to their own
-  // tenant_id, but only a global super_admin-only screen ever existed
+  // רב / מורה הוראה (architecture.md §5.2): "שאל את הרב" – ניהול שאלות ותשובות +
+  // "הלכה יומית". rabbi_questions RLS already scopes moderator/tenant_admin to
+  // their own tenant_id, but only a global super_admin-only screen ever existed
   // (admin/RabbiQuestions.tsx) -- a real rabbi/mori_horaah tenant had no nav
-  // path to their own portal/rabbi-questions screen.
+  // path to their own portal/rabbi-questions screen. halacha_daily had the same
+  // gap: table + RLS existed since 20260519000002 and a public read-only list
+  // (pages/public/HalachaDaily.tsx) already existed, but zero write UI/nav.
   const rabbiItems =
     tenant?.type === "rabbi" || tenant?.type === "mori_horaah"
-      ? [{ to: "/portal/rabbi-questions", icon: MessageCircle, label: "שאל את הרב" }]
+      ? [
+          { to: "/portal/rabbi-questions", icon: MessageCircle, label: "שאל את הרב" },
+          { to: "/portal/halacha-daily", icon: ScrollText, label: "הלכה יומית" },
+        ]
       : [];
 
   // pages/portal/Lessons.tsx ("השיעורים שלי") is a personal self-listing screen

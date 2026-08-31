@@ -93,6 +93,7 @@ const PortalAzkarot = lazy(() => import("@/pages/portal/Azkarot"));
 const PortalNewsletters = lazy(() => import("@/pages/portal/Newsletters"));
 const PortalAnnouncements = lazy(() => import("@/pages/portal/Announcements"));
 const PortalRabbiQuestions = lazy(() => import("@/pages/portal/RabbiQuestions"));
+const PortalHalachaDaily = lazy(() => import("@/pages/portal/HalachaDaily"));
 const PortalAds = lazy(() => import("@/pages/portal/Ads"));
 const PortalGallery = lazy(() => import("@/pages/portal/Gallery"));
 const PortalDonations = lazy(() => import("@/pages/portal/Donations"));
@@ -259,6 +260,7 @@ export default function App() {
                     <Route path="newsletters" element={<PortalNewsletters />} />
                     <Route path="announcements" element={<PortalAnnouncements />} />
                     <Route path="rabbi-questions" element={<PortalRabbiQuestions />} />
+                    <Route path="halacha-daily" element={<PortalHalachaDaily />} />
                     <Route path="ads" element={<PortalAds />} />
                     <Route path="gallery" element={<PortalGallery />} />
                     <Route path="donations" element={<PortalDonations />} />
