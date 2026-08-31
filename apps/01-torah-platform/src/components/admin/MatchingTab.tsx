@@ -76,37 +76,35 @@ export default function MatchingTab() {
 
   useEffect(() => {
     const load = async () => {
-      const [tRes, sRes, nRes] = await Promise.all([
-        supabase.from("teacher_leads").select("*").order("created_at", { ascending: false }),
-        supabase.from("seeker_leads").select("*").order("created_at", { ascending: false }),
-        supabase.from("nedarim_submissions").select("*").order("created_at", { ascending: false }),
-      ]);
-
-      const tLeads: Lead[] = (tRes.data || []).map((t: any) => ({
-        id: t.id, name: t.full_name, phone: t.phone || "", email: t.email || "",
-        city: t.city || "", subject: (t.subjects || []).join(", "), style: t.experience || "",
-        notes: t.notes || "", source: "site" as const, created_at: t.created_at,
-      }));
-      const sLeads: Lead[] = (sRes.data || []).map((s: any) => ({
-        id: s.id, name: s.contact_name, phone: s.phone || "", email: s.email || "",
-        city: s.city || "", subject: s.subject || "", style: s.lesson_type || "",
-        notes: s.notes || "", source: "site" as const, created_at: s.created_at,
-      }));
-
-      // Add nedarim submissions
-      for (const n of (nRes.data || [])) {
-        const type = (n.submission_type || "").toLowerCase();
-        const lead: Lead = {
-          id: n.id, name: n.name || "", phone: n.phone || "", email: "",
-          city: n.city || "", subject: n.subject || "", style: "",
-          notes: n.notes || "", source: "nedarim", created_at: n.created_at,
-        };
-        if (type.includes("teacher")) tLeads.push(lead);
-        else if (type.includes("seeker")) sLeads.push(lead);
+      // teacher_leads/seeker_leads/nedarim_submissions never existed on the
+      // live multi-tenant schema (teacher_leads/seeker_leads were folded into
+      // `leads` with a `kind` column during the tenant migration -- same
+      // rename already accounted for by admin/MatchingGuru.tsx and
+      // admin/Matching.tsx -- and nedarim_submissions is an unrelated
+      // Nedarim-webhook ingestion table with no name/city/subject columns).
+      // Every load here 42703/42P01'd and both errors were silently dropped,
+      // so this tab always rendered "אין רבנים עדיין" / "אין בקשות עדיין" no
+      // matter how many real leads existed. Read `leads` instead, split by
+      // kind, exactly like the two already-working matching screens do.
+      const { data: l, error } = await supabase
+        .from("leads")
+        .select("*")
+        .order("created_at", { ascending: false });
+      if (error) {
+        console.error("MatchingTab: failed to load leads", error.message);
+        setTeachers([]);
+        setSeekers([]);
+        return;
       }
 
-      setTeachers(tLeads);
-      setSeekers(sLeads);
+      const toLead = (x: any): Lead => ({
+        id: x.id, name: x.full_name || "", phone: x.phone || "", email: x.email || "",
+        city: x.area || "", subject: x.preferred_subject || "", style: "",
+        notes: x.message || "", source: "site" as const, created_at: x.created_at,
+      });
+
+      setTeachers((l || []).filter((x: any) => x.kind === "teacher_offer").map(toLead));
+      setSeekers((l || []).filter((x: any) => (x.kind || "lesson_request") === "lesson_request").map(toLead));
     };
     load();
   }, []);
