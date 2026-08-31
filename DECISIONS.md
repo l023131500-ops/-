@@ -8945,3 +8945,66 @@
      main לא נגע. System 35 KioskFleet לא נגע, per HARD STEERING;
      מערכות/סכימות מוגנות (08/09/bkalut-app/bkalot-admin/`zr_*`/
      webhook NEDARIM3873/`csj`/`csj_src`/`igud`/15-egod) לא נגעו.
+
+## 31/08/2026 (LOOP A, סבב נוסף) — `donation_campaigns.raised_ils`: אותה מחלקת-באג כמו זיוף מחיר ה-checkout, הפעם דרך RLS `for update` בלי הגבלת-עמודה
+
+704. **ההקשר.** המשך אותה שיטת חקירה חופשית (הבעיות הפתוחות היחידות
+     ב-01-torah-platform — #138/#172/#201/#203/#260/#261 — כולן עדיין
+     חסומות על הכרעת-בעלים, לא נגעתי בהן). סוכן Explore קיבל הנחיה
+     מפורשת לחפש רק מחוץ לאזורים שכבר נסרקו (הבאג הקודם ב-
+     `nedarim-create-payment`, `components/bulk`, `components/studyday`,
+     `nedarim-webhook`, `SynagogueShowcase.tsx`) ולחפש דווקא מקומות
+     נוספים שבהם קוד-צד-לקוח נסמך על שדה כספי/מחושב. הממצא: מדיניות
+     ה-RLS `campaigns_write_upd` על `public.donation_campaigns`
+     (`for update using/with check has_tenant_role(..., 'tenant_admin')`)
+     מרשה ל-tenant_admin לעדכן **כל עמודה** בשורה, כולל `raised_ils` —
+     RLS מגביל שורות, לא עמודות. `raised_ils` אמור להיכתב אך ורק ע"י
+     לולאת ה-CAS ב-`nedarim-webhook` (מפתח service-role) אחרי תשלום
+     נדרים אמיתי שנתפס בפועל, אבל שום דבר לא מונע מסשן-הלקוח הקיים
+     של tenant_admin (טעון בכל עמוד ב-SPA) לקרוא ישירות
+     `.from("donation_campaigns").update({ raised_ils: 999999 })` —
+     בלי קשר לכך שאין כרגע מסך ניהול-קמפיינים בכלל ב-UI (`grep` מאשר
+     ש-`donation_campaigns` מוזכר רק ב-`DonationPage.tsx` הציבורי
+     ו-`types.ts`). הערך המזויף מוצג ל-*תורמים אמיתיים* בעמוד
+     `/donate/:slug` כאילו נאסף כסף אמיתי — אותה מחלקת "לסמוך על שדה
+     כספי שהלקוח כותב" כמו #196/#194 וזיוף-המחיר שתוקן קודם בסבב הזה,
+     רק שהפעם התוקף הוא תפקיד מחובר (tenant_admin) ולא אנונימי לגמרי.
+
+705. **מה נבנה.** מיגרציה `20260831050000_donation_campaigns_protect_
+     raised_ils.sql`: פונקציית טריגר `protect_campaign_raised_ils()`
+     (plpgsql, `set search_path = public, pg_temp` — נדרש כדי לא
+     לפתוח אזהרת `function_search_path_mutable` חדשה, כפי שאומת
+     ונתפס ב-`get_advisors` ותוקן מיד) על `before update` — אם
+     `new.raised_ils is distinct from old.raised_ils` וגם
+     `auth.role()` אינו `'service_role'`, מחזירה את `new.raised_ils`
+     לערך הישן במקום לזרוק שגיאה. RLS לא יכולה להגביל עמודה בודדת,
+     אז טריגר הוא הכלי הנכון כאן — לא שינוי במדיניות. עדכון של עמודות
+     אחרות (למשל `title`) באותה קריאה ממשיך לעבוד רגיל, רק
+     `raised_ils` "נדבק" לערכו הקודם אם מישהו שאינו service_role מנסה
+     לשנות אותו.
+
+706. **אימות.** שלוש טרנזקציות rolled-back על `bieebmnmkffwbqlsfozh`
+     עם `user_id`/`tenant_id` אמיתיים (הוספת שורת `user_roles`
+     זמנית ל-tenant_admin + קמפיין `QA DELETE ME` עם `raised_ils=100`,
+     נמחקו ב-rollback): (1) **לפני** התיקון — `tenant_admin` מזויף
+     הצליח לשנות `raised_ils` ל-999999 (אושר בקריאה חיה, אימת שהבאג
+     אמיתי ולא false-positive). (2) **אחרי** התיקון, אותו ניסיון על
+     שדה `raised_ils` בלבד — נחסם, הערך נשאר 100. (3) אותו ניסיון אבל
+     ביחד עם עדכון לגיטימי לשדה `title` באותה קריאה — ה-`title`
+     השתנה, `raised_ils` עדיין נדבק ל-100 (מוכיח שההגנה היא
+     עמודה-ספציפית, לא חוסמת את כל השורה). (4) `service_role` (מדמה
+     את `nedarim-webhook`) מבצע בדיוק את לולאת ה-CAS האמיתית שלו
+     (`update ... set raised_ils = 100+250 where raised_ils = 100`) —
+     הצליח, `raised_ils` עלה ל-350 — מוכיח שנתיב ה-webhook הלגיטימי
+     לא נפגע. `select count(*)` אחרי כל `ROLLBACK` = 0 על הקמפיין
+     ועל שורת ה-`user_roles` הזמנית — אין שאריות (שורת `super_admin`
+     האמיתית והקיימת-מראש של אותו `user_id` נשארה בדיוק כפי שהייתה).
+     `get_advisors(security)` הופעל פעמיים — פעם ראשונה תפסה אזהרת
+     `function_search_path_mutable` חדשה על הפונקציה, תוקנה מיד
+     (`set search_path`), פעם שנייה — 0 אזהרות חדשות. אין שינוי קוד
+     `.tsx`/`.ts` בסבב זה — מיגרציית SQL בלבד. אין שליחה/חיוב/מייל
+     אמיתיים בסבב זה. נדחף לענף חדש
+     `fix/01-torah-platform-donation-campaigns-raised-ils-tamper-0831`.
+     לא מוזג, main לא נגע. System 35 KioskFleet לא נגע, per HARD
+     STEERING; מערכות/סכימות מוגנות (08/09/bkalut-app/bkalot-admin/
+     `zr_*`/webhook NEDARIM3873/`csj`/`csj_src`/`igud`/15-egod) לא נגעו.
