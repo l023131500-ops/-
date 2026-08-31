@@ -68,7 +68,9 @@ const AdminDashboard = () => {
       // folded into `leads` with a `kind` column during the tenant migration,
       // same rename MatchingTab.tsx already accounts for.
       supabase.from("leads").select("*").order("created_at", { ascending: false }),
-      supabase.from("contact_messages").select("*").order("created_at", { ascending: false }),
+      // contact_messages never existed on the live schema -- inbound contact
+      // (ContactSection.tsx, Footer.tsx) writes to portal_messages.
+      supabase.from("portal_messages").select("*").order("created_at", { ascending: false }),
       supabase.from("rabbi_portals").select("*").order("created_at", { ascending: false }),
       supabase.from("org_portals").select("*").order("created_at", { ascending: false }),
       // nedarim_submissions is a shared table fed by the org-wide Nedarim Plus
@@ -987,14 +989,14 @@ const AdminDashboard = () => {
                 {contactMessages.map((msg) => (
                   <div key={msg.id} className="bg-card rounded-2xl border border-border p-5 hover:border-primary/20 transition-all">
                     <div className="flex items-center gap-2 mb-2">
-                      <h3 className="font-body font-bold text-card-foreground">{msg.name}</h3>
-                      {msg.role && <Badge variant="outline" className="font-body border-teal/30 text-primary">{msg.role}</Badge>}
+                      <h3 className="font-body font-bold text-card-foreground">{msg.from_name}</h3>
+                      {msg.status && msg.status !== "new" && <Badge variant="outline" className="font-body border-teal/30 text-primary">{msg.status}</Badge>}
                       {msg.subject && <Badge variant="outline" className="font-body border-gold/30 text-gold">{msg.subject}</Badge>}
                     </div>
-                    <p className="font-body text-sm text-muted-foreground mb-2">{msg.message}</p>
+                    <p className="font-body text-sm text-muted-foreground mb-2">{msg.body}</p>
                     <div className="flex gap-3 text-xs font-body text-muted-foreground">
-                      {msg.phone && <span className="flex items-center gap-1"><Phone className="w-3 h-3" /> {msg.phone}</span>}
-                      {msg.email && <span className="flex items-center gap-1"><Mail className="w-3 h-3" /> {msg.email}</span>}
+                      {msg.from_phone && <span className="flex items-center gap-1"><Phone className="w-3 h-3" /> {msg.from_phone}</span>}
+                      {msg.from_email && <span className="flex items-center gap-1"><Mail className="w-3 h-3" /> {msg.from_email}</span>}
                     </div>
                   </div>
                 ))}
