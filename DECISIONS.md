@@ -8812,3 +8812,56 @@
      לא מוזג, main לא נגע. System 35 KioskFleet לא נגע, per HARD
      STEERING; מערכות/סכימות מוגנות (08/09/bkalut-app/bkalot-admin/
      `zr_*`/webhook NEDARIM3873/`csj`/`csj_src`/`igud`/15-egod) לא נגעו.
+
+## 31/08/2026 (LOOP A, סבב נוסף) — `teacher_features`/`teacher_forum_access`: אותו באג `multiple_permissive_policies` שכבר תוקן על `tenant_features` יום לפני, פשוט לא הגיע לטבלאות האלה כי עוד לא היו קיימות
+
+697. **ההקשר.** המשך אותה שיטת חקירה חופשית (`core.issues` הפתוחים
+     היחידים — #260/#261/#138/#201/#203/#172 — עדיין חסומים כולם על
+     החלטת-בעלים, לא נגעתי בהם). סוכן Explore סרק 45 קבצים שמעולם לא
+     תועדו ב-DECISIONS.md; רוב הממצאים היו false-positive (עיצוב
+     מכוון עם הערה מסבירה, כמו ה-fallback ב-`tenant.ts`, או קוד מת
+     שאינו מנותב מ-`App.tsx` בכלל, כמו `SynagogueDetailModal.tsx`
+     שמגיע אך ורק דרך `IndexLegacy.tsx` הלא-מנותב). הרצתי `get_advisors
+     (performance)` על `bieebmnmkffwbqlsfozh` כדי לאתר פער אמיתי:
+     שתי אזהרות `multiple_permissive_policies` (WARN) על
+     `public.teacher_features`/`public.teacher_forum_access` — טבלאות
+     שנוצרו ע"י סבב קודם של הלולאה הזו עצמה (מיגרציה
+     `20260826100000_teacher_features_tables.sql`, לתיקון "אשר מגיד"
+     שנכשל בשקט). כל טבלה הייתה עם policy `_read` (select using true)
+     ו-policy `_write` (`for all` עם `is_super_admin`) — וה-`for all`
+     חופף ל-SELECT מול ה-`_read`, כך שכל קריאה מעריכה `is_super_admin()`
+     לחינם. `pg_policies` על `tenant_features` (הטבלה המקבילה
+     שה-comment במיגרציה מצטט כמקור העיצוב) חשפה שהיא כבר עברה בדיוק
+     את אותו תיקון יום לפני (`torah_platform_multiple_permissive_
+     policies_fix`, 25/08) — פיצול ל-`_ins`/`_upd`/`_del` נפרדים בלי
+     SELECT — אבל `teacher_features`/`teacher_forum_access` נוצרו רק
+     יום אחרי, אז לא נכללו.
+
+698. **מה נבנה.** מיגרציה `20260831040000_teacher_features_multiple_
+     permissive_policies_fix.sql`: `drop policy` על שני ה-`_write`
+     הישנים, `create policy` נפרד ל-INSERT (`with check`
+     `is_super_admin`), UPDATE (`using`+`with check`) ו-DELETE (`using`)
+     על כל אחת מהשתי הטבלאות — פיצול זהה בית-לבית לתבנית שכבר קיימת
+     ואומתה על `tenant_features`. הרשאות אפקטיביות לא משתנות: קריאה
+     הייתה כבר פתוחה לכולם דרך `_read`, וכתיבה הייתה כבר חסומה
+     ל-super-admin בלבד — רק ה-SELECT-הכפול נעלם.
+
+699. **אימות.** הופעל ישירות מול `bieebmnmkffwbqlsfozh` דרך
+     `apply_migration`. `get_advisors(performance)` אחרי — 0 אזהרות
+     `multiple_permissive_policies` נותרו על שתי הטבלאות (רק אזהרת
+     `unindexed_foreign_keys` קיימת-מראש ולא-קשורה על
+     `teacher_forum_access_category_id_fkey`, לא נגעתי בה — מחוץ
+     לסקופ הסבב). שתי הטבלאות ריקות בייצור (0 שורות) אז כל בדיקה
+     בוצעה בטרנזקציות rolled-back עם משתמשי-אמת אמיתיים: `anon` קורא
+     משתי הטבלאות בהצלחה; משתמש לא-אדמין (`רבקה`) קורא בהצלחה, INSERT
+     נחסם, UPDATE/DELETE משפיעים על 0 שורות (RLS מסנן את השורה, לא
+     שגיאה); super-admin אמיתי (`מוטי`) מבצע INSERT+UPDATE+DELETE
+     בהצלחה על שתי הטבלאות. `select count(*)` אחרי כל `ROLLBACK` = 0
+     על שתי הטבלאות — אין שאריות. אין שינוי קוד `.tsx`/`.ts` בסבב זה —
+     `TeacherFeaturesDialog.tsx` כבר משתמש ב-`upsert` (לא ב-`for all`
+     ישיר), אז הפיצול ל-INSERT/UPDATE נפרד שקוף לו לגמרי. אין
+     שליחה/חיוב/מייל אמיתיים בסבב זה. נדחף לענף חדש
+     `fix/01-torah-platform-teacher-features-permissive-policies-0831`.
+     לא מוזג, main לא נגע. System 35 KioskFleet לא נגע, per HARD
+     STEERING; מערכות/סכימות מוגנות (08/09/bkalut-app/bkalot-admin/
+     `zr_*`/webhook NEDARIM3873/`csj`/`csj_src`/`igud`/15-egod) לא נגעו.
