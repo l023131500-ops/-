@@ -3,6 +3,7 @@ import { ScrollText, Calendar } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
 import { useTenant } from "@/hooks/useTenant";
+import { localDateString } from "@/lib/utils";
 
 export default function HalachaDaily() {
   const { tenant } = useTenant();
@@ -10,7 +11,7 @@ export default function HalachaDaily() {
     queryKey: ["halacha-list", tenant?.id],
     enabled: !!tenant?.id,
     queryFn: async () => {
-      const today = new Date().toISOString().slice(0, 10);
+      const today = localDateString();
       const { data } = await supabase
         .from("halacha_daily")
         .select("*")

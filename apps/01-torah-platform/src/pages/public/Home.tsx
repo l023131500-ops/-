@@ -5,6 +5,7 @@ import { Card, CardContent, CardTitle, CardDescription, CardHeader } from "@/com
 import { useTenant, useTenantFeature } from "@/hooks/useTenant";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { localDateString } from "@/lib/utils";
 
 export default function Home() {
   const { tenant } = useTenant();
@@ -35,7 +36,7 @@ export default function Home() {
     queryKey: ["halacha-today", tenant?.id],
     enabled: !!tenant?.id && hasHalacha,
     queryFn: async () => {
-      const today = new Date().toISOString().slice(0, 10);
+      const today = localDateString();
       const { data } = await supabase
         .from("halacha_daily")
         .select("*")

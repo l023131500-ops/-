@@ -7,21 +7,10 @@ import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
 import { useTenant } from "@/hooks/useTenant";
 import { toast } from "sonner";
+import { localDateString } from "@/lib/utils";
 
 type LessonRow = { id: string; title: string; rabbi_name: string | null; time_hhmm: string | null };
 type ParticipantRow = { id: string; full_name: string; phone: string | null };
-
-// Returns the browser's local calendar date (YYYY-MM-DD), not UTC.
-// `new Date().toISOString()` is always UTC, so in timezones ahead of UTC
-// (e.g. Israel, UTC+2/+3) it returns *yesterday's* date for the first
-// hours of every local day — attendance saved/queried during that window
-// would silently land on the wrong date.
-function localDateString(d: Date = new Date()): string {
-  const year = d.getFullYear();
-  const month = String(d.getMonth() + 1).padStart(2, "0");
-  const day = String(d.getDate()).padStart(2, "0");
-  return `${year}-${month}-${day}`;
-}
 
 export default function Attendance() {
   const { tenant } = useTenant();

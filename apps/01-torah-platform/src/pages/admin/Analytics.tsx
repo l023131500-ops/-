@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip as RTooltip } from "recharts";
 import { supabase } from "@/integrations/supabase/client";
+import { localDateString } from "@/lib/utils";
 
 export default function Analytics() {
   const { data } = useQuery({
@@ -11,7 +12,7 @@ export default function Analytics() {
       const { data } = await supabase.from("donations").select("amount_ils, created_at, payment_status").eq("payment_status", "captured");
       const buckets: Record<string, number> = {};
       (data || []).forEach((d: any) => {
-        const day = new Date(d.created_at).toISOString().slice(0, 10);
+        const day = localDateString(new Date(d.created_at));
         buckets[day] = (buckets[day] || 0) + Number(d.amount_ils);
       });
       return Object.entries(buckets).map(([day, total]) => ({ day, total })).sort((a, b) => a.day.localeCompare(b.day));
