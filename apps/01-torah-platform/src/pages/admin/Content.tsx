@@ -18,9 +18,10 @@ const AdminContent = () => {
   const [search, setSearch] = useState("");
 
   const load = async () => {
-    const { data: ms } = await supabase.from("materials").select("*").order("created_at", { ascending: false });
+    const { data: ms, error } = await supabase.from("materials").select("*").order("created_at", { ascending: false });
+    if (error) { toast.error("שגיאה בטעינת החומרים: " + error.message); return; }
     setMaterials(ms || []);
-    const ids = Array.from(new Set((ms || []).map((m: any) => m.uploader_id)));
+    const ids = Array.from(new Set((ms || []).map((m: any) => m.owner_user_id).filter(Boolean)));
     if (ids.length) {
       const { data: profs } = await supabase.from("profiles").select("id, full_name").in("id", ids);
       const map: Record<string, string> = {};
@@ -32,14 +33,16 @@ const AdminContent = () => {
   useEffect(() => { load(); }, []);
 
   const updateStatus = async (id: string, status: string, notes?: string) => {
-    await supabase.from("materials").update({ status, admin_notes: notes || null }).eq("id", id);
+    const { error } = await supabase.from("materials").update({ status, rejection_reason: notes || null }).eq("id", id);
+    if (error) { toast.error("שגיאה: " + error.message); return; }
     toast.success(status === "approved" ? "הקובץ אושר" : status === "rejected" ? "הקובץ נדחה" : "עודכן");
     load();
   };
 
   const remove = async (id: string) => {
     if (!confirm("למחוק את הקובץ?")) return;
-    await supabase.from("materials").delete().eq("id", id);
+    const { error } = await supabase.from("materials").delete().eq("id", id);
+    if (error) { toast.error("שגיאה: " + error.message); return; }
     toast.success("נמחק");
     load();
   };
@@ -47,7 +50,7 @@ const AdminContent = () => {
   const filtered = materials.filter(m =>
     (statusFilter === "all" || m.status === statusFilter) &&
     (categoryFilter === "all" || m.category === categoryFilter) &&
-    (!search || m.title?.includes(search) || profilesMap[m.uploader_id]?.includes(search))
+    (!search || m.title?.includes(search) || profilesMap[m.owner_user_id]?.includes(search))
   );
 
   const counts = {
@@ -114,7 +117,7 @@ const AdminContent = () => {
                       <Badge variant="outline" className="text-xs">{m.category}{m.subcategory ? ` / ${m.subcategory}` : ""}</Badge>
                       <span className={`text-xs flex items-center gap-1 ${color}`}><Icon className="w-3 h-3" />{m.status === "approved" ? "מאושר" : m.status === "rejected" ? "נדחה" : "ממתין"}</span>
                     </div>
-                    <p className="text-xs text-muted-foreground">העלה: {profilesMap[m.uploader_id] || "—"} · {new Date(m.created_at).toLocaleString("he-IL")}</p>
+                    <p className="text-xs text-muted-foreground">העלה: {profilesMap[m.owner_user_id] || "—"} · {new Date(m.created_at).toLocaleString("he-IL")}</p>
                     {m.description && <p className="text-sm text-muted-foreground mt-2">{m.description}</p>}
                   </div>
                   <div className="flex items-center gap-1 shrink-0">
