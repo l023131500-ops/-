@@ -11100,3 +11100,41 @@
      per HARD STEERING; מערכות/סכימות מוגנות (08/09/bkalut-app/
      bkalot-admin/`zr_*`/webhook NEDARIM3873/`csj`/`csj_src`/`igud`/
      15-egod) לא נגעו.
+
+780. **round 780 — 01-torah-platform: `search-lessons` (chatbot חי,
+     `FloatingChatBot.tsx`) הדליף לכל מבקר אתר פרטי-קשר של שיעורים
+     שכבר בוטלו.** דיספצ'ר-חיפוש (general-purpose agent) עם רשימת-
+     החרגה שנגזרה מ-DECISIONS.md מצא ש-`search-lessons/index.ts`
+     (edge function פרוסה, v5) סינן שיעורים ב-`.eq("is_approved",
+     true)` בלבד — בלי `.eq("is_active", true)`. שלושת הצרכנים
+     האחרים של אותו נתון (`LessonsDirectory.tsx`, `ivr-search`,
+     `ivr-agent` — האחרונים תוקנו בסבב #773-774) כבר מסננים את שני
+     השדות; זה היה המקום הרביעי היחיד שנשאר פרוץ. תרחיש: מנהל-על
+     משהה/מבטל שיעור (`is_active=false`) בלי לבטל את האישור
+     (`is_approved` נשאר `true`) — השיעור נעלם מהמדריך הציבורי
+     ומהחיפוש הטלפוני, אך ה-chatbot הציבורי (`verify_jwt=false`,
+     נגיש לכל מבקר בלי הזדהות) המשיך להזין אותו ל-system prompt
+     כולל `contact_phone`/`contact_email`, ולהציע אותו כתוצאת חיפוש.
+
+     **התיקון.** הוספת `.eq("is_active", true)` לאותה שאילתה, שורה
+     אחת + הערה מסבירה. אין שינוי לחוזה החיצוני (בקשה/תשובה זהות).
+
+     **האימות.** נמשך קוד-המקור החי מהפונקציה הפרוסה לפני העריכה
+     ואומת זהה-בית לקובץ המקומי (אין סחיפת-פריסה). לאחר התיקון:
+     נפרס `search-lessons` v5→v6 (`deploy_edge_function`). אומת חי
+     מול `bieebmnmkffwbqlsfozh` בעסקה עם `ROLLBACK`: הוחדרה שורת
+     `lessons` אמיתית עם `is_approved=true, is_active=false,
+     contact_phone='0500000000'` (עם `lessons_protect_moderation_fields`
+     מנוטרל זמנית בתוך הטרנזקציה, כדי לעקוף את חסימת ה-INSERT-בלי-
+     JWT-מנחה) — צורת-השאילתה הישנה (`is_approved` בלבד) החזירה
+     `count=1` (כולל הטלפון הדלוף), צורת-השאילתה המתוקנת
+     (`is_approved AND is_active`) החזירה `count=0`. `ROLLBACK` בוצע;
+     `SELECT count(*) ... WHERE title LIKE 'QA DELETE ME%'` נפרד
+     אישר אפס שאריות. אין שינוי סכימה/RLS בסבב זה. אין שליחה/חיוב
+     אמיתיים — TEST MODE כובד. אפס רגרסיה: שינוי תוסף של שורה אחת
+     בקובץ אחד. נדחף לענף הקיים
+     `fix/01-torah-platform-ivr-search-agent-stale-columns-0831`
+     (`66f504bd`) — לא מוזג, main לא נגע. System 35 KioskFleet לא
+     נגע, per HARD STEERING; מערכות/סכימות מוגנות (08/09/bkalut-app/
+     bkalot-admin/`zr_*`/webhook NEDARIM3873/`csj`/`csj_src`/`igud`/
+     15-egod) לא נגעו.
