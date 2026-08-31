@@ -83,6 +83,26 @@ export const insertBrandSchema = createInsertSchema(brands).omit({
 export type InsertBrand = z.infer<typeof insertBrandSchema>;
 export type Brand = typeof brands.$inferSelect;
 
+/**
+ * רקע AI שנוצר — נשמר אוטומטית בכל יצירה (gemini/recraft, כולל עריכת-תמונה),
+ * כדי לאפשר ללקוח לחזור ולבחור רקע קודם מאוחר יותר ("ספריית רקעים").
+ */
+export const backgrounds = sqliteTable("backgrounds", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
+  prompt: text("prompt").notNull(),
+  engine: text("engine").notNull(), // gemini | recraft
+  dataUrl: text("data_url").notNull(), // data URL של התמונה שנוצרה
+  userId: text("user_id"),
+  createdAt: integer("created_at").notNull().default(sql`(unixepoch())`),
+});
+
+export const insertBackgroundSchema = createInsertSchema(backgrounds).omit({
+  id: true,
+  createdAt: true,
+});
+export type InsertBackground = z.infer<typeof insertBackgroundSchema>;
+export type Background = typeof backgrounds.$inferSelect;
+
 // ---- טבלת משתמשים (נשארת מהתבנית, נחוצה ל-storage) ----
 export const users = sqliteTable("users", {
   id: integer("id").primaryKey({ autoIncrement: true }),

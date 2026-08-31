@@ -30,6 +30,14 @@ export function ensureTables() {
     created_at INTEGER NOT NULL DEFAULT (unixepoch()),
     updated_at INTEGER NOT NULL DEFAULT (unixepoch())
   )`);
+  db.run(sql`CREATE TABLE IF NOT EXISTS backgrounds (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    prompt TEXT NOT NULL,
+    engine TEXT NOT NULL,
+    data_url TEXT NOT NULL,
+    user_id TEXT,
+    created_at INTEGER NOT NULL DEFAULT (unixepoch())
+  )`);
 }
 
 export async function seedTemplates() {

@@ -1,9 +1,10 @@
-import { users, templates, projects, brands } from "@shared/schema";
+import { users, templates, projects, brands, backgrounds } from "@shared/schema";
 import type {
   User, InsertUser,
   Template, InsertTemplate,
   Project, InsertProject,
   Brand, InsertBrand,
+  Background, InsertBackground,
 } from "@shared/schema";
 import { drizzle } from "drizzle-orm/better-sqlite3";
 import Database from "better-sqlite3";
@@ -39,6 +40,10 @@ export interface IStorage {
   createBrand(b: InsertBrand, userId?: string): Promise<Brand>;
   updateBrand(id: number, patch: Partial<InsertBrand>): Promise<Brand | undefined>;
   deleteBrand(id: number): Promise<void>;
+  // ספריית רקעים (AI) — נשמר אוטומטית בכל יצירה, לבחירה חוזרת מאוחר יותר
+  listBackgrounds(limit?: number): Promise<Background[]>;
+  createBackground(b: InsertBackground): Promise<Background>;
+  deleteBackground(id: number): Promise<void>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -78,6 +83,10 @@ export class DatabaseStorage implements IStorage {
     return db.update(brands).set({ ...patch, updatedAt: Math.floor(Date.now() / 1000) }).where(eq(brands.id, id)).returning().get();
   }
   async deleteBrand(id: number) { db.delete(brands).where(eq(brands.id, id)).run(); }
+
+  async listBackgrounds(limit = 60) { return db.select().from(backgrounds).orderBy(desc(backgrounds.id)).limit(limit).all(); }
+  async createBackground(b: InsertBackground) { return db.insert(backgrounds).values(b).returning().get(); }
+  async deleteBackground(id: number) { db.delete(backgrounds).where(eq(backgrounds.id, id)).run(); }
 }
 
 export const storage = new DatabaseStorage();

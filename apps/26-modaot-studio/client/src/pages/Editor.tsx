@@ -78,7 +78,7 @@ import { FORMATS, getFormat } from "@shared/formats";
 import { downloadPNG, downloadPDF, downloadSVG } from "@/lib/exporter";
 import { exportPromoVideo, downloadBlob } from "@/lib/videoExport";
 import { downloadIDML } from "@/lib/idmlExporter";
-import { apiRequest, hasAuthSession } from "@/lib/queryClient";
+import { apiRequest, hasAuthSession, queryClient } from "@/lib/queryClient";
 import { nextId } from "@shared/layers";
 import type { TemplateDoc, TextLayer, ImageLayer, ShapeLayer, AnyLayer, TemplateBackground } from "@shared/layers";
 
@@ -89,6 +89,15 @@ interface BrandRow {
   logoPng: string | null;
   kitJson: string | null;
   updatedAt: number;
+}
+
+// שורת רקע שמור כפי שהשרת מחזיר מ-/api/backgrounds (ר' shared/schema.ts) — קריאה בלבד כאן
+interface BackgroundRow {
+  id: number;
+  prompt: string;
+  engine: string;
+  dataUrl: string;
+  createdAt: number;
 }
 
 // שולף עד 4 צבעי פלטה (ראשי+משני) מ-kitJson לתצוגת נקודות-צבע קטנה בכרטיס
@@ -191,6 +200,19 @@ export default function Editor() {
   function openBrandInNewTab(id: number) {
     const url = `${window.location.origin}${window.location.pathname}#/branding/${id}`;
     window.open(url, "_blank", "noopener,noreferrer");
+  }
+
+  // ספריית רקעים — כל רקע AI שנוצר (בעורך הזה או קודם) נשמר אוטומטית בשרת ומוצג כאן
+  // לבחירה חוזרת, בלי תלות בסשן/מותג. staleTime הוא Infinity ברמת ה-queryClient
+  // (ר' lib/queryClient.ts) ולכן הרשימה מתעדכנת ידנית ע"י invalidateQueries בהמשך.
+  const { data: savedBackgrounds } = useQuery<BackgroundRow[]>({
+    queryKey: ["/api/backgrounds"],
+  });
+  const [libraryPreview, setLibraryPreview] = useState<BackgroundRow | null>(null);
+  function applySavedBackground(bg: BackgroundRow) {
+    updateDoc({ ...doc!, background: { type: "image", src: bg.dataUrl } });
+    toast({ title: "הרקע מהספרייה הוחל" });
+    setAiDialogOpen(false);
   }
 
   // אם נכנסים ישירות ל-/editor בלי בחירה (רענון) — חזרה לבית
@@ -543,6 +565,7 @@ export default function Editor() {
         updateDoc({ ...doc!, background: { type: "image", src: data.dataUrl } });
         toast({ title: "רקע AI הוחל בהצלחה" });
         setAiDialogOpen(false);
+        queryClient.invalidateQueries({ queryKey: ["/api/backgrounds"] });
       }
     } catch (err: any) {
       toast({
@@ -583,6 +606,8 @@ export default function Editor() {
       });
       if (!variants.length) {
         toast({ title: "לא התקבלו אפשרויות רקע — נסה תיאור אחר", variant: "destructive" });
+      } else {
+        queryClient.invalidateQueries({ queryKey: ["/api/backgrounds"] });
       }
       setAiVariants(variants);
     } catch (err: any) {
@@ -1478,6 +1503,74 @@ export default function Editor() {
               ))}
             </div>
           )}
+          {/* ספריית רקעים — כל רקע AI שנוצר אי-פעם (בעורך זה או אחר) נשמר אוטומטית בשרת;
+              כאן ניתן לבחור שוב רקע קודם או להציג אותו בגודל מלא, בלי ליצור מחדש */}
+          {!!savedBackgrounds?.length && (
+            <div className="border-t border-[#C9A227]/20 pt-3">
+              <p className="mb-2 text-xs font-semibold text-[#F5EEDD]/70">
+                ספריית רקעים שנשמרו ({savedBackgrounds.length})
+              </p>
+              <div
+                className="grid max-h-56 grid-cols-3 gap-2 overflow-y-auto"
+                data-testid="grid-background-library"
+              >
+                {savedBackgrounds.map((bg) => (
+                  <div
+                    key={bg.id}
+                    className="group relative overflow-hidden rounded-md border border-[#C9A227]/20 hover:border-[#C9A227]"
+                  >
+                    <button
+                      type="button"
+                      onClick={() => applySavedBackground(bg)}
+                      className="block h-16 w-full"
+                      title={bg.prompt}
+                      data-testid={`button-library-bg-${bg.id}`}
+                    >
+                      <img src={bg.dataUrl} alt={bg.prompt} className="h-16 w-full object-cover" />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={(e) => { e.stopPropagation(); setLibraryPreview(bg); }}
+                      className="absolute left-1 top-1 rounded bg-black/60 p-1 opacity-0 transition-opacity group-hover:opacity-100"
+                      title="הצג בגודל מלא"
+                      data-testid={`button-library-bg-preview-${bg.id}`}
+                    >
+                      <Eye className="h-3 w-3 text-white" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
+
+      {/* דיאלוג תצוגה מוגדלת לרקע מהספרייה */}
+      <Dialog open={!!libraryPreview} onOpenChange={(o) => !o && setLibraryPreview(null)}>
+        <DialogContent className="max-w-2xl border-[#C9A227]/30 bg-[#0E1830] text-[#F5EEDD]" dir="rtl">
+          <DialogHeader>
+            <DialogTitle className="text-[#F5EEDD]">רקע מהספרייה</DialogTitle>
+            {libraryPreview?.prompt && <DialogDescription>{libraryPreview.prompt}</DialogDescription>}
+          </DialogHeader>
+          {libraryPreview && (
+            <img
+              src={libraryPreview.dataUrl}
+              alt={libraryPreview.prompt}
+              className="max-h-[70vh] w-full rounded-md object-contain"
+            />
+          )}
+          <DialogFooter>
+            <Button
+              className="bg-[#C9A227] text-[#0B1220] hover:bg-[#C9A227]/90"
+              onClick={() => {
+                if (libraryPreview) applySavedBackground(libraryPreview);
+                setLibraryPreview(null);
+              }}
+              data-testid="button-library-preview-apply"
+            >
+              החל רקע זה
+            </Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
 
