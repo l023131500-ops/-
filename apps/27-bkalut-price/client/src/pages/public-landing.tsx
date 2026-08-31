@@ -6,6 +6,12 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Logo } from "@/components/logo";
+import {
+  HeroRightsIllustration,
+  FindRightsIcon,
+  ClearExplanationIcon,
+  PersonalSupportIcon,
+} from "@/components/illustrations";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import {
@@ -17,10 +23,8 @@ import {
   ShieldCheck,
   ScrollText,
   CheckCircle2,
-  Compass,
   Users,
   Search,
-  Lightbulb,
   Bell,
   Info,
   HeartPulse,
@@ -181,6 +185,7 @@ export default function PublicLanding() {
               ארגון בקלות מסייע למשפחות לממש זכויות והטבות שמגיעות להן לפי חוק.
               מידע ברור, ליווי אישי, ובדיקת זכאות בקליק — לכל נושא רלוונטי.
             </p>
+            <HeroRightsIllustration className="w-full max-w-[280px] h-auto mx-auto mt-8" />
             <div className="mt-8 flex flex-col sm:flex-row gap-3 justify-center">
               <Link href="/eligibility" data-testid="cta-hero-eligibility">
                 <Button size="lg" className="w-full sm:w-auto">
@@ -225,7 +230,7 @@ export default function PublicLanding() {
             <div className="grid md:grid-cols-3 gap-5">
               <Card className="p-6 border border-card-border rounded-xl">
                 <div className="rounded-full p-2.5 bg-primary/10 text-primary w-fit mb-3">
-                  <Compass className="w-5 h-5" />
+                  <FindRightsIcon className="w-5 h-5" />
                 </div>
                 <h3 className="font-semibold text-base mb-1.5">איתור הזכויות שלכם</h3>
                 <p className="text-sm text-muted-foreground leading-relaxed">
@@ -234,7 +239,7 @@ export default function PublicLanding() {
               </Card>
               <Card className="p-6 border border-card-border rounded-xl">
                 <div className="rounded-full p-2.5 bg-primary/10 text-primary w-fit mb-3">
-                  <Lightbulb className="w-5 h-5" />
+                  <ClearExplanationIcon className="w-5 h-5" />
                 </div>
                 <h3 className="font-semibold text-base mb-1.5">הסבר ברור ומעשי</h3>
                 <p className="text-sm text-muted-foreground leading-relaxed">
@@ -243,7 +248,7 @@ export default function PublicLanding() {
               </Card>
               <Card className="p-6 border border-card-border rounded-xl">
                 <div className="rounded-full p-2.5 bg-primary/10 text-primary w-fit mb-3">
-                  <HeartHandshake className="w-5 h-5" />
+                  <PersonalSupportIcon className="w-5 h-5" />
                 </div>
                 <h3 className="font-semibold text-base mb-1.5">ליווי אישי כשצריך</h3>
                 <p className="text-sm text-muted-foreground leading-relaxed">
