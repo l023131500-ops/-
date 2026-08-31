@@ -72,8 +72,13 @@ a{color:inherit;text-decoration:none}
 .nav-links a:hover{color:var(--gold-soft)}
 @media(max-width:760px){.nav-links a:not(.nav-cta){display:none}}
 
-.hero{padding:100px 0 76px;background:
+.hero{position:relative;overflow:hidden;padding:100px 0 76px;background:
   radial-gradient(1100px 480px at 80% -12%,rgba(36,27,84,.85),transparent 62%),var(--royal)}
+.hero-img{position:absolute;inset-inline:0;bottom:0;width:100%;height:280px;
+  object-fit:cover;object-position:top;opacity:.22;pointer-events:none;mask-image:
+  linear-gradient(to top,rgba(0,0,0,.9),transparent);-webkit-mask-image:
+  linear-gradient(to top,rgba(0,0,0,.9),transparent)}
+.hero-in{position:relative}
 .hero h1{font-size:clamp(36px,6.2vw,68px);line-height:1.08;margin:18px 0 22px}
 .hero .lead{font-size:clamp(17px,2.1vw,21px);color:var(--ink-2);max-width:62ch;margin:0 0 34px}
 .actions{display:flex;gap:14px;flex-wrap:wrap}
@@ -89,6 +94,13 @@ a{color:inherit;text-decoration:none}
 .card h3{font-family:'Secular One',sans-serif;font-weight:400;font-size:20px;margin:14px 0 10px}
 .card p{color:var(--ink-2);margin:0;font-size:15px}
 .card .num{font-family:'Suez One',serif;font-size:15px;color:var(--gold);letter-spacing:.18em}
+
+.imgcards{display:grid;gap:22px;grid-template-columns:repeat(auto-fit,minmax(270px,1fr))}
+.imgcard{overflow:hidden;border:1px solid var(--line-2);border-radius:4px;background:rgba(236,233,245,.035)}
+.imgcard img{display:block;width:100%;height:168px;object-fit:cover}
+.imgcard .body{padding:22px 24px}
+.imgcard h3{font-family:'Secular One',sans-serif;font-weight:400;font-size:18px;margin:0 0 8px}
+.imgcard p{color:var(--ink-2);margin:0;font-size:14px}
 
 .flow{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:26px}
 .flow span{border:1px solid var(--line);border-radius:2px;padding:9px 16px;font-size:14px;color:var(--ink-2)}
@@ -149,7 +161,8 @@ a{color:inherit;text-decoration:none}
 
 <main id="main">
 <header class="hero" id="top">
-  <div class="wrap">
+  <img class="hero-img" src="https://uhnrgujbdxhhmoxcjria.supabase.co/storage/v1/object/public/nadlan-marketing/broker-desk-hero.webp" alt="" aria-hidden="true" />
+  <div class="wrap hero-in">
     <div class="eyebrow">עולם הסטארטאפים</div>
     <h1 class="display">כל העסק של המתווך<br/>ממסך אחד</h1>
     <p class="lead serif">
@@ -200,6 +213,42 @@ a{color:inherit;text-decoration:none}
           וכל מעבר שלב נשמר עם השעה שבה קרה. אפשר לענות על "כמה זמן הצעה
           יושבת אצלנו" בלי לנחש.
         </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="see-it">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="eyebrow">איך זה נראה בפועל</div>
+      <h2 class="display sec-title">משלושת הדברים למעלה — לתמונה אחת</h2>
+      <p class="sec-sub">
+        ליד שנכנס, נכס שמתאים לו בדיוק, ועסקה שנסגרת בלי לוותר על אף שלב —
+        כך זה עובד בתוך המערכת.
+      </p>
+    </div>
+    <div class="imgcards">
+      <div class="imgcard">
+        <img src="https://uhnrgujbdxhhmoxcjria.supabase.co/storage/v1/object/public/nadlan-marketing/lead-to-deal-pipeline.webp" alt="" loading="lazy" />
+        <div class="body">
+          <h3>מליד לעסקה חתומה</h3>
+          <p>כל ליד נכנס לצינור אחד ועובר שלב-שלב עד חתימה — בלי גיליון אקסל צדדי ובלי ליד ששוכח מישהו.</p>
+        </div>
+      </div>
+      <div class="imgcard">
+        <img src="https://uhnrgujbdxhhmoxcjria.supabase.co/storage/v1/object/public/nadlan-marketing/buyer-property-match.webp" alt="" loading="lazy" />
+        <div class="body">
+          <h3>ההתאמה המדויקת</h3>
+          <p>קריטריון של הקונה מול נתוני הנכס — התאמה אמיתית, לא ניחוש ולא "קרוב מספיק".</p>
+        </div>
+      </div>
+      <div class="imgcard">
+        <img src="https://uhnrgujbdxhhmoxcjria.supabase.co/storage/v1/object/public/nadlan-marketing/closing-checklist.webp" alt="" loading="lazy" />
+        <div class="body">
+          <h3>צ׳קליסט שלא מוותר</h3>
+          <p>תשעה שלבים קבועים מהסכם תיווך ועד עמלה שנגבתה — כל מעבר שלב מתועד עם השעה שבה קרה.</p>
+        </div>
       </div>
     </div>
   </div>
