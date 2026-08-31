@@ -10381,3 +10381,63 @@
      STEERING; מערכות/סכימות מוגנות (08/09/bkalut-app/bkalot-admin/
      `zr_*`/webhook NEDARIM3873/`csj`/`csj_src`/`igud`/15-egod) לא
      נגעו.
+
+## 31/08/2026 (LOOP A) — 01-torah-platform: `legacy/admin` — שני מופעים עצמאיים של אותו באג (leads מול טבלאות שלא קיימות)
+
+757. **ההקשר.** המשך סבב P3 01-torah-platform (STEP 1 מאושר: P0 sys14
+     `done` מ-30/08, P1(35) אסור per HARD STEERING, P2(32/36)
+     `core.build_tasks` נשאר 0 `todo`, 15-egod עדיין לא ב-
+     `list_projects`). הפעלתי סוכן `general-purpose` שקרא את
+     DECISIONS.md (עד #756) ובנה רשימת-החרגה עצמאית לחיפוש מחלקת-באג
+     חדשה, לא רק grep נוסף על `pg_policies`.
+
+758. **הממצא + התיקון (בשני חלקים).** `components/admin/MatchingTab.tsx`
+     (מסך "התאמת שיעורים" בקונסולה `/legacy/admin`, מוגן
+     `RequireSuperAdmin`, נתיב חי) שאל `teacher_leads`/`seeker_leads`
+     — שתיהן קופלו לתוך `leads` עם עמודת `kind` בזמן מיגרציית
+     ה-multi-tenant — וגם `nedarim_submissions` (טבלת webhook נפרדת
+     ללא עמודות `name`/`city`/`subject`). כל שלוש השאילתות נכשלות
+     (`42P01`/הייתה תיכשל `42703`) והשגיאות נבלעו בשקט, כך שהטאב
+     הציג תמיד "אין רבנים עדיין"/"אין בקשות עדיין" ללא קשר לנתונים
+     אמיתיים. הסוכן תיקן לקריאת `leads` מפוצלת לפי `kind`, זהה
+     למיפוי שכבר עובד ב-`admin/MatchingGuru.tsx`. Commit `6d56bde8`.
+
+     **מה מצאתי בביקורת-נגד עצמאית (לפני push):** קראתי את הדיפ
+     והרצתי שאילתות `information_schema` עצמאיות מול
+     `bieebmnmkffwbqlsfozh` לאמת את קיום/העדר הטבלאות/עמודות שהסוכן
+     טען עליהן (אושרו נכונות: `teacher_leads`/`seeker_leads` לא
+     קיימות, `leads` כן עם `kind`/`status` כנטען, `nedarim_submissions`
+     חסרה `status`). אבל `pages/legacy/AdminDashboard.tsx` — הקובץ
+     ה-**הורה** שמרכיב את `<MatchingTab/>` — מכיל `fetchAll()` עצמאי
+     משלו עם אותה שאילתה שבורה בדיוק (`teacher_leads`/`seeker_leads`,
+     שורות 67-68 המקוריות) שמזינה **שני טאבים נוספים ונפרדים** באותה
+     קונסולה בדיוק ("מגידי שיעור"/"מחפשי שיעור", שורות 918-974) —
+     מופע שני, בלתי-תלוי, של אותו באג בדיוק, שהסוכן לא תפס כי הוא
+     ערך רק את `MatchingTab.tsx` עצמו. השלמתי את התיקון: `fetchAll()`
+     ב-`AdminDashboard.tsx` קורא עכשיו `leads` יחיד ומפצל לפי `kind`
+     (אותו מיפוי בדיוק כמו ב-`MatchingTab.tsx`), וטאבי ה-render
+     עודכנו לשדות האמיתיים (`full_name`/`area`/`preferred_subject`/
+     `message`/`status` במקום `contact_name`/`city`/`subjects[]`/
+     `lesson_type`/`notes`). `nedarim_submissions.status` (עמודה
+     שלא קיימת, בשימוש בטאב "נדרים" הנפרד) — נמצא ותועד כאן אך
+     **לא תוקן הסבב הזה** — טבלה/פיצ'ר שונים לגמרי, מחוץ להיקף
+     צר-ומלא של סבב זה.
+
+     **אימות.** `npx tsc --noEmit` נקי (0 שגיאות ב-`AdminDashboard.tsx`);
+     `esbuild` bundle נקי. טרנזקציה חיה rolled-back מול
+     `bieebmnmkffwbqlsfozh`: הכנסתי שורת `leads` אמיתית מכל `kind`
+     (`teacher_offer`/`lesson_request`) עם כל השדות ששני הרכיבים
+     קוראים כעת, `SELECT` בדיוק כמו ש-`fetchAll()` מריץ — שתי השורות
+     חזרו נכון עם `full_name`/`area`/`preferred_subject`/`message`/
+     `status` תקינים. `COUNT` נפרד אחרי `ROLLBACK` אישר אפס שאריות
+     (0 שורות `source='test_admindash_verify'`). `get_advisors(security)`:
+     74 לינטים — זהה לבייסליין (שינוי צד-לקוח בלבד, אין DDL). אין
+     שינוי בסכימה/RLS. אין שליחה/חיוב/מייל אמיתיים. אפס רגרסיה —
+     קובץ אחד נוסף (`AdminDashboard.tsx`), אותו דפוס-מיפוי בדיוק כמו
+     התיקון הקודם, שום עמודה/טאב/פיצ'ר אחר לא נגע. נדחף לענף חדש
+     `fix/01-torah-platform-freshbug-0831-2` (`6d56bde8` תיקון
+     `MatchingTab.tsx`, `60ba4da6` תיקון `AdminDashboard.tsx`) — לא
+     מוזג, main לא נגע. System 35 KioskFleet לא נגע, per HARD
+     STEERING; מערכות/סכימות מוגנות (08/09/bkalut-app/bkalot-admin/
+     `zr_*`/webhook NEDARIM3873/`csj`/`csj_src`/`igud`/15-egod) לא
+     נגעו.
