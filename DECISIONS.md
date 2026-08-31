@@ -9677,3 +9677,78 @@
      per HARD STEERING; מערכות/סכימות מוגנות (08/09/bkalut-app/
      bkalot-admin/`zr_*`/webhook NEDARIM3873/`csj`/`csj_src`/`igud`/
      15-egod) לא נגעו.
+
+## 31/08/2026 (LOOP A) — 01-torah-platform: `orders`/`donations` — הגנת-התשלום מ-060000 כיסתה רק UPDATE, ה-INSERT נשאר פרוץ לגמרי
+
+737. **ההקשר.** המשך ישיר לסבב הקודם (#735-736), אותו ענף-בסיס
+     `fix/01-torah-platform-prayertimes-delete-error-0831` (דחוף,
+     עץ נקי). לפי ההנחיה חזרתי לרשימת המסכים ש"עדיין לא נסרקו
+     לעומק" (`portal/Attendance`, `portal/Materials`, `portal/
+     Donations`, `portal/Schedule`, `portal/Tips`, `portal/
+     Participants`, `portal/Gallery`, `portal/Messages`, `portal/
+     PortalSettings`, ומסכי `public/*`). קראתי את `Participants.tsx`/
+     `Gallery.tsx`/`Messages.tsx`/`Donations.tsx`/`Tips.tsx`/
+     `Attendance.tsx` במלואם — כולם קוד-UI תקין, מסתמכים על RLS
+     בשרת בלי לוגיקת-אבטחה בצד-לקוח. `Tips.tsx` כבר מתעד בקוד את
+     ה-RLS-quirk שלו כ"read-only בכוונה" (לא באג). בדקתי את `pg_
+     policies` החי על שש הטבלאות שהמסכים האלה נוגעים בהן
+     (`participants`, `gallery_images`, `portal_messages`,
+     `donations`, `attendance`, `portal_photos`) — חמש מהן תקינות
+     (INSERT/UPDATE/DELETE דורשים `has_tenant_role`/`user_id=auth.
+     uid()` אמיתיים). `donations_insert`/`orders_insert` בלטו:
+     `with check` שבודק רק שהטננט קיים, בלי שום הגבלה על
+     `payment_status` — בדיוק העמודות שסבב קודם היום (#707-710,
+     מיגרציה `20260831060000`) כבר הגן עליהן, אבל **רק על UPDATE**.
+
+738. **הממצא.** `protect_order_payment_fields()`/`protect_donation_
+     payment_fields()` (מ-`20260831060000`) מחוברות ל-`before update`
+     בלבד. מאחר ש-`orders_insert`/`donations_insert` (RLS) לא מגבילות
+     שום עמודה מלבד קיום-הטננט, כל קורא anon/authenticated יכול
+     להכניס ישירות שורת `donations`/`orders` חדשה עם `payment_status
+     ='captured'`, `payment_reference` מזויף, ו-(על donations) גם
+     `receipt_number`/`paid_at` מזויפים — תרומה/הזמנה "משולמת" מלאה
+     בלי שום מעורבות אמיתית של `nedarim-create-payment`/`nedarim-
+     webhook`. אומת חי לפני התיקון: טרנזקציה rolled-back על
+     `bieebmnmkffwbqlsfozh`, `SET LOCAL ROLE anon`,
+     `insert into donations (...) values (..., 'captured',
+     'FAKE-REF-123', 'FAKE-RCPT-1', now())` — הצליחה, `SELECT` לאחר
+     ה-INSERT (לפני ה-ROLLBACK) אישר `payment_status='captured'` +
+     קבלה מזויפת נשמרו. אותה בדיקה בדיוק על `orders`
+     (`payment_status='captured'` + `payment_reference` מזויף) —
+     הצליחה גם היא, ומפעילה בדרך את טריגר הפחתת-המלאי מ-
+     `20260826060000` על הזמנה שמעולם לא שולמה. שני מסכי-ההזנה
+     האמיתיים (`Checkout.tsx`, `DonationPage.tsx`) שולחים תמיד
+     `payment_status: "pending"` בלבד ולעולם לא מגדירים
+     `payment_reference`/`paid_at`/שדות-קבלה — כלומר תיקון שכופה
+     ערכי-ברירת-מחדל בטוחים על INSERT לא-service-role לא פוגע
+     בשום זרימה חוקית.
+
+     **מה נבנה ואומת.** מיגרציה `20260831150000_orders_donations_
+     protect_payment_fields_on_insert.sql`: אותן שתי פונקציות-
+     טריגר עודכנו (`create or replace`, לא נגעו בגרסת-UPDATE שלהן)
+     כדי לבדוק `tg_op`: ב-INSERT, לא-service-role, כל השדות
+     המוגנים נכפים ל-`'pending'`/`null` (בדיוק כמו שהקוד החוקי
+     כבר שולח); ב-UPDATE ההתנהגות הקיימת מ-060000 נשארה זהה
+     לגמרי. שני טריגרים חדשים (`orders_protect_payment_fields_ins`,
+     `donations_protect_payment_fields_ins`) `before insert`, לצד
+     הקיימים `before update` (לא הוחלפו/נמחקו). אומת ב-4 טרנזקציות
+     rolled-back נוספות אחרי ההחלה: (1) אותה התקפת-INSERT בדיוק על
+     `donations`/`orders` — עכשיו כל השדות המוגנים חוזרים
+     `pending`/`null` למרות מה שהתוקף ניסה לכתוב, ה-INSERT עצמו
+     עדיין מצליח (לא שגיאת RLS) בדיוק כמו שזרימת-אנונימי החוקית
+     מצפה; (2) INSERT "חוקי" בצורת-הpayload המדויקת של
+     `DonationPage.tsx` (`payment_status:'pending'`, בלי reference/
+     receipt) — עדיין עובד נקי; (3) רגרסיה על נתיב-UPDATE הישן —
+     תוקן `tenant_admin` שניסה `update ... set payment_status=
+     'captured'` על שורה קיימת — עדיין נחסם בדיוק כמו לפני התיקון
+     היום, מוכיח שאין רגרסיה בהגנת-060000. `COUNT` נפרד לאחר כל
+     `ROLLBACK` אישר אפס שאריות (`donations`/`orders` עם שמות-TEST
+     שנוצרו בבדיקות). `get_advisors(security)` לפני ואחרי — אותם
+     70 lints בדיוק, אף אזהרה חדשה. אין שליחה/חיוב/מייל אמיתיים,
+     TEST MODE מכובד. אפס רגרסיה — קובץ מיגרציה חדש אחד בלבד,
+     שום handler/RLS policy/UI קיים לא נגע. נדחף לענף חדש
+     `fix/01-torah-platform-orders-donations-insert-tamper-0831`
+     (`55c7381c`). לא מוזג, main לא נגע. System 35 KioskFleet לא
+     נגע, per HARD STEERING; מערכות/סכימות מוגנות (08/09/bkalut-app/
+     bkalot-admin/`zr_*`/webhook NEDARIM3873/`csj`/`csj_src`/`igud`/
+     15-egod) לא נגעו.
