@@ -7589,3 +7589,106 @@ to that constraint: they import only dependency-free modules (`hosts.js`,
   Per owner steering, KioskFleet (35) is now treated as hardened-enough for
   this loop; the next Loop A iteration moves to P2 Real-estate (32
   Nadlan-BeRega + 36 nadlan-pro).
+
+- **[31/08/2026, Loop A] Owner order (project 33 note, 2026-08-31): 35 Kiosks
+  is the top priority again — complete it fully to spec (input-validation/
+  write-path bugs stay banned; every other feature/completion/UI/design task
+  is required). core.build_tasks had zero rows for system 35, so per the
+  progress contract this round's job was reading the spec + actual code
+  first, not building blind.**
+
+  Re-verified `core.issues #215` is still real and still open: this
+  session's `l023131500-ops/zol` clone (branch `claude/what-do-you-see-gxo5tc`,
+  the one Railway actually deploys) has `public/js/app.js` at 1,170 lines with
+  `alerts.js`, `analytics.js`, `maintenance.js`, `policy.js`, `signage.js`,
+  `snapshots.js`, `templatepolicy.js`, `watchdog.js` — none of which exist in
+  this monorepo's `apps/35-kioskfleet/server` (confirmed by direct `ls`/`grep`,
+  not by trusting either tree's own prior notes). Production is **far** more
+  feature-complete than this local tree suggests; a general-purpose Explore
+  agent asked to audit "the codebase" against KIOSK_BUILD.md without being
+  told about #215 confidently reported 8 of 17 features as entirely missing
+  in this local tree — every one of them already live in zol. That
+  cross-check is worth recording: any future round that greps only this
+  monorepo's copy for a feature will draw the same wrong conclusion. Fixed
+  this round accordingly as a **surgical edit to the real zol checkout**,
+  per #215's own operational guidance — not to this monorepo's divergent
+  copy.
+
+  Checked zol against KIOSK_BUILD.md §2★/§5/§7/§8/§9 feature by feature
+  (IdentifyDevice, client branding, device-owner templates/bulk-apply,
+  zoom, schedule, signage, snapshots/backup, session-cache clear, remote
+  screenshot, event log) — all already built and wired to a console UI.
+  Two real gaps found: **orientation lock** (needs a native `KioskActivity`
+  change; no Java/Kotlin/Gradle toolchain exists in this sandbox — `java`,
+  `kotlinc` both absent — so it is left alone rather than shipping an
+  unverifiable native edit, consistent with this file's own prior warning
+  about editing Kotlin blind) and **the install flow itself**: creating an
+  enrollment code showed a bare 6-character chip and nothing else — no way
+  to obtain the APK (no `/downloads` route existed anywhere), no ADB
+  commands, no step checklist. The separate static "Guide" screen
+  (`viewGuide`) has generic prose but is not linked to a specific code, has
+  no checkboxes, and also never mentions how to get the APK file. This is
+  KIOSK_BUILD.md §2★ב's "live checklist" ("לכל שלב תיבת סימון שהלקוח מסמן
+  אם בוצע") and it did not exist in production in any form.
+
+  Built `openInstallWizard()` in zol's `public/js/app.js`: a 6-step
+  checklist scoped to one enrollment (download → enable USB debugging →
+  `adb install` → `adb shell dpm set-device-owner …` → enter the code →
+  verify), each step a checkbox whose state persists in `localStorage`
+  keyed by the enrollment's own unique code (so two open codes never share
+  progress), with copy-to-clipboard buttons for the two real commands taken
+  verbatim from `android/README.md` (not invented). Reachable immediately
+  after creating a code and from a new "📋 אשף התקנה" button on every still-
+  open row in the existing enrollments table. Mounted `/downloads` as a
+  static route for a new `../releases` directory in `src/index.js`, using
+  the exact same conditional-`fs.existsSync` pattern the existing `/docs`
+  mount already uses — so whoever next has the Android toolchain drops
+  `kioskfleet-agent.apk` there and the wizard's download link resolves with
+  no further code change or redeploy. Until that file is placed, the link
+  404s like any other missing static asset rather than a broken feature —
+  the actual APK binary cannot be produced in this sandbox (no toolchain),
+  so that half is honestly left as "infrastructure ready, artifact pending
+  a human build step" rather than faked.
+
+  Verified live, not just by reading: `npm install` + `npm test` in the real
+  zol checkout — **134/134**, zero regressions (only a new static mount and
+  new frontend code, no existing route/handler touched). Booted the real
+  server (`node src/index.js`) against a scratch on-disk DB with a fresh
+  `JWT_SECRET`, logged in as the seeded `admin`/`admin1234`, created a real
+  enrollment over HTTP and confirmed its JSON shape matches exactly what the
+  new wizard code reads (`code`/`name`/`home_url`); confirmed
+  `/downloads/README.md` (the placeholder file committed in `../releases/`)
+  serves `200` — proving the mount is actually live, not coincidentally
+  404ing from an unmounted path — while `/downloads/kioskfleet-agent.apk`
+  correctly 404s with no file present. `node --check` clean on both changed
+  JS files. `wizardProgress`/`setWizardStep` (the localStorage-keyed
+  checklist state) replicated in Node with a `Map`-backed `localStorage`
+  polyfill against 5 scenarios: empty-start, independent step toggles,
+  per-code isolation (a second code's progress array stays `[]`), and
+  uncheck-after-check — all correct. `cmdBox()`'s output confirmed
+  HTML-escaped via `esc()` on both the visible command text and the
+  `data-copy` attribute value (the enrollment code is server-generated
+  alnum-only in practice, but the escaping holds regardless).
+
+  `modal(html, cls)` gained an optional second parameter (default `''`) so
+  the wizard could request a wider dialog (`.modal-wide`, 720px vs the
+  existing 460px) without touching the ten other existing single-argument
+  call sites, all of which still pass exactly one argument. Zero regression:
+  the existing enrollment create/list/delete endpoints, the static Guide
+  screen, and every other `modal()` caller are untouched.
+
+  Committed + pushed to `l023131500-ops/zol` branch
+  `feat/kiosk-install-wizard-0831` (`06ab6dc`), off the live tip (`0f3947d`)
+  — not merged, same human-review convention as every prior fix branch on
+  this chain. This monorepo's own `apps/35-kioskfleet/server` tree was
+  deliberately **not** touched (editing it further would only deepen #215,
+  per its own recorded guidance) — this STATUS.md update is the only change
+  in this repo. Not done: orientation lock (blocked on an Android toolchain
+  this sandbox does not have — `java`/`kotlinc` both absent, confirmed
+  directly rather than assumed); the actual `.apk` binary for
+  `releases/kioskfleet-agent.apk` (same toolchain gap); routes C (Windows
+  Assigned Access/Shell Launcher) and D (USB-only) have **no code at all**
+  anywhere in zol — not even a stub — confirmed by `find` for
+  windows/assigned-access-related files, so a future round scoping "finish
+  35 to spec" should expect that as a much larger remaining unit than
+  anything closed so far.
