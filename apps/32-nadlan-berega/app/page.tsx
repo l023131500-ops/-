@@ -69,11 +69,23 @@ const TIERS: {
   },
 ];
 
+/** תמונות המיתוג (הדמיה ווקטורית, לא צילום) — נוצרו והועלו פעם אחת דרך
+ *  ה-Edge Function nadlan-marketing-images (Recraft, מפתח שכבר מוגדר
+ *  ב-core.secrets), מאוחסנות ב-bucket ציבורי nadlan-marketing. */
+const MARKETING_IMG_BASE =
+  'https://uhnrgujbdxhhmoxcjria.supabase.co/storage/v1/object/public/nadlan-marketing/';
+
 export default function HomePage() {
   return (
     <div>
-      <section className="hero-gradient text-white">
-        <div className="mx-auto max-w-5xl px-5 py-20 text-center">
+      <section className="hero-gradient relative overflow-hidden text-white">
+        <img
+          src={`${MARKETING_IMG_BASE}hero-skyline.webp`}
+          alt=""
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-x-0 bottom-0 h-56 w-full object-cover object-top opacity-25 sm:h-72"
+        />
+        <div className="relative mx-auto max-w-5xl px-5 py-20 text-center">
           <div className="mx-auto mb-3 inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-1 text-xs font-bold tracking-widest text-goldL">
             תעודת זהות דיגיטלית לכל נכס בישראל
           </div>
@@ -117,6 +129,49 @@ export default function HomePage() {
               <div key={t} className="rounded-xl border border-line bg-surface p-5 shadow-card">
                 <div className="text-lg font-extrabold text-navy">{t}</div>
                 <div className="mt-1 text-sm leading-relaxed text-muted">{d}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ===== שלוש חוויות שרק אצלנו יש ===== */}
+      <section className="border-b border-line bg-surface">
+        <div className="mx-auto max-w-6xl px-5 py-14">
+          <h2 className="text-center text-2xl font-black text-navy">לא עוד דוח טקסט — נכס שרואים</h2>
+          <p className="mx-auto mt-2 max-w-2xl text-center text-[15px] leading-relaxed text-muted">
+            תעודת זהות דיגיטלית אמיתית: מסמך אחד שמזהה את הנכס בוודאות, סיור רחוב חי
+            סביבו, ודוח שכל שורה בו נשענת על מקור רשמי.
+          </p>
+          <div className="mt-8 grid gap-6 sm:grid-cols-3">
+            {[
+              {
+                img: 'document-identity',
+                title: 'תעודת זהות דיגיטלית',
+                text: 'גוש, חלקה ותת-חלקה מאומתים בשני הכיוונים — הנכס הנכון, בלי טעויות זיהוי.',
+              },
+              {
+                img: 'street-view-scan',
+                title: 'פנורמה 360° וסיור רחוב',
+                text: 'עומדים בדיוק על הכתובת, מסתכלים סביב, ומריצים סיור וידאו של הרחוב עצמו.',
+              },
+              {
+                img: 'trusted-report',
+                title: 'כל שורה עם מקור',
+                text: 'מרשם העסקאות, מרשם החלקות ומנהל התכנון — לא הערכה, לא ניחוש.',
+              },
+            ].map((f) => (
+              <div key={f.img} className="overflow-hidden rounded-2xl border border-line bg-surface shadow-card">
+                <img
+                  src={`${MARKETING_IMG_BASE}${f.img}.webp`}
+                  alt=""
+                  loading="lazy"
+                  className="h-40 w-full object-cover"
+                />
+                <div className="p-5">
+                  <div className="text-lg font-extrabold text-navy">{f.title}</div>
+                  <div className="mt-1 text-sm leading-relaxed text-muted">{f.text}</div>
+                </div>
               </div>
             ))}
           </div>
