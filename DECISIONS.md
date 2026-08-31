@@ -9752,3 +9752,79 @@
      נגע, per HARD STEERING; מערכות/סכימות מוגנות (08/09/bkalut-app/
      bkalot-admin/`zr_*`/webhook NEDARIM3873/`csj`/`csj_src`/`igud`/
      15-egod) לא נגעו.
+
+## 31/08/2026 (LOOP A) — 01-torah-platform: `admin-users` delete/update_password דרשו התאמת תפקיד אחד בלבד, לא את כולם — טננט-אדמין יכול היה לפגוע בגישת משתמש לטננט אחר
+
+739. **ההקשר.** המשך ישיר לסבב הקודם (#737-738), אותה שרשרת ענפים.
+     P0 (מערכת 14) אומת `done` (`core.build_tasks id=15`). P1 (35)
+     אסור per HARD STEERING. P2 (32/36) `core.build_tasks` נשאר 0
+     `todo` (7/7 `done` לכל אחת). `15-egod` (`hkkkynyoigzlttpynoeo`)
+     עדיין לא מופיע ב-`list_projects` (נבדק מחדש חי הסבב הזה) — 01
+     נשאר הבחירה לפי הנחיית P3. הפעלתי סוכן `general-purpose` לסריקה
+     מלאה של 23 הקבצים שנותרו ברשימת "עדיין לא נסרקו לעומק" מסבב
+     #735 (`admin/Analytics`, `admin/Commerce`, `admin/RabbiQuestions`,
+     `admin/Tenants`, `admin/TenantDetail`, `portal/Materials`,
+     `portal/PortalSettings`+`PortalSettingsTab`, `portal/Schedule`,
+     `portal/StudySchedule`, כל `public/*` שנותר, כל `shop/*`) מול
+     ה-RLS החי על כל טבלה שהם כותבים אליה — כולם חזרו נקיים (כתיבות
+     בודקות `error`, מדיניות RLS מוגבלת-תפקיד/בעלים כראוי). המועמד
+     היחיד שעלה (`PortalSettingsTab.tsx` מול `rabbi_portals`/
+     `org_portals` שאינן קיימות) התברר כתסמין-נוסף של תת-המערכת
+     הנטושה `rabbi_portals`/`org_portals`/`synagogue_portals`/
+     `study_day_events` שכבר מתועדת ומוכרעת-חסומה-על-בעלים בסבבים
+     קודמים (#260/#261 וכו') — לא נגעתי בה שוב.
+
+     `get_advisors(security)` על `bieebmnmkffwbqlsfozh` חזר אותם 70
+     lints בדיוק כמו הבסיס המתועד; 12 ה-`ERROR` היחידים ב-`public`
+     שייכים לטבלאות `client_profiles`/`crm_users`/`hf_tiers`/וכו' —
+     מערכות אחרות (10/30-סוג) שחולקות את אותו פרויקט Supabase ולא
+     בסלייס שלי, ולא נגעתי בהן.
+
+740. **הממצא.** בהיעדר באג חדש מ-23 הקבצים, קראתי במלואם את שני
+     ה-edge functions הרגישים-לאבטחה שקיבלו רק תיקוני-pagination
+     ממוקדים בעבר אך מעולם לא עברו קריאה-שורה-אחר-שורה מלאה:
+     `admin-users/index.ts` ו-`create-admin/index.ts`. `create-admin`
+     נמצא תקין (השוואת-סוד קבועת-זמן, 404 על סוד שגוי, לא 403).
+     ב-`admin-users/index.ts`, הפעולות `update_password` (שורות
+     161-170 בגרסה הישנה) ו-`delete` (שורות 206-215) בודקות הרשאת
+     tenant_admin באמצעות `targetRoles.some(r => tenantAdminTenants.
+     includes(r.tenant_id) && r.role !== "super_admin")` — כלומר
+     **מספיק שתפקיד אחד** של המשתמש-המטרה תואם לטננט של הקורא כדי
+     לאשר את הפעולה. הבעיה: `auth.admin.deleteUser`/`updateUserById`
+     פועלות על חשבון ה-auth הגלובלי היחיד של המשתמש (`auth.users`),
+     לא על שיוך-לטננט ספציפי. משתמש שמחזיק גם תפקיד בטננט A (מנוהל
+     ע"י הקורא) וגם תפקיד בטננט B (לא קשור) — טננט-אדמין של A יכול
+     היה למחוק את חשבון ה-auth כולו (כולל הגישה לטננט B) או לאפס
+     סיסמה (ואז לגשת בעצמו לחשבון בטננט B) — חריגה מגבול-הרשאה
+     בין-טננטית. `SELECT` חי על `bieebmnmkffwbqlsfozh` אישר 0
+     משתמשים עם יותר מטננט אחד כרגע בפרודקשן (אין ניצול היום), אבל
+     מודל-הנתונים (טבלת `user_roles` גלובלית, ללא מגבלת-ייחוד על
+     `user_id`) לא חוסם משתמש-רב-טננטי (לדוגמה מורה שמלמד בשתי
+     קהילות שונות שכל אחת מנוהלת ע"י טננט-אדמין נפרד) — נתיב-כתיבה
+     חי ובר-הגעה, לא קוד מת.
+
+     **מה נבנה ואומת.** שני הבלוקים הוחלפו מ-`.some(...)` ל-בדיקה
+     שדורשת **כל** תפקידי המטרה בתוך טננטי-הקורא וללא `super_admin`:
+     `(targetRoles||[]).length>0 && (targetRoles||[]).every(r =>
+     r.role!=="super_admin" && tenantAdminTenants.includes(r.
+     tenant_id))`. אומת בסקריפט Node מבודד עם 6 תרחישים (חבר יחיד-
+     טננט של הקורא, tenant_admin יחיד-טננט של הקורא, אפס תפקידים,
+     תפקיד בטננט לא-קשור בלבד, תפקיד בטננט-הקורא **וגם** בטננט לא-
+     קשור, ותפקיד `super_admin` בכל מקום) — כל 6 עברו כצפוי. אומת
+     `esbuild --bundle --packages=external` נקי + מאזן-סוגריים
+     81/81 מסולסלים, 166/166 עגולים, 25/25 מרובעים. אימות-אפס-רגרסיה
+     חי: שאילתה על `bieebmnmkffwbqlsfozh` (`GROUP BY user_id HAVING
+     count(distinct tenant_id)>1 OR bool_or(role='super_admin')`)
+     אישרה 0 משתמשים קיימים מושפעים — כלומר לאף טננט-אדמין אמיתי אין
+     היום שום משתמש-מטרה שההרשאה שלו משתנה, זה חיזוק טהור. משכתי את
+     `get_edge_function` החי לפני העריכה ואישרתי שהוא זהה-בית לקובץ
+     המקומי (אין פער-פריסה כמו שנמצא בסבב הקודם) — כך שהתיקון המקומי
+     אכן משקף את מה שרץ בפרודקשן. נפרס מחדש דרך `deploy_edge_function`
+     (`admin-users` v3→v4). אין שליחה/חיוב/מייל אמיתיים, TEST MODE
+     מכובד. אפס רגרסיה — שני בלוקים בקובץ אחד בלבד שונו, שום handler/
+     RLS/UI אחר לא נגע. נדחף לענף חדש
+     `fix/01-torah-platform-admin-users-cross-tenant-blast-radius-0831`
+     (`1836e9cc`). לא מוזג, main לא נגע. System 35 KioskFleet לא נגע,
+     per HARD STEERING; מערכות/סכימות מוגנות (08/09/bkalut-app/
+     bkalot-admin/`zr_*`/webhook NEDARIM3873/`csj`/`csj_src`/`igud`/
+     15-egod) לא נגעו.
