@@ -1,7 +1,7 @@
 import { useParams, Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { ArrowRight, ExternalLink, Plus } from "lucide-react";
+import { ArrowRight, ExternalLink, Plus, Globe } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
@@ -28,6 +28,7 @@ export default function TenantDetail() {
   const [savingFeatures, setSavingFeatures] = useState(false);
   const [subOpen, setSubOpen] = useState(false);
   const [subForm, setSubForm] = useState({ plan: "standard", expires_at: "", payment_method: "", notes: "" });
+  const [domainInput, setDomainInput] = useState("");
 
   const { data: tenant } = useQuery({
     queryKey: ["tenant-admin", id],
@@ -81,6 +82,29 @@ export default function TenantDetail() {
   useEffect(() => {
     if (tenant?.tenant_features) setFeatures(Array.isArray(tenant.tenant_features) ? tenant.tenant_features[0] : tenant.tenant_features);
   }, [tenant]);
+
+  useEffect(() => {
+    setDomainInput(tenant?.custom_domain || "");
+  }, [tenant?.custom_domain]);
+
+  const DOMAIN_RE = /^[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?(\.[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?)+$/i;
+
+  const saveDomain = useMutation({
+    mutationFn: async (raw?: string) => {
+      const value = (raw ?? domainInput).trim().toLowerCase().replace(/^https?:\/\//, "").replace(/\/+$/, "");
+      if (value && !DOMAIN_RE.test(value)) throw new Error("כתובת דומיין לא תקינה (לדוגמה: mc-galil.org.il)");
+      const { error } = await supabase.from("tenants").update({ custom_domain: value || null }).eq("id", id!);
+      if (error) {
+        if (error.code === "23505") throw new Error("הדומיין הזה כבר משויך לטננט אחר");
+        throw error;
+      }
+    },
+    onSuccess: () => {
+      toast.success("הדומיין נשמר. יש להוסיף רשומת CNAME אצל ספק הדומיין ולעדכן את רשימת נטפרי.");
+      qc.invalidateQueries({ queryKey: ["tenant-admin", id] });
+    },
+    onError: (e: any) => toast.error(e.message),
+  });
 
   const saveFeatures = async () => {
     if (!features || savingFeatures) return;
@@ -166,6 +190,39 @@ export default function TenantDetail() {
               </div>
             );
           })}
+        </CardContent>
+      </Card>
+
+      <Card className="mt-6">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2"><Globe className="h-4 w-4" /> דומיין מותאם אישית</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          <div>
+            <Label>כתובת הדומיין (ללא https://)</Label>
+            <Input
+              value={domainInput}
+              onChange={(e) => setDomainInput(e.target.value)}
+              placeholder="mc-galil.org.il"
+              dir="ltr"
+            />
+          </div>
+          <p className="text-sm text-muted-foreground">
+            הפעלת דומיין מותאם מציגה את האתר הציבורי + הפורטל של הארגון הזה בלבד תחת הדומיין. יש
+            להגדיר CNAME אצל ספק הדומיין ולאחר מכן להוסיף את הדומיין ל
+            <Link to="/admin/whitelist" className="underline mx-1">רשימת נטפרי</Link>
+            כדי שהאתר יעבור סינון תוכן.
+          </p>
+          <div className="flex gap-2">
+            <Button onClick={() => saveDomain.mutate()} disabled={saveDomain.isPending}>
+              {saveDomain.isPending ? "שומר..." : "שמור דומיין"}
+            </Button>
+            {tenant.custom_domain && (
+              <Button variant="outline" onClick={() => { setDomainInput(""); saveDomain.mutate(""); }} disabled={saveDomain.isPending}>
+                הסר דומיין
+              </Button>
+            )}
+          </div>
         </CardContent>
       </Card>
     </div>
