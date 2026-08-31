@@ -1,6 +1,6 @@
 import { Link, useLocation } from "react-router-dom";
 import {
-  LayoutDashboard, Users, FileText, Lightbulb, MessageSquare, Settings, LogOut, ShieldCheck, Mail, ArrowLeftRight
+  LayoutDashboard, Users, FileText, Lightbulb, MessageSquare, Settings, LogOut, ShieldCheck, Mail, ArrowLeftRight, MessageCircle
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
@@ -11,6 +11,7 @@ const adminMenu = [
   { icon: ArrowLeftRight, label: "התאמת שיעורים", path: "/admin/matching" },
   { icon: MessageSquare, label: "ניהול לידים", path: "/admin/leads" },
   { icon: Mail, label: "ניהול פניות", path: "/admin/messages" },
+  { icon: MessageCircle, label: "שאלות לרב", path: "/admin/rabbi-questions" },
   { icon: MessageSquare, label: "ניהול פורומים", path: "/admin/forums" },
   { icon: Lightbulb, label: "ניהול טיפים", path: "/admin/tips" },
   { icon: FileText, label: "ניהול תכנים", path: "/admin/content" },

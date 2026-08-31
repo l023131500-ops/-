@@ -124,6 +124,7 @@ const AdminLeadsGuru = lazy(() => import("@/pages/admin/LeadsGuru"));
 const AdminMatchingGuru = lazy(() => import("@/pages/admin/MatchingGuru"));
 const AdminMessages = lazy(() => import("@/pages/admin/Messages"));
 const AdminTeachers = lazy(() => import("@/pages/admin/Teachers"));
+const AdminRabbiQuestions = lazy(() => import("@/pages/admin/RabbiQuestions"));
 
 // ---- Guru-Portal Portal Pages ----
 const PortalLessons = lazy(() => import("@/pages/portal/Lessons"));
@@ -269,6 +270,7 @@ export default function App() {
                     <Route path="matching-guru" element={<AdminMatchingGuru />} />
                     <Route path="messages" element={<AdminMessages />} />
                     <Route path="teachers" element={<AdminTeachers />} />
+                    <Route path="rabbi-questions" element={<AdminRabbiQuestions />} />
                   </Route>
 
                   {/* Torah-Connect Legacy Routes (standalone, no layout wrapper) */}

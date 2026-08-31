@@ -9154,3 +9154,78 @@
      מוזג, main לא נגע. System 35 KioskFleet לא נגע, per HARD STEERING;
      מערכות/סכימות מוגנות (08/09/bkalut-app/bkalot-admin/`zr_*`/webhook
      NEDARIM3873/`csj`/`csj_src`/`igud`/15-egod) לא נגעו.
+
+714. **ההקשר.** המשך סבב P3 01-torah-platform (STEP 1 מאושר: P0 sys14
+     `done` מ-30/08, P1(35) אסור per HARD STEERING, P2(32/36) build_tasks
+     0 todo, 15-egod עדיין לא ב-`list_projects`). סוכן Explore חיפש
+     מחלקת-באג חדשה עם רשימת כל מה שכבר תוקן/נחסם כדי לא לחזור על עצמו.
+     המועמד שהציע ("`leads` בלי מדיניות INSERT לציבור") התברר **false
+     positive** — `leads_insert` קיימת חיה עם `tenant_accepts_public_
+     intake(tenant_id) OR ...`, בדיוק אותו תמרון-מפני-ניחוש-סכימה
+     שתועד בתקריות #629/711 — שוב, גריפת קובצי מיגרציה בלי לבדוק מצב DB
+     חי. בדקתי חי ומצאתי שהוא false positive לפני שהמשכתי.
+
+715. **הממצא האמיתי.** בדקתי שיטתית את כל מדיניות ה-`UPDATE`/`ALL` ב-
+     `public` שכוללות תפקיד `'member'` (`pg_policy` חי) וגיליתי שאותה
+     מחלקת-באג של `materials` (#712-713) חוזרת על עוד כ-20 טבלאות
+     tenant-scoped — אבל רובן (ads/announcements/lessons/synagogues/
+     chat_rooms וכו') הן תוכן שיתופי-בכוונה, בלי עמודת-החלטה של מנהל.
+     `rabbi_questions` שונה: יש לה `answer`/`is_public`/`status`/
+     `rabbi_user_id`/`answered_at` — בדיוק שדות-החלטת-רב, ו-
+     `public/RabbiQuestions.tsx` (עמוד "שאל את הרב" חי) קורא `where
+     is_public=true and answer is not null` ומציג תחת Badge "תשובת
+     הרב". `rabbi_questions_tenant_write_upd` מזהה member/moderator/
+     tenant_admin זהה — אז כל `member` בטננט (וה-`rabbi_questions_
+     tenant_read` כבר מאפשר לו לקרוא גם שאלות פרטיות/אנונימיות של
+     אחרים) יכול לקרוא ישירות `.update({answer:"...", is_public:true,
+     status:"answered"})` על **כל** שאלה בטננט — כולל שאלה אנונימית
+     של מישהו אחר — ולפרסם תשובה מזויפת תחת Badge "תשובת הרב" הרשמי,
+     או לחשוף שאלה פרטית לציבור בלי הסכמה. חמור אף יותר מ-`materials`:
+     כאן זו לא רק עקיפת-מודרציה אלא התחזות לתשובה רשמית של רב. בדקתי
+     גם את `rabbi_questions_insert`'s `with_check`: הענף public-intake
+     דורש נכון `answer is null and is_public=false`, אבל ענף
+     `has_tenant_role(...,'member')` בלי שום הגבלה כזו — אז member יכול
+     גם ל-**INSERT** שורה חדשה עם `answer`/`is_public` כבר מלאים,
+     עוקף-מודרציה בזמן יצירה במקום עדכון. עוד גילוי: אין בקוד שום מסך
+     ניהול שכותב אי-פעם ל-`answer`/`is_public`/`status`/`rabbi_user_id`
+     — הפיצ'ר "שאל את הרב" חצי-בנוי: הגשה ציבורית עובדת, אך שום דבר לא
+     מאפשר לרב/מנהל לענות בפועל.
+
+716. **מה נבנה ואומת.** שני חלקים: (א) מיגרציה
+     `20260831080000_rabbi_questions_protect_answer_fields.sql` — טריגר
+     `before insert or update` (`protect_rabbi_questions_answer_
+     fields()`, plpgsql, `set search_path = public, pg_temp`) שמגן על
+     חמש העמודות (`answer`/`is_public`/`status`/`rabbi_user_id`/
+     `answered_at`) גם ב-INSERT (מאפס לברירת המחדל הבטוחה אם המבצע לא
+     moderator/tenant_admin) וגם ב-UPDATE (מחזיר לערך הישן) — כולל
+     `super_admin` כי `has_tenant_role` כבר מקפל אותו. `question`/
+     `from_name`/`from_phone`/`from_email`/`is_anonymous`/`category`
+     נשארים חופשיים. (ב) מסך ניהול חדש `admin/RabbiQuestions.tsx`
+     ("שאלות לרב", בדיוק תבנית `admin/Content.tsx`/`Messages.tsx`):
+     רשימת שאלות + טיוטת-תשובה + Switch לפרסום ציבורי + Send מעדכן
+     `answer`/`status="answered"`/`answered_at`/`rabbi_user_id=auth.uid()`.
+     נרשם ב-`App.tsx` (`/admin/rabbi-questions`) ונוסף לתפריט הצד ב-
+     `components/admin/AdminLayout.tsx` (היה חסר, אחרת המסך היה נגיש
+     רק בהקלדת URL — כמו שאר מסכי ה-Guru-Portal). לא היה `node_modules`
+     בסביבה להרצת `vite build`/`tsc` (אין להתקין) — כל שלושת הקבצים
+     שהשתנו/נוצרו עברו `esbuild --loader=tsx` בהצלחה (טרנספילציה נקייה,
+     אין שגיאת syntax) בנוסף לבדיקת איזון-סוגריים. אומת חי ב-4
+     טרנזקציות rolled-back על `bieebmnmkffwbqlsfozh` (משתמשים אמיתיים
+     f25f6e65/3c03f8db, תפקיד-`user_roles` זמני): (1) **לפני** התיקון —
+     ה-member הצליח לזייף תשובה+פרסום על שאלה אנונימית של אחר (אישר
+     את הבאג). (2) **אחרי** התיקון, אותה התקפה בדיוק דרך UPDATE —
+     כל חמשת השדות המוגנים חזרו לערכם המקורי, בעוד `category`
+     (שדה לא-מוגן) כן התעדכן — מוכיח הגנה עמודה-ספציפית. (3) אותה
+     התקפה דרך **INSERT** של שורה חדשה — נחסמה זהה (`answer=null`,
+     `is_public=false`, `status='new'`, `rabbi_user_id=null`). (4)
+     `moderator` אמיתי (אותו user_id, תפקיד שונה) ענה כרגיל — מוכיח
+     שנתיב המודרציה הלגיטימי לא נפגע. כל הטרנזקציות הסתיימו ב-
+     `ROLLBACK`, `COUNT` נפרד אימת אפס שאריות (0 שורות `QA %`, 0 שורות
+     `user_roles` זמניות) אחרי כל אחת. `get_advisors(security)` הופעל
+     אחרי ה-apply — 70 lints, אין אזכור חדש של `rabbi_questions` או
+     הפונקציה החדשה. אין שליחה/חיוב/מייל אמיתיים, TEST MODE מכובד.
+     נדחף לענף חדש `fix/01-torah-platform-rabbi-questions-answer-
+     fields-0831`. לא מוזג, main לא נגע. System 35 KioskFleet לא נגע,
+     per HARD STEERING; מערכות/סכימות מוגנות (08/09/bkalut-app/
+     bkalot-admin/`zr_*`/webhook NEDARIM3873/`csj`/`csj_src`/`igud`/
+     15-egod) לא נגעו.
