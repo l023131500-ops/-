@@ -69,6 +69,18 @@ export function PortalLayout() {
         ]
       : [];
 
+  // ארגון (architecture.md §5.2 "ארגון": "ניהול בתי כנסת קשורים"). synagogues +
+  // its RLS (synagogues_tenant_write_*) are not restricted to religious_council
+  // -- any tenant_admin/moderator/member of the owning tenant may write -- and
+  // the /portal/synagogues route+screen were already built+verified for
+  // build_tasks#22, but PortalLayout.tsx only ever linked it for
+  // religious_council, so the 3 live organization tenants had no nav path to
+  // manage their linked synagogues despite the spec listing it for them too.
+  const orgItems =
+    tenant?.type === "organization"
+      ? [{ to: "/portal/synagogues", icon: Building2, label: "בתי כנסת קשורים" }]
+      : [];
+
   // רב / מורה הוראה (architecture.md §5.2): "שאל את הרב" – ניהול שאלות ותשובות.
   // rabbi_questions RLS already scopes moderator/tenant_admin to their own
   // tenant_id, but only a global super_admin-only screen ever existed
@@ -94,6 +106,7 @@ export function PortalLayout() {
     { to: "/portal/participants", icon: Users, label: "משתתפים" },
     ...lessonsItems,
     ...councilItems,
+    ...orgItems,
     ...rabbiItems,
     { to: "/portal/materials", icon: FileText, label: "חומרי לימוד" },
     { to: "/portal/kashrut", icon: BadgeCheck, label: "תעודות כשרות" },
