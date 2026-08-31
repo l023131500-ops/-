@@ -75,20 +75,25 @@ Deno.serve(async (req) => {
     const maggidMemberships = (memberships ?? []).filter((m: any) => m.tenants?.type === "maggid");
     const userIds = maggidMemberships.map((m: any) => m.user_id);
     const { data: teacherProfiles } = userIds.length
-      ? await supabase.from("profiles").select("id, full_name, phone, city, bio").in("id", userIds)
+      ? await supabase.from("profiles").select("id, full_name, phone, city, bio, meta").in("id", userIds)
       : { data: [] as any[] };
     const profileById = new Map((teacherProfiles ?? []).map((p: any) => [p.id, p]));
 
-    const teacherList = maggidMemberships.map((m: any) => {
-      const p = profileById.get(m.user_id);
-      return {
-        user_id: m.user_id,
-        name: p?.full_name || m.tenants?.name,
-        city: p?.city || m.tenants?.city,
-        region: m.tenants?.region,
-        bio: p?.bio,
-      };
-    });
+    // architecture.md §5.2 מגיד: self-service "פנוי למסירת שיעורים נוספים"
+    // switch (profiles.meta.available_for_matching, set from PortalSettings.tsx).
+    // Missing key = available, so existing maggidim keep matching unchanged.
+    const teacherList = maggidMemberships
+      .filter((m: any) => (profileById.get(m.user_id)?.meta ?? {}).available_for_matching !== false)
+      .map((m: any) => {
+        const p = profileById.get(m.user_id);
+        return {
+          user_id: m.user_id,
+          name: p?.full_name || m.tenants?.name,
+          city: p?.city || m.tenants?.city,
+          region: m.tenants?.region,
+          bio: p?.bio,
+        };
+      });
 
     const prompt = `אתה עוזר התאמה במערכת איגוד השיעורים. בקשת ליד:
 - שם: ${lead.full_name}

@@ -10,6 +10,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
 import { BACKGROUND_PRESETS, PORTAL_LANGUAGES } from "@/types/portalDesign";
 import { buildRabbiUrl } from "@/lib/site";
+import { useTenant } from "@/hooks/useTenant";
+import { Switch } from "@/components/ui/switch";
 
 type Profile = {
   id?: string;
@@ -19,6 +21,7 @@ type Profile = {
   donation_link: string; lesson_download_url: string;
   rabbi_photo_url: string; logo_url: string; custom_background_url: string;
   background_preset: string; font_color: string; portal_language: string;
+  available_for_matching: boolean;
 };
 
 type Photo = { id: string; image_url: string; caption: string | null };
@@ -30,10 +33,12 @@ const empty: Profile = {
   donation_link: "", lesson_download_url: "",
   rabbi_photo_url: "", logo_url: "", custom_background_url: "",
   background_preset: "preset-1", font_color: "light", portal_language: "עברית",
+  available_for_matching: true,
 };
 
 const PortalSettings = () => {
   const { user } = useAuth();
+  const { tenant } = useTenant();
   const [profile, setProfile] = useState<Profile>(empty);
   const [photos, setPhotos] = useState<Photo[]>([]);
   const [saving, setSaving] = useState(false);
@@ -71,6 +76,7 @@ const PortalSettings = () => {
         background_preset: (meta.background_preset as string) || "preset-1",
         font_color: (meta.font_color as string) || "light",
         portal_language: data.language || "עברית",
+        available_for_matching: meta.available_for_matching !== false,
       });
       // public.portal_photos exists live (20260831030000); "as any" stays only
       // because this repo doesn't regenerate generated-types.ts per migration.
@@ -146,6 +152,7 @@ const PortalSettings = () => {
         custom_background_url: profile.custom_background_url,
         background_preset: profile.background_preset,
         font_color: profile.font_color,
+        available_for_matching: profile.available_for_matching,
       } as Json,
     };
     const { error } = await supabase.from("profiles").update(payload).eq("id", user!.id);
@@ -210,6 +217,16 @@ const PortalSettings = () => {
                 <Input value={profile.bio} onChange={(e) => update("bio", e.target.value)} /></div>
               <div><label className="text-sm font-medium mb-1 block">אודות (טקסט מלא לדף הציבורי)</label>
                 <Textarea value={profile.about_text} onChange={(e) => update("about_text", e.target.value)} rows={5} /></div>
+              {tenant?.type === "maggid" && (
+                <div className="flex items-center gap-3 pt-2 border-t border-border">
+                  <Switch checked={profile.available_for_matching}
+                    onCheckedChange={(v) => setProfile(p => ({ ...p, available_for_matching: v }))} />
+                  <div>
+                    <label className="text-sm font-medium block">פנוי לקבלת שיעורים נוספים</label>
+                    <p className="text-xs text-muted-foreground">כשכבוי, לא תוצג כברירת מחדל בהתאמת שיעורים של איגוד השיעורים (מסך הניהול עדיין יכול להציג ולשייך גם מגידים לא זמינים באופן ידני)</p>
+                  </div>
+                </div>
+              )}
             </div>
           </TabsContent>
 

@@ -17,6 +17,7 @@ const AdminMatching = () => {
   const [aiLoading, setAiLoading] = useState(false);
   const [aiSuggestions, setAiSuggestions] = useState<string[]>([]);
   const [assigning, setAssigning] = useState<string | null>(null);
+  const [showUnavailable, setShowUnavailable] = useState(false);
 
   const load = async () => {
     const [{ data: l }, { data: m }] = await Promise.all([
@@ -37,11 +38,15 @@ const AdminMatching = () => {
     const maggidMemberships = (m || []).filter((row: any) => row.tenants?.type === "maggid");
     const userIds = maggidMemberships.map((row: any) => row.user_id);
     const { data: p } = userIds.length
-      ? await supabase.from("profiles").select("id, full_name, phone, city, neighborhood, bio").in("id", userIds)
+      ? await supabase.from("profiles").select("id, full_name, phone, city, neighborhood, bio, meta").in("id", userIds)
       : { data: [] as any[] };
     const profileById = new Map((p || []).map((row: any) => [row.id, row]));
     const maggidim = maggidMemberships.map((row: any) => {
       const profile = profileById.get(row.user_id);
+      // architecture.md §5.2 מגיד: "Switch פנוי למסירת שיעורים נוספים". Stored
+      // in profiles.meta (same pattern as every other PortalSettings.tsx
+      // field) — missing key means available (existing maggidim keep showing).
+      const meta = (profile?.meta as Record<string, unknown>) || {};
       return {
         id: row.user_id,
         full_name: profile?.full_name || row.tenants?.name,
@@ -49,6 +54,7 @@ const AdminMatching = () => {
         neighborhood: profile?.neighborhood,
         organization_name: row.tenants?.name,
         is_approved: row.tenants?.status === "active",
+        is_available: meta.available_for_matching !== false,
         _phone: profile?.phone,
       };
     });
@@ -61,6 +67,7 @@ const AdminMatching = () => {
         subjects: x.preferred_subject ? x.preferred_subject.split(",").map((s: string) => s.trim()) : [],
         organization_name: "מועמד מהאתר",
         is_approved: false,
+        is_available: true,
         _isLead: true,
         _phone: x.phone,
       }));
@@ -76,8 +83,9 @@ const AdminMatching = () => {
   ), [leads, search]);
 
   const filteredTeachers = useMemo(() => teachers.filter(t =>
+    (showUnavailable || t.is_available) &&
     matches(search, t.full_name, t.city, t.neighborhood, (t.subjects || []).join(" "), t.organization_name)
-  ), [teachers, search]);
+  ), [teachers, search, showUnavailable]);
 
   const assign = async (leadId: string, teacherId: string) => {
     if (teacherId.startsWith("lead:")) {
@@ -193,8 +201,12 @@ const AdminMatching = () => {
 
           {/* Teachers column */}
           <div className="bg-card rounded-2xl border-2 border-border overflow-hidden">
-            <div className="bg-gradient-to-r from-secondary/10 to-card p-4 border-b border-border">
+            <div className="bg-gradient-to-r from-secondary/10 to-card p-4 border-b border-border space-y-2">
               <h2 className="font-heading text-xl font-bold flex items-center gap-2"><BookOpen className="w-5 h-5 text-secondary" />איגוד מגידי השיעורים – פנויים ({filteredTeachers.length})</h2>
+              <label className="flex items-center gap-2 text-xs text-muted-foreground cursor-pointer w-fit">
+                <input type="checkbox" checked={showUnavailable} onChange={(e) => setShowUnavailable(e.target.checked)} className="accent-secondary" />
+                הצג גם מגידים שסימנו עצמם "לא פנוי כרגע"
+              </label>
             </div>
             <div className="divide-y divide-border max-h-[70vh] overflow-y-auto">
               {filteredTeachers.map(t => (
@@ -208,7 +220,10 @@ const AdminMatching = () => {
                         {(t.subjects || []).slice(0, 3).map((s: string) => <Badge key={s} variant="outline" className="text-xs">{s}</Badge>)}
                       </div>
                     </div>
-                    <Badge variant={t.is_approved ? "default" : "outline"}>{t.is_approved ? "מאושר" : "ממתין"}</Badge>
+                    <div className="flex flex-col items-end gap-1">
+                      <Badge variant={t.is_approved ? "default" : "outline"}>{t.is_approved ? "מאושר" : "ממתין"}</Badge>
+                      {!t.is_available && <Badge variant="destructive" className="text-xs">לא פנוי כרגע</Badge>}
+                    </div>
                   </div>
                   {selectedTeacher?.id === t.id && selectedLead && (
                     <Button size="sm" className="w-full mt-2 bg-gradient-to-l from-secondary to-gold-dark text-secondary-foreground gap-1"
