@@ -5,6 +5,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
+import { UploadContributionIllustration } from "@/components/illustrations";
 import { ChevronRight, UploadCloud, FileAudio, X } from "lucide-react";
 
 const ALLOWED_EXT = /\.(mp3|wav|m4a|aac|ogg|opus|webm|flac)$/i;
@@ -211,11 +212,18 @@ export default function UploadPage() {
       </header>
 
       <main className="max-w-3xl mx-auto px-4 py-10">
-        <h1 className="text-xl font-bold mb-2">העלאת הקלטה חדשה</h1>
-        <p className="text-sm text-muted-foreground mb-6">
-          עד {fmtBytes(MAX_UPLOAD_BYTES)} לקובץ — ההעלאה נעשית ישירות לאחסון עם מד התקדמות.
-          הקלטה ארוכה יותר אפשר לפצל, או לדחוס לאיכות נמוכה יותר.
-        </p>
+        <div className="flex flex-col sm:flex-row-reverse items-center gap-4 mb-6">
+          <UploadContributionIllustration className="w-28 h-20 sm:w-36 sm:h-24 shrink-0" />
+          <div className="text-center sm:text-right">
+            <h1 className="text-xl font-bold mb-2">העלאת הקלטה חדשה</h1>
+            <p className="text-sm text-muted-foreground">
+              שיעור שמעלים כאן עובר תמלול ועריכה אוטומטיים ומצטרף לארכיון החי —
+              קריא ונגיש לחיפוש לצד כל השיעורים שכבר בו. עד{" "}
+              {fmtBytes(MAX_UPLOAD_BYTES)} לקובץ, בהעלאה ישירה לאחסון עם מד
+              התקדמות. הקלטה ארוכה יותר אפשר לפצל, או לדחוס לאיכות נמוכה יותר.
+            </p>
+          </div>
+        </div>
 
         <Card className="p-6 space-y-5">
           <div

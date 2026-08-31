@@ -27,6 +27,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
+import { TorahLectureIllustration } from "@/components/illustrations";
 import { useToast } from "@/hooks/use-toast";
 import { useState, useMemo, useEffect } from "react";
 import {
@@ -183,6 +184,22 @@ export default function RecordingsPage() {
       </header>
 
       <main className="max-w-6xl mx-auto px-4 py-8">
+        {/* Value proposition — one sentence, above everything else, with a
+            real number (not a round claim) from the same query that feeds
+            the stat tiles below it. */}
+        <div className="mb-8 flex flex-col md:flex-row-reverse items-center gap-6 md:gap-10">
+          <TorahLectureIllustration className="w-40 h-28 md:w-56 md:h-40 shrink-0" />
+          <p
+            className="text-base md:text-lg leading-relaxed text-foreground text-center md:text-right max-w-xl"
+            data-testid="text-hero-tagline"
+          >
+            כל שיעור תורה מוקלט הופך כאן לתמלול קריא בעברית מלאה — מפוסק, מחולק
+            לפסקאות ונשמר לצמיתות — וניתן לחיפוש חופשי בתוך{" "}
+            {stats ? stats.total.toLocaleString("he-IL") : "אלפי"} השיעורים שכבר
+            בארכיון.
+          </p>
+        </div>
+
         {/* Stats — counted by the database over the whole archive */}
         <div className="grid grid-cols-3 gap-3 mb-8">
           <Card className="p-4 flex items-center gap-3">
