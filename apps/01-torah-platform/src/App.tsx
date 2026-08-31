@@ -72,6 +72,7 @@ const PortalBulkUpload = lazy(() => import("@/pages/portal/BulkUpload"));
 const PortalStudySchedule = lazy(() => import("@/pages/portal/StudySchedule"));
 const Questionnaire = lazy(() => import("@/pages/public/Questionnaire"));
 const AdminTips = lazy(() => import("@/pages/admin/Tips"));
+const AdminTopics = lazy(() => import("@/pages/admin/Topics"));
 const AdminForums = lazy(() => import("@/pages/admin/Forums"));
 const AdminTeacherFeatures = lazy(() => import("@/pages/admin/TeacherFeatures"));
 
@@ -278,6 +279,7 @@ export default function App() {
                     <Route path="analytics" element={<AdminAnalytics />} />
                     <Route path="audit-log" element={<AdminAuditLog />} />
                     <Route path="tips" element={<AdminTips />} />
+                    <Route path="topics" element={<AdminTopics />} />
                     <Route path="forums" element={<AdminForums />} />
                     <Route path="teacher-features" element={<AdminTeacherFeatures />} />
                     {/* Guru-Portal Admin Pages */}
