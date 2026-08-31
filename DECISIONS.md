@@ -9484,3 +9484,51 @@
      main לא נגע. System 35 KioskFleet לא נגע, per HARD STEERING;
      מערכות/סכימות מוגנות (08/09/bkalut-app/bkalot-admin/`zr_*`/webhook
      NEDARIM3873/`csj`/`csj_src`/`igud`/15-egod) לא נגעו.
+
+## 31/08/2026 (LOOP A) — 01-torah-platform: הזמנת חנות — עמודת "הערות" שגויה + מסך מילוי הזמנות חסר כל פרט מעשי
+
+728. **ההקשר.** המשך סבב P3 01-torah-platform (STEP 1 מאושר: P0 sys14
+     `done` מ-30/08, P1(35) אסור per HARD STEERING, P2(32/36) build_tasks
+     0 todo, 15-egod עדיין לא ב-`list_projects`). מחלקת-הבאג "member
+     שווה ל-moderator/tenant_admin על עמודת-החלטה" ומחלקת "RLS מתעלמת
+     מעמודת-בעלות" מוצו על רוב טבלאות ה-`public` (ראו #700-727). הפעלתי
+     סוכן Explore לחפש מחלקת-באג **שונה** — קריאת קוד אמיתית, לא עוד
+     סריקת `pg_policies` — עם רשימה מפורשת של כל מה שכבר טופל/נבדק
+     ונפסל, כדי למנוע כפילות.
+
+729. **הממצא.** `Checkout.tsx` (`/checkout`, נתיב חנות ציבורי חי) אוסף
+     הוראות-משלוח מהלקוח בשדה "הערות" וכותב אותן ל-`orders.notes` —
+     עמודה נפרדת מ-`orders.shipping_notes` שהסכימה עצמה מקבצת יחד עם
+     `shipping_address`/`shipping_city`/`shipping_zip` (עמדות 8-11).
+     אך בדיקת קוד הראתה שזה סימפטום למשהו רחב יותר: **אף מסך בכל
+     האפליקציה לא מציג את שתי העמודות האלה בכלל** — לא
+     `admin/Commerce.tsx` (תצוגת-על חוצת-טננטים) ולא `portal/Orders.tsx`
+     (המסך האמיתי שדרכו טננט מטפל בהזמנות שלו) — האחרון הציג רק שם
+     לקוח/סכום/תאריך/עיר/סטטוס, בלי טלפון, בלי מייל, בלי כתובת מלאה,
+     בלי הערות משלוח, ו**בלי פריטי ההזמנה עצמם**. איש-צוות שמנסה למלא
+     הזמנה אמיתית לא יכול לדעת מה הוזמן, איך ליצור קשר עם הלקוח, או
+     להיכן לשלוח.
+
+730. **מה נבנה ואומת.** (1) `Checkout.tsx` שורה 83: `notes:` הוחלף
+     ל-`shipping_notes:` (תואם את כוונת השדה ואת קיבוץ העמודות בסכימה).
+     (2) `portal/Orders.tsx`: נוסף אזור-פרטים נפתח/נסגר per-הזמנה
+     (state מקומי `expandedId`, ללא ספריה חדשה) המציג טלפון/מייל/כתובת
+     מלאה/הערות משלוח, ופריטי ההזמנה (`order_items`) דרך embed
+     `select("*, order_items(*)")` — נשען על מדיניות `oi_read` הקיימת
+     שכבר מתירה זאת ל-`tenant_admin`. שורת התקציר הקיימת (שם/סכום/
+     תאריך/עיר/badges) נשארה זהה, האזור החדש סגור כברירת מחדל. אין
+     שינוי סכימה/RLS. אומת: `esbuild` נקי על שני הקבצים; טרנזקציה חיה
+     rolled-back על `bieebmnmkffwbqlsfozh` עם משתמש אמיתי (`f25f6e65`)
+     ותפקיד `tenant_admin` זמני על טננט אמיתי — הזמנת-QA + פריט-QA
+     נכתבו עם `shipping_notes`, ואותה שאילתה בדיוק שה-UI החדש משתמש בה
+     (embed `order_items`) החזירה את הטלפון/ההערות/הפריטים כראוי דרך
+     ה-RLS; `COUNT` נפרד לאחר `ROLLBACK` אימת אפס שאריות (0
+     `orders`/`order_items` בשם `QA DELETE ME%`, 0 שורת `user_roles`
+     זמנית). `get_advisors(security)` — עדיין 70 lints (בסיס זהה, שינוי
+     Frontend גרידא ללא נגיעה בסכימה). אין שליחה/חיוב/מייל אמיתיים,
+     TEST MODE מכובד. אפס רגרסיה — התוספת גלויה רק בהרחבה, שום `.tsx`/
+     RPC/route קיים אחר לא נגע. נדחף לענף חדש
+     `fix/01-torah-platform-orders-fulfillment-details-0831` (`4803efb2`).
+     לא מוזג, main לא נגע. System 35 KioskFleet לא נגע, per HARD
+     STEERING; מערכות/סכימות מוגנות (08/09/bkalut-app/bkalot-admin/
+     `zr_*`/webhook NEDARIM3873/`csj`/`csj_src`/`igud`/15-egod) לא נגעו.
