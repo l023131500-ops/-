@@ -7862,3 +7862,66 @@
      (32/36) `build_tasks` נשאר 0 todo; מערכות/סכימות מוגנות (08/09/
      bkalut-app/bkalot-admin/`zr_*`/webhook NEDARIM3873/`csj`/`csj_src`/
      `igud`/15-egod) לא נגעו.
+
+## 31/08/2026 (LOOP A) — `pages/legacy/TeachersLanding.tsx` (`/teachers`, מקושר מהיירו/פוטר/צ׳אטבוט) כתב ל-`teacher_leads` שלא קיימת — כל הרשמת מגיד נכשלה בשקט
+
+645. **ההקשר.** P0 (מערכת 14) אומת שוב `done` ב-`core.build_tasks`
+     id=15. P1 (35) אסור per HARD STEERING. P2 (32/36) אומת שוב כ-0
+     שורות `todo`. `core.build_tasks` אין שורות עבור 01/15 — המשך
+     בביקורת ad-hoc על 01-torah-platform (15-egod עדיין לא נגיש
+     דרך ה-MCP הזה). סוכן Explore סרק 41 קבצים שטרם בוקרו בשום סבב
+     קודם (השוואה נגד כל שם-קובץ שהוזכר אי-פעם ב-`DECISIONS.md`) ומצא
+     תבנית-על: `lib/lessonShare.ts`/`components/bulk/BulkLessonTable.tsx`/
+     `BulkLessonForm.tsx` קוראים לשדות ישנים (`audience_type`,
+     `target_audience`, `street`, `schedule_days` וכו') שלא קיימים
+     בסכימת ה-`lessons` האמיתית — אך אומת בגריפ ישיר שאף קובץ בעץ לא
+     מייבא/מרנדר את שלושתם (אין ראוט אליהם, `IndexLegacy.tsx` היחיד
+     שמייבא באנר תואם גם הוא לא-מנותב) — קוד מת לגמרי, לא תוקן/לא
+     דווח (אין ראוט חי מושפע).
+646. **הממצא שכן תוקן.** `pages/legacy/TeachersLanding.tsx` נטען בראוט
+     **חי** `/teachers`, ומקושר במפורש משלושה מקומות מודרניים ופעילים:
+     `HeroSection.tsx` (כפתור בהירו של דף הבית!), `Footer.tsx`
+     ("הצטרפות כמגיד שיעור"), ו-`FloatingChatBot.tsx` ("רישום כרב מגיד
+     שיעור") — בניגוד לתת-המערכת ה"legacy" הנטושה שכבר תועדה (סעיף
+     500/#257/#260), זהו מסך שמוצג ומקודם באופן פעיל למבקר אמיתי.
+     טופס ה-16-שלבים שלו מסתיים ב-`INSERT` ל-`teacher_leads`
+     (`handleSubmit`, שורה ~130) — טבלה שמעולם לא נוצרה באף מיגרציה
+     (`information_schema.columns` על `bieebmnmkffwbqlsfozh`: 0 שורות).
+     כל הרשמה אמיתית נכשלה ב-`42P01`, נבלעה ב-`catch` גנרי (`toast.error`
+     בלבד, בלי לחשוף למה). זהה במחלקה ל-#261 (UpdateLesson.tsx) — אבל
+     בניגוד אליו, כאן **קיים כבר יעד-כתיבה אמיתי, חי ומאומת-עובד**:
+     `components/FloatingChatBot.tsx` (הערה בקוד, שורות 117-128, מסבב
+     קודם) מתעדת במפורש ש"`seeker_leads`/`teacher_leads` התמזגו ל-`leads`
+     עם עמודת `kind`", ו-`pages/public/JoinTeacher.tsx` (מסך-אח מודרני,
+     ראוט `/join-teacher`) כבר כותב בהצלחה ל-`leads` עם
+     `kind: "teacher_offer"` — בדיוק אותה כוונת-מוצר ("הצטרף כמגיד").
+     `admin/Leads.tsx`/`admin/LeadsGuru.tsx` כבר קוראים ומרנדרים
+     `leads` (כולל `TYPE_LABELS.teacher_offer = "הצטרף כמגיד"`) — כלומר
+     תור-האישור הנדרש (בניגוד ל-#261) **כבר קיים ועובד**, לא חסר.
+647. **מה נעשה + אימות.** הוספתי `useTenant()` (הקובץ לא היה מודע-טננט
+     בכלל קודם) ושיניתי את ה-`insert` מ-`teacher_leads` ל-`leads` עם
+     `tenant_id: tenant.id`, `kind: "teacher_offer"`, `source:
+     "teachers-landing"`, ושמרתי את כל 16 שדות הטופס (רקע/סטטוס/מגדר/
+     שפה/נושאים/ימים/שעות/ממליצים וכו') תחת `raw_data` jsonb — אותו
+     דפוס בדיוק כמו `JoinTeacher.tsx`. הוספתי גם שער `if (!tenant)`
+     לפני השליחה (הקובץ לא בדק זאת קודם). אומת: `information_schema`
+     מאשר `teacher_leads` לא קיימת (0 עמודות). בטרנזקציה מגולגלת-אחורה
+     מול `bieebmnmkffwbqlsfozh` תחת `SET LOCAL ROLE anon` (בלי JWT
+     claims — בדיוק מבקר אנונימי אמיתי): `INSERT` ל-`teacher_leads`
+     ישיר נכשל מיידית ב-`42P01` (המסלול הישן, כצפוי); `INSERT` ל-`leads`
+     עם הפיילוד החדש (טננט אמיתי `igud` שמקבל public-intake) **הצליח**
+     — אומת ב-`SELECT` נפרד אחרי `RESET ROLE` (`kind`/`full_name`/
+     `source` חזרו נכון), ואז `ROLLBACK`; `count(*)` נפרד אחריו חזר `0`
+     — אפס שאריות. (לקח: ניסיון ראשון כלל `RETURNING` על ה-`INSERT`
+     וזה נכשל ב-RLS-על-SELECT של `leads_tenant_read` — לא קשור ל-
+     `WITH CHECK` של ה-INSERT עצמו; הקוד האמיתי לא קורא ל-`.select()`
+     כך שההתנהגות הנבדקת תואמת בדיוק את הקריאה האמיתית.) `esbuild
+     --bundle --packages=external --jsx=automatic` + `node --check`
+     נקיים; איזון סוגריים נקי (233/233 עגולים, 264/264 מסולסלים,
+     70/70 מרובעים). `git diff --stat`: קובץ אחד, 22+/4-, תוספתי
+     בעיקרו. נדחף לענף חדש
+     `fix/01-torah-platform-teacherslanding-leads-0831` (`32a70949`)
+     — לא מוזג. System 35 KioskFleet לא נגע, per HARD STEERING; P2
+     (32/36) `build_tasks` נשאר 0 todo; מערכות/סכימות מוגנות (08/09/
+     bkalut-app/bkalot-admin/`zr_*`/webhook NEDARIM3873/`csj`/`csj_src`/
+     `igud`/15-egod) לא נגעו. אין שליחה/חיוב אמיתיים בסבב זה.
