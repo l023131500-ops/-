@@ -81,6 +81,7 @@ import { downloadIDML } from "@/lib/idmlExporter";
 import { apiRequest, hasAuthSession, queryClient } from "@/lib/queryClient";
 import { nextId } from "@shared/layers";
 import type { TemplateDoc, TextLayer, ImageLayer, ShapeLayer, AnyLayer, TemplateBackground } from "@shared/layers";
+import { fitText } from "@/lib/autofit";
 
 // שורת מותג כפי שהשרת מחזיר מ-/api/brands (ר' shared/schema.ts) — קריאה בלבד כאן
 interface BrandRow {
@@ -123,6 +124,8 @@ export default function Editor() {
 
   const [doc, setDoc] = useState<TemplateDoc | null>(selected?.doc ?? null);
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  // עריכת טקסט "in-place" על הקנבס עצמו (דאבל-קליק על שכבת טקסט) — לא רק דרך הפאנל הצדדי
+  const [editingTextId, setEditingTextId] = useState<string | null>(null);
   const [copyDialogOpen, setCopyDialogOpen] = useState(false);
   const [aiDialogOpen, setAiDialogOpen] = useState(false);
   const [aiPrompt, setAiPrompt] = useState("");
@@ -240,6 +243,35 @@ export default function Editor() {
     () => doc.layers.find((l) => l.id === selectedId) ?? null,
     [doc, selectedId],
   );
+
+  // עריכת inline על הקנבס — אותו maxDisplayWidth שמועבר ל-CanvasStage, כדי שה-textarea
+  // תמוקם בדיוק על גבי מיקום השכבה בקנבס המוקטן לתצוגה.
+  const CANVAS_MAX_WIDTH = 560;
+  const canvasScale = Math.min(1, CANVAS_MAX_WIDTH / doc.width);
+  const editingLayer = useMemo(
+    () =>
+      editingTextId
+        ? ((doc.layers.find((l) => l.id === editingTextId && l.type === "text") as TextLayer | undefined) ?? null)
+        : null,
+    [doc, editingTextId],
+  );
+  // אותו fitText שמקטין את הפונט ב-CanvasStage כדי שה-textarea תתאים ויזואלית לטקסט שמתחתיה
+  const editingFit = useMemo(() => {
+    if (!editingLayer) return { fontSize: 0, lines: [] as string[], totalHeight: 0 };
+    const bold = (editingLayer.fontWeight ?? 400) >= 700;
+    if (editingLayer.autoFit === false) return { fontSize: editingLayer.fontSize, lines: [], totalHeight: 0 };
+    return fitText({
+      text: editingLayer.text || " ",
+      fontFamily: editingLayer.fontFamily,
+      bold,
+      maxWidth: editingLayer.width,
+      maxHeight: editingLayer.height,
+      startFontSize: editingLayer.maxFontSize ?? editingLayer.fontSize,
+      minFontSize: editingLayer.minFontSize ?? Math.max(12, Math.round(editingLayer.fontSize * 0.4)),
+      lineHeight: editingLayer.lineHeight ?? 1.15,
+      letterSpacing: editingLayer.letterSpacing ?? 0,
+    });
+  }, [editingLayer]);
 
   function updateDoc(next: TemplateDoc) {
     setDoc(next);
@@ -945,25 +977,64 @@ export default function Editor() {
       <div className="flex flex-1 overflow-hidden">
         {/* קנבאס מרכזי */}
         <main className="flex flex-1 items-center justify-center overflow-auto bg-[#070C17] p-8">
-          <CanvasStage
-            doc={doc}
-            selectedId={selectedId}
-            onSelect={setSelectedId}
-            onChangeLayer={handleChangeLayer}
-            onEditText={(id) => {
-              setSelectedId(id);
-              // גלילה לתיבת עריכת הטקסט ומיקוד
-              setTimeout(() => {
-                const el = document.querySelector('[data-testid="input-layer-text"]') as HTMLTextAreaElement | null;
-                el?.scrollIntoView({ behavior: "smooth", block: "center" });
-                el?.focus();
-                el?.select();
-              }, 60);
-            }}
-            maxDisplayWidth={560}
-            stageRef={stageRef}
-            interactive={true}
-          />
+          <div className="relative">
+            <CanvasStage
+              doc={doc}
+              selectedId={selectedId}
+              onSelect={setSelectedId}
+              onChangeLayer={handleChangeLayer}
+              editingId={editingTextId}
+              onEditText={(id) => {
+                setSelectedId(id);
+                setEditingTextId(id);
+              }}
+              maxDisplayWidth={CANVAS_MAX_WIDTH}
+              stageRef={stageRef}
+              interactive={true}
+            />
+            {editingLayer && (
+              <textarea
+                key={editingLayer.id}
+                autoFocus
+                dir="auto"
+                data-testid="input-inline-text-editor"
+                value={editingLayer.text}
+                onChange={(e) => handleChangeLayer(editingLayer.id, { text: e.target.value })}
+                onFocus={(e) => e.currentTarget.select()}
+                onBlur={() => setEditingTextId(null)}
+                onKeyDown={(e) => {
+                  if (e.key === "Escape") {
+                    e.preventDefault();
+                    setEditingTextId(null);
+                  }
+                  // Enter מוסיף שורה חדשה (כמו בפאנל הצדדי) — עזיבת התיבה סוגרת את העריכה
+                }}
+                style={{
+                  position: "absolute",
+                  left: editingLayer.x * canvasScale,
+                  top: editingLayer.y * canvasScale,
+                  width: editingLayer.width * canvasScale,
+                  height: (editingLayer.height ?? editingLayer.width) * canvasScale,
+                  fontSize: editingFit.fontSize * canvasScale,
+                  lineHeight: editingLayer.lineHeight ?? 1.15,
+                  letterSpacing: (editingLayer.letterSpacing ?? 0) * canvasScale,
+                  fontFamily: editingLayer.fontFamily,
+                  fontWeight: (editingLayer.fontWeight ?? 400) >= 700 ? 700 : 400,
+                  color: editingLayer.fill,
+                  textAlign: editingLayer.align ?? "center",
+                  background: "rgba(255,255,255,0.94)",
+                  border: "2px dashed #3b82f6",
+                  borderRadius: 4,
+                  padding: 0,
+                  resize: "none",
+                  outline: "none",
+                  overflow: "hidden",
+                  transform: `rotate(${editingLayer.rotation ?? 0}deg)`,
+                  transformOrigin: "top left",
+                }}
+              />
+            )}
+          </div>
         </main>
 
         {/* פאנל צד ימין */}
