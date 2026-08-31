@@ -18,7 +18,11 @@ export default function Azkarot() {
     queryKey: ["azkarot-upcoming", tenant?.id],
     enabled: !!tenant?.id,
     queryFn: async () => {
-      const { data } = await supabase.from("azkarot").select("*").eq("tenant_id", tenant!.id).order("created_at", { ascending: false }).limit(30);
+      // azkarot_tenant_read RLS only grants SELECT to tenant members/super-admin;
+      // this RPC exposes just the public-safe columns (no family contact PII) to
+      // anonymous visitors of tenants that accept public intake, mirroring the
+      // INSERT-side tenant_accepts_public_intake gate already in place.
+      const { data } = await supabase.rpc("azkarot_upcoming", { _tenant_id: tenant!.id });
       return data || [];
     },
   });
