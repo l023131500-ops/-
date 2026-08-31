@@ -20,12 +20,26 @@ Deno.serve(async (req) => {
       ? Object.fromEntries(new URL(req.url).searchParams)
       : await req.json();
 
-    let query = supabase.from("lessons").select("*").eq("is_approved", true);
+    // Columns below match the live `lessons` table (public.lessons has no
+    // subject/target_audience/synagogue_name/is_recurring/schedule_days/
+    // specific_date -- those were carried over from a stale recovered bundle.
+    // subject.ilike threw 42703 whenever params.subject was set, and even
+    // without it every result's spoken text read "שיעור 1: undefined" because
+    // l.subject/l.is_recurring/l.schedule_days/l.specific_date/l.synagogue_name
+    // are all undefined on the real row shape. topic_free_text/title, audience
+    // (a plain text column, not an array), day_of_week/time_hhmm/date_specific
+    // are the real equivalents. is_active is also required here -- lessons_
+    // tenant_read only gates on the tenant being active, not the lesson, so a
+    // deactivated lesson (is_active=false) was still being read aloud to phone
+    // callers even though every public web page requires is_active=true too.
+    let query = supabase.from("lessons").select("*").eq("is_approved", true).eq("is_active", true);
 
-    if (params.subject) query = query.ilike("subject", `%${params.subject}%`);
+    if (params.subject) {
+      query = query.or(`topic_free_text.ilike.%${params.subject}%,title.ilike.%${params.subject}%`);
+    }
     if (params.city) query = query.ilike("city", `%${params.city}%`);
     if (params.language) query = query.eq("language", params.language);
-    if (params.audience) query = query.contains("target_audience", [params.audience]);
+    if (params.audience) query = query.ilike("audience", `%${params.audience}%`);
 
     const { data, error } = await query.limit(10);
 
@@ -37,10 +51,13 @@ Deno.serve(async (req) => {
     }
 
     const textResults = (data || []).map((l, i) => {
-      const schedule = l.is_recurring && l.schedule_days?.length
-        ? (l.schedule_days as any[]).map((d: any) => `${d.day} בשעה ${d.time}`).join(", ")
-        : l.specific_date || "";
-      return `שיעור ${i + 1}: ${l.subject}, מגיד השיעור ${l.rabbi_name}, ב${l.city}${l.synagogue_name ? ` בבית הכנסת ${l.synagogue_name}` : ""}${schedule ? `, ${schedule}` : ""}.`;
+      const subject = l.topic_free_text || l.title || "שיעור תורה";
+      const schedule = l.date_specific
+        ? l.date_specific
+        : (l.day_of_week != null && l.time_hhmm)
+          ? `יום ${l.day_of_week} בשעה ${l.time_hhmm}`
+          : "";
+      return `שיעור ${i + 1}: ${subject}, מגיד השיעור ${l.rabbi_name}, ב${l.city}${schedule ? `, ${schedule}` : ""}.`;
     }).join(" ");
 
     await supabase.from("ivr_submissions").insert({

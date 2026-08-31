@@ -27,13 +27,23 @@ Deno.serve(async (req) => {
 
     const keywords = text.split(/\s+/).filter((w: string) => w.length > 2);
 
+    // Columns below match the live `lessons` table (public.lessons has no
+    // `subject` column -- confirmed live, SELECT ... WHERE subject ilike ...
+    // throws 42703). The .or() below silently swallowed that error (only
+    // `data` was destructured, never `error`), so `data` stayed undefined and
+    // this always fell through to "no results found" regardless of what the
+    // caller said. topic_free_text/title are the real equivalents. is_active
+    // is required too -- lessons_tenant_read only gates on the tenant being
+    // active, not the lesson itself, so without this a deactivated lesson
+    // was still being read aloud to phone callers.
     let results: any[] = [];
     for (const keyword of keywords.slice(0, 3)) {
       const { data } = await supabase
         .from("lessons")
         .select("*")
         .eq("is_approved", true)
-        .or(`subject.ilike.%${keyword}%,city.ilike.%${keyword}%,rabbi_name.ilike.%${keyword}%`)
+        .eq("is_active", true)
+        .or(`topic_free_text.ilike.%${keyword}%,title.ilike.%${keyword}%,city.ilike.%${keyword}%,rabbi_name.ilike.%${keyword}%`)
         .limit(5);
       if (data) results.push(...data);
     }
@@ -42,7 +52,7 @@ Deno.serve(async (req) => {
 
     const responseText = unique.length > 0
       ? `מצאנו ${unique.length} שיעורים. ` + unique.map((l, i) =>
-          `שיעור ${i + 1}: ${l.subject} עם ${l.rabbi_name} ב${l.city}.`
+          `שיעור ${i + 1}: ${l.topic_free_text || l.title || "שיעור תורה"} עם ${l.rabbi_name} ב${l.city}.`
         ).join(" ")
       : "לא מצאנו שיעורים מתאימים לחיפוש שלכם. נסו לחפש בנושא אחר, או השאירו הודעה ונחזור אליכם.";
 
