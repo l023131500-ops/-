@@ -282,6 +282,10 @@ export default function Editor() {
     });
   }
 
+  function handleChangeBackground(patch: Partial<TemplateBackground>) {
+    updateDoc({ ...doc!, background: { ...doc!.background, ...patch } });
+  }
+
   // ---- ניהול שכבות: הוספה / מחיקה / שכפול / נראות / נעילה / סדר ----
   const maxZ = () => doc!.layers.reduce((m, l) => Math.max(m, l.z ?? 0), 0);
 
@@ -907,6 +911,7 @@ export default function Editor() {
               selectedId={selectedId}
               onSelect={setSelectedId}
               onChangeLayer={handleChangeLayer}
+              onChangeBackground={handleChangeBackground}
               editingId={editingTextId}
               onEditText={(id) => {
                 setSelectedId(id);
