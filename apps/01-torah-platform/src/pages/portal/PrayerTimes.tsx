@@ -54,8 +54,10 @@ const PrayerTimes = () => {
   };
 
   const handleDeleteSyn = async (id: string) => {
-    await supabase.from("prayer_times").delete().eq("synagogue_id", id);
-    await supabase.from("synagogues").delete().eq("id", id);
+    const { error: prayerError } = await supabase.from("prayer_times").delete().eq("synagogue_id", id);
+    if (prayerError) { toast.error("שגיאה: " + prayerError.message); return; }
+    const { error } = await supabase.from("synagogues").delete().eq("id", id);
+    if (error) { toast.error("שגיאה: " + error.message); return; }
     toast.success("בית הכנסת נמחק");
     fetchData();
   };
@@ -78,7 +80,8 @@ const PrayerTimes = () => {
   };
 
   const handleDeletePrayer = async (id: string) => {
-    await supabase.from("prayer_times").delete().eq("id", id);
+    const { error } = await supabase.from("prayer_times").delete().eq("id", id);
+    if (error) { toast.error("שגיאה: " + error.message); return; }
     toast.success("זמן התפילה נמחק");
     fetchData();
   };
