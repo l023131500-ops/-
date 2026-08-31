@@ -8564,3 +8564,52 @@
      STEERING; P2 (32/36) `build_tasks` נשאר 0 todo; מערכות/סכימות
      מוגנות (08/09/bkalut-app/bkalot-admin/`zr_*`/webhook NEDARIM3873/
      `csj`/`csj_src`/`igud`/15-egod) לא נגעו.
+
+## 31/08/2026 (LOOP A, סבב נוסף) — `shop/ProductDetail.tsx` + `ShopCatalog.tsx`: תיקון-הזרקת-`.or()` שכבר נמצא ותוקן ב-24/08 מעולם לא הגיע לענף הזה
+
+681. **ההקשר.** P0 (מערכת 14) מאומת `done`. P1 (35) אסור per HARD
+     STEERING. P2 (32/36) `build_tasks` נשאר 0 todo. `15-egod`
+     (`hkkkynyoigzlttpynoeo`) עדיין לא נגיש ב-`list_projects`. המשך
+     P3 01-torah-platform. הופעל general-purpose agent לחיפוש באג
+     טרי, עם רשימת ממצאים-ידועים-לדחייה (כפילויות
+     `TeacherFeatures.tsx`, קוד מת ב-`components/questionnaire`,
+     `service_submission_rows` view תחת סכימת `igud` המוגנת, ושלושת
+     התיקונים שכבר בוצעו היום). הסוכן חזר עם ממצא שנראה "טרי" —
+     `.or()` לא-מוגן ב-`ProductDetail.tsx`/`ShopCatalog.tsx` — אך בדיקה
+     שלי מול `git log --all` גילתה שזה **אותו באג בדיוק** שכבר נמצא
+     ותוקן ב-24/08/2026 (commit `59b44b14`, ענף
+     `fix/a-01-torah-platform-shop-or-filter-injection-0824`).
+
+682. **הגילוי המבני.** אף ענף-תיקון בריפו הזה לא מתמזג לתוך ענף אחר או
+     לתוך `main` (`main` עדיין רק ה-skeleton המקורי, שני commits
+     בלבד) — כל סבב מסתעף משרשרת-ה-fix הקודמת שלו בלבד. משמע: התיקון
+     מ-59b44b14 קיים ב-git history אבל **לא** בעץ-הקבצים בפועל של
+     השרשרת שממנה יצא הסבב הזה (השרשרת שמסתיימת ב-`nedarim-webhook` →
+     `admin rabbi-share-link` → `azkarot public-read`), כך שהקובץ
+     האמיתי על הדיסק בסבב הזה עדיין היה פגיע — לא באג "חדש" מבחינה
+     תוכנית, אבל כן רגרסיה אמיתית וחיה בענף שממנו עובדים כרגע. דגל
+     לבעלים: ריבוי ענפים לא-ממוזגים (עשרות ענפי `fix/a-01-torah-platform-*`
+     מ-23-24/08 בלבד) יוצר סיכון מובנה שתיקונים מאומתים "יאבדו" בענפים
+     שלעולם לא מתמזגים — ראוי לשקול איחוד/rebase תקופתי של הענפים
+     המאומתים לתוך שרשרת אחת לפני שהבעלים בוחר מה לפרוס.
+
+683. **מה נעשה.** יישמתי מחדש את התיקון המדויק והמאומת-כבר מ-`59b44b14`
+     (זהה ל-diff המקורי, ללא שינוי): ב-`ProductDetail.tsx`,
+     `slug` עובר `.replace(/[,()]/g, "\\$&")` ל-`safeSlug` לפני בניית
+     `.or(`slug.eq.${safeSlug},id.eq.${safeSlug}`)`; ב-`ShopCatalog.tsx`,
+     `q` עובר אותו escape ל-`safeQ` לפני `.or(`name.ilike.%${safeQ}%,
+     description.ilike.%${safeQ}%`)`. אין שינוי RLS/סכימה — תיקון
+     פרונט-בלבד בשני קבצים, זהה בדיוק למה שכבר אומת ב-24/08.
+
+684. **אימות.** `npx esbuild --bundle --packages=external --jsx=automatic`
+     נקי על שני הקבצים (רק אזהרות `import.meta`/`iife` הרגילות).
+     בדיקת Node עצמאית אישרה שה-escape מנטרל את מטען-ההזרקה:
+     `"x,is_active.eq.true"` → `"x\\,is_active.eq.true"` (פסיק
+     escaped-ב-backslash, לא שובר את מחרוזת ה-filter). `git diff --stat`
+     זהה ל-2 files changed, 12 insertions(+), 2 deletions(-) — בדיוק
+     כמו ה-diff המקורי מ-59b44b14. נדחף לענף חדש
+     `fix/01-torah-platform-shop-or-filter-injection-reconcile-0831`
+     (`92732523`) — לא מוזג, main לא נגע. System 35 KioskFleet לא נגע,
+     per HARD STEERING; P2 (32/36) `build_tasks` נשאר 0 todo; מערכות/
+     סכימות מוגנות (08/09/bkalut-app/bkalot-admin/`zr_*`/webhook
+     NEDARIM3873/`csj`/`csj_src`/`igud`/15-egod) לא נגעו.
