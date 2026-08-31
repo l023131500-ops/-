@@ -6,6 +6,7 @@ import { useTenant, useTenantFeature } from "@/hooks/useTenant";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { localDateString } from "@/lib/utils";
+import AdsBanner from "@/components/AdsBanner";
 
 export default function Home() {
   const { tenant } = useTenant();
@@ -115,6 +116,8 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      <AdsBanner placement="homepage" />
 
       {/* Tip + Halacha row */}
       {/* גובה הכרטיסים קבוע ותוכנם נקטע אחרי שלוש שורות, ולכן השלד ומה
