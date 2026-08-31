@@ -11,6 +11,18 @@ import { toast } from "sonner";
 type LessonRow = { id: string; title: string; rabbi_name: string | null; time_hhmm: string | null };
 type ParticipantRow = { id: string; full_name: string; phone: string | null };
 
+// Returns the browser's local calendar date (YYYY-MM-DD), not UTC.
+// `new Date().toISOString()` is always UTC, so in timezones ahead of UTC
+// (e.g. Israel, UTC+2/+3) it returns *yesterday's* date for the first
+// hours of every local day — attendance saved/queried during that window
+// would silently land on the wrong date.
+function localDateString(d: Date = new Date()): string {
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
+
 export default function Attendance() {
   const { tenant } = useTenant();
   const qc = useQueryClient();
@@ -50,7 +62,7 @@ export default function Attendance() {
     queryKey: ["attendance-records", tenant?.id, selectedLesson],
     enabled: !!tenant?.id && !!selectedLesson,
     queryFn: async () => {
-      const today = new Date().toISOString().split("T")[0];
+      const today = localDateString();
       const { data, error } = await supabase
         .from("attendance")
         .select("participant_id, is_present")
@@ -70,7 +82,7 @@ export default function Attendance() {
   const saveAttendance = useMutation({
     mutationFn: async () => {
       if (!selectedLesson || !tenant?.id) throw new Error("חסר נתונים");
-      const today = new Date().toISOString().split("T")[0];
+      const today = localDateString();
       const rows = participants.map((p) => ({
         tenant_id: tenant!.id,
         lesson_id: selectedLesson,
