@@ -8291,3 +8291,76 @@
      שליחה/חיוב אמיתיים בסבב זה (רק שאילתות SELECT/information_schema
      ו-`pg_policies` מול הדאטהבייס האמיתי, אין כתיבה/מחיקה בטבלת
      ייצור).
+
+## 31/08/2026 (LOOP A, סבב נוסף ח') — `public/Kashrut.tsx` (`/kashrut`): הטבלה שהוא קורא ריקה תמיד — אין באף מסך, פורטל או אדמין, דרך לכתוב אליה
+
+668. **ההקשר.** נבדק מחדש: P0 (מערכת 14) `done`. P1 (35) אסור per
+     HARD STEERING. P2 (32/36) `build_tasks` עדיין 0 שורות `todo`.
+     `15-egod` עדיין לא נגיש דרך ה-MCP. המשכתי לסרוק קבצים שעדיין לא
+     נסרקו באף סבב קודם (`admin/Analytics`, `admin/Forums`,
+     `admin/Tenants`, `portal/Profile`, `portal/Participants`,
+     `portal/Materials`, `portal/Donations`, `portal/Orders`,
+     `portal/Schedule`, `portal/StudySchedule`, `shop/Cart`,
+     `shop/Checkout`, `shop/OrderSuccess`, `public/Invite`,
+     `public/RabbiQuestions`, `public/JoinTeacher`, `public/Contact`,
+     `public/Kashrut`, `public/Mikvaot`, `public/Mourning`,
+     `public/LessonDetail`, `public/SynagogueDetail`,
+     `public/RabbiPublic`, `supabase/functions/{chat,admin-users,
+     create-admin}` ועוד) — רובם תקינים או כבר תוקנו בסבבים קודמים
+     (יש בהם הערות-קוד המתעדות זאת). בדקתי גם לעומק ממצא גדול יותר —
+     `admin/TeacherFeatures.tsx` (`user_roles.permissions`) ו-
+     `admin/TeacherFeaturesDialog.tsx` (`teacher_features`/
+     `teacher_forum_access`) הן **שתי** מסכי-הרשאות-לכל-מורה נפרדים
+     ולגמרי מנותקים מכל אכיפה בפועל (`grep` מאשר: אף מסך פורטל,
+     כולל `PortalSidebar.tsx`, לא קורא אף אחת מהעמודות/טבלאות האלה)
+     — אבל מכיוון שכל שורת `user_roles` קיימת היום נוצרת עם
+     `permissions: {}` (ב-`admin-users`/`create-admin`), הפעלת אכיפה
+     עכשיו הייתה או לא-משנה-כלום (ברירת-מחדל "מותר") או שוברת גישה
+     אמיתית לכל מורה חי בפרודקשן בבת אחת (ברירת-מחדל "אסור", תואם
+     איך שמסך ה-`TeacherFeatures` עצמו כבר מציג את זה — `Boolean(undefined)`
+     `=false`) — סיכון רגרסיה מערכתי שלא ניתן לאמת כ"בטוח" בסבב אחד,
+     ולכן הושאר כפתוח לא-מטופל (לא כאן, לא במקום אחר) ותועד רק כאן
+     לסבב עתידי עם החלטת-מוצר מפורשת.
+
+669. **הממצא + מה נעשה + אימות.** `public/Kashrut.tsx` (ראוט חי
+     `/kashrut`) קורא נכון את `public.kashrut_certifications`
+     (`tenant_id` + `status='active'`, כל שמות העמודות אומתו מול
+     `information_schema.columns` החי) — אבל `grep -rln
+     "kashrut_certifications" src/pages src/components` לא מחזיר
+     שום תוצאה מלבד הקובץ הזה עצמו: **אין באף מסך פורטל או אדמין
+     דרך לכתוב שורה לטבלה הזו**. אומת חי: `SELECT count(*) FROM
+     kashrut_certifications` מחזיר `0` — הטבלה ריקה לחלוטין מאז
+     שהסכמה הרב-טננטית נבנתה, כלומר `/kashrut` היה ריק תמיד לכל
+     טננט וללא שום דרך למלא אותו. ה-RLS על הטבלה (`kashrut_certifications
+     _tenant_write_{ins,upd,del}`) כבר תואם בדיוק לתבנית של
+     `participants`/`lessons` (כל חבר-טננט עם role `member`/
+     `moderator`/`tenant_admin` יכול לכתוב), כך שזה פער-חיווט-UI
+     בלבד, לא פער RLS/סכימה.
+
+     נוסף `portal/Kashrut.tsx` — עמוד CRUD פורטלי (רשימה + דיאלוג
+     יצירה/עריכה + אישור מחיקה) התואם אחד-לאחד את התבנית הקיימת של
+     `portal/Participants.tsx`, מקושר לראוט חדש `/portal/kashrut`
+     ולתפריט הפורטל (`commonTail` ב-`PortalSidebar.tsx`, גלוי לכל
+     סוגי הפורטל בדיוק כמו פורומים/חומרי-עזר/פניות).
+
+     אומת חי דרך MCP בטרנזקציות שלא נשמרו (`BEGIN` בלי `COMMIT`,
+     נמחק אוטומטית כשהחיבור נסגר) מול פרופיל-אמת שאינו super_admin
+     שהפך זמנית לחבר (`member`) של טננט אמיתי: הוספה/רשימה/עדכון
+     של הטננט-שלו הצליחו; הוספה לטננט אחר נדחתה על ידי RLS
+     (`42501`); עדכון על שורה קיימת של טננט אחר השפיע על `0` שורות.
+     בדיקת-שיוריות אחרי כל הניסיונות: `kashrut_certifications`
+     ו-`user_roles` של המשתמש הזמני חזרו ל-`0`/`0` — אין שיור.
+     (ניסיון ראשון בבדיקה השתמש בטעות בפרופיל שכבר `super_admin`,
+     מה שגרם לשתי ההוספות להצליח כולל חוצה-טננט — זוהה, תוקן לפרופיל
+     רגיל, ואומת מחדש כראוי לפני שנקבע שהתיקון עובד.) `npx esbuild
+     --bundle --packages=external --jsx=automatic` נקי (רק אזהרות
+     `import.meta` הרגילות) על `Kashrut.tsx`, `App.tsx` (כולל באנדל
+     מלא של האפליקציה) ו-`PortalSidebar.tsx`. `get_advisors`
+     (security) לא מראה שום ממצא חדש — אין שינוי סכימה בסבב הזה,
+     תוספת פרונט-בלבד. נדחף לענף חדש
+     `fix/01-torah-platform-kashrut-portal-management-0831`
+     (`9d2c4b27`) — לא מוזג, main לא נגע. System 35 KioskFleet לא
+     נגע, per HARD STEERING; P2 (32/36) `build_tasks` נשאר 0 todo;
+     מערכות/סכימות מוגנות (08/09/bkalut-app/bkalot-admin/`zr_*`/
+     webhook NEDARIM3873/`csj`/`csj_src`/`igud`/15-egod) לא נגעו. אין
+     שליחה/חיוב אמיתיים בסבב זה.
