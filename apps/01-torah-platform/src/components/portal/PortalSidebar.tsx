@@ -39,6 +39,11 @@ const menuByType: Record<string, { icon: any; label: string; path: string }[]> =
     { icon: Calendar, label: "לוח פעילות", path: "/portal/schedule" },
     { icon: Building2, label: "בתי הכנסת המשויכים", path: "/portal/prayer-times" },
   ],
+  religious_council: [
+    { icon: Building2, label: "בתי כנסת באזור", path: "/portal/synagogues" },
+    { icon: BookOpen, label: "שיעורים באזור", path: "/portal/lessons" },
+    { icon: Calendar, label: "לוח פעילות", path: "/portal/schedule" },
+  ],
 };
 
 const PortalSidebar = () => {
