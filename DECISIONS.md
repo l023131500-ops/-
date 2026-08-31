@@ -10894,3 +10894,57 @@
      לא נגע, per HARD STEERING; מערכות/סכימות מוגנות (08/09/bkalut-app/
      bkalot-admin/`zr_*`/webhook NEDARIM3873/`csj`/`csj_src`/`igud`/
      15-egod) לא נגעו.
+
+## 31/08/2026 (LOOP A, סבב נוסף י') — `ivr-search`/`ivr-agent` (Edge Functions פרוסות חי): קראו עמודות `lessons` שלא קיימות — חיפוש טלפוני שבור לגמרי
+
+773. **ההקשר.** המשך סבב P3 01-torah-platform (STEP 1 מאושר: P0 sys14
+     `done`, P1(35) אסור per HARD STEERING, P2(32/36) `core.build_tasks`
+     נשאר 0 `todo`, 15-egod עדיין לא נגיש דרך `list_projects`, אומת
+     מחדש הסבב הזה). `core.issues` נבדק תחילה — כל השורות הפתוחות על
+     01-torah-platform (#138/#172/#203/#257/#258/#259/#260) חסומות
+     במפורש על הכרעת-בעלים. הופעל סוכן general-purpose עם רשימת-הדרה
+     מפורטת שנבנתה מכל כותרות הסבבים ב-DECISIONS.md מהיום (כ-30 מחלקות
+     באג שכבר נסגרו) כדי למצוא פער אמיתי וטרי, בלי לחזור על עבודה.
+
+774. **הממצא.** `supabase/functions/ivr-search/index.ts` ו-`ivr-agent/index.ts`
+     (שתי Edge Functions פרוסות חי, אחיות של `ivr-submit` שתוקנה בסבב
+     #767-768 וגם היא מקבלת קלט מאותה אינטגרציית טלפון) נבנו מול סכימת
+     `lessons` ישנה — עמודות `subject`/`target_audience`/`synagogue_name`/
+     `is_recurring`/`schedule_days`/`specific_date` שאף אחת מהן לא קיימת
+     בטבלה החיה (אומת חי: `SELECT subject FROM lessons` → `42703: column
+     "subject" does not exist`). ההשפעה שונה בין השתיים: ב-`ivr-search`,
+     `params.subject` זרק 42703 בכל פעם שנשלח, וגם בלעדיו כל תוצאה מדוברת
+     הקריאה "שיעור 1: undefined" בפועל. ב-`ivr-agent`, אותה שגיאה נבלעה
+     בשקט (רק `data` פורק, לעולם לא `error`) — אימות חי: חיפוש לפי שם רב
+     קיים ("כהן") החזיר 0 תוצאות למרות שורה תואמת קיימת. שתיהן גם סיננו
+     רק לפי `is_approved`, בלי שער `is_active` שכל עמוד ציבורי שכבר תוקן
+     (LessonDetail/RabbiPublic/LessonsDirectory/FindLesson) דורש — כלומר
+     שיעור שהרב השבית עדיין הוקרא בטלפון למתקשרים.
+
+     **התיקון.** שני קבצים. מיפוי לעמודות האמיתיות (`topic_free_text`/
+     `title` במקום `subject`, `audience` כטקסט פשוט ב-`ilike` במקום
+     `.contains()` על מערך שלא קיים, `day_of_week`/`time_hhmm`/
+     `date_specific` במקום שדות-לוח-הזמנים הישנים) + הוספת `.eq("is_active",
+     true)` לשתי השאילתות. חוזה הבקשה/תשובה החיצוני (`params.subject/
+     city/language/audience`, `{text, caller_phone}`) נשאר זהה — תואם את
+     מה ש-`IvrBuilder.tsx` מתעד לאינטגרציית ה-Make/n8n.
+
+     **האימות.** חי מול `bieebmnmkffwbqlsfozh`. לפני: `ivr-search` החזיר
+     "undefined" בטקסט המדובר; `ivr-agent` החזיר 0 תוצאות ל"כהן ירושלים"
+     למרות שורות תואמות. נפרסו שני הקבצים המתוקנים דרך
+     `deploy_edge_function`. אחרי: `ivr-search` מחזיר טקסט נושא/לוח-זמנים
+     נכון; `ivr-agent` מוצא 3 תוצאות נכונות לאותה שאילתה. שער `is_active`
+     אומת עם שורת-בדיקה זמנית — 0 תוצאות כש-`is_active=false`, והפונקציה
+     מגיעה נכון לשורה אחרי הפעלה (גילוי-לוואי, לא באג חדש: `is_approved`
+     מתאפס אוטומטית ל-`false` ב-trigger בכל כתיבה שאינה דרך מסך-מודרציה
+     — אומת בנפרד, לא תוקן כאן כי מחוץ לתחום הסבב). נמחקו שורת השיעור
+     הפיקטיבית וכל שורות `ivr_submissions` שנוצרו בבדיקה; `COUNT` בהמשך
+     אישר אפס שאריות בשתיהן. `esbuild --bundle` נקי על שני הקבצים (אין
+     `deno` בסביבת-הארגז). אין שינוי סכימה/RLS בסבב זה — שאילתות
+     service-role בלבד, `get_advisors(security)` לא הופעל מחדש כי אין מה
+     שהשתנה שם. אין שליחה/חיוב אמיתיים. נדחף לענף חדש
+     `fix/01-torah-platform-ivr-search-agent-stale-columns-0831`
+     (`4dfb10df`) — לא מוזג, main לא נגע. System 35 KioskFleet לא נגע,
+     per HARD STEERING; מערכות/סכימות מוגנות (08/09/bkalut-app/
+     bkalot-admin/`zr_*`/webhook NEDARIM3873/`csj`/`csj_src`/`igud`/
+     15-egod) לא נגעו.
