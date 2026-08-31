@@ -7925,3 +7925,85 @@
      (32/36) `build_tasks` נשאר 0 todo; מערכות/סכימות מוגנות (08/09/
      bkalut-app/bkalot-admin/`zr_*`/webhook NEDARIM3873/`csj`/`csj_src`/
      `igud`/15-egod) לא נגעו. אין שליחה/חיוב אמיתיים בסבב זה.
+
+## 31/08/2026 (LOOP A, סבב נוסף ב') — `portal/Gallery.tsx` (`/portal/gallery`, פריט ניווט חי): הטבלה+RLS קיימים ועובדים, אבל שום מסך לא איפשר להעלות תמונה בכלל
+
+648. **ההקשר.** P0 (מערכת 14) אומת שוב `done`. P1 (35) אסור per HARD
+     STEERING. P2 (32/36) אומת שוב כ-0 שורות `todo`. `15-egod`
+     (`hkkkynyoigzlttpynoeo`) אומת שוב כלא-נגיש (`list_projects` לא
+     מציג אותו כלל בחשבון). המשך ב-01-torah-platform: סבב ראשון היום
+     (agent נפרד) חזר על סוג-הבאג המבוסס (typo/שדה-שגוי/RLS-חסר) על כל
+     קובץ חי-מנותב שטרם בוקר, ולא מצא כלום חדש — המחלקה הזו אמיתית
+     מוצתה (ה-agent סרק את כל 70 הראוטים, בדק Gallery/Orders/BulkUpload/
+     Profile/useSuperAdmin ישירות מול הסכמה החיה — כולם תקינים). עבר
+     ל-class חדש שכבר הוכיח את עצמו במערכות אחרות (עמלות ב-36
+     nadlan-pro, ותיקוני Tips.tsx הקודמים באפליקציה הזו): טבלה+RLS
+     קיימים ועובדים בפועל, אבל אף מסך לא כותב/קורא אליהם בפועל.
+
+649. **הממצא.** `gallery_images` (עמודות: `tenant_id`, `image_url`,
+     `caption`, `sort_order`) עם RLS פעילות ומאומתות: `..._tenant_read`
+     (SELECT ציבורי לטננטים פעילים) ו-`..._tenant_write_ins/upd/del`
+     — מתירות INSERT/UPDATE/DELETE ל-`tenant_admin`/`moderator` **וגם**
+     ל-`member` הרגיל (לא רק סופר-אדמין). `pages/portal/Gallery.tsx`
+     נטען בראוט **חי** `/portal/gallery`, עם פריט ניווט קבוע ("גלריה")
+     ב-`PortalLayout.tsx` שמוצג לכל טננט — אך הקובץ מעולם לא הכיל שום
+     `.insert`/`.update`/`.delete`, רק `.select("*")`. גריפ מלא על כל
+     `src/` אישר: אין קובץ אחר בכל האפליקציה שכותב ל-`gallery_images`.
+     אומת חי: `gallery_images` עמדה על **0 שורות בכל הטננטים** לפני
+     התיקון — לא עניין של "אין עדיין תוכן", אלא מסך שהיה **מבנית לא-
+     מסוגל** אי-פעם להראות תמונה.
+
+650. **מה נעשה.** נוסף דיאלוג-העלאה ל-`Gallery.tsx`: קובץ תמונה →
+     bucket קיים `portal-assets` (אותו bucket ציבורי שכבר משמש
+     `PortalSettings.tsx`/`PortalSettingsTab.tsx`, עם RLS-אחסון תואמת
+     לכל משתמש מאומת) → `insert` ל-`gallery_images` עם `tenant_id`
+     אמיתי + כיתוב אופציונלי, וכפתור מחיקה על כל תמונה (`.eq("id")
+     .eq("tenant_id")` תואם-דפוס ל-`Participants.tsx`). הכל תואם-סגנון
+     לתבנית ההעלאה הקיימת כבר ב-`Materials.tsx` — אין רכיב/ספרייה
+     חדשים, שימוש ב-shadcn/Tailwind הקיימים בפרויקט בלבד.
+
+651. **אימות.** `esbuild --bundle --packages=external --jsx=automatic`
+     נקי (רק אזהרות ה-`import.meta`/iife השגרתיות שמופיעות בכל קובץ
+     באפליקציה הזו). בטרנזקציה מגולגלת-אחורה מול `bieebmnmkffwbqlsfozh`
+     שמדמה `member` פורטל אמיתי (משתמש-QA קיים `test@more30.com` +
+     הענקת `user_roles` **זמנית בתוך אותה טרנזקציה**): ה-`INSERT`
+     המדויק שה-UI החדש שולח הצליח ונקרא-בחזרה מיד תחת RLS (לא
+     `postgres`), ואז ה-`DELETE` המדויק שכפתור-המחיקה שולח גם הוא
+     הצליח תחת אותו תפקיד; `ROLLBACK` בוצע, ואומת בנפרד: 0 שורות
+     `gallery_images` שיוריות לטננט-הבדיקה, 0 מענקי `user_roles`
+     שיוריים למשתמש-הבדיקה. `git diff --stat`: קובץ אחד, 113+/4-,
+     תוספתי בלבד — אין שינוי/מחיקה בהתנהגות קיימת. נדחף לענף חדש
+     `fix/01-torah-platform-portal-gallery-upload-0831c` (`0d932001`)
+     — לא מוזג. System 35 KioskFleet לא נגע, per HARD STEERING; P2
+     (32/36) `build_tasks` נשאר 0 todo; מערכות/סכימות מוגנות (08/09/
+     bkalut-app/bkalot-admin/`zr_*`/webhook NEDARIM3873/`csj`/`csj_src`/
+     `igud`/15-egod) לא נגעו. אין שליחה/חיוב אמיתיים בסבב זה.
+
+652. **טבלאות/RPCs נוספים שנבדקו ואומתו כמחוברים-כראוי (למניעת חזרה
+     על הסריקה הזו בסבב עתידי).** מחוברים ותקינים (קריאה+כתיבה):
+     `azkarot`, `lesson_bookmarks`, `participants`, `study_schedules`,
+     `study_daily`, `teacher_forum_access`, `forum_categories`,
+     `forum_posts`, `forum_comments`, `attendance`, `materials`.
+     נתוני-ייחוס לקריאה-בלבד-במכוון (אין ציפייה לכתיבת-משתמש):
+     `kashrut_certifications`, `community_services`, `lesson_topics`,
+     `knowledge_chunks` (טבלת RAG מתויגת כבר כשארית Lovable — נעולת
+     RLS, ללא מפיק/צרכן, תשתית מתה ולא פער-מוצר). RPCs ללא בעיה:
+     `is_super_admin`, `donation_payment_status`,
+     `order_payment_status`, `ai_rate_limit_hit`. Edge functions
+     מחוברים: `activate-invite`, `ai-match-teacher`, `nedarim-admin`,
+     `nedarim-create-payment`, `chat`, `search-lessons`
+     (שני האחרונים דרך `fetch` גולמי, לא `.invoke`, אך כן מחוברים).
+     `nedarim-webhook` מופעל חיצונית-במכוון (שרתי Nedarim). `admin-
+     users`/`create-admin` — כלי-פנים ללא ראוט ב-SPA, לא פער-פורטל.
+     טבלאות ללא כל אזכור בקוד (לא קריאה ולא כתיבה, בניגוד ל-
+     `gallery_images` שהייתה קריאה-בלבד): `chat_rooms`, `chat_messages`,
+     `share_links`, `distribution_lists`, `client_list_memberships`,
+     `ads`, `tenant_ads`, `announcements`, `newsletters`, אשכול
+     `rc_councils`/`rc_synagogues`/`rc_gabbaim`/`rc_prayer_times`/
+     `rc_announcements`/`rc_events` (כנראה "פורטל מועצה דתית" שלא
+     החל להיבנות), `premium_requests`, `legal_acceptances`,
+     `ai_rate_limits`, `invite_rate_limits`, `params_topics`, אשכול
+     `community_questionnaires`/`community_questions`/
+     `community_questionnaire_links`/`community_questionnaire_submissions`
+     — אלו הכרעת-מוצר (לבנות מאפס או למחוק), לא באג-חיווט כמו
+     `gallery_images`, ולכן לא נגעו.
