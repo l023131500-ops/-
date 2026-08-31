@@ -1,6 +1,16 @@
+import { useEffect, useState } from "react";
 import { Outlet, NavLink, Navigate, useLocation } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { useTenant, useTenantFeature } from "@/hooks/useTenant";
+import { supabase } from "@/integrations/supabase/client";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import {
   LayoutDashboard,
   Calendar,
@@ -34,11 +44,72 @@ import {
 import { cn } from "@/lib/utils";
 import { Navbar } from "./Navbar";
 
+const STATUS_LABEL: Record<string, string> = {
+  pending: "ממתין לאישור",
+  suspended: "מושעה",
+  archived: "בארכיון",
+};
+
+const STATUS_MESSAGE: Record<string, string> = {
+  pending: "החשבון שלך ממתין לאישור מנהל המערכת. תישלח הודעה כאשר הגישה תאושר.",
+  suspended: "הגישה לחשבון זה הושעתה. לבירור הסיבה יש לפנות למנהל המערכת.",
+  archived: "חשבון זה הועבר לארכיון ואינו פעיל יותר.",
+};
+
+/* build_tasks#47: tenants.status ("pending"/"active"/"suspended"/"archived",
+ * set by the approve/suspend flow in admin/Tenants.tsx + TenantDetail.tsx) was
+ * never actually read anywhere in the app — a pending or suspended tenant's
+ * member could sign in and use the full portal exactly like an active
+ * tenant's. RLS now blocks all tenant-scoped writes/most reads for a
+ * non-active tenant (has_tenant_role, migration 20260831270000), but a signed
+ * in member still needs to SEE why the portal isn't working instead of
+ * hitting silent permission errors on every screen. */
+function TenantStatusBlocked({ status, onSignOut }: { status: string; onSignOut: () => void }) {
+  return (
+    <div className="min-h-[60vh] flex items-center justify-center p-4">
+      <Card className="max-w-md w-full text-center">
+        <CardHeader>
+          <CardTitle>הגישה לפורטל אינה זמינה</CardTitle>
+          <CardDescription>
+            סטטוס החשבון: {STATUS_LABEL[status] || status}
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <p className="text-sm text-muted-foreground">
+            {STATUS_MESSAGE[status] || "החשבון אינו פעיל כרגע."}
+          </p>
+          <Button variant="outline" onClick={onSignOut}>
+            התנתקות
+          </Button>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+
 export function PortalLayout() {
-  const { user, loading } = useAuth();
-  const { tenant } = useTenant();
+  const { user, loading, signOut } = useAuth();
+  const { tenant, loading: tenantLoading } = useTenant();
   const hasLessons = useTenantFeature("lessons");
   const loc = useLocation();
+
+  // Bypass the tenant-status gate for real super admins (verified server-side
+  // via the is_super_admin RPC, the same check useSuperAdminGate uses) so an
+  // owner can still open a pending/suspended tenant's portal for support.
+  const [isSuperAdmin, setIsSuperAdmin] = useState<boolean | null>(null);
+  useEffect(() => {
+    if (!user) {
+      setIsSuperAdmin(false);
+      return;
+    }
+    let alive = true;
+    supabase.rpc("is_super_admin", { _uid: user.id }).then(({ data }) => {
+      if (alive) setIsSuperAdmin(Boolean(data));
+    });
+    return () => {
+      alive = false;
+    };
+  }, [user]);
 
   if (loading) {
     return (
@@ -50,6 +121,31 @@ export function PortalLayout() {
 
   if (!user) {
     return <Navigate to={`/auth/sign-in?redirect=${encodeURIComponent(loc.pathname)}`} replace />;
+  }
+
+  const tenantBlocked = !tenantLoading && !!tenant && tenant.status !== "active";
+
+  // isSuperAdmin === null means the RPC hasn't answered yet — wait rather than
+  // flashing the blocked screen at a real super admin for a split second.
+  if (tenantBlocked && isSuperAdmin === null) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+
+  if (tenantBlocked && !isSuperAdmin) {
+    return (
+      <div className="min-h-screen flex flex-col bg-muted/30">
+        <Navbar />
+        <div className="flex-1 flex">
+          <main className="flex-1 p-4 md:p-8">
+            <TenantStatusBlocked status={tenant!.status} onSignOut={signOut} />
+          </main>
+        </div>
+      </div>
+    );
   }
 
   // religious_council (architecture.md §5.2 "מועצה דתית") is the only tenant
