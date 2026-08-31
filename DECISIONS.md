@@ -9008,3 +9008,87 @@
      לא מוזג, main לא נגע. System 35 KioskFleet לא נגע, per HARD
      STEERING; מערכות/סכימות מוגנות (08/09/bkalut-app/bkalot-admin/
      `zr_*`/webhook NEDARIM3873/`csj`/`csj_src`/`igud`/15-egod) לא נגעו.
+
+## 31/08/2026 (LOOP A, סבב נוסף) — `orders`/`donations`: אותה מחלקת-באג בדיוק כמו `raised_ils`, הפעם על `payment_status`/קבלות-תרומה
+
+707. **ההקשר.** ראשית אימות STEP 1 (core.projects #33): סעיף ה-P0
+     (סריקת-תיעוד מערכת 14 שמחות פלוס) כבר בוצע במלואו בסבב קודם
+     (30/08, commit `1a36c77d`, ענף `fix/14-bsmachot-plus-live-scan-0830`,
+     דחוף ל-origin) — 50 צילומי-מסך + `SPEC.md` מלא קיימים ב-
+     `apps/14-bsmachot-plus/scan/`, כך שאין חסימת ANTI-DRIFT פעילה. P1/P2
+     (`core.build_tasks`: 35=אין שורות בכלל, 32=7/7 done, 36=7/7 done) —
+     ריקים, ותואם את ה-HARD STEERING שכבר סימן 35 כ"גמור לעת עתה". עברתי
+     ל-P3, ונשארתי על 01-torah-platform (15-egod: הפרויקט שלו
+     `hkkkynyoigzlttpynoeo` עדיין לא נגיש דרך ה-MCP של הסבב הזה, בדיוק
+     כפי שתועד ב-`apps/15-egod/app.json` וב-`CONNECTIONS.md`, כך שאין דרך
+     לאמת שם תיקון חי — אותה הכרעה שכל הסבבים הקודמים כבר קיבלו).
+
+     עם ~100 סבבי סריקה קודמים על 01-torah-platform כבר בתיק, שני סוכני
+     Explore/general-purpose שנשלחו על קבצים חסרי-אזכור לגמרי ב-
+     DECISIONS.md (`RequestLesson.tsx`/`SignUp.tsx`/`ResetPassword.tsx`,
+     ואז `components/synagogue/*`/`components/forms/*`/
+     `RequireSuperAdmin.tsx`/`CartSync.tsx`) חזרו נקיים — שני "ממצאים"
+     היחידים (`SynagogueExcelImportExport.tsx`/`SynagogueFullAccessRequest.tsx`
+     כותבים ל-`study_day_events`/`synagogue_full_access_requests`, טבלאות
+     שלא קיימות) התבררו כתסמין של אשכול-פיצ'רים-יתום כבר-מתועד וחסום על
+     הכרעת-בעלים (#260, ראו סבב 700). המשכתי חיפוש עצמי במקום זאת בליבת
+     הקוד המשותפת (`src/hooks`, `src/lib`) והשוואה של כל טבלה/עמודה
+     פיננסית ב-`20260519000003_commerce.sql` מול מדיניות ה-RLS שמגינה
+     עליה.
+
+708. **הממצא.** `orders_admin_update`/`donations_admin_update` (אותה
+     מיגרציה) הן `for update using (has_tenant_role(..., 'tenant_admin'))`
+     — **בלי** `with check` ובלי הגבלת-עמודה, בדיוק כמו `campaigns_write_upd`
+     שתוקן קודם היום עבור `raised_ils`. `grep` על כל הריפו מאשר ש-**אף**
+     מסך אדמין לא קורא `.update()` על `orders` או `donations` בכלל (כל
+     אזכור הוא `.select()`, חוץ מה-`.insert()` הראשוני בצד הלקוח ב-
+     `Checkout.tsx`/`DonationPage.tsx`) — כלומר המדיניות קיימת אך אינה
+     משרתת שום זרימת-אדמין אמיתית, בדיוק כמו `raised_ils`. הכותב
+     החוקי היחיד הוא `nedarim-webhook` (מפתח service-role), שכותב בדיוק
+     את `payment_status`/`payment_reference`/`payment_meta`/`paid_at`
+     (+`receipt_url`/`receipt_number`/`receipt_issued_at` על donations)
+     אחרי IPN אמיתי מנדרים. תוקף (tenant_admin מחובר — לא אנונימי) יכול
+     לקרוא ישירות `.from("orders").update({payment_status:"captured"})`
+     ולקבל: (א) הפעלה של טריגר הפחתת-המלאי מ-`20260826060000` על הזמנה
+     שמעולם לא שולמה — מלאי אמיתי תמורת כלום; (ב) על `donations` — זיוף
+     `receipt_number`/`receipt_issued_at`/`receipt_url` על תרומה שמעולם
+     לא נתפסה בפועל — קבלה רשמית-למראה לצורכי-מס בלי תרומה אמיתית מאחוריה.
+     אותה מחלקת-באג "לסמוך על שדה כספי/סטטוס-תשלום שנכתב ע"י תפקיד
+     פחות-מהימן" כמו זיוף-מחיר ה-checkout ו-`raised_ils` — שתי הפעמים
+     הקודמות היום.
+
+709. **מה נבנה.** מיגרציה `20260831060000_orders_donations_protect_
+     payment_fields.sql`: שתי פונקציות-טריגר (`protect_order_payment_
+     fields()`/`protect_donation_payment_fields()`, plpgsql, `set
+     search_path = public, pg_temp` מראש כדי לא לפתוח אזהרת
+     `function_search_path_mutable`) על `before update`, כל אחת מחזירה
+     בדיוק את העמודות ש-`nedarim-webhook` כותב (`payment_status`,
+     `payment_reference`, `paid_at` על שתי הטבלאות + שלישיית-הקבלה על
+     `donations`) לערכן הישן אם `auth.role()` אינו `'service_role'`.
+     במכוון **לא** נגעתי ב-`orders.status`/`payment_meta` — אף מסך לא
+     מתייחס אליהם כהוכחה-לתשלום, ונשארים פנויים לפיצ'ר עתידי של סטטוס-
+     משלוח ידני. RLS לא יכולה להגביל עמודה בודדת, אז טריגר הוא הכלי
+     הנכון, בדיוק כמו ב-`raised_ils`.
+
+710. **אימות.** ארבע טרנזקציות rolled-back על `bieebmnmkffwbqlsfozh`
+     עם משתמש/תפקיד אמיתיים (טננט+הזמנה+תרומה `QA DELETE ME`, שורת
+     `user_roles` זמנית ל-tenant_admin, `set local role authenticated`
+     + `request.jwt.claims` עם ה-`sub` האמיתי — מדמה סשן-PostgREST חי):
+     (1) **לפני** התיקון — ההתקפה הצליחה על שתי הטבלאות (`payment_status`
+     ל-`captured`, קבלה מזויפת) — אישר שהבאג אמיתי, לא false-positive.
+     (2) **אחרי** התיקון, אותה התקפה בדיוק — נחסמה על שתי הטבלאות,
+     כל השדות המוגנים נשארו בערכם המקורי. (3) באותה קריאה, כתיבה
+     לגיטימית לשדה לא-מוגן (`orders.notes`) — הצליחה, מוכיח שההגנה
+     עמודה-ספציפית ולא חוסמת-שורה. (4) `set local role service_role` +
+     `request.jwt.claims` עם `role:"service_role"` (מדמה בדיוק את
+     ה-webhook האמיתי) — הצליח לתפוס תשלום על שתי הטבלאות כולל שלישיית-
+     הקבלה, מוכיח שנתיב ה-webhook הלגיטימי לא נפגע. כל ארבע הטרנזקציות
+     הסתיימו ב-`ROLLBACK` — אפס שאריות. `get_advisors(security)` הופעל
+     אחרי ה-apply: 70 lints לפני ואחרי, אפס אזהרות חדשות. אין שינוי
+     `.tsx`/`.ts` — מיגרציית SQL בלבד. אין שליחה/חיוב/מייל אמיתיים.
+     נדחף לענף חדש
+     `fix/01-torah-platform-orders-donations-payment-tamper-0831`
+     (`fd2f3e48`). לא מוזג, main לא נגע. System 35 KioskFleet לא נגע,
+     per HARD STEERING; מערכות/סכימות מוגנות (08/09/bkalut-app/
+     bkalot-admin/`zr_*`/webhook NEDARIM3873/`csj`/`csj_src`/`igud`/
+     15-egod) לא נגעו.
