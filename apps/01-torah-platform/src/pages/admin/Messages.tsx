@@ -41,14 +41,22 @@ const AdminMessages = () => {
   };
 
   const updateStatus = async (id: string, status: string) => {
-    await supabase.from("portal_messages").update({ status }).eq("id", id);
+    const { error } = await supabase.from("portal_messages").update({ status }).eq("id", id);
+    if (error) {
+      toast.error("עדכון הסטטוס נכשל");
+      return;
+    }
     toast.success("הסטטוס עודכן");
     load();
   };
 
   const remove = async (id: string) => {
     if (!confirm("למחוק את הפנייה?")) return;
-    await supabase.from("portal_messages").delete().eq("id", id);
+    const { error } = await supabase.from("portal_messages").delete().eq("id", id);
+    if (error) {
+      toast.error("המחיקה נכשלה");
+      return;
+    }
     toast.success("נמחק");
     load();
   };
