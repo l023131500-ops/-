@@ -8435,3 +8435,67 @@
      per HARD STEERING; P2 (32/36) `build_tasks` נשאר 0 todo; מערכות/
      סכימות מוגנות (08/09/bkalut-app/bkalot-admin/`zr_*`/webhook
      NEDARIM3873/`csj`/`csj_src`/`igud`/15-egod) לא נגעו.
+
+## 31/08/2026 (LOOP A, סבב נוסף) — `admin/Teachers.tsx`: כפתור "קישור הפצה" בנה תמיד קישור פרופיל-רב מת
+
+674. **ההקשר.** P0 (מערכת 14) מאומת `done`. P1 (35) אסור per HARD
+     STEERING. P2 (32/36) `build_tasks` נשאר 0 todo. `15-egod`
+     (`hkkkynyoigzlttpynoeo`) עדיין לא מופיע ב-`list_projects` — נבדק
+     מחדש, עדיין לא נגיש. המשך P3 01-torah-platform. שתי סריקות ראשונות
+     של הסבב הזה חזרו על ממצא ידוע-ומתועד ("פורטל בית כנסת/רב עצמאי"
+     legacy חסר-DB לגמרי, רשומה 499-500 מ-26/08) ועל קוד מת לגמרי
+     (`components/questionnaire/{SeekerForm,RoleSelection,TeacherForm}.tsx`
+     — לא מיובאים משום מקום מלבד עצמם, אין להם ראוט) — שניהם נדחו
+     כמחוץ-לתחום (המדיניות: "never invest work/credits in projects
+     that never progressed"), ותועד כאן כדי שסבב הבא לא יגלה אותם
+     מחדש. הסריקה השלישית מצאה את התיקון שבוצע בפועל.
+
+675. **הממצא.** `src/pages/admin/Teachers.tsx` (מסך אדמין חי `/admin/teachers`,
+     "מגידים") שולף `profiles` יחד עם `tenant:tenants(...,public_token)`
+     (הקשר יחיד: FK `profiles_preferred_tenant_id_fkey`), וכפתור "קישור
+     הפצה" (`Share2`, גלוי כש-`p.tenant?.public_token` אמיתי) מעתיק
+     ללוח `buildRabbiUrl(p.tenant.public_token)` — כלומר בונה
+     `<siteOrigin>/rabbi/<tenants.public_token>`. אבל הראוט החי
+     `/rabbi/:id` (`public/RabbiPublic.tsx`) פותר את ה-`id` מול
+     `profiles.id`, לא מול `tenants.public_token` — וההערה בקובץ עצמו
+     כבר אומרת זאת במפורש ("there's no separate public_token column on
+     profiles"). התבנית הנכונה כבר קיימת באותו קוד-בסיס:
+     `portal/PortalSettings.tsx` (מסך ההגדרות העצמי של המגיד) בונה
+     נכון `buildRabbiUrl(profile.id)`. אומת חי מול הפרויקט האמיתי
+     (`bieebmnm`): `tenants.public_token` לא-`null` רק ב-5 שורות (כולן
+     `religious_council`/`organization`/`super_admin`, אף אחת לא מקושרת
+     כרגע לשום `profiles.preferred_tenant_id` — היום אין אף שורת
+     `profiles` עם טננט מקושר, כך שהכפתור לא מוצג לאף אחד עדיין), אבל
+     הקישור עצמו שגוי במבנהו בלי קשר לכמות הנתונים: קריאת REST אנונימית
+     אמיתית (`GET .../profiles?id=eq.<tenants.public_token אמיתי>`)
+     החזירה מערך ריק, בעוד אותה קריאה עם `id=eq.<profiles.id אמיתי>`
+     החזירה את השורה הנכונה. `pg_policies` על `profiles` אושרה מאפשרת
+     `SELECT` אנונימי לכל שורה (`profiles_read_basic`, `qual=true`) —
+     כלומר זה לא פער RLS, רק פער שדה-שגוי-לגמרי בבניית הקישור בצד
+     האדמין, בדיוק כמו משפחת הבאגים הקודמת ("קורא/כותב עמודה לא נכונה")
+     רק כאן בכתובת ציבורית משותפת ולא בכתיבת DB.
+
+676. **מה נעשה.** `admin/Teachers.tsx`: הכפתור עבר ל-`buildRabbiUrl(p.id)`
+     (מזהה הפרופיל עצמו, בדיוק כמו ב-`PortalSettings.tsx`) ותנאי
+     ההצגה עבר מ-`p.tenant?.public_token` ל-`p.tenant?.id` (אותו תנאי
+     ש-`toggleApproval` כבר בודק לפני אישור/ביטול) — כלומר הכפתור יופיע
+     כשיש למגיד פורטל מקושר, לא כשלטננט שלו יש בטעות `public_token`
+     שאינו רלוונטי לראוט הזה. הוסר `public_token` מה-`select` המקורי
+     (לא נחוץ יותר בקובץ הזה). אין שינוי סכימה/מיגרציה — תיקון פרונט-
+     בלבד בקובץ יחיד.
+
+677. **אימות.** `npx esbuild --bundle --packages=external --jsx=automatic`
+     נקי על `Teachers.tsx` (רק אזהרות `import.meta`/`iife` הרגילות
+     מקבצים אחרים שהוא מייבא). אומת חי מול `bieebmnm`: לקוח פרופיל
+     אמיתי (`fafe9db0-…`, "מוטי") — קריאת REST אנונימית
+     (`apikey`/`Authorization` = מפתח `anon` הציבורי, לא סוד) ל-
+     `/rest/v1/profiles?id=eq.fafe9db0-…` החזירה את השורה הנכונה;
+     אותה קריאה עם `id=eq.<אחד מחמשת ה-public_token האמיתיים>` החזירה
+     מערך ריק — הוכחה חיה, לא רק בקוד, שהתיקון פותר קישור שבאמת נשבר
+     ושהתבנית החדשה באמת עובדת. אין כתיבה/מחיקה בבדיקה הזו (רק `GET`
+     אנונימי לטבלה שכבר קריאה-לכולם). אין שליחה/חיוב אמיתיים בסבב זה.
+     נדחף לענף חדש `fix/01-torah-platform-admin-rabbi-share-link-0831`
+     (`0a5de354`) — לא מוזג, main לא נגע. System 35 KioskFleet לא נגע,
+     per HARD STEERING; P2 (32/36) `build_tasks` נשאר 0 todo; מערכות/
+     סכימות מוגנות (08/09/bkalut-app/bkalot-admin/`zr_*`/webhook
+     NEDARIM3873/`csj`/`csj_src`/`igud`/15-egod) לא נגעו.
