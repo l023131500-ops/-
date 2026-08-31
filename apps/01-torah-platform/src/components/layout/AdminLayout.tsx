@@ -1,6 +1,6 @@
 import { Outlet, NavLink } from "react-router-dom";
 import { useSuperAdminGate } from "@/hooks/useSuperAdmin";
-import { LayoutDashboard, Building2, Users, Sparkles, MessageSquare, ShoppingCart, BarChart3, Lightbulb, Tags, MessageCircle, Settings2, ShieldAlert, ShieldCheck } from "lucide-react";
+import { LayoutDashboard, Building2, Users, Sparkles, MessageSquare, ShoppingCart, BarChart3, Lightbulb, Tags, MessageCircle, Settings2, ShieldAlert, ShieldCheck, FileCheck2, GraduationCap, Mail, HelpCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Navbar } from "./Navbar";
 
@@ -15,14 +15,18 @@ export function AdminLayout() {
     { to: "/admin", icon: LayoutDashboard, label: "סקירה כללית", end: true },
     { to: "/admin/tenants", icon: Building2, label: "ארגונים" },
     { to: "/admin/users", icon: Users, label: "משתמשים" },
+    { to: "/admin/teachers", icon: GraduationCap, label: "מגידים ופורטלים" },
     { to: "/admin/matching", icon: Sparkles, label: "התאמת AI" },
     { to: "/admin/leads", icon: MessageSquare, label: "פניות ולידים" },
+    { to: "/admin/messages", icon: Mail, label: "פניות ציבור" },
     { to: "/admin/commerce", icon: ShoppingCart, label: "מסחר ותרומות" },
     { to: "/admin/analytics", icon: BarChart3, label: "ניתוחים" },
     { to: "/admin/tips", icon: Lightbulb, label: "טיפים יומיים" },
     { to: "/admin/topics", icon: Tags, label: "מאגר נושאים" },
+    { to: "/admin/content", icon: FileCheck2, label: "מודרציית חומרי עזר" },
     { to: "/admin/whitelist", icon: ShieldCheck, label: "רשימת נטפרי" },
     { to: "/admin/forums", icon: MessageCircle, label: "פורומים" },
+    { to: "/admin/rabbi-questions", icon: HelpCircle, label: "שאלות לרב" },
     { to: "/admin/teacher-features", icon: Settings2, label: "הגדרות מורים" },
     { to: "/admin/audit-log", icon: ShieldAlert, label: "יומן ביקורת" },
   ];

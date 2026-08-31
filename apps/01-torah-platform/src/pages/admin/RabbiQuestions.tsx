@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { MessageCircle, CheckCircle2, Clock, Trash2, Send } from "lucide-react";
-import AdminLayout from "@/components/admin/AdminLayout";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
@@ -66,7 +65,6 @@ const AdminRabbiQuestions = () => {
   };
 
   return (
-    <AdminLayout>
       <div className="max-w-5xl mx-auto space-y-6">
         <div className="flex items-center justify-between flex-wrap gap-3">
           <div>
@@ -145,7 +143,6 @@ const AdminRabbiQuestions = () => {
           )}
         </div>
       </div>
-    </AdminLayout>
   );
 };
 

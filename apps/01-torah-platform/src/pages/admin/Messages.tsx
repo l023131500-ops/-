@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { Mail, Phone, Trash2, CheckCircle, Clock } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import AdminLayout from "@/components/admin/AdminLayout";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -64,7 +63,6 @@ const AdminMessages = () => {
   const filtered = filter === "all" ? messages : messages.filter(m => m.status === filter);
 
   return (
-    <AdminLayout>
       <div className="max-w-5xl mx-auto space-y-6">
         <div className="flex items-center justify-between">
           <div>
@@ -145,7 +143,6 @@ const AdminMessages = () => {
           )}
         </div>
       </div>
-    </AdminLayout>
   );
 };
 

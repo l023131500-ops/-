@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { UserCheck, UserX, Search, Plus, Copy, KeyRound, Building2, Users as UsersIcon, BookOpen, ExternalLink, Settings, Share2, LogIn } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import AdminLayout from "@/components/admin/AdminLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
@@ -138,7 +137,6 @@ const AdminTeachers = () => {
   });
 
   return (
-    <AdminLayout>
       <div className="max-w-6xl mx-auto space-y-6">
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="flex items-start justify-between gap-4">
           <div>
@@ -327,7 +325,6 @@ const AdminTeachers = () => {
           />
         )}
       </div>
-    </AdminLayout>
   );
 };
 
