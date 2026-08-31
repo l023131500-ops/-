@@ -25,6 +25,7 @@ import {
   Megaphone,
   Newspaper,
   MessageCircle,
+  Clock,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Navbar } from "./Navbar";
@@ -50,10 +51,16 @@ export function PortalLayout() {
   // type with its own dedicated region screens -- these routes+pages have
   // existed and been RLS-verified since earlier rounds, but were never added
   // here, so a council tenant had no way to reach them from the real nav.
+  // "זמני תפילות" (architecture.md §5.2 "זמני תפילות מצרפיים מכל בתי הכנסת"):
+  // pages/portal/PrayerTimes.tsx already reads/writes prayer_times for every
+  // synagogues row scoped to tenant.id -- for a council tenant that is every
+  // synagogue in its region, i.e. exactly the "aggregated from all synagogues"
+  // spec ask -- but the route (App.tsx "prayer-times") was never in this nav.
   const councilItems =
     tenant?.type === "religious_council"
       ? [
           { to: "/portal/synagogues", icon: Building2, label: "בתי כנסת באזור" },
+          { to: "/portal/prayer-times", icon: Clock, label: "זמני תפילות" },
           { to: "/portal/community-services", icon: HeartHandshake, label: "שירותי קהילה" },
           { to: "/portal/azkarot", icon: Heart, label: "אזכרות ויארצייט" },
           { to: "/portal/newsletters", icon: Newspaper, label: "ניוזלטר / עלון" },
