@@ -91,6 +91,7 @@ export function PortalLayout() {
   const { user, loading, signOut } = useAuth();
   const { tenant, loading: tenantLoading } = useTenant();
   const hasLessons = useTenantFeature("lessons");
+  const hasDonations = useTenantFeature("donations");
   const loc = useLocation();
 
   // Bypass the tenant-status gate for real super admins (verified server-side
@@ -212,6 +213,18 @@ export function PortalLayout() {
     ? [{ to: "/portal/lessons", icon: BookOpen, label: "השיעורים שלי" }]
     : [];
 
+  // donation_campaigns (architecture.md §3.2 "donations" + §5.2 org/council
+  // fundraising): table + tenant_admin-scoped write RLS (campaigns_write_ins/
+  // upd/del) existed since the table was created, and public/DonationPage.tsx
+  // already reads a campaign by slug and renders its title/goal/progress bar
+  // for /donate/:campaignSlug -- but no screen anywhere ever let a tenant
+  // admin create that row, so a named campaign could never exist in practice
+  // (build_tasks#48). Gated on the same "donations" tenant_features flag the
+  // public /donate nav link already uses.
+  const campaignItems = hasDonations
+    ? [{ to: "/portal/campaigns", icon: Heart, label: "קמפיינים לתרומה" }]
+    : [];
+
   // announcements (architecture.md §5.2 synagogue "מודעות פנימיות" + council
   // "מודעות לציבור"): table + generic tenant_read/tenant_write RLS existed
   // since 20260519000002 but zero UI anywhere ever referenced it. Unconditional
@@ -232,6 +245,7 @@ export function PortalLayout() {
     { to: "/portal/ads", icon: Megaphone, label: "באנרים ופרסום" },
     { to: "/portal/gallery", icon: ImageIcon, label: "גלריה" },
     { to: "/portal/donations", icon: Heart, label: "תרומות" },
+    ...campaignItems,
     { to: "/portal/orders", icon: ShoppingBag, label: "הזמנות" },
     { to: "/portal/messages", icon: Mail, label: "הודעות" },
     { to: "/portal/attendance", icon: CheckSquare, label: "נוכחות" },

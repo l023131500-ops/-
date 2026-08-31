@@ -97,6 +97,7 @@ const PortalHalachaDaily = lazy(() => import("@/pages/portal/HalachaDaily"));
 const PortalAds = lazy(() => import("@/pages/portal/Ads"));
 const PortalGallery = lazy(() => import("@/pages/portal/Gallery"));
 const PortalDonations = lazy(() => import("@/pages/portal/Donations"));
+const PortalCampaigns = lazy(() => import("@/pages/portal/Campaigns"));
 const PortalOrders = lazy(() => import("@/pages/portal/Orders"));
 const PortalMessages = lazy(() => import("@/pages/portal/Messages"));
 const PortalSettings = lazy(() => import("@/pages/portal/Settings"));
@@ -264,6 +265,7 @@ export default function App() {
                     <Route path="ads" element={<PortalAds />} />
                     <Route path="gallery" element={<PortalGallery />} />
                     <Route path="donations" element={<PortalDonations />} />
+                    <Route path="campaigns" element={<PortalCampaigns />} />
                     <Route path="orders" element={<PortalOrders />} />
                     <Route path="messages" element={<PortalMessages />} />
                     <Route path="settings" element={<PortalSettings />} />
