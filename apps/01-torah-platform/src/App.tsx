@@ -80,6 +80,7 @@ const PortalSchedule = lazy(() => import("@/pages/portal/Schedule"));
 const PortalParticipants = lazy(() => import("@/pages/portal/Participants"));
 const PortalMaterials = lazy(() => import("@/pages/portal/Materials"));
 const PortalForums = lazy(() => import("@/pages/portal/Forums"));
+const PortalKashrut = lazy(() => import("@/pages/portal/Kashrut"));
 const PortalGallery = lazy(() => import("@/pages/portal/Gallery"));
 const PortalDonations = lazy(() => import("@/pages/portal/Donations"));
 const PortalOrders = lazy(() => import("@/pages/portal/Orders"));
@@ -232,6 +233,7 @@ export default function App() {
                     <Route path="participants" element={<PortalParticipants />} />
                     <Route path="materials" element={<PortalMaterials />} />
                     <Route path="forums" element={<PortalForums />} />
+                    <Route path="kashrut" element={<PortalKashrut />} />
                     <Route path="gallery" element={<PortalGallery />} />
                     <Route path="donations" element={<PortalDonations />} />
                     <Route path="orders" element={<PortalOrders />} />

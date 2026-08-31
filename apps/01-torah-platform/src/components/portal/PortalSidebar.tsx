@@ -1,6 +1,6 @@
 import { Link, useLocation } from "react-router-dom";
-import { 
-  LayoutDashboard, Calendar, Users, FileText, Settings, LogOut, BookOpen, MessageSquare, ShieldCheck, Building2, Mail, ClipboardCheck
+import {
+  LayoutDashboard, Calendar, Users, FileText, Settings, LogOut, BookOpen, MessageSquare, ShieldCheck, Building2, Mail, ClipboardCheck, BadgeCheck
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useRole } from "@/hooks/useRole";
@@ -15,6 +15,7 @@ const commonTail = [
   { icon: MessageSquare, label: "פורומים", path: "/portal/forums" },
   { icon: Mail, label: "פניות", path: "/portal/messages" },
   { icon: FileText, label: "חומרי עזר", path: "/portal/materials" },
+  { icon: BadgeCheck, label: "תעודות כשרות", path: "/portal/kashrut" },
   { icon: Settings, label: "הגדרות", path: "/portal/settings" },
 ];
 
