@@ -9570,3 +9570,42 @@
      לא מוזג, main לא נגע. System 35 KioskFleet לא נגע, per HARD
      STEERING; מערכות/סכימות מוגנות (08/09/bkalut-app/bkalot-admin/
      `zr_*`/webhook NEDARIM3873/`csj`/`csj_src`/`igud`/15-egod) לא נגעו.
+
+## 31/08/2026 (LOOP A) — 01-torah-platform: אזור/נושא בליד מעולם לא נשמרו לעמודות
+
+733. **ההקשר.** המשך ישיר לסבב הקודם (#731-732). לפני תחילת עבודה:
+     `core.build_tasks` עדיין ריק לחלוטין (0 `todo` בכל המערכות), P0
+     sys14 `done`, P1(35) אסור, P2(32/36) 0 `todo`, 15-egod עדיין בלתי-
+     נגיש (`hkkkynyoigzlttpynoeo` נעדר מ-`list_projects`). הפעלתי סוכן
+     Explore עם רשימה מפורשת של כל מחלקות-הבאג שכבר טופלו (RLS
+     חבר/מנחה, תמחור-קופה, `shipping_zip`/`shipping_notes`,
+     `portal_photos`, deploy-lag, `Matching`/`MatchingGuru`, lints
+     ביצועים, קוד מת) כדי למצוא פער **טרי**.
+
+734. **הממצא.** `RequestLesson.tsx` ו-`JoinTeacher.tsx` (טפסי "בקש
+     פתיחת שיעור" ו-"הצטרף כמגיד שיעור") אוספים "אזור/עיר" ו-"נושא"
+     דרך שדות טופס אמיתיים, אך שולחים אותם רק בתוך `raw_data`
+     (JSONB) — לעולם לא לעמודות `leads.area`/`leads.preferred_subject`
+     עצמן (`20260519000002_torah_content.sql` שורות 219-220). לעומת
+     זאת `FindLesson.tsx` כן ממלא את שתי העמודות בדיוק (שורות 55-56).
+     `admin/LeadsGuru.tsx` מציג ומחפש לפי `l.area`/`l.preferred_subject`
+     בטבלה **לכל סוגי הליד** (שורות 48, 97-98) — כלומר כל ליד
+     `lesson_request`/`teacher_offer` הציג "—" באזור ובנושא, ולא נמצא
+     בחיפוש-לפי-אזור, למרות שהמשתמש כן מילא את הפרטים בטופס.
+
+     **מה נבנה ואומת.** בשני הקבצים נוסף `area: form.location || null`
+     ו-`preferred_subject: form.topic || null` (`RequestLesson.tsx`) /
+     `form.topics || null` (`JoinTeacher.tsx`) ל-INSERT, ל-`leads`; אין
+     שינוי סכימה/RLS — שתי העמודות קיימות מראש; `raw_data` נשאר כפי
+     שהיה (ללא הסרת מידע). אומת: `esbuild` נקי על שני הקבצים; טרנזקציה
+     חיה rolled-back על `bieebmnmkffwbqlsfozh` עם צורת-INSERT מדויקת
+     לשני סוגי הליד — `RETURNING` אימת ש-`area`/`preferred_subject`
+     חוזרים נכון (`ירושלים`/`גמרא`); `COUNT` נפרד לאחר `ROLLBACK` אימת
+     אפס שאריות (0 לידים בשם `QA Test%`). אין שליחה/חיוב/מייל אמיתיים,
+     TEST MODE מכובד. אפס רגרסיה — שני שדות נוספים בלבד, שום
+     handler/RPC/עמודה קיימים אחרים לא נגעו. נדחף לענף חדש
+     `fix/01-torah-platform-leads-area-subject-capture-0831`
+     (`1b719fb3`). לא מוזג, main לא נגע. System 35 KioskFleet לא נגע,
+     per HARD STEERING; מערכות/סכימות מוגנות (08/09/bkalut-app/
+     bkalot-admin/`zr_*`/webhook NEDARIM3873/`csj`/`csj_src`/`igud`/
+     15-egod) לא נגעו.
