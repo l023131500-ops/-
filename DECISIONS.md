@@ -10026,3 +10026,75 @@
      STEERING; מערכות/סכימות מוגנות (08/09/bkalut-app/bkalot-admin/
      `zr_*`/webhook NEDARIM3873/`csj`/`csj_src`/`igud`/15-egod) לא
      נגעו.
+
+## 31/08/2026 (LOOP A) — 01-torah-platform: `materials` — פער DELETE שהשלים את פער ה-UPDATE שנסגר קודם
+
+747. **ההקשר.** סבב ~374. P0 (מערכת 14) אומת `done` (`core.build_tasks
+     id=15`, סבב 30/08). P1 (35) אסור per HARD STEERING. P2 (32/36)
+     `core.build_tasks` נשאר 0 `todo` (7/7 `done` לכל אחת). `15-egod`
+     (`hkkkynyoigzlttpynoeo`) אינו נגיש דרך MCP — 01 נשאר הבחירה לפי
+     הנחיית P3. הפעלתי סוכן `general-purpose` לסריקה ממוקדת: קרא
+     תחילה DECISIONS.md #700-746 (רשימת כל מה שכבר נסגר — RLS על
+     carts/study_schedules/forum_posts/forum_comments/rabbi_questions/
+     lessons/donation_campaigns/orders/donations, כל 9 ה-edge
+     functions, activate-invite rate-limit) כדי לא לחזור על תיקון
+     קיים, ואז חיפש בשטחים פחות-סרוקים: קוד לקוח שכותב ל-Supabase
+     ישירות, hooks, טריגרים/פונקציות SECURITY DEFINER, storage
+     policies, זרימות auth, וחישובי-כסף.
+
+748. **הממצא.** הסוכן החזיר מועמד מדויק ב-`materials`: מיגרציית
+     20260831070000 (סבב קודם, #712-713 בהיסטוריה) כבר זיהתה שה-
+     policy הגנרי `materials_tenant_write` (מ-20260519000002, הלולאה
+     הגנרית שיוצרת RLS לכל טבלאות ה-commerce/content) מעניק UPDATE/
+     DELETE/INSERT ל-`is_super_admin` OR `tenant_admin` OR `moderator`
+     OR **`member`** גם יחד — תלוי-טננט, לא תלוי-תפקיד. אותו סבב קודם
+     הוסיף טריגר `before update` (`protect_materials_moderation_fields`)
+     שחוסם `member` מלשנות `status`/`rejection_reason`/
+     `display_in_public_profile`/`featured_on_homepage` — אך הערת-
+     ההיקף שלו-עצמו הצהירה במפורש שהוא מכסה רק את נתיב ה-UPDATE
+     (`updateStatus()` ב-`admin/Content.tsx`). המסך היחיד שקורא ל-
+     `.delete()` על הטבלה הוא אותו `admin/Content.tsx` (`remove()`,
+     שורה 44-51: `supabase.from("materials").delete().eq("id", id)`
+     ישיר, ללא אימות-תפקיד בצד-לקוח) — מיועד למנחה/טננט-אדמין בלבד,
+     אבל שום טריגר `before delete` לא נוצר מעולם. `grep` על כל
+     תיקיית המיגרציות אחר `before delete` בשילוב `materials` החזיר
+     אפס תוצאות. אין גם נתיב-מחיקה-עצמית לגיטימי מה-portal
+     (`portal/Materials.tsx` רק `select`+`insert`).
+
+     אימות חי מול `bieebmnmkffwbqlsfozh` בטרנזקציה rolled-back
+     (`set local role authenticated` + `request.jwt.claims` עם
+     `sub` של משתמש אמיתי עם תפקיד `member` בטננט-בדיקה): מחיקת
+     חומר-קורבן (`status='approved'`) הצליחה **ללא שום שגיאה** —
+     `remaining_before_fix=0`. חציית-הרשאה חיה ובת-הגעה היום, לא
+     תיאורטית — ולא מכוסה ע"י מדיניות RLS קיימת (ה-policy עצמה
+     מאשרת את זה, `materials_tenant_write_del` אושרה חי דרך
+     `pg_policies` כמכילה `has_tenant_role(..., 'member')`).
+
+     **מה נבנה ואומת.** מיגרציה חדשה
+     (`20260831170000_materials_protect_delete.sql`) מוסיפה
+     `protect_materials_delete()` + טריגר `before delete on
+     materials`, במדויק כמו בדיקת-התפקיד של הטריגר הקיים על UPDATE
+     (ללא `member` ברשימת המורשים): אם לא
+     `is_super_admin(auth.uid())` וגם לא `has_tenant_role(...,
+     'tenant_admin')` וגם לא `has_tenant_role(..., 'moderator')` —
+     `raise exception`. קובץ אחד בלבד, טריגר חדש אחד, שום
+     handler/RLS/UI קיים לא נגע. אומת חי אחרי ה-apply (`apply_migration`
+     ישירות דרך MCP, אין edge function מעורבת אז אין deploy נדרש):
+     ניסיון-שוב באותו משתמש-`member` נכשל עם `P0001: only a moderator
+     or tenant admin may delete materials` (בדיוק כפי שהתוקן — הבדיקה
+     הראשונה עם משתמש-בדיקה שהתברר super_admin אמיתי חמקה בטעות דרך
+     הטריגר, זוהתה ותוקנה ל-משתמש לא-super_admin אמיתי לפני שנקבעה
+     המסקנה); אותה מחיקה עם תפקיד `moderator` הצליחה כרגיל
+     (`remaining_after_moderator_delete=0`) — אי-רגרסיה מאומתת.
+     `COUNT` נפרד לאחר כל `ROLLBACK` אישר אפס שאריות בכל שלב (טננט/
+     חומר/תפקיד-בדיקה). `get_advisors(security)` לפני ואחרי — אף
+     אזהרה חדשה המזכירה `materials` או את הפונקציה החדשה (מספר-
+     הלינטים הכולל בפרויקט זז מ-70 המתועד ל-72 בגלל דריפט לא-קשור
+     בסכמות אחרות על אותו חשבון Supabase משותף, לא בגלל השינוי הזה).
+     אין שליחה/חיוב/מייל אמיתיים בכל שלב. אפס רגרסיה — קובץ מיגרציה
+     אחד בלבד, טבלה אחת, טריגר UPDATE הקיים לא נגע. נדחף לענף חדש
+     `fix/01-torah-platform-materials-delete-guard-0831` (`2261d82b`).
+     לא מוזג, main לא נגע. System 35 KioskFleet לא נגע, per HARD
+     STEERING; מערכות/סכימות מוגנות (08/09/bkalut-app/bkalot-admin/
+     `zr_*`/webhook NEDARIM3873/`csj`/`csj_src`/`igud`/15-egod) לא
+     נגעו.
