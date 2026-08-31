@@ -7759,3 +7759,43 @@ prerequisite env vars (`KIOSK_AGENT_APK_URL` /
 `KIOSK_AGENT_APK_SIGNATURE_CHECKSUM`) are validated-but-unset until a human
 supplies a signed, hosted APK — `qrprovision.js` throws a clear Hebrew error
 rather than silently building a broken QR code in the meantime.
+
+[31/08/2026 Loop A, session 3] All 5 prior `core.build_tasks` rows (16-20) for
+system 35 were `done`, so before moving to P2 checked whether 35 is *actually*
+complete against `KIOSK_BUILD.md` + the owner's DESIGN STANDARD before
+advancing, per the priority-note's rule 4. Read `clients.js` /
+`routes/clients.js` / `routes/agent.js`'s `/identify` handler / `app.js`'s
+enrollment-row buttons directly (not just prior STATUS.md claims) and confirmed
+§2★ד's two-level client-id/branding model, `IdentifyDevice`, and all 4 routes'
+per-row UI actions (USB/QR/Windows buttons) are genuinely wired server+console
+side — no gap there.
+
+One real gap found: `public/index.html`, the public landing page, still
+described only the original "lock a device to an approved domain list" pitch —
+zero mention anywhere of Route A/C/D (QR/Windows/USB), digital signage, per-
+customer branding, or the 3-option payment flow, all of which are real, tested,
+shipped capabilities. A first-time visitor had no way to learn KioskFleet is
+now a full "kiosk manufacturer" rather than a link-lock app — undersells the
+product exactly the DESIGN STANDARD's "genuinely meets its full spec" bar
+cares about.
+
+Added a new "4 install routes" section (`#routes`, reusing the existing
+`.feature`/`.grid-4` CSS pattern verbatim — zero new styles) + 3 new feature
+cards (branding, digital signage, payment) to the existing features grid;
+updated the hero lead/badges and the Business/Enterprise pricing bullets to
+match. Copy-only change, zero JS/route/CSS-file edits. Recorded as
+`core.build_tasks` id 21, then built+closed it this same iteration.
+
+Verified live: applied the change on a **fresh branch off the actual deployed
+tip** (`origin/claude/what-do-you-see-gxo5tc` @ `0f3947d`), separate from the
+still-unmerged `feat/kiosk-route-a-qr-provisioning-0831` branch, so this small
+copy fix can review/ship independently of the larger native-code branch. `node
+--test` **134/134** clean on that branch. Booted the real server
+(`node src/index.js`) against a scratch DB — `curl` confirmed `/` and
+`/console` both `200`; a script-verified div/section tag-balance check passed
+on the edited file (73/73 `<div>`, 7/7 `<section>`). Committed+pushed to
+`l023131500-ops/zol` branch `fix/kiosk-landing-page-full-feature-copy-0831`
+(`d7ab64a`) — not merged, same human-review convention as every prior fix
+branch. This monorepo's own `apps/35-kioskfleet/server` tree untouched, per
+core issue #215's guidance (real work happens in the zol checkout). No
+protected schema/app touched.
