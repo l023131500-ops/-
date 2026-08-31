@@ -6,11 +6,13 @@ import {
   Calendar,
   Users,
   MessageSquare,
+  MessagesSquare,
   FileText,
   Settings,
   Image as ImageIcon,
   BookOpen,
   Heart,
+  HeartHandshake,
   ShoppingBag,
   Mail,
   Loader2,
@@ -18,6 +20,10 @@ import {
   Lightbulb,
   Upload,
   CalendarDays,
+  Building2,
+  BadgeCheck,
+  Megaphone,
+  Newspaper,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Navbar } from "./Navbar";
@@ -39,12 +45,30 @@ export function PortalLayout() {
     return <Navigate to={`/auth/sign-in?redirect=${encodeURIComponent(loc.pathname)}`} replace />;
   }
 
+  // religious_council (architecture.md §5.2 "מועצה דתית") is the only tenant
+  // type with its own dedicated region screens -- these routes+pages have
+  // existed and been RLS-verified since earlier rounds, but were never added
+  // here, so a council tenant had no way to reach them from the real nav.
+  const councilItems =
+    tenant?.type === "religious_council"
+      ? [
+          { to: "/portal/synagogues", icon: Building2, label: "בתי כנסת באזור" },
+          { to: "/portal/community-services", icon: HeartHandshake, label: "שירותי קהילה" },
+          { to: "/portal/azkarot", icon: Heart, label: "אזכרות ויארצייט" },
+          { to: "/portal/newsletters", icon: Newspaper, label: "ניוזלטר / עלון" },
+        ]
+      : [];
+
   const items = [
     { to: "/portal", icon: LayoutDashboard, label: "סקירה", end: true },
     { to: "/portal/schedule", icon: Calendar, label: "לוח שיעורים" },
     { to: "/portal/participants", icon: Users, label: "משתתפים" },
+    ...councilItems,
     { to: "/portal/materials", icon: FileText, label: "חומרי לימוד" },
+    { to: "/portal/kashrut", icon: BadgeCheck, label: "תעודות כשרות" },
     { to: "/portal/forums", icon: MessageSquare, label: "פורומים" },
+    { to: "/portal/chat", icon: MessagesSquare, label: "צ'אט פנימי" },
+    { to: "/portal/ads", icon: Megaphone, label: "באנרים ופרסום" },
     { to: "/portal/gallery", icon: ImageIcon, label: "גלריה" },
     { to: "/portal/donations", icon: Heart, label: "תרומות" },
     { to: "/portal/orders", icon: ShoppingBag, label: "הזמנות" },
