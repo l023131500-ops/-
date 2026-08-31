@@ -22,10 +22,14 @@ export default function ProductDetail() {
     queryKey: ["product", slug, tenant?.id],
     enabled: !!tenant?.id && !!slug,
     queryFn: async () => {
+      // PostgREST treats , and ( ) in an .or() filter string as condition/group
+      // separators; without escaping, a slug containing them could break out
+      // of the intended filter and append arbitrary clauses.
+      const safeSlug = slug!.replace(/[,()]/g, "\\$&");
       const { data } = await supabase
         .from("products").select("*")
         .eq("tenant_id", tenant!.id)
-        .or(`slug.eq.${slug},id.eq.${slug}`)
+        .or(`slug.eq.${safeSlug},id.eq.${safeSlug}`)
         .maybeSingle();
       return data;
     },

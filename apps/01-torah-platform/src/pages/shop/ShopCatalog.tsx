@@ -31,7 +31,13 @@ export default function ShopCatalog() {
     queryFn: async () => {
       let qb = supabase.from("products").select("*").eq("tenant_id", tenant!.id).eq("is_active", true).order("created_at", { ascending: false });
       if (category !== "all") qb = qb.eq("category_id", category);
-      if (q) qb = qb.or(`name.ilike.%${q}%,description.ilike.%${q}%`);
+      // PostgREST treats , and ( ) in an .or() filter string as condition/group
+      // separators; without escaping, a search term containing them could break
+      // out of the intended filter and append arbitrary clauses.
+      if (q) {
+        const safeQ = q.replace(/[,()]/g, "\\$&");
+        qb = qb.or(`name.ilike.%${safeQ}%,description.ilike.%${safeQ}%`);
+      }
       const { data } = await qb;
       return data || [];
     },
