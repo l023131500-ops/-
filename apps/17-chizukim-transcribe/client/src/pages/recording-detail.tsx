@@ -14,6 +14,7 @@ import {
   type RecordingStatus,
 } from "@/lib/supabase";
 import { statusBadgeClass, canTranscribe, isProcessing } from "@/lib/status";
+import { TranscriptReadyIllustration } from "@/components/illustrations";
 import { queryClient } from "@/lib/queryClient";
 import {
   formatCost,
@@ -205,6 +206,13 @@ export default function RecordingDetailPage() {
       </header>
 
       <main className="max-w-6xl mx-auto px-4 py-6 space-y-6">
+        {/* Page title — the topic field below is the editable form control,
+            this is the one required h1 (DESIGN_STANDARD §6/§11), so a screen
+            reader or search bot lands on real text instead of a bare toolbar. */}
+        <h1 className="text-lg md:text-xl font-bold leading-tight truncate" data-testid="text-page-title">
+          {recordingTitle(current)}
+        </h1>
+
         {/* Meta card */}
         <Card className="p-5 space-y-4">
           <div className="flex items-start justify-between gap-4 flex-wrap">
@@ -533,16 +541,19 @@ function TranscribePanel({
   if (status === "ready") {
     return (
       <Card
-        className="p-4 flex items-center gap-2 text-sm"
+        className="p-4 flex items-center gap-3 text-sm"
         data-testid="panel-transcribe"
       >
-        <span className="inline-flex items-center gap-1.5 text-chart-3 font-medium">
-          <Check className="w-4 h-4" />
-          {phaseLabel(status)}
-        </span>
-        <span className="text-muted-foreground">
-          — התמלול והעריכה זמינים למטה.
-        </span>
+        <TranscriptReadyIllustration className="w-10 h-10 shrink-0" />
+        <p>
+          <span className="inline-flex items-center gap-1.5 text-chart-3 font-medium">
+            <Check className="w-4 h-4" />
+            {phaseLabel(status)}
+          </span>{" "}
+          <span className="text-muted-foreground">
+            — התמלול הושלם ונערך בלשון קריאה; אפשר להגיה, לערוך ולהוריד Word/PDF למטה.
+          </span>
+        </p>
       </Card>
     );
   }
@@ -656,7 +667,8 @@ function AudioSection({ recording }: { recording: Recording }) {
   if (!playSrc && !driveOpen) {
     return (
       <p className="text-sm text-muted-foreground mt-2" data-testid="text-no-audio">
-        אין קובץ אודיו זמין להקלטה זו.
+        אין קובץ אודיו זמין להקלטה זו — ייתכן שהקובץ לא צורף בהעלאה או שהקישור
+        לאחסון פג. הטקסט המתומלל, אם קיים, נשאר זמין למטה.
       </p>
     );
   }

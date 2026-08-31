@@ -51,6 +51,47 @@ export function TorahLectureIllustration({ className = "" }: { className?: strin
   );
 }
 
+export function TranscriptReadyIllustration({ className = "" }: { className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 48 48"
+      className={className}
+      aria-hidden="true"
+      focusable="false"
+    >
+      {/* דף מתומלל — קווי טקסט מיושרים, כמו התמלול הערוך */}
+      <rect
+        x="8" y="6" width="26" height="36" rx="3"
+        className="text-primary"
+        fill="currentColor"
+        opacity="0.1"
+      />
+      <rect
+        x="8" y="6" width="26" height="36" rx="3"
+        className="text-primary"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+      />
+      <g className="text-muted-foreground" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" opacity="0.6">
+        <path d="M13 15h16M13 20h16M13 25h11M13 30h16" />
+      </g>
+      {/* חותמת השלמה */}
+      <circle cx="34" cy="34" r="11" className="text-chart-3" fill="currentColor" opacity="0.15" />
+      <circle cx="34" cy="34" r="11" className="text-chart-3" fill="none" stroke="currentColor" strokeWidth="2" />
+      <path
+        d="M29 34l3.5 3.5L39 30.5"
+        className="text-chart-3"
+        stroke="currentColor"
+        strokeWidth="2.4"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        fill="none"
+      />
+    </svg>
+  );
+}
+
 export function UploadContributionIllustration({ className = "" }: { className?: string }) {
   return (
     <svg
