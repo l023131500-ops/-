@@ -8613,3 +8613,80 @@
      per HARD STEERING; P2 (32/36) `build_tasks` נשאר 0 todo; מערכות/
      סכימות מוגנות (08/09/bkalut-app/bkalot-admin/`zr_*`/webhook
      NEDARIM3873/`csj`/`csj_src`/`igud`/15-egod) לא נגעו.
+
+## 31/08/2026 (LOOP A, סבב נוסף) — שחזור 18 תיקונים מאומתים-אך-יתומים מענפי `fix/a-01-torah-platform-*` (23-24/08) לתוך השרשרת החיה
+
+685. **ההקשר.** P0 (מערכת 14) מאומת `done`. P1 (35) אסור per HARD
+     STEERING. P2 (32/36) `build_tasks` נשאר 0 todo. `15-egod`
+     (`hkkkynyoigzlttpynoeo`) עדיין לא נגיש ב-`list_projects` (נבדק
+     מחדש חי הסבב הזה). הסבב הקודם (681-684) חשף וטיפל במקרה בודד של
+     "תיקון מאומת שאבד בענף לא-ממוזג" (`.or()` filter-injection). זה
+     הצדיק בדיקה שיטתית: `git branch -a | grep 01-torah-platform` העלה
+     **143** ענפים; `git merge-base --is-ancestor` מול `HEAD` הראה
+     ש-101 מהם כבר אבות-קדמונים (המשרשרת הרציפה שמצטברת מסבב לסבב
+     אכן עובדת, בניגוד לחשש שנרשם ב-682), אך **21** ענפים עם קידומת
+     `fix/a-01-torah-platform-*` (23-24/08, כולל הענף שכבר טופל
+     `shop-or-filter-injection-0824`) ו-`fix/01-torah-platform-audit-0830`
+     (רשומת DECISIONS בלבד, ללא שינוי קוד) נשארו מחוץ לשרשרת. אחד
+     מה-21 (`admindashboard-portal-switches-guard-0823`, commit
+     `ae43c08f`) שייך בפועל למערכת 03-igud-ads (לא בסלייס שלי) — דולג.
+     נותרו **18** commits אמיתיים של תיקוני-קוד למערכת 01, כולם עם
+     `git show --stat` צר (קובץ יחיד או שניים, שינויים חד-תכליתיים —
+     guard/double-submit/race/pagination), שמעולם לא הגיעו לעץ-הקבצים
+     שממנו יוצאים הסבבים האחרונים.
+
+686. **מה נעשה — cherry-pick שיטתי.** נפתח ענף חדש מעל ראש השרשרת
+     (`fix/01-torah-platform-reconcile-orphaned-guard-fixes-0831`) ו-18
+     ה-commits עברו `git cherry-pick -x` אחד-אחד. 15 מהם עלו נקי
+     (auto-merge או ללא קונפליקט כלל): `Leads.tsx`, `LeadsGuru.tsx`,
+     `Lessons.tsx` (handleDelete — פונקציה שונה מ-toggleActive שתוקנה
+     היום מוקדם יותר), `TenantDetail.tsx`, `Users.tsx`,
+     `admin-users/index.ts` + `create-admin/index.ts` (שני תיקוני
+     pagination ל-`listUsers()`, שהיה חתוך ב-50/עמוד כברירת מחדל —
+     כעת דוהה עמודים עד תום, 1000/עמוד), `Attendance.tsx`,
+     `DonationPage.tsx`, `PrayerTimesTab.tsx`+`PublicPrayerTimes.tsx`,
+     ושני ה-`FullAccessRequestsTab.tsx` (ברצף הנכון: קודם ה-guard
+     הבסיסי ואז שכבת try/catch שנבנתה מעליו).
+     3 קונפליקטים אמיתיים טופלו ידנית לפי בדיקת-שדות בקוד החי:
+     • `MatchingGuru.tsx` — הענף היתום מניח `assigned_teacher_id`
+       (שם עמודה ישן); הקוד החי כבר תוקן ל-`assigned_teacher_user_id`
+       (תיקון-סכימה מאוחר יותר). מוזג: העמודה הנכונה + ה-`assigning`
+       state-guard נגד לחיצה כפולה מהענף היתום.
+     • `Teachers.tsx` — הענף היתום מניח `profiles.is_approved` (עמודה
+       שלא קיימת בפועל, לפי ההערה שכבר בקוד: "profiles has no
+       is_approved... columns live" — core.issues #258); הקוד החי כבר
+       עבר ל-אישור-דרך-סטטוס-הטננט (`p.tenant.status`). מוזג: לוגיקת
+       הטננט הנכונה + `busyId`-guard מהענף היתום (`disabled` על הכפתור
+       + `setBusyId`/`finally`).
+     • `Content.tsx` — הענף היתום (`admin_notes`, guard בסיסי) התברר
+       כמיותר-לגמרי: תיקון מאוחר יותר בקוד החי כבר כולל *גם* את שם-
+       העמודה הנכון (`rejection_reason`) *וגם* `busyId`-guard זהה
+       במהות — דולג (`cherry-pick --skip`) ללא שינוי קובץ, למניעת
+       נסיגה לשם-עמודה שגוי.
+     • `legacy/AdminDashboard.tsx` נגע ע"י שני ענפים יתומים בלתי-
+       תלויים (`portal-create-guard`+`studyday-approve-reject-guard`,
+       אף אחד לא צאצא של השני) — שניהם auto-merge-נקי כי הם ערכו
+       אזורי-קוד שונים באותו קובץ (טפסי יצירת-פורטל מול כפתורי אישור-
+       יום-עיון) ושניהם חולקים את אותו `busyId` state שכבר הוגדר;
+       אומת ב-`git diff` שאף אחד מהשניים לא נדרס.
+
+687. **אימות.** `grep -rn "^<<<<<<<\|^=======$\|^>>>>>>>"` על כל
+     `apps/01-torah-platform/` — נקי, אין סימני-קונפליקט שיוריים.
+     `npx esbuild --bundle --packages=external --jsx=automatic` רץ על
+     כל 13 קבצי ה-`.tsx`/`.ts` בצד-הלקוח שנגעו — כולם נקיים (רק
+     אזהרות `import.meta`/`iife` הרגילות שכבר מוכרות מסבבים קודמים);
+     `esbuild --bundle --packages=external` על שני ה-edge functions
+     (`admin-users`, `create-admin`) — נקי, בונה תקין. `git diff --stat`
+     מול ראש-השרשרת הקודם: 15 קבצים, 187(+)/87(-) שורות, תואם בדיוק
+     ל-15 ה-commits שנשמרו (2 דולגו כמיותרים). לא נבדק חי מול ה-DB
+     (רוב התיקונים הם guard/state בצד-לקוח בלבד, ללא שינוי RLS/סכימה;
+     שני תיקוני ה-pagination הם קריאה ל-`auth.admin.listUsers()` הקיים
+     עם פרמטר `page` שכבר נתמך ב-Supabase Admin API, לא שינוי חוזה).
+     נדחף לענף חדש
+     `fix/01-torah-platform-reconcile-orphaned-guard-fixes-0831`
+     (ראש: `f39f439c`) — לא מוזג, main לא נגע. System 35 KioskFleet לא
+     נגע, per HARD STEERING; P2 (32/36) `build_tasks` נשאר 0 todo;
+     מערכות/סכימות מוגנות (08/09/bkalut-app/bkalot-admin/`zr_*`/webhook
+     NEDARIM3873/`csj`/`csj_src`/`igud`/15-egod) לא נגעו. 21-3=18 הענפים
+     שנשארו (`fix/a-01-torah-platform-*` הישנים + `audit-0830`) אפשר
+     כעת למחוק בבטחה כשהבעלים יאשר — התוכן שלהם חי בשרשרת הנוכחית.
