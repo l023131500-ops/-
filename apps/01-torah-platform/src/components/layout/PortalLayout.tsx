@@ -24,6 +24,7 @@ import {
   BadgeCheck,
   Megaphone,
   Newspaper,
+  MessageCircle,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Navbar } from "./Navbar";
@@ -59,11 +60,22 @@ export function PortalLayout() {
         ]
       : [];
 
+  // רב / מורה הוראה (architecture.md §5.2): "שאל את הרב" – ניהול שאלות ותשובות.
+  // rabbi_questions RLS already scopes moderator/tenant_admin to their own
+  // tenant_id, but only a global super_admin-only screen ever existed
+  // (admin/RabbiQuestions.tsx) -- a real rabbi/mori_horaah tenant had no nav
+  // path to their own portal/rabbi-questions screen.
+  const rabbiItems =
+    tenant?.type === "rabbi" || tenant?.type === "mori_horaah"
+      ? [{ to: "/portal/rabbi-questions", icon: MessageCircle, label: "שאל את הרב" }]
+      : [];
+
   const items = [
     { to: "/portal", icon: LayoutDashboard, label: "סקירה", end: true },
     { to: "/portal/schedule", icon: Calendar, label: "לוח שיעורים" },
     { to: "/portal/participants", icon: Users, label: "משתתפים" },
     ...councilItems,
+    ...rabbiItems,
     { to: "/portal/materials", icon: FileText, label: "חומרי לימוד" },
     { to: "/portal/kashrut", icon: BadgeCheck, label: "תעודות כשרות" },
     { to: "/portal/forums", icon: MessageSquare, label: "פורומים" },
