@@ -139,11 +139,14 @@ const Lessons = () => {
   };
 
   const handleDelete = async (id: string) => {
-    if (deletingId) return;
+    if (deletingId || !profileId) return;
     if (!window.confirm("למחוק את השיעור? הפעולה אינה הפיכה.")) return;
     setDeletingId(id);
     try {
-      const { error } = await supabase.from("lessons").delete().eq("id", id);
+      // Scoped to own lessons only — RLS itself is tenant-wide (any member can
+      // write any row in the tenant), so this filter is what actually keeps
+      // this screen's delete button from reaching another teacher's lesson.
+      const { error } = await supabase.from("lessons").delete().eq("id", id).eq("rabbi_user_id", profileId);
       if (error) { toast.error("שגיאה במחיקה"); return; }
       toast.success("השיעור נמחק");
       fetchData();
@@ -153,7 +156,9 @@ const Lessons = () => {
   };
 
   const toggleActive = async (id: string, current: boolean) => {
-    const { error } = await supabase.from("lessons").update({ is_active: !current }).eq("id", id);
+    if (!profileId) return;
+    // Scoped to own lessons only, same reasoning as handleDelete above.
+    const { error } = await supabase.from("lessons").update({ is_active: !current }).eq("id", id).eq("rabbi_user_id", profileId);
     if (error) { toast.error("שגיאה בעדכון סטטוס השיעור"); return; }
     fetchData();
   };
