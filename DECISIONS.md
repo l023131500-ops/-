@@ -10320,3 +10320,64 @@
      לא נגע. System 35 KioskFleet לא נגע, per HARD STEERING; מערכות/
      סכימות מוגנות (08/09/bkalut-app/bkalot-admin/`zr_*`/webhook
      NEDARIM3873/`csj`/`csj_src`/`igud`/15-egod) לא נגעו.
+
+## 31/08/2026 (LOOP A) — 01-torah-platform: `lessons` — DELETE ללא בדיקת-בעלים, נתיב שני (Schedule.tsx) חשוף
+
+755. **ההקשר.** המשך סבב P3 01-torah-platform (STEP 1 מאושר: P0 sys14
+     `done` מ-30/08, P1(35) אסור per HARD STEERING, P2(32/36)
+     `core.build_tasks` נשאר 0 `todo`, 15-egod עדיין לא ב-
+     `list_projects`). סבב #713-714 (מיגרציה `20260831130000`) כבר
+     נעל `is_approved`/`is_active` ב-INSERT/UPDATE על `lessons`, אבל
+     מעולם לא נגע ב-DELETE. הפעלתי סוכן `general-purpose` שקרא קודם
+     את כל הרשומות של 01-torah-platform ב-DECISIONS.md (עד #754) כדי
+     לבנות רשימת-החרגה עצמאית ולא לחזור על מחלקת-הבאג "member vs
+     moderator RLS" הרגילה מבלי לבדוק זווית חדשה — התבקש במפורש
+     לחפש גם סוגי-פער אחרים (שדה שנאסף ולא נשלח, שאילתה שבורה,
+     טיפול-שגיאות חסר, פער תכונה חצי-מחוברת) ולא רק grep נוסף על
+     `pg_policies`.
+
+756. **הממצא.** מדיניות `lessons_tenant_write_del` מעניקה DELETE
+     זהה ל-`member`/`moderator`/`tenant_admin`/`super_admin` ללא שום
+     בדיקת-בעלים. `portal/Lessons.tsx` (שורה ~149) כן מסנן
+     `.eq("rabbi_user_id", profileId)` — אך זהו סינון צד-לקוח בלבד,
+     לא נאכף ב-RLS — ומסך חי שני, `portal/Schedule.tsx` (route
+     `PortalSchedule`, "לוח שיעורים", מקושר מ-`App.tsx`), קורא
+     `.from("lessons").delete().eq("id", id)` **ללא שום סינון-בעלים**.
+     כל member בטננט יכול היה אם כך למחוק רישום-שיעור של מורה אחר
+     דרך המסך הזה (או קריאת REST/JS ישירה). אומת חי מול
+     `bieebmnmkffwbqlsfozh` בטרנזקציה rolled-back: משתמש אמיתי
+     (`3c03f8db`) עם תפקיד `member` בלבד בטננט מחק שיעור בבעלות
+     משתמש אמיתי אחר (`f25f6e65`) — הצליח **ללא שגיאה**,
+     `remaining_before_fix=0`.
+
+     **מה נבנה ואומת.** מיגרציה
+     `20260831210000_lessons_protect_delete.sql` מוסיפה
+     `public.protect_lessons_delete()` + טריגר `before delete on
+     lessons` (`lessons_protect_delete`), באותה תבנית כמו
+     `protect_materials_delete`/`protect_forum_posts_delete`: חוסם
+     (RAISE EXCEPTION) אלא אם `super_admin`/`tenant_admin`/`moderator`
+     או `auth.uid() = old.rabbi_user_id` (מחיקה-עצמית לגיטימית, תואם
+     ל-`portal/Lessons.tsx`). שום RLS/טריגר קיים אחר על `lessons` לא
+     נגע. אימות חי אחרי ה-apply, שלוש טרנזקציות נפרדות עם משתמשים
+     אמיתיים: אותה תקיפה בדיוק — נכשלת עכשיו עם `P0001: only the
+     lesson owner, a moderator, or a tenant admin may delete a
+     lesson`; מחיקה-עצמית של הבעלים האמיתי (`f25f6e65`, תפקיד
+     `member`) על השיעור שלו-עצמו — הצליחה,
+     `remaining_after_owner_delete=0`; מחיקת `moderator` אמיתי
+     (`aedf4073`, תפקיד זמני) של שיעור בבעלות משתמש שלישי
+     (`daa5d38f`) — הצליחה, `remaining_after_moderator_delete=0` —
+     נתיב-מודרציה לא נפגע. `COUNT` נפרד אחרי כל טרנזקציה אישר אפס
+     שאריות ב-`lessons`/`user_roles`. `get_advisors(security)`: 74
+     לינטים לפני ואחרי — ללא שינוי, אפס איזכור חדש. נבדקו ונפסלו שני
+     מועמדים נוספים כבר-מתועדים/קוד-מת: `PortalSettingsTab.tsx`
+     ו-`BulkLessonTable.tsx` כותבים לעמודות/טבלאות (`rabbi_portals`/
+     `org_portals`, `is_sent`/`schedule_days`) שאושרו כנעדרות מהסכימה
+     החיה דרך `information_schema.columns` — תואם לפער-#749 שכבר
+     סומן כקוד לא-פעיל. אין שינוי בקוד-לקוח. אין שליחה/חיוב/מייל
+     אמיתיים. אפס רגרסיה — קובץ מיגרציה אחד, טריגר DELETE חדש אחד;
+     שום מדיניות/טריגר קיים אחר על `lessons` לא נגע. נדחף לענף חדש
+     `fix/01-torah-platform-lessons-delete-ownership-0831` (`c056a634`)
+     — לא מוזג, main לא נגע. System 35 KioskFleet לא נגע, per HARD
+     STEERING; מערכות/סכימות מוגנות (08/09/bkalut-app/bkalot-admin/
+     `zr_*`/webhook NEDARIM3873/`csj`/`csj_src`/`igud`/15-egod) לא
+     נגעו.
