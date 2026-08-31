@@ -9410,3 +9410,77 @@
      bkalot-admin/`zr_*`/webhook NEDARIM3873/`csj`/`csj_src`/`igud`/
      15-egod) לא נגעו. פער ה-`tenant_id is null` שנפתח ב-#722 עדיין
      פתוח במכוון (שולי, 0 שורות חיות, אין UI) לסבב עתידי.
+
+## 31/08/2026 (LOOP A) — 01-torah-platform: study_schedules/study_daily ניתנים לחטיפה על-ידי member זר
+
+726. **ההקשר.** המשך סבב P3 01-torah-platform (STEP 1 מאושר: P0 sys14
+     `done` מ-30/08, P1(35) אסור per HARD STEERING, P2(32/36) build_tasks
+     0 todo, 15-egod עדיין לא ב-`list_projects`). הסבב הקודם (`lessons`,
+     #`3e8ce09b`) מיצה את מחלקת-הבאג "`member` מקבל UPDATE זהה ל-
+     moderator/tenant_admin על עמודת-החלטה" — שאילתת `pg_policies` על
+     `qual`/`with_check` שמכילים `'member'` על `bieebmnmkffwbqlsfozh`
+     לא החזירה אף מדיניות נוספת עם עמודת-החלטה שלא כבר טופלה. הפעלתי
+     סוכן שיטתי על יתר הטבלאות עם מדיניות `'member'`-inclusive
+     (`ads`, `announcements`, `attendance`, `azkarot`, `chat_messages`,
+     `chat_rooms`, `community_services`, `gallery_images`,
+     `halacha_daily`, `kashrut_certifications`, `leads`, `newsletters`,
+     `participants`, `portal_messages`, `prayer_times`, `study_daily`,
+     `study_schedules`, `synagogues`) לאתר מחלקת-באג קרובה: עמודת-
+     **בעלות** (לא החלטת-מודרציה) שה-UI אוכף אך ה-RLS מתעלם ממנה.
+     רוב הטבלאות נפסלו — קוד מת (`ads`/`announcements`/`chat_messages`/
+     `chat_rooms`/`newsletters`, אין UI שמפנה אליהן בכלל) או תוכן-
+     טננט-משותף לגיטימי בלי עמודת-בעלות (`attendance`/`gallery_images`/
+     `participants`/`prayer_times`/`synagogues` וכו').
+
+727. **הממצא.** `study_schedules` (לוחות "ימי לימוד" ב-`/portal/study-
+     schedule`, `StudySchedule.tsx`) כן נושאת עמודת בעלות אמיתית —
+     `owner_user_id`, מוגדרת ב-INSERT (`owner_user_id: user?.id`,
+     שורה 116) ואף מתועדת בהערת-כותרת בקובץ עצמו (שורה 15). אך המסך
+     לעולם לא מסנן לפי בעלים: הרשימה (`select("*").eq("tenant_id",...)`,
+     שורות 64-72) מביאה את **כל** לוחות הטננט, וכפתורי העריכה/המחיקה
+     (`openEditSchedule`/`deleteSchedule.mutate`, שורות 444-449) פועלים
+     על כל שורה ברשימה בלי סינון `owner_user_id`. ה-route עצמו
+     (`/portal/study-schedule` דרך `PortalLayout.tsx`) גדור רק בהתחברות
+     (`if (!user) redirect`), לא בתפקיד — כל `member` רגיל בטננט מגיע
+     למסך. ב-RLS, `study_schedules_tenant_write_upd`/`_del` (וגם
+     ה-`_ins`) זיהו `member` זהה לגמרי ל-`moderator`/`tenant_admin`
+     (row-scoped לטננט, לא owner-scoped) — כל member יכול לקרוא ישירות
+     ל-`.update()`/`.delete()` על לוח-לימוד של member אחר. אותה בעיה
+     בדיוק זולגת ל-`study_daily` (הרשומות היומיות בתוך לוח): אין לה
+     עמודת בעלות משלה, אך `openEditEntry`/`deleteEntry.mutate` (שורות
+     484-499) גם הן חסרות כל סינון-בעלות, ו-`study_daily_tenant_write_*`
+     אותה בעיה — צריכות לרשת בעלות מלוח-האם דרך `schedule_id`.
+     אומת חי (rolled-back transaction, לפני התיקון): member זר
+     (`3c03f8db`, לא הבעלים) הצליח לשנות את הכותרת של לוח-לימוד ששייך
+     ל-`f25f6e65` ל-"HIJACKED BY ATTACKER" — אישר את הבאג.
+
+     **מה נבנה ואומת.** מיגרציה
+     `20260831140000_study_schedules_protect_ownership.sql`: כתיבה
+     מחדש (DROP+CREATE, לא טריגר — כאן כל השורה היא תוכן אישי של
+     היוצר, לא רק דגל-החלטה בודד כמו בסבבים הקודמים) של שש המדיניות
+     (`_ins`/`_upd`/`_del` על `study_schedules` ו-`study_daily`):
+     ל-`moderator`/`tenant_admin`/`super_admin` — ללא שינוי (גישה מלאה
+     לטננט). ל-`member` — מוגבל ל-`owner_user_id = auth.uid()` על
+     `study_schedules`, ול-`EXISTS` שהלוח-האם שייך לו על `study_daily`.
+     גם ה-INSERT הוגבל (member לא יכול לזייף `owner_user_id` של מישהו
+     אחר) — תואם את התנהגות ה-UI בפועל, שאף פעם לא מציע בורר-בעלים.
+     אומת חי ב-`bieebmnmkffwbqlsfozh` בשתי טרנזקציות rolled-back עם
+     שלושה משתמשים אמיתיים (`f25f6e65` כבעלים, `3c03f8db` פעם כ-member
+     תוקף ופעם כ-moderator אמיתי, `daa5d38f` כ-member תוקף שני) +
+     שורות `user_roles` זמניות: (1) member תוקף מנסה UPDATE+DELETE על
+     לוח של מישהו אחר — שניהם 0 שורות מושפעות (אומת ע"י כך שהכותרת
+     נשארה ללא שינוי). (2) הבעלים האמיתי מעדכן את הלוח שלו — הצליח.
+     (3) moderator אמיתי מעדכן גם לוח וגם רשומה יומית ששייכים למישהו
+     אחר — שניהם הצליחו (נתיב המודרציה הלגיטימי לא נפגע). (4) member
+     תוקף שני (לא קשור בכלל ללוח) מנסה UPDATE+DELETE ישירות על
+     `study_daily` — שניהם נחסמו, הערך שהמודרטור כתב נשאר ללא שינוי.
+     כל הטרנזקציות הסתיימו ב-`ROLLBACK`; `COUNT` נפרד אימת אפס שאריות
+     (0 שורות `QA DELETE ME%`, 0 שורות `user_roles` זמניות).
+     `get_advisors(security)` אחרי ה-apply — אפס איזכור חדש של
+     `study_schedules`/`study_daily`. אין שינוי `.tsx`/`.ts` (הבעיה
+     הייתה RLS בלבד, לא ה-UI). אין שליחה/חיוב/מייל אמיתיים, TEST MODE
+     מכובד. נדחף לענף חדש
+     `fix/01-torah-platform-study-schedules-ownership-0831`. לא מוזג,
+     main לא נגע. System 35 KioskFleet לא נגע, per HARD STEERING;
+     מערכות/סכימות מוגנות (08/09/bkalut-app/bkalot-admin/`zr_*`/webhook
+     NEDARIM3873/`csj`/`csj_src`/`igud`/15-egod) לא נגעו.
