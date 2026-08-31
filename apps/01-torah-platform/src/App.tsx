@@ -46,6 +46,7 @@ const Mourning = lazy(() => import("@/pages/public/Mourning"));
 const Kashrut = lazy(() => import("@/pages/public/Kashrut"));
 const Mikvaot = lazy(() => import("@/pages/public/Mikvaot"));
 const Azkarot = lazy(() => import("@/pages/public/Azkarot"));
+const Newsletters = lazy(() => import("@/pages/public/Newsletters"));
 
 // Shop
 const ShopCatalog = lazy(() => import("@/pages/shop/ShopCatalog"));
@@ -84,6 +85,7 @@ const PortalKashrut = lazy(() => import("@/pages/portal/Kashrut"));
 const PortalSynagogues = lazy(() => import("@/pages/portal/Synagogues"));
 const PortalCommunityServices = lazy(() => import("@/pages/portal/CommunityServices"));
 const PortalAzkarot = lazy(() => import("@/pages/portal/Azkarot"));
+const PortalNewsletters = lazy(() => import("@/pages/portal/Newsletters"));
 const PortalGallery = lazy(() => import("@/pages/portal/Gallery"));
 const PortalDonations = lazy(() => import("@/pages/portal/Donations"));
 const PortalOrders = lazy(() => import("@/pages/portal/Orders"));
@@ -202,6 +204,7 @@ export default function App() {
                     <Route path="/kashrut" element={<Kashrut />} />
                     <Route path="/mikvaot" element={<Mikvaot />} />
                     <Route path="/azkarot" element={<Azkarot />} />
+                    <Route path="/newsletters" element={<Newsletters />} />
 
                     <Route path="/shop" element={<ShopCatalog />} />
                     <Route path="/shop/:slug" element={<ProductDetail />} />
@@ -241,6 +244,7 @@ export default function App() {
                     <Route path="synagogues" element={<PortalSynagogues />} />
                     <Route path="community-services" element={<PortalCommunityServices />} />
                     <Route path="azkarot" element={<PortalAzkarot />} />
+                    <Route path="newsletters" element={<PortalNewsletters />} />
                     <Route path="gallery" element={<PortalGallery />} />
                     <Route path="donations" element={<PortalDonations />} />
                     <Route path="orders" element={<PortalOrders />} />
