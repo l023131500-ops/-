@@ -9958,3 +9958,71 @@
      per HARD STEERING; מערכות/סכימות מוגנות (08/09/bkalut-app/
      bkalot-admin/`zr_*`/webhook NEDARIM3873/`csj`/`csj_src`/`igud`/
      15-egod) לא נגעו.
+
+## 31/08/2026 (LOOP A) — 01-torah-platform: `carts_self` RLS העניקה גישה מלאה לכל עגלת-אורח, לא רק לזו של הקורא
+
+745. **ההקשר.** סבב ~373 בלולאת האודיט האוטונומית. סקרתי תחילה את כל
+     9 ה-edge functions (`nedarim-webhook`, `nedarim-create-payment`,
+     `search-lessons`, `chat`, `ai-match-teacher`, `activate-invite`,
+     ובנוסף `nedarim-admin`/`admin-users`/`create-admin` הידועים) —
+     כולם כבר מחוזקים לעומק עם הערות מפורטות המתעדות תיקוני-עבר
+     (בדיקת-IP ל-webhook, אימות-סכום מול מחירי-מוצר חיים ב-create-
+     payment, הגבלות-קצב לפי IP אמיתי ולא spoofable ב-4 הפונקציות
+     הציבוריות, בדיקת-בעלות עסקה גורפת ב-nedarim-admin). לא נמצא שם
+     פער חדש. סרקתי מסכי admin/portal לא-ברשימת-הסגירה (Leads,
+     Matching, Attendance, Participants, Donations,
+     FullAccessRequestsTab, TeacherFeaturesDialog) — כולם תקינים או
+     כבר ידועים כמתים (`synagogue_full_access_requests` לא קיימת חי,
+     אותה משפחה כמו #260/#261). הרחבתי לבדיקת `pg_policies` גורפת על
+     כל טבלה ב-`public` כדי למצוא דפוס-הרשאה שגוי שלא הוסק מקובצי-
+     מיגרציה (הלקח מ-#629/#711) — ומצאתי את `carts`.
+
+746. **הממצא.** `public.carts` (`id, tenant_id, user_id, session_id,
+     items jsonb`) נוצרה במיגרציית ה-commerce המקורית (19/05) עם
+     policy יחיד `carts_self` בשם "Carts – self / session only":
+     `using ((user_id is not null and user_id = auth.uid()) or
+     session_id is not null)`. הענף השני נועד לתמוך בעגלת-אורח
+     אנונימית, אבל `session_id is not null` אינו תנאי-סינון בכלל —
+     RLS ב-Postgres אין לה שום דרך לדעת מהו "מזהה-הסשן שלי" (זהו מחרוזת
+     שנוצרת בצד-הלקוח, לא claim ב-JWT), כך שהתנאי בפועל היה מענק גורף
+     לכל שורה עם `session_id` לא-ריק, בלי שום השוואה למי ששולח את
+     הבקשה. אומת חי מול `bieebmnmkffwbqlsfozh` בטרנזקציות
+     rolled-back עם `set local role anon`: הכנסתי שורת-"קורבן" עם
+     `session_id='session-victim-abc'`, ואז — כתוקף אנונימי נפרד,
+     בלי לדעת שום דבר מלבד ש-`session_id` לא ריק — הצלחתי `select`
+     ללא שום סינון שהחזיר את השורה (`bool_or(...)=true`), `update`
+     ששינה את ה-`items` שלה, ו-`delete` שמחק אותה — כל שלוש הפעולות
+     חצו טננטים לחלוטין (אין בדיקת `tenant_id` בכלל). זו חשיפה חיה
+     ובת-הגעה היום, לא תיאורטית — אך הטבלה ריקה (0 שורות חי) ואין
+     שום קוד ב-`src/` שקורא/כותב אליה (`grep` מקיף אישר: עגלת הקנייה
+     האמיתית היא ה-store של Zustand ב-`useCart.tsx`, נשמרת ל-
+     localStorage בלבד). הטבלה חוברה ב-19/05 אך מעולם לא שימשה בפועל.
+
+     **מה נבנה ואומת.** מיגרציה חדשה מחליפה את `carts_self`: הענף
+     האנונימי-הגורף (`session_id is not null`) הוסר לחלוטין; במקומו
+     — בדיוק כמו הדפוס שכבר נקבע ב-`study_schedules`/`study_daily`
+     (סבב 739-740) — הסינון מוגבל לבעלים מאומת (`user_id =
+     auth.uid()`) בתוספת `is_super_admin`/`has_tenant_role(...,
+     'tenant_admin')` לצפייה ניהולית, באותה צורה כמו `neda_txn`/
+     `pc_write` בטבלאות commerce אחרות. מאחר שאין זרימת-אורח חיה
+     שתלויה בענף שנפתח ואפס שורות קיימות, אין נתיב-הגירה נדרש.
+     אומת חי: לפני התיקון — הכנסה+`select`+`update`+`delete` כתוקף
+     אנונימי-זר הצליחו במלואן (אישור-הפרצה). אחרי התיקון — אותה
+     הכנסה כאנונימי-זר (ללא `user_id`, ללא תפקיד-טננט) נכשלת עם
+     `42501: new row violates row-level security policy`; לעומת זאת
+     בעלים מאומת אמיתי (`role authenticated`, `sub` תואם ל-`user_id`)
+     הצליח להכניס/לקרוא/לעדכן/למחוק את העגלה שלו-עצמו ללא שגיאה —
+     אי-רגרסיה מאומתת. `COUNT` נפרד אחרי כל `ROLLBACK` אישר אפס
+     שאריות בכל שלב. `get_advisors(security)` לפני ואחרי — 70 lints
+     בשני המקרים (הלינטר של Supabase לא מזהה את סוג-הבאג הזה כלל, לא
+     לפני ולא אחרי — הפער נמצא ידנית דרך `pg_policies`, לא דרך
+     advisors). אין edge function שהשתנתה כאן, אין deploy נדרש. אין
+     שליחה/חיוב/מייל אמיתיים בכל שלב. אפס רגרסיה — קובץ מיגרציה אחד
+     בלבד, טבלה אחת, ה-policy היחיד עליה הוחלף בגרסה מצומצמת-יותר
+     תוך שמירה על כל גישה לגיטימית קיימת (שאף פעם לא הייתה בשימוש,
+     אך לו הייתה — עדיין הייתה עובדת). נדחף לענף חדש
+     `fix/01-torah-platform-carts-session-rls-0831` (`7d43f48c`). לא
+     מוזג, main לא נגע. System 35 KioskFleet לא נגע, per HARD
+     STEERING; מערכות/סכימות מוגנות (08/09/bkalut-app/bkalot-admin/
+     `zr_*`/webhook NEDARIM3873/`csj`/`csj_src`/`igud`/15-egod) לא
+     נגעו.
