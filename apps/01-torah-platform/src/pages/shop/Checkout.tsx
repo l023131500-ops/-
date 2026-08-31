@@ -20,7 +20,7 @@ export default function Checkout() {
   const { tenant } = useTenant();
   const nav = useNavigate();
 
-  const [customer, setCustomer] = useState({ name: "", phone: "", email: "", address: "", city: "", notes: "" });
+  const [customer, setCustomer] = useState({ name: "", phone: "", email: "", address: "", city: "", zip: "", notes: "" });
   const [iframeUrl, setIframeUrl] = useState<string | null>(null);
   const [pendingOrderId, setPendingOrderId] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -80,6 +80,7 @@ export default function Checkout() {
           customer_email: customer.email || null,
           shipping_address: customer.address,
           shipping_city: customer.city,
+          shipping_zip: customer.zip || null,
           shipping_notes: customer.notes,
           total_ils: total,
           status: "pending",
@@ -149,7 +150,10 @@ export default function Checkout() {
               </div>
               <div><Label>דוא״ל</Label><Input type="email" value={customer.email} onChange={(e) => setCustomer({ ...customer, email: e.target.value })} /></div>
               <div><Label>כתובת *</Label><Input value={customer.address} onChange={(e) => setCustomer({ ...customer, address: e.target.value })} /></div>
-              <div><Label>עיר</Label><Input value={customer.city} onChange={(e) => setCustomer({ ...customer, city: e.target.value })} /></div>
+              <div className="grid sm:grid-cols-2 gap-3">
+                <div><Label>עיר</Label><Input value={customer.city} onChange={(e) => setCustomer({ ...customer, city: e.target.value })} /></div>
+                <div><Label>מיקוד</Label><Input value={customer.zip} onChange={(e) => setCustomer({ ...customer, zip: e.target.value })} /></div>
+              </div>
               <div><Label>הערות</Label><Textarea value={customer.notes} onChange={(e) => setCustomer({ ...customer, notes: e.target.value })} /></div>
             </CardContent>
           </Card>
