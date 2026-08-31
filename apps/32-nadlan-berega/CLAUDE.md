@@ -1,5 +1,35 @@
 # CLAUDE.md — נדל"ן ברגע (קרא אותי בתחילת כל סשן)
 
+## עדכון — 31/08/2026 (Loop A — build_tasks id=29: QUALITY AUDIT closed, homepage was missing images entirely)
+`core.build_tasks` id=29 ("QUALITY AUDIT to marketing-ready: verify street
+VIDEO works; stunning brochure + 2-4 illustrative images; WORKING customer
+login") found `app/page.tsx` had **zero images anywhere** — confirmed by
+grep and a live WebFetch render ("lacks hero imagery or illustrative
+photography"). Built a new Supabase Edge Function
+`nadlan-marketing-images` (reads `RECRAFT_API_KEY` from `core.secrets` via
+`more30_secrets_fetch`, same pattern as `np-tabu-document-analyze`; calls
+Recraft v4, same shape already proven in `apps/26-modaot-studio`), invoked
+it once, got 4 real on-brand navy/gold illustrations into a new public
+bucket `nadlan-marketing`. Wired into the homepage: `hero-skyline` as a
+low-opacity hero background, the other three (`document-identity`,
+`street-view-scan`, `trusted-report`) illustrate a new "לא עוד דוח טקסט —
+נכס שרואים" section — which also fixed a real copy gap: the homepage never
+mentioned the already-built 360 panorama / street-video features at all.
+
+Login re-verified live (`more30.com/auth-button.js` → HTTP 200, real JS,
+unchanged). Street video: infra re-confirmed intact and unregressed
+(bucket + `street_video_cache` table), but full browser E2E
+(`MediaRecorder`) remains impossible in this sandbox — same ceiling every
+prior `apps/32` session has hit, `street_video_cache` still has 0 real rows.
+Don't re-open that specific sub-item without a real browser or an
+owner-run manual check.
+
+Verified: esbuild transpile clean, then bundled+server-rendered with real
+`react-dom/server` (stubbed `next/link`/`ReportRequestForm`) — rendered
+successfully with all 4 image URLs present. All 4 images independently
+confirmed live (200, `image/webp`) and visually reviewed. Committed+pushed
+to `fix/32-nadlan-berega-marketing-images-0831` (cf695ae5) — not merged.
+
 ## עדכון — 26/08/2026 (Loop A, session 13 — build_tasks id=6 חלק (c) נסגר: "ההיסטוריה שלי")
 `core.build_tasks` id=6 (system 32, priority 60) נשאר `todo` מ-session 9 (ראו
 למטה) בגלל חלק (c) בלבד: "הנתונים האמיתיים נגישים רק מאחורי כפתור כניסה
