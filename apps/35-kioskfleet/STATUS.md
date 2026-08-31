@@ -7692,3 +7692,70 @@ to that constraint: they import only dependency-free modules (`hosts.js`,
   windows/assigned-access-related files, so a future round scoping "finish
   35 to spec" should expect that as a much larger remaining unit than
   anything closed so far.
+
+[31/08/2026 Loop A, session 2] Correction to the prior session's "no code at
+all" claim above: routes A/C/D and orientation lock **do** exist — built and
+pushed by an earlier round (24-25/08) to three separate `zol` branches
+(`feat/kiosk-route-a-qr-provisioning-0825`, `feat/windows-kiosk-package-0824`,
+`feat/usb-offline-kiosk-package-0824`) that were never merged and never
+recorded against these build_tasks, so the "zero existing code" grep this
+morning (run only against the checked-out branch) missed them entirely. Found
+by checking `git branch -a` / `git diff <route-branch> --stat` against every
+unmerged `zol` branch before starting fresh Kotlin work blind, per KIOSK
+issue #215's own warning about drift between this monorepo, `zol`'s many
+branches, and the actual Railway-deployed tip.
+
+All three branches share one merge-base with the live tip (`06fec9f`,
+pre-dating this week's URL-scheme-validation and heartbeat-replay fixes), and
+`feat/kiosk-route-a-qr-provisioning-0825` is the superset of the other two
+(Route A/QR + orientation lock + Route C/Windows + Route D/USB all together,
+plus a `payment.js`/access-code launcher slice not tied to any of the four
+open build_tasks). Rebuilt it cleanly: branched
+`feat/kiosk-route-a-qr-provisioning-0831` off the current live tip (`0f3947d`)
+and merged the 0825 branch in — one real conflict (`policy.js`, two comment
+blocks both wanting to precede the same `if (linkId)` line; resolved by
+keeping both additions, no logic lost), everything else auto-merged clean.
+Diffed the merge result against the live tip: **2,289 insertions / 42
+deletions across 39 files, every deletion a same-line replacement (e.g. an
+array-literal split across more lines), zero removed functionality** —
+confirmed by reading every non-trivial hunk in `devicepayload.js`,
+`snapshots.js`, `routes/agent.js`, `templatepolicy.js` by hand, not just
+trusting the diffstat.
+
+What this actually closes: **orientation lock** (server: `orientation.js` +
+wiring through `policy.js`/`templatepolicy.js`/`snapshots.js`/`devicepayload.js`;
+native: `KioskActivity.kt`'s `applyOrientation()` calls the standard
+`Activity.setRequestedOrientation()` API keyed off a server-pushed
+`displayOrientation` field, re-applied live via `onConfigUpdated`) — **Route
+A** (`qrprovision.js`: standard Android Device-Owner QR provisioning, the
+`android.app.extra.PROVISIONING_*` mechanism Android has shipped since 6.0,
+carrying a short-lived single-use enrollment code rather than a live device
+token, wired into a new `/k/:code` technician launcher page +
+`EnrollActivity.kt`/`KioskDeviceAdminReceiver.kt`) — **Route C**
+(`windowspackage.js`: Assigned-Access/Shell-Launcher provisioning script
+generator, PowerShell-quoted, per KIOSK_BUILD.md §10) — **Route D**
+(`usbpackage.js`: offline JSON config package for USB/adb-only install, no
+network round-trip needed).
+
+Verified live, not just by reading: real `npm test` in the merged tree —
+**210/210, zero failures**. Booted the real server (`node src/index.js`)
+against a scratch on-disk DB — `/console` and `/` both `200`, the new `/k/:code`
+launcher page renders real RTL Hebrew HTML for an unredeemed code, `/api/auth/login`
+still `404`s on GET exactly as before (routing untouched). Brace/paren balance
+checked on every touched `.kt` file (`AgentClient.kt` 86/86 `{}` 346/346 `()`,
+`EnrollActivity.kt` 44/44 / 176/176, `KioskActivity.kt` 120/120 / 437/437,
+`KioskDeviceAdminReceiver.kt` 7/7 / 24/24, `Prefs.kt` 2/2 / 24/24) — same
+toolchain gap as always (`java`/`kotlinc` absent here) so the Kotlin side is
+**syntax-sane but not compiler-verified**; flagging that honestly rather than
+claiming full verification.
+
+Pushed to `l023131500-ops/zol` branch `feat/kiosk-route-a-qr-provisioning-0831`
+(`e97583a`), off live tip `0f3947d` — not merged, same human-review
+convention. `core.build_tasks` rows 17/18/19/20 marked `done` with this note.
+Not done: the `.kt` compile/flash/on-device verification itself (needs an
+Android toolchain + real hardware, same gap flagged every round); the actual
+`kioskfleet-agent.apk` binary artifact; and the Route A QR flow's own
+prerequisite env vars (`KIOSK_AGENT_APK_URL` /
+`KIOSK_AGENT_APK_SIGNATURE_CHECKSUM`) are validated-but-unset until a human
+supplies a signed, hosted APK — `qrprovision.js` throws a clear Hebrew error
+rather than silently building a broken QR code in the meantime.
