@@ -9285,3 +9285,69 @@
      main לא נגע. System 35 KioskFleet לא נגע, per HARD STEERING;
      מערכות/סכימות מוגנות (08/09/bkalut-app/bkalot-admin/`zr_*`/webhook
      NEDARIM3873/`csj`/`csj_src`/`igud`/15-egod) לא נגעו.
+
+720. **ההקשר.** המשך סבב P3 01-torah-platform (STEP 1 מאושר: P0 sys14
+     `done`, P1(35) אסור per HARD STEERING, P2(32/36) build_tasks 0 todo,
+     15-egod עדיין לא ב-`list_projects`). Explore agent סרק קבצים שעדיין לא
+     טופלו ומצא מועמד ב-RLS של `forum_comments` — בדיקה חיה גילתה שהמצב
+     האמיתי חמור משמעותית ממה שקובץ המיגרציה המקורי
+     (`20260519000002_torah_content.sql`) מתאר.
+
+721. **הממצא — RLS-drift לא-מתועד.** `list_migrations` מול
+     `bieebmnmkffwbqlsfozh` חשף שני סבבים (`torah_platform_multiple_
+     permissive_policies_fix`/`_gap`, 25/08) שהוחלו **ישירות על ה-DB החי
+     דרך MCP ומעולם לא נשמרו כקובץ מיגרציה בריפו** — סטייה בין הריפו
+     למצב החי. תוצאת הסטייה בטבלת `forum_comments`: (א) `fcom_read`
+     (SELECT) הפך ל-`qual = true` — קריאה **ציבורית לחלוטין**, כולל
+     `anon` לא-מחובר (אומת שיש ל-`anon` הרשאת SELECT על הטבלה) יכול היה
+     לקרוא כל תגובת-פורום פרטית של כל טננט. (ב) מדיניות INSERT כפולה:
+     `fcom_write_ins` (`user_id = auth.uid()` בלבד, ללא שום בדיקת-טננט)
+     התקיימה **לצד** מה שהקובץ המקורי הגדיר כ-`fcom_insert` — ו-PostgreSQL
+     מאחד (OR) בין policies פרמיסיביות מרובות לאותה פקודה, כך שכל משתמש
+     מחובר, ללא שום חברות בטננט כלשהו, יכול היה להוסיף תגובה לכל פוסט
+     פורום של כל טננט. אומת חי (רולבק אוטומטי, בלי COMMIT מפורש): משתמש
+     (`3c03f8db`) עם **אפס** שורות `user_roles` בכלל הצליח להכניס
+     `forum_comments` על פוסט טננט-פרטי (`e658ea3f`) שאינו חבר בו — אישר
+     את הפער. שכבת ה-UI (`admin/Forums.tsx`, `portal/Forums.tsx`) לא
+     חושפת יצירת פוסט/תגובה בכלל (מסך הניהול הוא מודרציה בלבד: מחיקה/
+     נעיצה/נעילה) — אבל RLS הוא גבול האבטחה האמיתי (כמו בכל התיקונים
+     הקודמים), לא ה-UI, אז הפער ניתן לניצול ישירות מול ה-API בלי קשר
+     לכפתור קיים.
+
+722. **מה נבנה ואומת.** מיגרציה
+     `20260831100000_forum_comments_restrict_insert_to_tenant.sql`:
+     איחוד SELECT+INSERT לכדי policy אחת לכל פקודה (מחיקת `fcom_read`,
+     `fcom_insert`, `fcom_write_ins` הישנות; `fcom_write_upd`/
+     `fcom_write_del` — self-row-or-super_admin — לא נגעו כי כבר תקינות).
+     שתי המדיניות החדשות דורשות הרשאת-טננט זהה למה ש-`forum_posts_
+     tenant_write` כבר דורש ליצירת פוסט עצמו (tenant_admin/moderator/
+     member/super_admin דרך `has_tenant_role`/`is_super_admin` על
+     `fp.tenant_id` של הפוסט-הורה), עם ענף `fp.tenant_id is null`
+     שנשאר פתוח לקטגוריות גלובליות — ועטיפת `(select auth.uid())` לפי
+     הקונבנציה שכבר נקבעה ב-`rls_initplan_perf`. אומת חי ב-
+     `bieebmnmkffwbqlsfozh` בכמה טרנזקציות rolled-back: (1) `anon` לא
+     יכול עוד לקרוא תגובה פרטית של טננט (0 שורות, לעומת "ציבורי לגמרי"
+     קודם). (2) אותו תוקף (`3c03f8db`, אפס חברות) שניסה להכניס תגובה על
+     פוסט-טננט זר — נחסם עם שגיאת RLS מפורשת (`42501`), לא רק "0 שורות
+     גלויות". (3) `member` אמיתי (`f25f6e65`, עם שורת `user_roles` זמנית
+     בטננט `e658ea3f`) יכול להכניס ולקרוא תגובה על פוסט הטננט שלו —
+     הנתיב הלגיטימי לא נפגע. (4) `super_admin` זמני יכול להכניס תגובה
+     גם על פוסט גלובלי (`tenant_id is null`) — מוודא שהתנאי הלוגי בקוד
+     תקין (משתמש מחובר-רגיל לא הצליח לבדוק ענף זה במלואו כי התגלה פער
+     נפרד וקיים-מראש ב-`forum_posts_tenant_write`: ל-policy המאוחדת שלו
+     [שמכסה גם SELECT דרך `ALL`] **אין** ענף `tenant_id is null`, כך
+     שפוסטים גלובליים בפועל בלתי-נראים למי שאינו super_admin כרגע — פער
+     קיים-מראש, נפרד מהתיקון הזה, ללא UI יצירת-פוסט בכלל היום ואפס
+     שורות חיות ב-`forum_posts`; נרשם כאן לסבב עתידי, לא תוקן בסבב הזה
+     כדי לשמור על שינוי אחד ממוקד). כל הטרנזקציות הסתיימו ב-ROLLBACK
+     (חלקן ללא `rollback` מפורש כלל, מסתמכות על ניתוק-חיבור אוטומטי);
+     `COUNT` נפרד לאחר כל ניסיון אימת אפס שאריות (0 שורות `QA DELETE
+     ME%`/מזהי בדיקה, 0 שורות `user_roles` זמניות). `get_advisors(
+     security)` הופעל אחרי ה-apply — עדיין 70 lints (זהה לבסיס), אפס
+     איזכור חדש של `forum_comments`. אין שליחה/חיוב/מייל אמיתיים, TEST
+     MODE מכובד. נדחף לענף חדש
+     `fix/01-torah-platform-rabbi-questions-read-leak-0831` (אותו ענף
+     מהסבב הקודם, לא מוזג). main לא נגע. System 35 KioskFleet לא נגע,
+     per HARD STEERING; מערכות/סכימות מוגנות (08/09/bkalut-app/
+     bkalot-admin/`zr_*`/webhook NEDARIM3873/`csj`/`csj_src`/`igud`/
+     15-egod) לא נגעו.
