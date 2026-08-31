@@ -9532,3 +9532,41 @@
      לא מוזג, main לא נגע. System 35 KioskFleet לא נגע, per HARD
      STEERING; מערכות/סכימות מוגנות (08/09/bkalut-app/bkalot-admin/
      `zr_*`/webhook NEDARIM3873/`csj`/`csj_src`/`igud`/15-egod) לא נגעו.
+
+## 31/08/2026 (LOOP A) — 01-torah-platform: מיקוד הזמנה אף פעם לא נאסף בקופה
+
+731. **ההקשר.** המשך ישיר לסבב הקודם (#728-730). לפני תחילת עבודה:
+     `core.projects` #33 אושר — P0 sys14 `done` מ-30/08 (אין
+     `CANNOT_SCREENSHOT` חדש לכתוב), P1(35) אסור per HARD STEERING,
+     `core.build_tasks` ריק לחלוטין (`status='todo'` — 0 שורות בכל
+     המערכות, אז אין אילוץ PROGRESS CONTRACT שחוסם עבודת-אודיט אד-הוק),
+     `list_projects` עדיין לא כולל את הפרויקט של 15-egod
+     (`hkkkynyoigzlttpynoeo`) — נשאר בלתי-נגיש בסשן הזה, לכן ההמשך
+     ב-01-torah-platform תקף. הפעלתי סוכן Explore עם רשימה מפורשת של כל
+     מחלקות-הבאג שכבר טופלו (#650-730) כדי למצוא פער **טרי**.
+
+732. **הממצא.** `Checkout.tsx` אוסף שם/טלפון/מייל/כתובת/עיר/הערות אבל
+     מעולם לא אסף מיקוד (`zip`) — לא ב-`state` (שורה 23) ולא בטופס. עמודת
+     `orders.shipping_zip` קיימת בסכימה (`20260519000003_commerce.sql`
+     שורה 85) והיא **כבר מוצגת** ב-`portal/Orders.tsx` בדיוק הסבב הקודם
+     הוסיף (`[shipping_address, shipping_city, shipping_zip].filter(
+     Boolean).join(", ")`, שורה 62) — כלומר תא-התצוגה כבר מוכן לקבל
+     ערך אך לעולם לא מקבל אחד: כל הזמנה אמיתית נכתבת עם `shipping_zip
+     = NULL` כי אין שדה-קלט שממלא אותו. איש-צוות שמנסה לשלוח חבילה רואה
+     כתובת חלקית ללא מיקוד.
+
+     **מה נבנה ואומת.** `Checkout.tsx`: נוסף `zip` ל-`state` הראשוני
+     (שורה 23), שדה קלט "מיקוד" חדש לצד "עיר" (רשת `sm:grid-cols-2`,
+     לא שדה-חובה — תואם את זה ש-`shipping_zip` עצמה `nullable`), ו-
+     `shipping_zip: customer.zip || null` נוסף ל-INSERT (שורה 83). אין
+     שינוי סכימה/RLS — עמודה קיימת מראש. אומת: `esbuild` נקי על הקובץ;
+     טרנזקציה חיה rolled-back על `bieebmnmkffwbqlsfozh` עם אותה צורת-
+     INSERT בדיוק ש-`Checkout.tsx` שולח עכשיו (כולל `shipping_zip`) —
+     חזרה נכונה עם הערך; `COUNT` נפרד לאחר `ROLLBACK` אימת אפס שאריות
+     (0 `orders` בשם `QA DELETE ME%`). אין שליחה/חיוב/מייל אמיתיים,
+     TEST MODE מכובד. אפס רגרסיה — שדה נוסף בלבד, שום handler/RPC/עמודה
+     קיימים אחרים לא נגעו. נדחף לענף חדש
+     `fix/01-torah-platform-checkout-zip-capture-0831` (`428ff90c`).
+     לא מוזג, main לא נגע. System 35 KioskFleet לא נגע, per HARD
+     STEERING; מערכות/סכימות מוגנות (08/09/bkalut-app/bkalot-admin/
+     `zr_*`/webhook NEDARIM3873/`csj`/`csj_src`/`igud`/15-egod) לא נגעו.
