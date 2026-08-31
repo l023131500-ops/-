@@ -10639,3 +10639,62 @@
      נגע, per HARD STEERING; מערכות/סכימות מוגנות (08/09/bkalut-app/
      bkalot-admin/`zr_*`/webhook NEDARIM3873/`csj`/`csj_src`/`igud`/
      15-egod) לא נגעו.
+
+## 31/08/2026 (LOOP A, סבב נוסף ו') — `LessonDetail.tsx`/`RabbiPublic.tsx`: שני עמודים ציבוריים חשפו שיעורים לא-מאושרים/מבוטלים דרך פער RLS
+
+764. **ההקשר.** המשך סבב P3 01-torah-platform (STEP 1 מאושר: P0 sys14
+     `done`, P1(35) אסור per HARD STEERING, P2(32/36) `core.build_tasks`
+     נשאר 0 `todo`, 15-egod עדיין לא נגיש דרך MCP). בדקתי קודם את
+     `core.issues` (טבלת באגים נפרדת מ-`core.build_tasks`, לא נסרקה
+     בסבבים קודמים של הבוקר) לפני שהפעלתי סוכן חדש — מצאתי ש-#258
+     ("`admin/Teachers.tsx` כותב/קורא `profiles.is_approved` שלא קיים")
+     עדיין מסומנת `open` בטבלה, אבל `git log`+קריאת הקובץ אישרו שהיא
+     כבר תוקנה בפועל בסבבים #517-518 (26/08) ושוכללה ב-#675-676
+     (31/08) — פשוט לא עודכן הרישום ב-`core.issues`. תיקנתי את הרישום
+     (ראו למטה) בלי לגעת בקוד, והמשכתי לחפש ממצא אמיתי. סוכן `Explore`
+     שהופעל על `admin-users/index.ts` (`update_role`) החזיר מועמד
+     שגוי — קראתי את הקובץ בעצמי ואישרתי ש-`update_role` כבר מוגבל
+     לשורת-תפקיד אחת בטננט אחד שהקורא כבר מאומת עליו (`tenantAdminTenants
+     .includes(tenant_id)`), בניגוד ל-`update_password`/`delete` (#740)
+     שפועלים על כל חשבון-האימות הגלובלי — לא כפילות של אותה מחלקה,
+     דחיתי את הממצא. המשכתי בסריקה עצמית של קבצים שמעולם לא הוזכרו
+     ב-DECISIONS.md (`git`+`grep` השוואתי בין רשימת `src/pages` לרשימת
+     שמות-קבצים שהופיעו כאן).
+
+765. **הממצא.** `pages/public/LessonDetail.tsx` (מנותב חי `/lessons/:id`,
+     מקושר מכל שורה ב-`LessonsDirectory.tsx`) שולף שיעור לפי `id` בלבד
+     — בלי שום סינון `is_approved`/`is_active`. `RabbiPublic.tsx`
+     (עמוד ציבורי לרב, `/rabbi/:id`) קרוב יותר אך עדיין חלקי: מסנן
+     `is_active` בלבד, בלי `is_approved`. לשתי הדוגמאות אין הגנה
+     חלופית ב-RLS: מדיניות ה-SELECT היחידה על `public.lessons`
+     (`lessons_tenant_read`, אומתה חי מול `pg_policies` על
+     `bieebmnmkffwbqlsfozh`) בודקת רק ש-`tenants.status='active'`
+     (או חברות-טננט) — **לא** את `is_approved`/`is_active` בכלל. זה
+     בניגוד ל-`LessonsDirectory.tsx` שכבר מסנן שניהם נכון (עם הערה
+     מפורשת בקוד שמסבירה בדיוק את זה). כלומר: שיעור שמנהל **דחה**
+     (`is_approved=false`, ב-`AdminDashboard.tsx`) או **כיבה**
+     (`is_active=false`, ב-`portal/Lessons.tsx`) נשאר גלוי לצמיתות
+     לכל מי שמחזיק את הקישור הישיר — בדיוק המחלקה של תת-אישור-אבל-לא-
+     נחסם-בפועל שנמצאה שוב ושוב באפליקציה זו (RLS מגביל שורות, לא
+     עמודות/מצבים).
+
+766. **אימות + התיקון.** אימתתי חי מול `bieebmnmkffwbqlsfozh` **לפני**
+     כתיבת התיקון: `INSERT` שורת `lessons` אמיתית עם
+     `is_approved=false, is_active=false` על טננט פעיל אמיתי, ואז
+     `SET LOCAL ROLE anon; SELECT ... WHERE id=...` — השורה המלאה
+     חזרה במלואה לתפקיד `anon` (בדיוק השאילתה ש-`LessonDetail.tsx`
+     מריץ). מחקתי מיד אחרי, `SELECT count(*)` נפרד אישר `0` שאריות.
+     התיקון: שני הקבצים מוסיפים `.eq("is_active", true).eq("is_approved",
+     true)` — זהה לתבנית הקיימת ב-`LessonsDirectory.tsx`. `esbuild
+     --bundle` נקי על שני הקבצים. `SELECT count(*) FROM lessons WHERE
+     is_active AND is_approved` = 5 מתוך 5 השורות האמיתיות הקיימות —
+     כלומר אפס רגרסיה על הדאטה החי: כל שיעור אמיתי שכבר מאושר וממשיך
+     להיות פעיל ימשיך להופיע זהה לגמרי, השינוי משפיע רק על שיעורים
+     עתידיים שיידחו/יכובו. `get_advisors(security)`: 74 לינטים — זהה
+     לבייסליין המתועד, ללא שינוי (אין מיגרציה/RLS בסבב זה, רק סינון
+     בצד הלקוח). נדחף לענף חדש
+     `fix/01-torah-platform-lesson-detail-moderation-gate-0831`
+     (`fd93d1ef`) — לא מוזג, main לא נגע. System 35 KioskFleet לא
+     נגע, per HARD STEERING; מערכות/סכימות מוגנות (08/09/bkalut-app/
+     bkalot-admin/`zr_*`/webhook NEDARIM3873/`csj`/`csj_src`/`igud`/
+     15-egod) לא נגעו. אין שליחה/חיוב אמיתיים בסבב זה.
