@@ -65,14 +65,17 @@ Deno.serve(async (req) => {
 
     if (!ipOk) {
       console.warn("[nedarim-webhook] rejected: IP not allowed", clientIp);
-      // לוג ל-DB גם כן — עטוף ב-try/catch כי insert לא חושף .catch()
+      // tenant_id is unknown at this point (rejected before payload is parsed) --
+      // the column is nullable specifically for this orphan/security-log case.
       try {
-        await supabase.from("nedarim_transactions").insert({
+        const { error: logErr } = await supabase.from("nedarim_transactions").insert({
+          tenant_id: null,
           status: "rejected_ip",
           amount_ils: 0,
           webhook_payload: { rejected_ip: clientIp, headers: Object.fromEntries(req.headers.entries()) },
           error_message: `IP ${clientIp} not in Nedarim Plus allowlist`,
         });
+        if (logErr) console.error("[nedarim-webhook] failed to log IP rejection:", logErr);
       } catch (logErr) {
         console.warn("[nedarim-webhook] failed to log IP rejection:", logErr);
       }
@@ -170,7 +173,8 @@ Deno.serve(async (req) => {
       }
     }
 
-    // 2. If no pending found, insert a new transaction row
+    // 2. If no pending found, insert a new transaction row (orphan -- no our_payment_id
+    // match, so tenant is unknown; the column is nullable for exactly this case).
     if (!txnId) {
       const ins = await supabase
         .from("nedarim_transactions")
@@ -185,6 +189,7 @@ Deno.serve(async (req) => {
         })
         .select("id")
         .maybeSingle();
+      if (ins.error) console.error("[nedarim-webhook] failed to log orphan transaction:", ins.error);
       txnId = ins.data?.id ?? null;
     }
 
