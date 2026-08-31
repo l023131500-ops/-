@@ -10026,3 +10026,76 @@
      STEERING; מערכות/סכימות מוגנות (08/09/bkalut-app/bkalot-admin/
      `zr_*`/webhook NEDARIM3873/`csj`/`csj_src`/`igud`/15-egod) לא
      נגעו.
+
+## 31/08/2026 (LOOP A) — 01-torah-platform: `profiles_read_basic` חשפה טלפון/כתובת/תאריך-לידה של כל משתמש לכל קורא, כולל אנונימי
+
+747. **ההקשר.** המשך ישיר לסבב הקודם (#745-746), אותה שיטת-סריקה
+     (`pg_policies` גורפת על כל טבלה ב-`public`, לא רק קריאת קובצי-
+     מיגרציה — הלקח מ-#629/#711/#746). P0 (מערכת 14) `done`. P1 (35)
+     אסור per HARD STEERING. P2 (32/36) נשאר 0 `todo`. `15-egod`
+     עדיין לא נגיש. הפעם הפער נמצא בטבלה בסיסית מאוד — `profiles` —
+     שכל סבב קודם קרא ממנה אך אף אחד לא בדק את ה-policy שלה עצמה.
+
+748. **הממצא.** `public.profiles` (`id, full_name, phone, whatsapp,
+     city, neighborhood, address, birthday, bio, ...`) נוצרה
+     ב-19/05 עם policy יחיד `profiles_read_basic` עם תגובת-מיגרציה
+     "self full access, others read minimal" — אך ה-SQL בפועל היה
+     `using (true)`, מענק גורף על כל השורה, לכל קורא כולל `anon`. RLS
+     לא מכירה "השדות הבסיסיים בלבד"; אין שום היגיון-עמודות ב-Postgres
+     RLS, כך שההגבלה שהמיגרציה תיארה מעולם לא התקיימה בפועל. אומת חי
+     מול `bieebmnmkffwbqlsfozh` בטרנזקציה rolled-back עם
+     `set local role anon`: שאילתה ישירה על `profiles` החזירה מספרי
+     טלפון אמיתיים של משתמשים אמיתיים (`0556787030`, `0500000000`)
+     ללא שום אימות. הנתיב הלגיטימי היחיד ל-"קריאה ציבורית" הוא
+     `/rabbi/:id` (`src/pages/public/RabbiPublic.tsx`) שמציג בכוונה
+     bio/whatsapp/אווטאר של רב-מלמד המפרסם עצמו; כל שאר נקודות-הקריאה
+     (`admin/MatchingGuru.tsx`, `admin/Matching.tsx`,
+     `admin/Teachers.tsx`, `admin/Messages.tsx`, `public/FindLesson.tsx`)
+     שולפות פרופילים רק לפי `user_id` שמקורו ב-`memberships`/
+     `user_roles`/`lessons.rabbi_user_id` — כלומר מפעילי-פלטפורמה עם
+     תפקיד-טננט, לעולם לא משתמשי-קצה שרירותיים (לקוחות-חנות, תורמים,
+     מתפללים רגילים) שיש להם רק שורת `profiles` בסיסית.
+
+     **מה נבנה ואומת.** שתי מיגרציות. הראשונה
+     (`20260831170000_profiles_scope_public_read.sql`) כתבה מחדש את
+     `profiles_read_basic` ל-`id = auth.uid() OR is_super_admin(...)
+     OR exists(select 1 from user_roles where user_id = profiles.id)`.
+     אימות חי גילה שהענף השלישי בפועל תמיד `false` לקורא לא-סופר-
+     אדמין: ל-`user_roles` יש RLS משלה (`user_roles_self_read`,
+     מוגבלת ל-`user_id = auth.uid()`), כך שתת-השאילתה `exists` רואה
+     רק את שורות-התפקיד של הקורא-עצמו, לעולם לא את שורות הפרופיל
+     המבוקש — אותו דפוס-מלכודת בדיוק (RLS פנימית שמנטרלת RLS חיצונית)
+     שכבר תועד קודם ב-`is_super_admin`/`has_tenant_role`. מיגרציה
+     שנייה (`…170100_…_fix_helper.sql`) הוסיפה פונקציית-עזר
+     `SECURITY DEFINER` חדשה `is_tenant_role_holder(_uid)` (אותה צורה
+     ומטרה כמו `is_super_admin`/`has_tenant_role` הקיימות — "כדי
+     למנוע רקורסיית-RLS"), מוגבלת ל-`tenant_id is not null` (מוציאה
+     חשבון `super_admin` גורף-בלי-טננט מהענף הציבורי — חשבון כזה כבר
+     מקבל גישה מלאה דרך ענף `is_super_admin` הקיים ממילא), והחליפה בה
+     את הענף השלישי. מיגרציה שלישית (`…170200_…grant_tidy.sql`)
+     ניקתה את מענק ה-`PUBLIC` המשתמע על הפונקציה החדשה והחליפה
+     בהרשאות מפורשות התואמות בדיוק את פונקציות-האחיות הקיימות.
+
+     אומת חי (הכול בטרנזקציות rolled-back, `COUNT` נפרד אחרי כל
+     `ROLLBACK` אישר אפס שאריות): `anon` → 0 שורות (היה 2 שורות עם
+     טלפונים אמיתיים לפני התיקון) · קורא-בעלים על שורתו-עצמו → עובד
+     · סופר-אדמין קורא כל פרופיל → עובד · קורא מאומת רגיל קורא פרופיל
+     של מחזיק-תפקיד-טננט (מדמה `/rabbi/:id`/חיפושי-matching) → עובד,
+     מחזיר בדיוק את הפרופיל המבוקש · אותו קורא מנסה לקרוא פרופיל
+     שאינו מחזיק-תפקיד → חסום (0 שורות) · חשבון `super_admin` גורף
+     בלי `tenant_id` אומת כמוצא גם הוא מהענף הציבורי (עדיין מקבל גישה
+     מלאה, אך רק דרך ענף `is_super_admin`). `get_advisors(security)`:
+     70 lints לפני → 72 אחרי — שתי אזהרות WARN חדשות
+     (`*_security_definer_function_executable` על הפונקציה החדשה),
+     בלתי-נמנעות בלי לשבור את ה-policy, וזהות-פונקציונלית (בוליאני
+     בלבד, ללא חשיפת PII) לאזהרות שלא-מסומנות על `is_super_admin`/
+     `has_tenant_role` הקיימות שהיא מחקה. ספירות סופיות אושרו זהות
+     לתחילת הסבב: `profiles=7`, `user_roles=2`, `tenants=5`. אין edge
+     function שהשתנתה, אין deploy נדרש. אין שליחה/חיוב/מייל אמיתיים.
+     אפס רגרסיה — שלוש מיגרציות תוספתיות בלבד, policy יחיד הוחלף
+     בגרסה מצומצמת-יותר תוך שמירה על כל גישה לגיטימית קיימת. נדחף
+     לענף חדש `fix/01-torah-platform-profiles-public-read-scope-0831`
+     (`5be350d7`). לא מוזג, main לא נגע. System 35 KioskFleet לא נגע,
+     per HARD STEERING; מערכות/סכימות מוגנות (08/09/bkalut-app/
+     bkalot-admin/`zr_*`/webhook NEDARIM3873/`csj`/`csj_src`/`igud`/
+     15-egod) לא נגעו.
