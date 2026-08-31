@@ -9828,3 +9828,74 @@
      per HARD STEERING; מערכות/סכימות מוגנות (08/09/bkalut-app/
      bkalot-admin/`zr_*`/webhook NEDARIM3873/`csj`/`csj_src`/`igud`/
      15-egod) לא נגעו.
+
+## 31/08/2026 (LOOP A) — 01-torah-platform: `nedarim-admin` איפשר לתננט-אדמין לפעול על עסקה של טננט אחר + חריגת `extra` שיכלה לעקוף Action/MosadId/ApiPassword
+
+741. **ההקשר.** המשך ישיר לסבב הקודם (#739-740). P0 (מערכת 14) אומת
+     `done`. P1 (35) אסור per HARD STEERING. P2 (32/36) `core.build_tasks`
+     נשאר 0 `todo`. `15-egod` (`hkkkynyoigzlttpynoeo`) עדיין לא מופיע
+     ב-`list_projects`. הפעלתי סוכן `general-purpose` לחיפוש ממוקד: אחרי
+     ש-#739-740 קראו `admin-users`/`create-admin` שורה-אחר-שורה במלואם
+     ומצאו אותם נקיים (מלבד הבאג שתוקן שם), ביקשתי לבדוק את שאר ה-edge
+     functions (`ai-match-teacher`, `chat`, `nedarim-admin`,
+     `nedarim-create-payment`, `nedarim-webhook`, `activate-invite`,
+     `search-lessons`) לעומק, עם גישה ל-`DECISIONS.md` כדי לא לחזור על
+     תיקונים שכבר בוצעו. הסוכן החזיר מועמד אחד קונקרטי ב-`nedarim-admin`
+     (עם ציטוט שורות מדויק) ופסל את השאר כמתועדים-כבר או לא-באג-אמיתי
+     (`activate-invite` — rate-limit/IP-spoof/race מתועדים בסבבים
+     105/227; `ai-match-teacher`/`chat`/`search-lessons` — payload-
+     contract ו-rate-limit מכוסים בסבבים 585-593/663/693+).
+
+742. **הממצא.** קראתי את `nedarim-admin/index.ts` (129 שורות) במלואי
+     ואישרתי ידנית. הפונקציה מקבלת `tenant_id` + `transaction_id` +
+     `action` (`DeletedAllowedTransaction`/`RefundTransaction`/
+     `GetHistoryJson`/`CancelInvoice`) מלקוח מאומת שהוא `tenant_admin`
+     של אותו `tenant_id` — ובונה בקשת POST ל-Nedarim Plus עם `MosadId`/
+     `ApiPassword` שנטענים משורת `nedarim_configs` של הטננט (או, אם
+     אין לטננט תצורה משלו, נופלים ל-ברירת-מחדל פלטפורמית משותפת דרך
+     `NEDARIM_MOSAD_ID`/`NEDARIM_API_PASSWORD`). שני פערים אמיתיים:
+     (1) **חציית-טננט על `transaction_id`** — הפונקציה מעולם לא בדקה
+     שה-`transaction_id` שנשלח שייך בפועל לטננט המבקש; אימות חי מול
+     `bieebmnmkffwbqlsfozh` הראה **2 מתוך 5 טננטים בפרויקט הזה כרגע
+     חסרי `nedarim_configs` משלהם** — כלומר חולקים בפועל את אותו חשבון
+     Mosad ברירת-מחדל. טננט-אדמין של טננט A (חבר לגיטימי ברמת-הרשאה
+     נמוכה) יכול היה לספק `transaction_id` ששייך לטננט B (על אותו
+     חשבון משותף) ולזכות/לבטל/למחוק אותה עסקה — חריגת-הרשאה בין-
+     טננטית ברת-הגעה היום, לא תיאורטית. (2) **עקיפת שדות שמורים דרך
+     `extra`** — `extra` (אובייקט מהלקוח) נפרש **אחרון** לתוך
+     `URLSearchParams`, כך ש-`extra.Action`/`MosadId`/`ApiPassword`/
+     `TransactionId`/`Amount`/`FromDate`/`ToDate` היו יכולים לדרוס
+     בשקט את הערכים המחושבים בשרת.
+
+     **מה נבנה ואומת.** ב-`supabase/functions/nedarim-admin/index.ts`:
+     הוספתי בדיקת-בעלות לפני בניית הבקשה — אם `body.transaction_id`
+     קיים, שאילתה על `nedarim_transactions` דורשת `tenant_id =
+     body.tenant_id AND transaction_id = body.transaction_id`; אם לא
+     נמצאה שורה, מוחזר `403`. הוספתי גם `RESERVED_KEYS` (Action/
+     MosadId/ApiPassword/TransactionId/Amount/FromDate/ToDate, השוואה
+     case-insensitive) שמסונן מ-`extra` לפני המיזוג — פרמטרים לגיטימיים
+     אחרים ב-`extra` (כמו `ClientId`/`Zeout`) ממשיכים לעבור כרגיל.
+     אומת: `esbuild --bundle --packages=external` + `node --check` נקי,
+     מאזן-סוגריים 59/59 מסולסלים, 91/91 עגולים, 8/8 מרובעים. לוגיקת
+     הסינון של `RESERVED_KEYS` שוכפלה בפועל ב-Node מול 5 תרחישים (דריסת
+     Action, דריסת MosadId+ApiPassword, דריסת TransactionId עם אותיות-
+     קטנות, פרמטר לגיטימי עובר, `extra` ריק) — כולם עברו. בדיקת-הבעלות
+     אומתה חי מול `bieebmnmkffwbqlsfozh` בטרנזקציה rolled-back: הוכנסה
+     שורת-בדיקה אחת ל-`nedarim_transactions` עם `tenant_id` ספציפי, אז
+     נבדקה השאילתה המדויקת מהקוד — עבור אותו `tenant_id` `found=true`,
+     עבור `tenant_id` אחר (מזהה מפורש, לא `OFFSET` שהתגלה לא-דטרמיניסטי
+     כש-`created_at` זהה לכמה טננטים) `found=false`; `COUNT` נפרד לאחר
+     `ROLLBACK` אישר אפס שאריות. משכתי `get_edge_function` החי לפני
+     העריכה ואישרתי שהוא זהה-בית לקובץ המקומי (אין פער-פריסה). נפרס
+     מחדש דרך `deploy_edge_function` (`nedarim-admin` v2→v3).
+     `get_advisors(security)` לפני ואחרי — אותם 70 lints בדיוק, אף
+     אזהרה חדשה, ואף אחת לא נוגעת ל-`nedarim`. אין שליחה/חיוב/מייל
+     אמיתיים, TEST MODE מכובד. אפס רגרסיה — קובץ אחד בלבד שונה, שום
+     handler/RLS/UI אחר לא נגע; שני הפעולות שאין להן `transaction_id`
+     (למשל `GetHistoryJson` עם `from_date`/`to_date` בלבד) לא מושפעות
+     מבדיקת-הבעלות החדשה. נדחף לענף חדש
+     `fix/01-torah-platform-nedarim-admin-cross-tenant-txn-0831`
+     (`5e6b61d9`). לא מוזג, main לא נגע. System 35 KioskFleet לא נגע,
+     per HARD STEERING; מערכות/סכימות מוגנות (08/09/bkalut-app/
+     bkalot-admin/`zr_*`/webhook NEDARIM3873/`csj`/`csj_src`/`igud`/
+     15-egod) לא נגעו.
