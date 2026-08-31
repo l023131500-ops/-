@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Logo } from "@/components/logo";
 import { Button } from "@/components/ui/button";
+import { EligibilityCatalogIllustration } from "@/components/illustrations";
 import {
   Search,
   ArrowLeft,
@@ -166,6 +167,7 @@ export default function PublicEligibility() {
             <p className="text-sm md:text-base text-muted-foreground mt-3 max-w-2xl mx-auto">
               חיפוש לפי נושא או קטגוריה, מידע ראשוני ברור, ובדיקת זכאות בקליק לכל נושא.
             </p>
+            <EligibilityCatalogIllustration className="w-full max-w-[220px] h-auto mx-auto mt-6" />
           </div>
         </section>
 

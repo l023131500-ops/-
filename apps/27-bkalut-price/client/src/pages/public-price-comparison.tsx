@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Logo } from "@/components/logo";
+import { PriceCompareIllustration } from "@/components/illustrations";
 import { useToast } from "@/hooks/use-toast";
 import { API_BASE } from "@/lib/queryClient";
 import { getPublicOrigin } from "@/lib/utils";
@@ -393,43 +394,46 @@ export default function PublicPriceComparison() {
       </header>
 
       <main id="main-content" className="max-w-5xl mx-auto px-4 py-8 space-y-6">
-        <section className="space-y-2">
-          <h1 className="text-2xl font-bold tracking-tight" data-testid="text-pc-title">
-            {settings?.title || "השוואת מחירים — חוסכים בקלות"}
-          </h1>
-          <p className="text-sm text-muted-foreground max-w-2xl">
-            {settings?.subtitle || "השוו מחירים של מוצרים נפוצים בין חנויות וסניפים, ומצאו היכן משתלם לקנות."}
-          </p>
+        <section className="space-y-2 flex items-start gap-6">
+          <div className="flex-1 min-w-0 space-y-2">
+            <h1 className="text-2xl font-bold tracking-tight" data-testid="text-pc-title">
+              {settings?.title || "השוואת מחירים — חוסכים בקלות"}
+            </h1>
+            <p className="text-sm text-muted-foreground max-w-2xl">
+              {settings?.subtitle || "השוו מחירים של מוצרים נפוצים בין חנויות וסניפים, ומצאו היכן משתלם לקנות."}
+            </p>
 
-          {/* Data freshness / source metadata — DB-driven, honest about origin. */}
-          {pcMeta && (
-            <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-muted-foreground pt-1" data-testid="pc-data-meta">
-              {formatUpdatedAt(pcMeta.lastUpdatedAt) ? (
-                <span>עודכן לאחרונה: {formatUpdatedAt(pcMeta.lastUpdatedAt)}</span>
-              ) : (
-                <span>הנתונים מתעדכנים אוטומטית כל בוקר</span>
-              )}
-              <span>מקורות פעילים: {pcMeta.activeSources}</span>
-              <span>מוצרים: {pcMeta.productCount.toLocaleString("he-IL")}</span>
-              <span>חנויות: {pcMeta.storeCount.toLocaleString("he-IL")}</span>
-              {pcMeta.showSampleData && (
-                <span className="text-amber-600 dark:text-amber-500">כולל נתוני דוגמה (לתצוגה בלבד)</span>
-              )}
-            </div>
-          )}
+            {/* Data freshness / source metadata — DB-driven, honest about origin. */}
+            {pcMeta && (
+              <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-muted-foreground pt-1" data-testid="pc-data-meta">
+                {formatUpdatedAt(pcMeta.lastUpdatedAt) ? (
+                  <span>עודכן לאחרונה: {formatUpdatedAt(pcMeta.lastUpdatedAt)}</span>
+                ) : (
+                  <span>הנתונים מתעדכנים אוטומטית כל בוקר</span>
+                )}
+                <span>מקורות פעילים: {pcMeta.activeSources}</span>
+                <span>מוצרים: {pcMeta.productCount.toLocaleString("he-IL")}</span>
+                <span>חנויות: {pcMeta.storeCount.toLocaleString("he-IL")}</span>
+                {pcMeta.showSampleData && (
+                  <span className="text-amber-600 dark:text-amber-500">כולל נתוני דוגמה (לתצוגה בלבד)</span>
+                )}
+              </div>
+            )}
 
-          <p className="text-[11px] text-muted-foreground/80">
-            הנתונים מבוססים על קובצי שקיפות מחירים שמפרסמות הרשתות לפי חוק. המחירים נכונים למועד העדכון האחרון.
-          </p>
+            <p className="text-[11px] text-muted-foreground/80">
+              הנתונים מבוססים על קובצי שקיפות מחירים שמפרסמות הרשתות לפי חוק. המחירים נכונים למועד העדכון האחרון.
+            </p>
 
-          {savedTotal > 0 && (
-            <div
-              className="inline-flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-full bg-primary/10 text-primary border border-primary/20"
-              data-testid="pc-savings-tracker"
-            >
-              <Sparkles className="w-3.5 h-3.5" /> חסכת {fmt(savedTotal)} עד כה בהשוואות שלך במכשיר הזה
-            </div>
-          )}
+            {savedTotal > 0 && (
+              <div
+                className="inline-flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-full bg-primary/10 text-primary border border-primary/20"
+                data-testid="pc-savings-tracker"
+              >
+                <Sparkles className="w-3.5 h-3.5" /> חסכת {fmt(savedTotal)} עד כה בהשוואות שלך במכשיר הזה
+              </div>
+            )}
+          </div>
+          <PriceCompareIllustration className="hidden sm:block w-full max-w-[160px] h-auto shrink-0" />
         </section>
 
         {/* Search bar + actions */}

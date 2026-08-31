@@ -11,6 +11,7 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import { Logo } from "@/components/logo";
 import { HealthBrand } from "@/components/health-brand";
+import { HealthFundsIllustration } from "@/components/illustrations";
 import { useToast } from "@/hooks/use-toast";
 import { API_BASE, apiRequest } from "@/lib/queryClient";
 import { getPublicOrigin } from "@/lib/utils";
@@ -269,35 +270,38 @@ export default function PublicHealthFunds() {
 
       {/* Colorful hero band */}
       <section className="bg-gradient-to-l from-primary/10 via-accent/40 to-transparent border-b border-border">
-        <div className="max-w-7xl mx-auto px-4 py-8 space-y-2">
-          <h1 className="text-2xl font-bold tracking-tight" data-testid="text-hf-title">
-            {meta?.title || "השוואת קופות חולים מבית בקלות"}
-          </h1>
-          <p className="text-sm text-muted-foreground max-w-3xl leading-6">
-            מאגר מרוכז של הטבות, החזרים וזכויות מכל קופות החולים ותוכניות הביטוח המשלים
-            {' (שב"ן — ביטוח בריאות משלים) '}
-            — וגם זכויות ממשרדי הממשלה ועמותות סיוע. מוצג מידע כללי בלבד: למי מיועדת ההטבה
-            ומה ניתן לקבל. את הפירוט המדויק לכל קופה מקבלים בלחיצה על "קרא עוד".
-          </p>
-          {meta && (
-            <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-muted-foreground pt-1" data-testid="hf-data-meta">
-              <span className="inline-flex items-center gap-1"><Stethoscope className="w-3.5 h-3.5" /> נושאי קופות חולים: {meta.fundCount.toLocaleString("he-IL")}</span>
-              <span className="inline-flex items-center gap-1"><Landmark className="w-3.5 h-3.5" /> זכויות ממשרדים: {meta.govCount.toLocaleString("he-IL")}</span>
-              {!!meta.ngoCount && (
-                <span className="inline-flex items-center gap-1"><HandHeart className="w-3.5 h-3.5" /> עמותות וסיוע משלים: {meta.ngoCount.toLocaleString("he-IL")}</span>
-              )}
-              <span className="inline-flex items-center gap-1 flex-wrap">
-                {meta.funds.map((f) => (
-                  <span key={f.key} className="inline-flex items-center gap-1 ml-2">
-                    <span className="w-2.5 h-2.5 rounded-full inline-block" style={{ background: f.color }} /> {f.name}
-                  </span>
-                ))}
-              </span>
-            </div>
-          )}
-          <p className="text-[11px] text-muted-foreground/80">
-            המידע מבוסס על מקורות רשמיים של הקופות ותקנון הביטוח המשלים. הנתונים להתרשמות בלבד; הזכאות המדויקת תלויה בתוכנית ובמועד.
-          </p>
+        <div className="max-w-7xl mx-auto px-4 py-8 flex items-center gap-6">
+          <div className="flex-1 min-w-0 space-y-2">
+            <h1 className="text-2xl font-bold tracking-tight" data-testid="text-hf-title">
+              {meta?.title || "השוואת קופות חולים מבית בקלות"}
+            </h1>
+            <p className="text-sm text-muted-foreground max-w-3xl leading-6">
+              מאגר מרוכז של הטבות, החזרים וזכויות מכל קופות החולים ותוכניות הביטוח המשלים
+              {' (שב"ן — ביטוח בריאות משלים) '}
+              — וגם זכויות ממשרדי הממשלה ועמותות סיוע. מוצג מידע כללי בלבד: למי מיועדת ההטבה
+              ומה ניתן לקבל. את הפירוט המדויק לכל קופה מקבלים בלחיצה על "קרא עוד".
+            </p>
+            {meta && (
+              <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-muted-foreground pt-1" data-testid="hf-data-meta">
+                <span className="inline-flex items-center gap-1"><Stethoscope className="w-3.5 h-3.5" /> נושאי קופות חולים: {meta.fundCount.toLocaleString("he-IL")}</span>
+                <span className="inline-flex items-center gap-1"><Landmark className="w-3.5 h-3.5" /> זכויות ממשרדים: {meta.govCount.toLocaleString("he-IL")}</span>
+                {!!meta.ngoCount && (
+                  <span className="inline-flex items-center gap-1"><HandHeart className="w-3.5 h-3.5" /> עמותות וסיוע משלים: {meta.ngoCount.toLocaleString("he-IL")}</span>
+                )}
+                <span className="inline-flex items-center gap-1 flex-wrap">
+                  {meta.funds.map((f) => (
+                    <span key={f.key} className="inline-flex items-center gap-1 ml-2">
+                      <span className="w-2.5 h-2.5 rounded-full inline-block" style={{ background: f.color }} /> {f.name}
+                    </span>
+                  ))}
+                </span>
+              </div>
+            )}
+            <p className="text-[11px] text-muted-foreground/80">
+              המידע מבוסס על מקורות רשמיים של הקופות ותקנון הביטוח המשלים. הנתונים להתרשמות בלבד; הזכאות המדויקת תלויה בתוכנית ובמועד.
+            </p>
+          </div>
+          <HealthFundsIllustration className="hidden sm:block w-full max-w-[180px] h-auto shrink-0" />
         </div>
       </section>
 

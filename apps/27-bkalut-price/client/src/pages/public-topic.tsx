@@ -21,6 +21,7 @@ import {
   Share2,
 } from "lucide-react";
 import { renderWithLinks } from "@/lib/links";
+import { TopicDetailIcon } from "@/components/illustrations";
 import { useToast } from "@/hooks/use-toast";
 import { downloadTopicPng, downloadTopicLetterhead, buildTopicPublicText } from "@/lib/topic-image";
 
@@ -174,7 +175,12 @@ export default function PublicTopic() {
                   {row.category && <span className="rounded-full bg-muted px-2 py-0.5">{row.category}</span>}
                   {row.subCategory && <span className="rounded-full bg-muted px-2 py-0.5">{row.subCategory}</span>}
                 </div>
-                <h1 className="text-3xl md:text-4xl font-bold leading-tight">{row.topic}</h1>
+                <div className="flex items-center justify-center md:justify-start gap-2.5">
+                  <div className="shrink-0 rounded-full p-2 bg-primary/10 text-primary">
+                    <TopicDetailIcon className="w-5 h-5" />
+                  </div>
+                  <h1 className="text-3xl md:text-4xl font-bold leading-tight">{row.topic}</h1>
+                </div>
                 {row.audience && row.audience.trim() && (
                   <p className="text-sm md:text-base text-foreground/80 leading-relaxed">
                     <span className="font-semibold">למי זה מיועד: </span>
