@@ -10582,3 +10582,60 @@
      STEERING; מערכות/סכימות מוגנות (08/09/bkalut-app/bkalot-admin/
      `zr_*`/webhook NEDARIM3873/`csj`/`csj_src`/`igud`/15-egod) לא
      נגעו.
+
+## 31/08/2026 (LOOP A) — 01-torah-platform: `AdminDashboard.tsx` (legacy) קרא מטבלה `contact_messages` שאף פעם לא הייתה קיימת בסכימה החיה
+
+763. **ההקשר.** המשך סבב P3 01-torah-platform (STEP 1 מאושר: P0 sys14
+     `done`, P1(35) אסור per HARD STEERING, P2(32/36) `core.build_tasks`
+     נשאר 0 `todo`, 15-egod עדיין לא נגיש דרך MCP). הפעלתי סוכן
+     `Explore` עם רשימת-החרגה מפורשת (#700-#762) שהתבקש למצוא ממצא
+     חדש בקטגוריות: שם-עמודה/טבלה שגוי, פיצ'ר חצי-מחובר (כתיבה בלי
+     קריאה או קריאה בלי כתיבה), עמוד legacy שקורא ל-RPC/טבלה שהוסרה,
+     או פער RLS-scoping כמו ב-#760.
+
+     **הממצא.** `pages/legacy/AdminDashboard.tsx` (שורה 71, לפני התיקון)
+     קרא `supabase.from("contact_messages")` — טבלה שלא קיימת בשום
+     מיגרציה (`grep` על `supabase/migrations/*.sql` לא מצא אותה כלל,
+     ו-`git log -S` על כל הריפו מצא אזכור יחיד מלבד commit "הצלת עץ
+     המקורות"). התוצאה: הטאב "הודעות" בדשבורד תמיד הציג `contactMessages
+     .length === 0` וההודעה "אין הודעות עדיין" — בלי קשר לכמה פניות
+     קשר אמיתיות הגיעו. חשוב: הבאג-האחות כבר תוקן בעבר בקבצים
+     אחרים — `ContactSection.tsx` ו-`Footer.tsx` כבר כותבים נכון ל-
+     `portal_messages` עם הערה מפורשת ("contact_messages no longer
+     exists"), אבל אף אחד לא עדכן את `AdminDashboard.tsx` (הדשבורד
+     ה-legacy הנפרד, לא `pages/admin/Messages.tsx` החדש) לקרוא מאותה
+     טבלה. בנוסף, בלוק ה-render (שורות 987-1000) עדיין ציפה לשדות
+     מהסכימה הישנה שלא קיימת יותר — `msg.name`/`msg.role`/
+     `msg.message`/`msg.phone`/`msg.email` — בעוד `public.portal_messages`
+     (מיגרציה `20260519000002_torah_content.sql`, שורות 236-248) מגדירה
+     `from_name`/`subject`/`body`/`from_phone`/`from_email`/`status`.
+     כלומר גם לו הטבלה הייתה נקראת נכון, הרינדור עדיין היה מציג שדות
+     ריקים לכל שורה. לא חופף לשום ממצא קודם (#700-#762): לא RLS/בעלות,
+     אלא שילוב של שם-טבלה שגוי + שמות-עמודה מהסכימה הישנה שנשארו
+     ב-legacy dashboard בלבד.
+
+     **התיקון.** קובץ אחד. שורה 71: `contact_messages` →
+     `portal_messages` (זהה לתיקון שכבר קיים ב-`ContactSection.tsx`/
+     `Footer.tsx`). בלוק ה-render: `msg.name`→`msg.from_name`,
+     `msg.message`→`msg.body`, `msg.phone`→`msg.from_phone`,
+     `msg.email`→`msg.from_email`; `msg.role` (עמודה שלא קיימת
+     ב-`portal_messages`) הוחלף ב-badge שמציג `msg.status` כשהוא לא
+     `'new'` (הערך המשמעותי היחיד שהטבלה כן מספקת ושמתאים סמנטית
+     למקום ה-badge הישן).
+
+     **אימות.** `node --check` נקי על הקובץ אחרי `esbuild --bundle`
+     (JSX+TSX). ספירת סוגריים מאוזנת על הקובץ המלא (787/787 מסולסלים,
+     863/863 עגולים, 136/136 מרובעים). אימות חי מול `bieebmnmkffwbqlsfozh`:
+     `SELECT count(*) FROM portal_messages` = 0 בייצור; הרצתי `INSERT
+     ... RETURNING` עם כל השדות בדיוק כפי שהקוד המתוקן קורא אותם
+     (`from_name`/`subject`/`body`/`from_phone`/`from_email`/`status`)
+     ואישרתי שהשורה שחוזרת תואמת 1:1 לשמות השדות בקוד המתוקן; קריאת
+     `execute_sql` נפרדת מיד אחרי אישרה `count=0` שוב — אין שאריות (כל
+     קריאת MCP רצה בטרנזקציה שלה שמתבטלת אוטומטית, לא נדרש `ROLLBACK`
+     ידני). אין שינוי סכימה/RLS. אין שליחה/חיוב/מייל אמיתיים. אפס
+     רגרסיה — שום שאילתה/טאב/פיצ'ר אחר בקובץ לא נגע. נדחף לענף חדש
+     `fix/01-torah-platform-admin-dashboard-contact-messages-0831`
+     (`5f3192c6`) — לא מוזג, main לא נגע. System 35 KioskFleet לא
+     נגע, per HARD STEERING; מערכות/סכימות מוגנות (08/09/bkalut-app/
+     bkalot-admin/`zr_*`/webhook NEDARIM3873/`csj`/`csj_src`/`igud`/
+     15-egod) לא נגעו.
