@@ -11138,3 +11138,70 @@
      נגע, per HARD STEERING; מערכות/סכימות מוגנות (08/09/bkalut-app/
      bkalot-admin/`zr_*`/webhook NEDARIM3873/`csj`/`csj_src`/`igud`/
      15-egod) לא נגעו.
+
+## 31/08/2026 (LOOP A, סבב נוסף יג') — חנות: אין תקרת-מלאי בשום מקום — הזמנה יחידה יכולה "לקנות" יותר יחידות ממה שקיים
+
+781. **ההקשר.** אימות STEP 1 חוזר: P0(14) `done`, P1(35) אסור per
+     HARD STEERING, P2(32/36) 0 `todo`, 15-egod עדיין לא נגיש
+     דרך MCP. `core.issues` נבדק — כל השורות הפתוחות על
+     01-torah-platform (#138/#172/#201/#203/#257/#258/#259/#260)
+     עדיין חסומות במפורש על הכרעת-בעלים. הופעל סוכן general-purpose
+     עם רשימת-הדרה של ~16 מחלקות-באג שכבר נסגרו היום ורשימת ה-issues
+     החסומים, בבקשה למועמד **טרי** ונגיש-חי בלבד (לא קוד-מת מתחת
+     ל-`legacy/IndexLegacy.tsx`). המועמד המוביל שהוחזר
+     (`PublicContactForm.tsx`/`PortalMessagesTab.tsx`, `portal_messages`)
+     נבדק ונפסל בבדיקה ישירה: הוא שייך במדויק לתת-מערכת
+     `legacy/*-portal` שכבר תועדה כ-`core.issues#260` — 7 הטבלאות
+     שהיא בנויה עליהן (`rabbi_portals`, `org_portals`,
+     `synagogue_portals` וכו') אינן קיימות בכלל בבסיס-הנתונים, כך
+     שהדף עצמו מציג "not found" עוד לפני שהטופס נטען; תיקון מבודד
+     של הקובץ לא היה משנה דבר. עברתי למועמד המשנה של אותו סוכן.
+
+782. **הממצא.** בשום מקום בזרימת החנות (`ProductDetail.tsx`,
+     `useCart.tsx`, `nedarim-create-payment` — הפונקציה שמנפיקה את
+     ה-iframe האמיתי-לתשלום דרך Nedarim Plus) לא נבדקת הכמות
+     המבוקשת מול `products.stock`. `ProductDetail.tsx`/`useCart.tsx`
+     רק מגבילים כמות מלמטה (`Math.max(1, q)`) — אין תקרה עליונה.
+     `nedarim-create-payment` כבר מאמת (מסבב קודם) ש-`order_id`
+     שייך לדייר/ל-tenant הנכון, עדיין `pending`, והסכום תואם מחדש
+     את `price_ils` החי (הגנת תרמית-מחיר) — אבל מעולם לא בדק כמות
+     מול מלאי. `decrement_product_stock` (נקרא מ-`nedarim-webhook`
+     **אחרי** שהתשלום האמיתי כבר הצליח) רק מוריד ומרצפד ב-0
+     בשקט (`greatest(stock - qty, 0)`) — לא נבנה כשער-חסימה, ומעולם
+     לא היה כזה. תרחיש קונקרטי: מוצר עם `stock=1` — הזמנה יחידה עם
+     `quantity=500` (או כל כמות) עדיין מקבלת בחזרה `iframe_url`
+     אמיתי ובר-תשלום מ-Nedarim; אין נקודה אחת בכל הזרימה שהייתה
+     חוסמת את זה.
+
+     **התיקון.** הוספת בדיקת-כמות-מול-מלאי לתוך אותו בלוק אימות
+     `order_id` הקיים ב-`nedarim-create-payment/index.ts`, בדיוק
+     באותו מקום/תבנית כמו בדיקת-המחיר שכבר שם: צבירת הכמות המבוקשת
+     לכל `product_id` מתוך `order_items`, והשוואה מול `products.stock`
+     החי (שנשלף באותה שאילתה שכבר קיימת לבדיקת-המחיר, רק עם עמודת
+     `stock` נוספת) — אם כמות מצטברת עולה על המלאי, נדחה ב-400 לפני
+     שנוצר ה-iframe. `stock=null` (מלאי לא-מנוהל) נשאר במכוון בלי
+     תקרה, תואם את התנאי `stock is not null` שכבר קיים ב-
+     `decrement_product_stock` עצמו.
+
+     **האימות.** נמשך קוד-המקור החי מהפונקציה הפרוסה לפני העריכה
+     ואומת זהה-בית לקובץ המקומי (אין סחיפת-פריסה). `npx esbuild
+     --bundle` נקי; איזון-סוגריים מלא (61/61 מסולסלים, 149/149
+     עגולים, 10/10 מרובעים). נפרס `nedarim-create-payment` v3→v4.
+     אומת **חי** מול `bieebmnmkffwbqlsfozh` עם שורות אמיתיות
+     (נמחקו בסוף): נוצר מוצר אמיתי (`stock=1`) + הזמנה אמיתית
+     (`pending`) עם `order_items.quantity=5` — קריאה ל-endpoint
+     החי (`curl` עם anon key אמיתי) החזירה `{ok:false, error:
+     "requested quantity exceeds available stock..."}`. הזמנה
+     שנייה לאותו מוצר עם `quantity=1` (בתוך המלאי) עברה את הבדיקה
+     ללא רגרסיה — קיבלה בחזרה `iframe_url`/`transaction_id` תקינים
+     (לא בוצע תשלום אמיתי בשום מקרה, רק יצירת URL — תואם TEST MODE).
+     `DELETE` על כל השורות (מוצר, 2 הזמנות, 2 order_items,
+     nedarim_transactions שנוצרו) ואישור-`COUNT`=0 בסוף אישרו אפס
+     שאריות. אין שינוי סכימה/RLS בסבב זה — קוד edge function בלבד.
+     אפס רגרסיה: שינוי תוסף (26 שורות) בתוך בלוק-אימות קיים; אין
+     handler/RPC/RLS אחר שנגע. נדחף לענף הקיים
+     `fix/01-torah-platform-ivr-search-agent-stale-columns-0831`
+     (`21a17626`) — לא מוזג, main לא נגע. System 35 KioskFleet לא
+     נגע, per HARD STEERING; מערכות/סכימות מוגנות (08/09/bkalut-app/
+     bkalot-admin/`zr_*`/webhook NEDARIM3873/`csj`/`csj_src`/`igud`/
+     15-egod) לא נגעו.
