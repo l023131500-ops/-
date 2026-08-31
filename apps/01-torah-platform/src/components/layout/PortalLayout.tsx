@@ -28,6 +28,7 @@ import {
   Clock,
   UserCog,
   GraduationCap,
+  Bell,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Navbar } from "./Navbar";
@@ -109,6 +110,10 @@ export function PortalLayout() {
     ? [{ to: "/portal/lessons", icon: BookOpen, label: "השיעורים שלי" }]
     : [];
 
+  // announcements (architecture.md §5.2 synagogue "מודעות פנימיות" + council
+  // "מודעות לציבור"): table + generic tenant_read/tenant_write RLS existed
+  // since 20260519000002 but zero UI anywhere ever referenced it. Unconditional
+  // like kashrut/chat/ads below -- not restricted to a single tenant type.
   const items = [
     { to: "/portal", icon: LayoutDashboard, label: "סקירה", end: true },
     { to: "/portal/schedule", icon: Calendar, label: "לוח שיעורים" },
@@ -118,6 +123,7 @@ export function PortalLayout() {
     ...orgItems,
     ...rabbiItems,
     { to: "/portal/materials", icon: FileText, label: "חומרי לימוד" },
+    { to: "/portal/announcements", icon: Bell, label: "מודעות" },
     { to: "/portal/kashrut", icon: BadgeCheck, label: "תעודות כשרות" },
     { to: "/portal/forums", icon: MessageSquare, label: "פורומים" },
     { to: "/portal/chat", icon: MessagesSquare, label: "צ'אט פנימי" },

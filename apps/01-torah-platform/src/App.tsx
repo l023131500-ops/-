@@ -47,6 +47,7 @@ const Kashrut = lazy(() => import("@/pages/public/Kashrut"));
 const Mikvaot = lazy(() => import("@/pages/public/Mikvaot"));
 const Azkarot = lazy(() => import("@/pages/public/Azkarot"));
 const Newsletters = lazy(() => import("@/pages/public/Newsletters"));
+const Announcements = lazy(() => import("@/pages/public/Announcements"));
 
 // Shop
 const ShopCatalog = lazy(() => import("@/pages/shop/ShopCatalog"));
@@ -90,6 +91,7 @@ const PortalTeachers = lazy(() => import("@/pages/portal/Teachers"));
 const PortalCommunityServices = lazy(() => import("@/pages/portal/CommunityServices"));
 const PortalAzkarot = lazy(() => import("@/pages/portal/Azkarot"));
 const PortalNewsletters = lazy(() => import("@/pages/portal/Newsletters"));
+const PortalAnnouncements = lazy(() => import("@/pages/portal/Announcements"));
 const PortalRabbiQuestions = lazy(() => import("@/pages/portal/RabbiQuestions"));
 const PortalAds = lazy(() => import("@/pages/portal/Ads"));
 const PortalGallery = lazy(() => import("@/pages/portal/Gallery"));
@@ -212,6 +214,7 @@ export default function App() {
                     <Route path="/mikvaot" element={<Mikvaot />} />
                     <Route path="/azkarot" element={<Azkarot />} />
                     <Route path="/newsletters" element={<Newsletters />} />
+                    <Route path="/announcements" element={<Announcements />} />
 
                     <Route path="/shop" element={<ShopCatalog />} />
                     <Route path="/shop/:slug" element={<ProductDetail />} />
@@ -254,6 +257,7 @@ export default function App() {
                     <Route path="community-services" element={<PortalCommunityServices />} />
                     <Route path="azkarot" element={<PortalAzkarot />} />
                     <Route path="newsletters" element={<PortalNewsletters />} />
+                    <Route path="announcements" element={<PortalAnnouncements />} />
                     <Route path="rabbi-questions" element={<PortalRabbiQuestions />} />
                     <Route path="ads" element={<PortalAds />} />
                     <Route path="gallery" element={<PortalGallery />} />
