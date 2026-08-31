@@ -194,6 +194,16 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
     const { prompt, aspectRatio, enhance, engine, imageBase64, imageMediaType } = req.body || {};
     if (!prompt) return res.status(400).json({ error: "חסר תיאור לרקע" });
 
+    // שומר כל רקע שנוצר בהצלחה לספריית הרקעים (ספריית-רקע — בחירה חוזרת מאוחר יותר).
+    // best-effort: כשל בשמירה לא אמור למנוע מהלקוח לקבל את התמונה שכבר נוצרה.
+    async function saveToLibrary(dataUrl: string, finalPrompt: string, engineUsed: string) {
+      try {
+        await storage.createBackground({ prompt: finalPrompt, engine: engineUsed, dataUrl, userId: null });
+      } catch (saveErr) {
+        console.error("שמירת רקע לספרייה נכשלה", saveErr);
+      }
+    }
+
     if (engine === "recraft") {
       try {
         const finalPrompt = enhance !== false ? await enhanceBackgroundPrompt(prompt) : prompt;
@@ -201,6 +211,7 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
         if (!result.ok || !result.dataUrl) {
           return res.status(502).json({ error: result.error || "שגיאת Recraft", detail: result.detail });
         }
+        await saveToLibrary(result.dataUrl, finalPrompt, "recraft");
         return res.json({ dataUrl: result.dataUrl, prompt: finalPrompt, engine: "recraft" });
       } catch (recErr: any) {
         return res.status(502).json({ error: aiErr(recErr), detail: String(recErr?.message || recErr).slice(0, 300) });
@@ -213,10 +224,21 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
       const img = imageBase64
         ? await editImage(imageBase64, finalPrompt, imageMediaType || "image/png", aspectRatio || "4:5")
         : await generateBackground(finalPrompt, aspectRatio || "4:5");
-      return res.json({ dataUrl: `data:${img.mimeType};base64,${img.base64}`, prompt: finalPrompt, engine: "gemini" });
+      const dataUrl = `data:${img.mimeType};base64,${img.base64}`;
+      await saveToLibrary(dataUrl, finalPrompt, "gemini");
+      return res.json({ dataUrl, prompt: finalPrompt, engine: "gemini" });
     } catch (gemErr: any) {
       return res.status(502).json({ error: aiErr(gemErr), detail: String(gemErr?.message || gemErr).slice(0, 300) });
     }
+  });
+
+  // ---- ספריית רקעים (AI) — כל רקע שנוצר נשמר אוטומטית ב-/api/ai/background למעלה ----
+  app.get("/api/backgrounds", async (_req, res) => {
+    res.json(await storage.listBackgrounds());
+  });
+  app.delete("/api/backgrounds/:id", async (req, res) => {
+    await storage.deleteBackground(Number(req.params.id));
+    res.json({ ok: true });
   });
 
   // ═══════════════════ מחלקת מיתוג ═══════════════════
