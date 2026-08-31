@@ -10698,3 +10698,86 @@
      נגע, per HARD STEERING; מערכות/סכימות מוגנות (08/09/bkalut-app/
      bkalot-admin/`zr_*`/webhook NEDARIM3873/`csj`/`csj_src`/`igud`/
      15-egod) לא נגעו. אין שליחה/חיוב אמיתיים בסבב זה.
+
+## 31/08/2026 (LOOP A, סבב נוסף ז') — `ivr-submit` (Edge Function פרוסה חי) תמיד נכשל: טבלת `ivr_submissions` חסרה + כתיבה ל-`seeker_leads`/`teacher_leads` שלא קיימות
+
+767. **ההקשר.** המשך סבב P3 01-torah-platform (STEP 1 מאושר: P0 sys14
+     `done`, P1(35) אסור per HARD STEERING, P2(32/36) `core.build_tasks`
+     נשאר 0 `todo`, 15-egod עדיין לא נגיש דרך MCP). בדקתי קודם את
+     `core.issues` הפתוחות על 01-torah-platform: #260 (כל תת-מערכת
+     `legacy/*Portal` מול 7 טבלאות שלא קיימות) ו-#261 (`UpdateLesson.tsx`
+     חסר `tenant_id`/`title` + RLS חוסם אנונימי + bucket חסר) — שתיהן
+     ממצאים אמיתיים אבל דורשות החלטת-מוצר/סכמה גדולה (איך אנונימי כותב
+     ל-`lessons`? צריך תור-אישור חדש?) שלא מתאימה לסבב בודד; דחיתי
+     אותן במפורש ולא נגעתי בהן. הפעלתי סוכן `Explore` לחיפוש ממצא חדש —
+     הסבב הראשון החזיר `profiles.portal_type` "חסר", אבל זו הייתה
+     טעות: הסוכן קרא רק את קבצי המיגרציה המקומיים (שלא מסונכרנים תמיד
+     עם ה-DB החי בפרויקט הזה), ואימות חי מול `bieebmnmkffwbqlsfozh`
+     הראה שהעמודה כן קיימת (`default 'standard'`, תוקנה כבר ב-#762).
+     סבב שני עם הנחיה מפורשת לאמת חי החזיר "`ai-match-teacher` לא
+     מסנן לפי טננט של הליד" — גם זה false positive: קראתי את הקוד
+     ואת `MatchingGuru.tsx` (מסך הניהול המקביל) ואישרתי שזה עיצוב
+     מכוון — "מגיד" הוא טננט עצמאי משלו (`tenants.type='maggid'`),
+     וההתאמה היא רשת חוצת-טננטים במכוון (מגיד עצמאי לא שייך לשום בית
+     כנסת ספציפי), לא דליפה.
+
+     המשכתי בסריקה עצמית: כל 9 ה-Edge Functions שיושבות בתיקייה
+     המקומית כבר נגעו בעבר (`git log --name-only`), אז חיפשתי דפים
+     בקוד שמעולם לא תוקנו בנפרד. `IvrBuilder.tsx` (`/legacy/ivr`, מסך
+     ניהול חי מאחורי `RequireSuperAdmin`) נגע רק בקומיט ה"הצלה" הכללי
+     (`cb6e4f58`) ומעולם לא תוקן ספציפית.
+
+768. **הממצא.** `IvrBuilder.tsx` קורא `supabase.from("ivr_submissions")`.
+     אימתתי חי: `information_schema.columns` על `bieebmnmkffwbqlsfozh`
+     מחזיר **אפס** שורות עבור `public.ivr_submissions` — הטבלה לא קיימת
+     בשום מיגרציה. בדקתי את ה-Edge Functions בפועל (`list_edge_functions`
+     + `get_edge_function`, לא רק את מה שבריפו): `ivr-menu`/`ivr-search`/
+     `ivr-agent`/`ivr-submit` פרוסים וחיים (נקראים על ידי אינטגרציית
+     הטלפוניה "ימות המשיח"), אבל אף אחד מהם לא היה בריפו המקומי —
+     פער-וונדורינג נפרד מ-#260/#261, לא כפילות שלהם.
+     `ivr-search`/`ivr-agent` כותבים ל-`ivr_submissions` בתור לוג
+     "ירה-ושכח" (שגיאה רק ל-console, לא חוסמת את התשובה ללקוח) — אז הן
+     תמיד עבדו נכון מבחינת הקורא, רק בלי היסטוריית-קריאות. `ivr-submit`
+     שונה מהותית: כל התשובה שלו ללקוח הייתה מותנית בשגיאת ה-insert
+     הזה — כלומר **כל שיחה אמיתית** (השארת הודעה, בקשת שיעור, הרשמה
+     כמגיד) קיבלה תמיד תשובת שגיאה טכנית במקום אישור "הפנייה נקלטה".
+     בנוסף, שני הענפים המותנים (`request_type==="request_lesson"`/
+     `"register_teacher"`) כתבו ל-`seeker_leads`/`teacher_leads` —
+     טבלאות שכבר תועדו כלא-קיימות בתיקונים קודמים באותה אפליקציה
+     (`60ba4da6`, `6d56bde8`) אחרי שאוחדו ל-`public.leads` — כך שגם
+     אם ה-insert הראשי היה מצליח, הבקשה בפועל של המתקשר עדיין לא
+     הייתה נשמרת בשום מקום נגיש.
+
+     **התיקון.** מיגרציה חדשה יוצרת `public.ivr_submissions` (RLS:
+     קריאה ל-super-admin בלבד — תואם את שער `RequireSuperAdmin` על
+     `/legacy/ivr` ואת התבנית הקיימת ב-`public.audit_log`; כתיבה רק
+     דרך ה-service-role client של ה-Edge Functions, עוקפת RLS לגמרי).
+     `ivr-submit` עודכן: ה-insert ל-`ivr_submissions` נשאר אך כבר לא
+     חוסם את התשובה (תואם את ההתנהגות הקיימת ב-`ivr-search`/`ivr-agent`);
+     שני הענפים המותנים כותבים עכשיו ל-`public.leads` עם `kind:
+     "lesson_request"`/`"teacher_offer"` — בדיוק אותם ערכי `kind` ש-
+     `LeadsGuru.tsx`/`MatchingGuru.tsx` כבר מסננים לפיהם, כך שהפניות
+     האלה יופיעו במסכי הניהול הקיימים בלי חיווט נוסף. גם ונדרתי
+     (`deploy_edge_function`/קובץ מקומי בלבד, ללא שינוי קוד) את
+     `ivr-menu`/`ivr-search`/`ivr-agent` לריפו — היו פרוסים בלי מקור
+     מקומי בכלל.
+
+     **אימות.** `esbuild --bundle` + `node --check` נקיים על כל 5
+     הקבצים. פרסתי בפועל את `ivr-submit` המעודכן ל-`bieebmnmkffwbqlsfozh`
+     (`deploy_edge_function`, גרסה 2) ובדקתי חי דרך `curl` את שלושת
+     הענפים (`request_lesson`/`register_teacher`/`message` רגיל) —
+     כל השלושה החזירו `{"success":true,...}` במקום שגיאה מובטחת כמו
+     קודם. `SELECT` מיד אחרי אישר: שורת `leads` עם `kind`/`full_name`/
+     `phone`/`preferred_subject`/`area`/`message` נכונים לכל אחד
+     מהענפים המותנים, ושורת `ivr_submissions` עם `caller_phone`/
+     `request_type`/`input_text` נכונים לכל שלוש הקריאות. ניקיתי אחרי
+     עצמי (`DELETE` על שתי הטבלאות לפי מספרי הטלפון הפיקטיביים),
+     `SELECT count(*)` נפרד אישר אפס שאריות בשתיהן. `get_advisors
+     (security)`: אין אזכור `ivr` חדש בפלט (RLS מופעל עם מדיניות,
+     כמו `audit_log`). אין שינוי לטבלה/מדיניות/פונקציה קיימת — תוסף
+     בלבד. אין שליחה/חיוב אמיתיים. נדחף לענף חדש
+     `fix/01-torah-platform-ivr-submit-missing-table-0831` (`0b96ad42`)
+     — לא מוזג, main לא נגע. System 35 KioskFleet לא נגע, per HARD
+     STEERING; מערכות/סכימות מוגנות (08/09/bkalut-app/bkalot-admin/
+     `zr_*`/webhook NEDARIM3873/`csj`/`csj_src`/`igud`/15-egod) לא
+     נגעו.
