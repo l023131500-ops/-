@@ -27,7 +27,7 @@ Deno.serve(async (req) => {
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
     );
 
-    const { invite_code, password_input, new_password } = await req.json();
+    const { invite_code, email, password_input, new_password } = await req.json();
 
     if (!invite_code || !password_input || !new_password) {
       return jr({ ok: false, error: "חסרים פרטים" }, 400);
@@ -67,6 +67,20 @@ Deno.serve(async (req) => {
     if (invErr || !invite) return jr({ ok: false, error: "קוד הזמנה לא נמצא" }, 404);
     if (invite.used_at) return jr({ ok: false, error: "ההזמנה כבר מומשה" }, 400);
     if (new Date(invite.expires_at) < new Date()) return jr({ ok: false, error: "ההזמנה פגה" }, 400);
+    // The client always collects an editable "email" field and uses it later
+    // to sign the user in (supabase.auth.signInWithPassword), but the account
+    // is created under invite.email from the DB, not whatever the client
+    // typed. Before this check, a mistyped/mismatched/missing email field
+    // silently created the account under the *invite's* email while the
+    // client tried to sign in with a *different* email -- always failing
+    // post-activation, and permanently locking the invite (used_at already
+    // set, no self-service retry possible). Reject the mismatch up front,
+    // before the invite is consumed, so the user gets an actionable error
+    // and can retry with the correct address.
+    if (typeof email === "string" && email.trim() &&
+      email.trim().toLowerCase() !== String(invite.email).toLowerCase()) {
+      return jr({ ok: false, error: "כתובת המייל אינה תואמת את ההזמנה" }, 400);
+    }
     if (password_input !== invite.initial_password) return jr({ ok: false, error: "סיסמה התחלתית שגויה" }, 401);
 
     // Create the user with the user's chosen password
