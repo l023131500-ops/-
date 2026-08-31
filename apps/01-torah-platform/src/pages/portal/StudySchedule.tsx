@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Plus, Edit2, Trash2, Calendar, ChevronDown, ChevronUp, BookOpen } from "lucide-react";
+import { Plus, Edit2, Trash2, Calendar, ChevronDown, ChevronUp, BookOpen, ImageDown } from "lucide-react";
+import { toPng } from "html-to-image";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -56,6 +57,10 @@ export default function StudySchedule() {
   const [activeScheduleId, setActiveScheduleId] = useState<string | null>(null);
 
   const [expanded, setExpanded] = useState<Set<string>>(new Set());
+
+  const [exportTarget, setExportTarget] = useState<Schedule | null>(null);
+  const [exporting, setExporting] = useState(false);
+  const exportRef = useRef<HTMLDivElement>(null);
 
   const { data: schedules = [], isLoading } = useQuery({
     queryKey: ["study-schedules", tenant?.id],
@@ -254,6 +259,40 @@ export default function StudySchedule() {
     }
   };
 
+  // Branded PNG export (spec §5.2 מגיד שיעור עצמאי: "ייצוא PNG ממותג")
+  const handleExportPng = (sched: Schedule) => {
+    setExportTarget(sched);
+  };
+
+  useEffect(() => {
+    if (!exportTarget || !exportRef.current) return;
+    // give the off-screen node a render pass before capturing it
+    const timer = setTimeout(async () => {
+      if (!exportRef.current) return;
+      setExporting(true);
+      try {
+        const dataUrl = await toPng(exportRef.current, {
+          pixelRatio: 2,
+          backgroundColor: "#ffffff",
+          width: exportRef.current.offsetWidth,
+          height: exportRef.current.offsetHeight,
+        });
+        const link = document.createElement("a");
+        const safeName = exportTarget.title.replace(/[^\w\u0590-\u05FF]+/g, "_") || "לוח_לימוד";
+        link.download = `${safeName}.png`;
+        link.href = dataUrl;
+        link.click();
+        toast.success("התמונה יוצאה בהצלחה");
+      } catch {
+        toast.error("שגיאה בייצוא התמונה");
+      } finally {
+        setExporting(false);
+        setExportTarget(null);
+      }
+    }, 60);
+    return () => clearTimeout(timer);
+  }, [exportTarget]);
+
   return (
     <div dir="rtl">
       <div className="flex items-center justify-between mb-6">
@@ -441,6 +480,15 @@ export default function StudySchedule() {
                         <Plus className="h-4 w-4 ml-1" />
                         רשומה
                       </Button>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        disabled={exporting && exportTarget?.id === sched.id}
+                        onClick={() => handleExportPng(sched)}
+                      >
+                        <ImageDown className="h-4 w-4 ml-1" />
+                        ייצוא PNG
+                      </Button>
                       <Button size="icon" variant="ghost" onClick={() => openEditSchedule(sched)}>
                         <Edit2 className="h-4 w-4" />
                       </Button>
@@ -507,6 +555,73 @@ export default function StudySchedule() {
               </Card>
             );
           })}
+        </div>
+      )}
+
+      {/* Off-screen branded card, captured to PNG on export */}
+      {exportTarget && (
+        <div style={{ position: "fixed", top: -10000, left: -10000, pointerEvents: "none" }}>
+          <div
+            ref={exportRef}
+            dir="rtl"
+            style={{
+              width: 800,
+              padding: 40,
+              background: "#ffffff",
+              fontFamily: "Heebo, Rubik, Arial, sans-serif",
+              color: "#1f2937",
+              borderTop: `8px solid ${tenant?.branding?.primary_color || "#2563eb"}`,
+            }}
+          >
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 24 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                {tenant?.branding?.logo_url && (
+                  <img src={tenant.branding.logo_url} alt="" style={{ height: 48, width: 48, objectFit: "contain", borderRadius: 8 }} />
+                )}
+                <span style={{ fontSize: 18, fontWeight: 600 }}>
+                  {tenant?.branding?.site_name || tenant?.name || "איגוד השיעורים"}
+                </span>
+              </div>
+            </div>
+
+            <h1 style={{ fontSize: 28, fontWeight: 700, margin: "0 0 8px" }}>{exportTarget.title}</h1>
+            <div style={{ display: "flex", gap: 16, flexWrap: "wrap", marginBottom: 24, fontSize: 14, color: "#4b5563" }}>
+              {exportTarget.source_book && <span>📖 {exportTarget.source_book}</span>}
+              {exportTarget.start_date && (
+                <span>
+                  📅 {formatDate(exportTarget.start_date)}
+                  {exportTarget.end_date ? ` – ${formatDate(exportTarget.end_date)}` : ""}
+                </span>
+              )}
+              {exportTarget.daily_amount && <span>🔖 {exportTarget.daily_amount} ליום</span>}
+            </div>
+
+            <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+              {getScheduleEntries(exportTarget.id)
+                .sort((a, b) => a.date.localeCompare(b.date))
+                .map((entry) => (
+                  <div
+                    key={entry.id}
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 12,
+                      padding: "10px 14px",
+                      borderRadius: 8,
+                      background: entry.is_special ? "#fef9c3" : "#f3f4f6",
+                    }}
+                  >
+                    <span style={{ fontSize: 12, color: "#6b7280", minWidth: 110 }}>{formatDate(entry.date)}</span>
+                    <span style={{ fontSize: 15, fontWeight: 500, flex: 1 }}>{entry.content}</span>
+                    {entry.notes && <span style={{ fontSize: 12, color: "#6b7280" }}>{entry.notes}</span>}
+                  </div>
+                ))}
+            </div>
+
+            <div style={{ marginTop: 32, paddingTop: 16, borderTop: "1px solid #e5e7eb", textAlign: "center", fontSize: 12, color: "#9ca3af" }}>
+              בסיוע איגוד השיעורים · 02-3131600
+            </div>
+          </div>
         </div>
       )}
     </div>
