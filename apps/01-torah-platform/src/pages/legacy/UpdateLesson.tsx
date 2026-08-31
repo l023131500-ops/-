@@ -10,6 +10,7 @@ import { toast } from "sonner";
 import Navbar from "@/components/Navbar";
 import ChipSelect from "@/components/forms/ChipSelect";
 import ProgressiveFormStep from "@/components/forms/ProgressiveFormStep";
+import { useTenant } from "@/hooks/useTenant";
 
 const SUBJECTS = [
   "גמרא עיון", "גמרא בקיאות", "משניות", "דף יומי", "עמוד היומי", "עין יעקב",
@@ -38,6 +39,7 @@ const DAY_NAMES = ["ראשון", "שני", "שלישי", "רביעי", "חמיש
 interface ScheduleDay { day: string; time: string; }
 
 const UpdateLesson = () => {
+  const { tenant } = useTenant();
   const [step, setStep] = useState(0);
   const [submitted, setSubmitted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -105,28 +107,39 @@ const UpdateLesson = () => {
       toast.error("נא למלא שם הרב ועיר");
       return;
     }
+    if (!tenant) {
+      toast.error("שגיאה בטעינת המערכת, נסו לרענן את הדף");
+      return;
+    }
     setSubmitting(true);
     let logoUrl = "";
     if (logoFile) logoUrl = await uploadLogo();
 
-    const { error } = await supabase.from("lessons").insert([{
-      rabbi_name: rabbiName,
-      subject: subject.join(", "),
-      target_audience: [gender],
-      language,
-      audience_type: audienceType,
-      lesson_style: lessonStyle.join(", "),
-      synagogue_name: synagogueName,
-      city, neighborhood, street, street_number: streetNumber,
-      is_recurring: updateType === "שיעור קבוע",
-      specific_date: specificDate || null,
-      schedule_days: scheduleDays as unknown as any,
-      is_recorded: isRecorded, recording_location: recordingDetail,
-      is_live_stream: isLiveStream,
-      submitter_notes: `${speakingStyle ? `סגנון דיבור: ${speakingStyle}. ` : ""}${updateNotes}`,
-      contact_name: contactName, contact_phone: contactPhone, contact_email: contactEmail,
-      logo_url: logoUrl,
-    }]);
+    // `lessons` has no anonymous-write RLS path and requires tenant_id/title
+    // this form never collected — every submit here 42501'd or 23502'd. The
+    // live pattern for an unauthenticated public submission that needs staff
+    // follow-up is `leads` (see TeachersLanding.tsx/ivr-submit): full form
+    // detail goes in `raw_data`, the office actions it from admin/LeadsGuru.tsx
+    // (already an unfiltered `leads` list, so this needs no further wiring),
+    // and applies the update to the real `lessons` row by hand.
+    const { error } = await supabase.from("leads").insert({
+      tenant_id: tenant.id,
+      kind: "lesson_update_request",
+      full_name: contactName || rabbiName,
+      phone: contactPhone,
+      email: contactEmail,
+      area: city,
+      preferred_subject: subject.join(", "),
+      message: updateNotes,
+      source: "update-lesson-form",
+      raw_data: {
+        rabbiName, gender, language, audienceType, synagogueName,
+        neighborhood, street, streetNumber, updateType, specificDate,
+        specificTime, scheduleDays, isRecorded, recordingDetail,
+        isLiveStream, liveStreamDetail, lessonStyle, speakingStyle,
+        updateNotes, orgName, logoUrl,
+      },
+    });
     setSubmitting(false);
     if (error) toast.error("שגיאה בשליחה, נסו שוב");
     else { setSubmitted(true); toast.success("השיעור נשלח לאישור! 🎉"); }

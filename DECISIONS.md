@@ -10781,3 +10781,64 @@
      STEERING; מערכות/סכימות מוגנות (08/09/bkalut-app/bkalot-admin/
      `zr_*`/webhook NEDARIM3873/`csj`/`csj_src`/`igud`/15-egod) לא
      נגעו.
+
+## 31/08/2026 (LOOP A, סבב נוסף ח') — `UpdateLesson.tsx` (`/update-lesson`, ציבורי): כל שליחה נכשלה — כתיבה ישירה ל-`lessons` בלי `tenant_id`/`title`, ו-RLS חוסם אנונימי לגמרי
+
+769. **ההקשר.** המשך סבב P3 01-torah-platform (STEP 1 מאושר: P0 sys14
+     `done`, P1(35) אסור per HARD STEERING, P2(32/36) `core.build_tasks`
+     נשאר 0 `todo`, 15-egod עדיין לא נגיש דרך `list_projects`). הפעם
+     בדקתי את `core.issues` תחילה במקום להפעיל סוכן — מצאתי ששתי
+     השורות הפתוחות על 01-torah-platform (#260 תת-מערכת `legacy/*-portal`
+     מול 7 טבלאות חסרות, #261 `UpdateLesson.tsx`) נדחו במפורש בסבב #767
+     כדורשות החלטת-מוצר גדולה מדי לסבב בודד. קראתי את `UpdateLesson.tsx`
+     בעצמי לפני שדחיתי גם אותה: #261 בפועל דורשת רק החלטת-יעד-כתיבה
+     (איפה לשמור בקשת עדכון אנונימית), לא סכימה חדשה — בדיוק התבנית
+     שכבר נפתרה ב-#768 (`ivr-submit`) וב-#757 (`TeachersLanding.tsx`):
+     בקשה אנונימית שדורשת טיפול ידני של המשרד → `public.leads`, לא
+     כתיבה ישירה לטבלת-התוכן.
+
+770. **הממצא + האימות.** `UpdateLesson.tsx` (מנותב חי, מקושר מ-`/access`
+     ומהתפריט הראשי — "עדכון שיעור קיים לפרסום") כתב ישירות ל-`lessons`:
+     בלי `tenant_id` (עמודה חובה ב-RLS, לא ב-`NOT NULL` בסכימה אבל אין
+     שום ערך `NULL`-מותר במדיניות ה-INSERT היחידה על הטבלה), בלי
+     `title` (השדה היחיד שה-RLS **כן** דורש בפועל), ובלי שום שדה טופס
+     שתואם את עמודות `lessons` האמיתיות בכלל (rabbi_name/subject/
+     synagogue_name וכו' חלקם קיימים, אבל rabbi_name/title משתמשים
+     בערכים שהטופס אף פעם לא אסף). אימתתי חי מול `bieebmnmkffwbqlsfozh`
+     שהתפקיד `anon` חסום לגמרי מ-INSERT על `lessons` ללא `tenant_id`
+     תקין (`tenant_id=NULL` → `tenant_accepts_public_intake(NULL)`
+     תמיד `false`) — כך שכל שליחה אמיתית של מבקר אנונימי נכשלה
+     תמיד עם שגיאת RLS/NOT-NULL, בלי יוצא מהכלל.
+
+     **התיקון.** זהה במבנה ל-#768: הוספתי `useTenant()` (אותו הוק
+     ש-`TeachersLanding.tsx` כבר משתמש בו) — הראוט `/update-lesson`
+     יושב על הדומיין הראשי בלי `/t/<slug>`, כך ש-`resolveTenantFromUrl()`
+     מחזיר תמיד את הטננט המוגדר כברירת-מחדל (`slug='igud'`, אימות חי:
+     `status='active'`, `is_public=true`). `handleSubmit` כותב עכשיו
+     ל-`public.leads` עם `kind: "lesson_update_request"` (ערך חדש —
+     לא מתנגש עם `lesson_request`/`teacher_offer` שכבר מסוננים
+     ב-`MatchingGuru.tsx`, כך שלא "יזלוג" לתור ההתאמה; `LeadsGuru.tsx`
+     מציג `leads` בלי סינון `kind` בכלל, אז השורה תופיע שם אוטומטית
+     בלי חיווט נוסף) — `full_name`/`phone`/`email`/`area`/
+     `preferred_subject`/`message` מהשדות המתאימים, וכל שאר 19 שדות
+     הטופס (כולל `rabbiName`, `scheduleDays`, `updateType` וכו') נשמרים
+     במלואם ב-`raw_data` jsonb כדי שהמשרד יוכל להחיל את העדכון בפועל
+     על שורת `lessons` האמיתית ביד — במקום להיעלם.
+
+     אימתתי חי ב-`bieebmnmkffwbqlsfozh` דרך MCP (טרנזקציה שמתבטלת
+     אוטומטית): כתפקיד `anon`, INSERT עם כל 10 השדות + `raw_data`
+     הצליח בלי `.select()`/`RETURNING` (זהה בדיוק לתבנית ה-client-side
+     האמיתית של `supabase-js`, שאף פעם לא מבקשת את השורה חזרה) —
+     ואז כ-`postgres` אישרתי שכל השדות נחתו נכון כולל `raw_data`
+     המלא. `SELECT count(*)` נפרד אחרי `ROLLBACK` אישר אפס שאריות.
+     גם גיליתי (לא תוקן — מחוץ לתחום, לא חוסם): `storage.buckets`
+     לא מכיל `lesson-logos` בכלל, אז `uploadLogo()` תמיד נכשל בשקט
+     (כבר מטופל ב-`catch`/`return ""` קיים, לא זורק) — פער נפרד,
+     קטן, לא-חוסם, מתועד כאן לסבב עתידי. `esbuild --bundle` נקי על
+     הקובץ. אין שינוי סכימה/RLS/מיגרציה בסבב זה — תיקון צד-לקוח בלבד,
+     ולכן `get_advisors(security)` ללא שינוי. אין שליחה/חיוב אמיתיים.
+     נדחף לענף חדש
+     `fix/01-torah-platform-update-lesson-anon-write-0831` — לא מוזג,
+     main לא נגע. System 35 KioskFleet לא נגע, per HARD STEERING;
+     מערכות/סכימות מוגנות (08/09/bkalut-app/bkalot-admin/`zr_*`/webhook
+     NEDARIM3873/`csj`/`csj_src`/`igud`/15-egod) לא נגעו.
