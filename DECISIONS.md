@@ -8364,3 +8364,74 @@
      מערכות/סכימות מוגנות (08/09/bkalut-app/bkalot-admin/`zr_*`/
      webhook NEDARIM3873/`csj`/`csj_src`/`igud`/15-egod) לא נגעו. אין
      שליחה/חיוב אמיתיים בסבב זה.
+
+## 31/08/2026 (LOOP A) — 01-torah-platform: `nedarim-webhook` — שני נתיבי לוג-ביקורת בפונקציית ה-IPN התשלומי נכשלו תמיד עם `23502 NOT NULL`
+
+670. **ההקשר.** P0 (מערכת 14, סריקת אדמין) מאומת `done` (`core.build_tasks`
+     id=15). P1 (35 KioskFleet) אסור per HARD STEERING. P2 (32/36)
+     `build_tasks` נשאר 0 todo. 15-egod (`hkkkynyoigzlttpynoeo`) עדיין לא
+     נגיש דרך ה-MCP הזה (`list_projects` לא מציג אותו). המשך P3:
+     01-torah-platform, אחרי שרשרת ארוכה של סבבים שכבר תיקנה כמעט כל
+     מחלקת-באג נפוצה (שדות עמודה שגויים, שגיאות Supabase שנבלעות בשקט,
+     נתיבי-כתיבה חסרים, אי-התאמות payload מול edge functions). שלחתי
+     Explore agent לחפש פינה פחות-מכוסה: 5 ה-edge functions שכנראה
+     נבדקו הכי פחות בנפרד (`chat`, `create-admin`, `nedarim-admin`,
+     `nedarim-webhook`, `search-lessons`) + `hooks`/`lib` שטרם הוזכרו.
+
+671. **הממצא.** `apps/01-torah-platform/supabase/functions/nedarim-webhook/
+     index.ts` הוא ה-IPN callback של Nedarim Plus (מעדכן donations/orders
+     לפי תוצאת תשלום). שני מקומות בו כותבים שורת-ביקורת ל-
+     `nedarim_transactions` **לפני** שידוע tenant — קריאה שנדחתה על סמך
+     IP (שורות 66-78 המקוריות, נדחית *לפני* פענוח ה-payload) וקריאת
+     webhook "יתומה" שה-`Param2` (our_payment_id) שלה לא תואם שום שורת
+     pending אצלנו (שורות 174-189 המקוריות). שני המקומות שולחים/משמיטים
+     `tenant_id`, אבל העמודה בטבלה (`20260519000003_commerce.sql:214`)
+     הוגדרה `not null references public.tenants(id)`. אומתי חי מול
+     הפרויקט האמיתי של המערכת (`bieebmnmkffwbqlsfozh`, לא ה-hub) בטרנזקציה
+     שלא נשמרה: `insert ... (status, amount_ils, webhook_payload,
+     error_message) values ('rejected_ip', ...)` (בלי `tenant_id`) נכשל
+     מיידית עם `23502: null value in column "tenant_id" ... violates
+     not-null constraint`. מאחר ו-`supabase-js` לא זורק שגיאה על
+     `.insert()` (מחזיר `{data, error}`) והקוד המקורי לא בדק את השדה
+     `error` בשני המקומות (במקום הראשון אף עטף ב-try/catch שלא תופס
+     כלום כי אין throw), הכשל היה שקט לחלוטין: מאז שהקוד נכתב, יומן
+     הביקורת/ההתאמה (reconciliation) של ה-webhook התשלומי — הן עבור
+     ניסיונות IP לא-מורשה והן עבור הודעות תשלום יתומות — מעולם לא
+     נשמר בפועל בבסיס הנתונים. זו לא "רגרסיה" חדשה; זה קוד ביקורת שלא
+     עבד אף פעם מאז שנכתב, בדיוק כמו פערי ה-column-mismatch/dead-write-
+     path שנמצאו בסבבים קודמים, רק בפונקציית edge ולא בקומפוננטת UI.
+
+672. **מה נעשה.** מיגרציה חדשה
+     `20260831010000_nedarim_transactions_nullable_tenant.sql`:
+     `alter table public.nedarim_transactions alter column tenant_id
+     drop not null;` — ה-FK ל-`tenants(id)` נשאר בתוקף לכל ערך לא-null;
+     רק `NULL` הופך חוקי, בדיוק למקרה של שורות-יתום/ביקורת-אבטחה שאין
+     להן שוכר ידוע. יושמה חי דרך `apply_migration` על הפרויקט האמיתי
+     (`bieebmnmkffwbqlsfozh`), לא על ה-hub. בקובץ הפונקציה: שני מקומות
+     ה-insert בודקים כעת את `error`/`logErr` ומדפיסים `console.error`
+     אם נכשל (במקום לבלוע בשקט), ושניהם מגדירים `tenant_id: null`
+     במפורש. שום נתיב-כתיבה קיים אחר (עדכון עסקה קיימת, עדכון donations/
+     orders, decrement מלאי) לא שונה.
+
+673. **אימות.** (א) `npx esbuild --bundle --packages=external` נקי על
+     `index.ts` המעודכן. (ב) לאחר ה-migration, אותה טרנזקציה-לא-נשמרת
+     שנכשלה קודם עם `23502` — גם ל-`rejected_ip` וגם ל-orphan
+     (`transaction_id`, בלי `our_payment_id` תואם) — הצליחה עם
+     `tenant_id: null`. (ג) הפונקציה נפרסה מחדש חי (`deploy_edge_function`,
+     גרסה 6→7, `verify_jwt=false` כפי שהייתה). (ד) בדיקת קצה-לקצה אמיתית:
+     `curl -X POST` ל-URL האמיתי של הפונקציה
+     (`https://bieebmnmkffwbqlsfozh.supabase.co/functions/v1/
+     nedarim-webhook`) מכתובת ה-IP של הסביבה הזו (לא ברשימת ה-allowlist
+     של Nedarim) — קיבל `403 {"ok":false,"error":"forbidden"}` כצפוי,
+     **ובפעם הראשונה** שורת `rejected_ip` נכתבה בפועל ל-
+     `nedarim_transactions` (`tenant_id=null`, `error_message` עם ה-IP
+     האמיתי) — נמחקה מיד לאחר האימות כדי לא להשאיר שיור-בדיקה בפרוד.
+     (ה) `get_advisors` (security) על `bieebmnmkffwbqlsfozh` לאחר ה-DDL
+     — אין ממצא חדש הקשור ל-`nedarim_transactions`. אין שינוי בזרימת
+     תשלום אמיתית עצמה (capture/decrement stock) בסבב זה — תוספתי-בלבד
+     לצד לוגינג/ביקורת, אין שליחה/חיוב אמיתיים. נדחף לענף חדש
+     `fix/01-torah-platform-nedarim-webhook-tenant-null-0831`
+     (`272ce5d8`) — לא מוזג, main לא נגע. System 35 KioskFleet לא נגע,
+     per HARD STEERING; P2 (32/36) `build_tasks` נשאר 0 todo; מערכות/
+     סכימות מוגנות (08/09/bkalut-app/bkalot-admin/`zr_*`/webhook
+     NEDARIM3873/`csj`/`csj_src`/`igud`/15-egod) לא נגעו.
