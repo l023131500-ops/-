@@ -8007,3 +8007,67 @@
      `community_questionnaire_links`/`community_questionnaire_submissions`
      — אלו הכרעת-מוצר (לבנות מאפס או למחוק), לא באג-חיווט כמו
      `gallery_images`, ולכן לא נגעו.
+
+## 31/08/2026 (LOOP A, סבב נוסף ג') — `admin/Messages.tsx` (`/admin/messages`, "ניהול פניות"): `updateStatus`/`remove` התעלמו משגיאת Supabase והציגו "הצליח" תמיד
+
+653. **ההקשר.** P0 (מערכת 14) אומת שוב `done`. P1 (35) אסור per HARD
+     STEERING. P2 (32/36) אומת שוב כ-0 שורות `todo`. `15-egod` עדיין
+     לא נגיש. סבב זה נפתח מחדש על ענף טרי (`fix/01-torah-platform-
+     audit-0831d`) שהתברר כמנותק מההיסטוריה האמיתית — `git reset
+     --hard` בוצע אל `origin/fix/01-torah-platform-portal-gallery-
+     upload-0831c` (ה-HEAD העדכני האמיתי, 0 קומיטים ייחודיים אבדו)
+     כדי לא לשכפל עבודה כבר-בוצעה ולשמור על מספור `DECISIONS.md` נכון.
+     agent נפרד נשלח לחפש מחלקת-באג חדשה לפי הכיוונים המוצעים
+     (RPC-mismatch, admin write-paths, success-toast-lies-about-
+     failure). מצא שני מועמדים: (א) `admin/TeacherFeatures.tsx` כותב
+     ל-`user_roles.permissions` שאף קוד לא קורא בחזרה — נבדק ונדחה
+     כמועמד-תיקון בסבב הזה: זו "פיצ'ר שלם שמעולם לא חובר לצרכן" (אותה
+     מחלקה כמו הטבלאות "אפס-אזכורים" שכבר תועדו כדורשות הכרעת-מוצר,
+     לא תיקון-שם-שדה מבודד — תיקון אמיתי דורש לתכנן איפה/איך הרשאות
+     אלו אמורות לשער גישה בפועל, מחוץ לסקופ "תיקון אחד מבודד"); (ב)
+     `admin/Messages.tsx` — נבחר, כי הוא תואם-מדויק למחלקה שכבר
+     הוכיחה עצמה בסבבים קודמים באפליקציה הזו (`portal/Messages.tsx`
+     read_at→status, `portal/Tips.tsx`).
+
+654. **הממצא.** `pages/admin/Messages.tsx` נטען בראוט **חי**
+     `/admin/messages` (`App.tsx:268`, בתוך `<Route path="/admin"
+     element={<AdminLayout />}>` שדורש super_admin). `updateStatus()`
+     (שורה 43) ו-`remove()` (שורה 49) קראו ל-`.update()`/`.delete()`
+     על `portal_messages` **בלי** לפרק/לבדוק את `{ error }` המוחזר,
+     ומיד הציגו `toast.success` ("הסטטוס עודכן"/"נמחק") בלי תנאי —
+     בניגוד לכל שאר מסכי ה-CRUD המנהליים באותה אפליקציה
+     (`admin/Leads.tsx:29-30`, `admin/Tips.tsx:48-49/60-61/75-76/90-91`)
+     שכולם בודקים `if (error) throw error;` (או שקול) לפני הטוסט.
+     אומת מול `information_schema`/`types.ts` (שורות 2692-2741) ש-
+     `status`/`id` הן עמודות אמיתיות בטבלה — אין כאן טעות-שם-שדה, רק
+     חוסר-בדיקת-שגיאה. `pg_policies` על `portal_messages` (נבדק חי)
+     מראה `portal_messages_tenant_write_upd`/`..._del` דורשות
+     `is_super_admin()` או תפקיד-טננט — כלומר בכניסה תקינה דרך שער
+     ה-super_admin השגיאה פחות סבירה, אך עדיין אמיתית (grant/רשת/
+     session שפג/session שאיבד תפקיד בין טעינת-הדף ללחיצה) — כל כשל
+     כזה היה משאיר את השורה כפי-שהייתה בעוד המנהל רואה "עודכן"/"נמחק"
+     מוצלח.
+
+655. **מה נעשה + אימות.** נוסף `const { error } = ...` + `if (error)
+     { toast.error(...); return; }` לשני הפונקציות, תואם-דפוס בדיוק
+     ל-`Leads.tsx`/`Tips.tsx`. `esbuild --bundle --packages=external
+     --jsx=automatic` נקי (רק אזהרות `import.meta`/iife הרגילות).
+     אומת חי מול `bieebmnmkffwbqlsfozh`: בלוק `DO $$...$$` **יחיד**
+     יצר שורת `portal_messages` זמנית על טננט אמיתי עם public-intake,
+     הריץ בדיוק את ה-`UPDATE`/`DELETE` שהקוד המתוקן שולח (שני
+     ה-`RAISE NOTICE` אישרו `status='handled'` ואז `still_exists=false`),
+     ואז נזרקה חריגה מכוונת לגלגול-אחורה מלא (`RAISE EXCEPTION
+     'ROLLBACK_TEST_CLEANUP'` שנתפסת ב-`EXCEPTION WHEN OTHERS`).
+     `SELECT count(*)` נפרד אחרי אישר 0 שורות שיוריות. בטרנזקציה
+     נוספת (`BEGIN...ROLLBACK` יחיד) הודגם גם המקרה שהקוד-המתוקן
+     *לא* פותר (RLS-deny מחזיר `error=null`/0-rows, לא זריקת-שגיאה —
+     הובהר כדי לתעד במדויק את גבולות התיקון: הוא תופס שגיאות-אמיתיות
+     ["error" מ-Supabase], לא שקט-RLS) תחת `SET LOCAL ROLE
+     authenticated` + JWT-claims מזויפים למשתמש-בדיקה חסר-תפקיד;
+     `ROLLBACK` בוצע ואומת בנפרד ב-`SELECT count(*)` נפרד = 0 שורות
+     שיוריות לשני הריצות. `git diff --stat`: קובץ אחד, 10+/2-,
+     תוספתי בעיקרו. נדחף לענף `fix/01-torah-platform-audit-0831d`
+     (`e5e5baac`). System 35 KioskFleet לא נגע, per HARD STEERING; P2
+     (32/36) `build_tasks` נשאר 0 todo; מערכות/סכימות מוגנות (08/09/
+     bkalut-app/bkalot-admin/`zr_*`/webhook NEDARIM3873/`csj`/`csj_src`/
+     `igud`/15-egod) לא נגעו. אין שליחה/חיוב אמיתיים בסבב זה.
