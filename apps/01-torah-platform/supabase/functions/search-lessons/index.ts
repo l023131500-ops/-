@@ -75,12 +75,21 @@ serve(async (req) => {
     // and made every query here fail with 42703, taking the whole chatbot
     // search down). title/topic_free_text/style/audience/date_specific are
     // the real equivalents; the rest have no live equivalent and are dropped.
+    //
+    // is_active is also required here -- lessons_tenant_write_ins lets a
+    // moderator pause/cancel a lesson via is_active=false without revoking
+    // is_approved, and this query (unlike LessonsDirectory.tsx's public list
+    // and the ivr-search/ivr-agent phone functions, which both already
+    // filter on is_active) was still surfacing a deactivated lesson --
+    // including its contact_phone/contact_email -- to every web chatbot
+    // visitor even though it had been pulled from the public directory.
     const { data: lessons } = await supabase
       .from("lessons")
       .select(
         "id, city, neighborhood, title, topic_free_text, style, rabbi_name, language, audience, day_of_week, date_specific, recording_url, stream_url, contact_phone, contact_email",
       )
       .eq("is_approved", true)
+      .eq("is_active", true)
       .order("created_at", { ascending: false });
 
     // synagogue_portals and org_portals do not exist in the live schema (the
