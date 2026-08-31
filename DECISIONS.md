@@ -9609,3 +9609,71 @@
      per HARD STEERING; מערכות/סכימות מוגנות (08/09/bkalut-app/
      bkalot-admin/`zr_*`/webhook NEDARIM3873/`csj`/`csj_src`/`igud`/
      15-egod) לא נגעו.
+
+## 31/08/2026 (LOOP A) — 01-torah-platform: מחיקת בית-כנסת/זמן-תפילה ב-portal/PrayerTimes.tsx הציגה "נמחק בהצלחה" גם כשה-DELETE נחסם בפועל
+
+735. **ההקשר.** המשך ישיר לסבב הקודם (#733-734). לפני תחילת עבודה:
+     `core.build_tasks` עדיין ריק לחלוטין (0 `todo`), P0 sys14 `done`,
+     P1(35) אסור per HARD STEERING, P2(32/36) 0 `todo`, 15-egod עדיין
+     בלתי-נגיש. הפעלתי שני סוכני Explore במקביל על רשימת הקבצים
+     שסומנו כ"עדיין לא נסרקו לעומק" (`admin/Analytics`, `admin/
+     Commerce`, `admin/Forums`, `admin/Tenants`, `admin/TenantDetail`,
+     `portal/Attendance`, `portal/Materials`, `portal/Donations`,
+     `portal/Schedule`, `portal/StudySchedule`, `portal/Tips`,
+     `portal/Participants`, `portal/Gallery`, `portal/Messages`,
+     `portal/PrayerTimes`, `portal/PortalSettings` החדש, `shop/*`,
+     `public/Invite`, `public/RabbiQuestions`, `public/Mikvaot`,
+     `public/Mourning`, `public/Azkarot`, `public/SynagogueDetail`,
+     `public/Synagogues`, `public/RabbiPublic`, `public/DonationPage`,
+     `public/DonationSuccess`) עם רשימה מפורשת של כל מה שכבר תוקן,
+     כדי למנוע דיווח כפול. רוב הקבצים נמצאו נקיים או כבר מתועדים.
+     שני מועמדים חזרו: `admin/Forums.tsx` (`.limit(200)` על סטטיסטיקות
+     אדמין — קוסמטי/דיוק-דשבורד, לא אובדן-נתונים/אבטחה/תשלום, מתחת
+     לרף הרגיל של הסדרה) ו-`portal/PrayerTimes.tsx` — הנבחר.
+
+736. **הממצא.** `PrayerTimes.tsx` (ראוט חי `/portal/prayer-times`,
+     רשום ב-`App.tsx` שורות 131/250) מנהל `synagogues`/`prayer_times`.
+     `handleAddSyn`/`handleAddPrayer` (שורות 38-54, 63-78) לוכדים
+     `error` כראוי ומציגים `toast.error` בכשלון — אבל `handleDeleteSyn`
+     (שורות 56-61) ו-`handleDeletePrayer` (שורות 80-84) **באותו קובץ
+     ממש** קוראים ל-`.delete()` בלי ללכוד `error` כלל, ומיד מציגים
+     `toast.success("נמחק")` בלי תנאי. אומת חי מול `pg_policies` על
+     `bieebmnmkffwbqlsfozh`: מדיניות ה-DELETE על שתי הטבלאות
+     (`prayer_times_tenant_write_del`, `synagogues_tenant_write_del`)
+     דורשת `is_super_admin` או `has_tenant_role(...,'tenant_admin'/
+     'moderator'/'member')` על ה-`tenant_id` של השורה — נתיב-כשל
+     אמיתי ובר-הגעה (למשל שינוי/הסרת תפקיד לאחר טעינת הדף, או תוקן
+     `synagogue_id` ששייך לטננט אחר). ב-Postgres RLS, DELETE שה-
+     `qual` לא תואם לו לא זורק שגיאה — פשוט מוחק 0 שורות בשקט —
+     כך שה-`toast.success` תמיד מוצג גם כשה-DELETE בפועל לא עשה
+     כלום, וה-UI מטעה את המשתמש שהשורה נמחקה בעוד היא עדיין חיה
+     בדאטהבייס. `synagogues`/`prayer_times` נמצאו ריקים כרגע
+     בפרודקשן (0 שורות), אבל הטבלאות נקראות בפועל בכמה מסכי ציבור
+     חיים (`public/SynagogueDetail.tsx`, `public/Synagogues.tsx`,
+     `public/RabbiPublic.tsx`) — כלומר זה נתיב-כתיבה מחובר וחי, לא
+     קוד מת.
+
+     **מה נבנה ואומת.** שני handlers תוקנו ללכוד `error` ולהציג
+     `toast.error(...)` + `return` לפני `fetchData()`, תואם בדיוק
+     לתבנית הקיימת של `handleAddSyn`/`handleAddPrayer` באותו קובץ.
+     אומת: `esbuild --bundle --packages=external --jsx=automatic`
+     נקי על הקובץ המלא (רק אזהרות `import.meta` הרגילות). אומת חי
+     ב-טרנזקציה rolled-back על `bieebmnmkffwbqlsfozh`: הוכנסה שורת
+     `synagogues`+`prayer_times` בדיקה תחת ההקשר הרגיל, ואז הורצה
+     בדיוק אותה זוגית-DELETE (`prayer_times` לפי `synagogue_id` ואז
+     `synagogues` לפי `id`) תחת `SET LOCAL role='authenticated'` +
+     `request.jwt.claims` של משתמש-בדוי בלי שום שורת `user_roles`
+     בטננט הזה — שתי ה-DELETE הושלמו "בהצלחה" (ללא שגיאת Postgres)
+     אך מחקו **0 שורות**: `SELECT count(*)` אחרי אישר ששתי השורות
+     עדיין קיימות (`count=1` לכל אחת) — מוכיח שהבאג המתואר אמיתי
+     ובר-הגעה בדיוק כפי שתואר. `ROLLBACK` הופעל; `COUNT` נפרד לאחר
+     מכן אימת אפס שאריות (0 שורות ב-`synagogues`/`prayer_times` עבור
+     ה-`id`-ים הזמניים). אין שליחה/חיוב/מייל אמיתיים, TEST MODE
+     מכובד. אפס רגרסיה — רק לכידת `error` נוספה לשני handlers
+     קיימים, שום schema/RLS/handler אחר לא נגע (`git diff --stat`:
+     קובץ אחד, 6+/3-). נדחף לענף חדש
+     `fix/01-torah-platform-prayertimes-delete-error-0831`
+     (`c7186595`). לא מוזג, main לא נגע. System 35 KioskFleet לא נגע,
+     per HARD STEERING; מערכות/סכימות מוגנות (08/09/bkalut-app/
+     bkalot-admin/`zr_*`/webhook NEDARIM3873/`csj`/`csj_src`/`igud`/
+     15-egod) לא נגעו.
