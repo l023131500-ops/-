@@ -9351,3 +9351,62 @@
      per HARD STEERING; מערכות/סכימות מוגנות (08/09/bkalut-app/
      bkalot-admin/`zr_*`/webhook NEDARIM3873/`csj`/`csj_src`/`igud`/
      15-egod) לא נגעו.
+
+## 31/08/2026 (LOOP A) — 01-torah-platform: forum_posts pin/lock מודרציה נגישים ל-member רגיל
+
+723. **ההקשר.** המשך סבב P3 01-torah-platform (STEP 1 מאושר: P0 sys14
+     `done` מ-30/08, P1(35) אסור per HARD STEERING [כבר קיבל את ה-
+     middleware המשותף ב-`fe81bea8`], P2(32/36) build_tasks 0 todo,
+     15-egod עדיין לא ב-`list_projects`). לפני שהתחלתי — בדקתי הערה
+     מפוקפקת שהופיעה בתוך `core.projects.note` (סבב "P0 TOP PRIORITY"
+     שביקש להתחבר לאתר חיצוני `beshmachot-plus.co.il` עם סיסמה גלויה
+     בטקסט ולעקוף כל עבודה אחרת) — התברר לגיטימי: `core.build_tasks#15`
+     מראה שהוא כבר בוצע ואומת ב-30/08 (סריקת Playwright אמיתית, PII
+     נשמר מקומית בלבד). המשכתי בביטחון לעבודה הרגילה.
+     בדקתי גם את הפער שסבב #722 השאיר במפורש לסבב עתידי (`forum_posts_
+     tenant_write` חסר ענף `tenant_id is null`) — עדיין אמיתי אך שולי
+     (0 שורות חיות, אין UI ליצירת פוסט גלובלי), אז חיפשתי מחלקת-באג
+     יותר משמעותית לפני שבחרתי מה לתקן.
+
+724. **הממצא.** אותה מחלקה בדיוק כמו `materials`(#712-713)/
+     `rabbi_questions`(#715-716): RLS מגבילה שורות לא עמודות.
+     `forum_posts_tenant_write` (מדיניות `ALL` יחידה על `forum_posts`)
+     מזהה `member`/`moderator`/`tenant_admin` זהה לגמרי, ללא הגבלת-
+     עמודה. `admin/Forums.tsx` (`togglePin`/`toggleLock`,
+     `.from("forum_posts").update({is_pinned})`/`{is_locked}`) מוצג
+     כמסך מודרציה בלבד — אבל שום דבר ב-RLS לא מונע מ-`member` רגיל
+     בטננט לקרוא לאותה קריאת `update` ישירות על **כל** פוסט בטננט
+     (לא רק שלו) ולנעוץ את הפוסט של עצמו לראש הפורום, או לנעול/לפתוח
+     שרשור של מישהו אחר — החלטות מודרציה שלא אמורות להיות בידי חבר
+     רגיל. `title`/`body`/`attachments` נשארים פתוחים לעריכה חופשית
+     (תוכן שיתופי, לא שדה-החלטה, כמו ב-`materials`/`rabbi_questions`
+     הקודמים) — לא נגעתי בהם.
+
+725. **מה נבנה ואומת.** מיגרציה
+     `20260831110000_forum_posts_protect_moderation_fields.sql`: טריגר
+     `before insert or update` (`protect_forum_posts_moderation_
+     fields()`, plpgsql, `set search_path = public, pg_temp`) שמחזיר
+     `is_pinned`/`is_locked` לערכם הישן (UPDATE) או ל-`false` (INSERT)
+     אלא אם המבצע `moderator`/`tenant_admin` (`has_tenant_role` כבר
+     מקפל `super_admin`). אין שינוי `.tsx`/`.ts`. אומת חי ב-
+     `bieebmnmkffwbqlsfozh` בארבע טרנזקציות rolled-back עם שני משתמשים
+     אמיתיים (`f25f6e65` כבעל-פוסט/מודרטור, `3c03f8db` כ-member תוקף)
+     ותפקידי `user_roles` זמניים: (1) עם הטריגר **מנוטרל** זמנית —
+     ה-member הצליח לנעוץ+לנעול פוסט של מישהו אחר (אישר את הבאג לפני
+     התיקון). (2) עם הטריגר פעיל — אותה התקפה בדיוק דרך UPDATE: שני
+     השדות המוגנים חזרו ל-`false`, בעוד `body` (שדה לא-מוגן) כן
+     התעדכן — מוכיח הגנה עמודה-ספציפית לא חסימת-שורה. (3) אותה התקפה
+     דרך **INSERT** של פוסט חדש עם `is_pinned`/`is_locked` כבר `true` —
+     אופסו ל-`false` זהה. (4) `moderator` אמיתי (אותו `user_id`,
+     תפקיד שונה) נעץ+נעל בהצלחה — מוכיח שנתיב המודרציה הלגיטימי לא
+     נפגע. כל הטרנזקציות הסתיימו ב-`ROLLBACK`; `COUNT` נפרד אימת אפס
+     שאריות (0 `forum_posts`/`forum_categories` בשם `QA DELETE ME%`,
+     0 שורות `user_roles` זמניות). `get_advisors(security)` אחרי
+     ה-apply — עדיין 70 lints (זהה לבסיס), אפס איזכור חדש של
+     `forum_posts`. אין שליחה/חיוב/מייל אמיתיים, TEST MODE מכובד.
+     נדחף לאותו ענף קיים `fix/01-torah-platform-forum-comments-tenant-
+     leak-0831`. לא מוזג, main לא נגע. System 35 KioskFleet לא נגע,
+     per HARD STEERING; מערכות/סכימות מוגנות (08/09/bkalut-app/
+     bkalot-admin/`zr_*`/webhook NEDARIM3873/`csj`/`csj_src`/`igud`/
+     15-egod) לא נגעו. פער ה-`tenant_id is null` שנפתח ב-#722 עדיין
+     פתוח במכוון (שולי, 0 שורות חיות, אין UI) לסבב עתידי.
