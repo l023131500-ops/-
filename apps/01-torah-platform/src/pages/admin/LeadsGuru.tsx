@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { Search, Eye } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import AdminLayout from "@/components/admin/AdminLayout";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
@@ -44,7 +43,6 @@ const AdminLeads = () => {
   });
 
   return (
-    <AdminLayout>
       <div className="max-w-6xl mx-auto space-y-6">
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
           <h1 className="font-heading text-2xl font-bold text-foreground mb-2">ניהול לידים</h1>
@@ -112,7 +110,6 @@ const AdminLeads = () => {
           </div>
         </div>
       </div>
-    </AdminLayout>
   );
 };
 

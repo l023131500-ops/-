@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import AdminLayout from "@/components/admin/AdminLayout";
 import { FileText, Download, CheckCircle2, XCircle, Clock, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -60,7 +59,6 @@ const AdminContent = () => {
   };
 
   return (
-    <AdminLayout>
       <div className="max-w-6xl mx-auto space-y-6">
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
           <h1 className="font-heading text-2xl font-bold text-foreground mb-2 flex items-center gap-2">
@@ -155,7 +153,6 @@ const AdminContent = () => {
           )}
         </div>
       </div>
-    </AdminLayout>
   );
 };
 

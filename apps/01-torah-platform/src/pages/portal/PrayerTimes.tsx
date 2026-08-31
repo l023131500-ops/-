@@ -3,7 +3,6 @@ import { motion } from "framer-motion";
 import { Building2, Plus, Trash2, Clock, Edit2, Save, X } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
-import PortalLayout from "@/components/portal/PortalLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -70,7 +69,6 @@ const PrayerTimes = () => {
   };
 
   return (
-    <PortalLayout>
       <div className="max-w-4xl mx-auto space-y-6">
         <div className="flex items-center justify-between">
           <div>
@@ -169,7 +167,6 @@ const PrayerTimes = () => {
           </DialogContent>
         </Dialog>
       </div>
-    </PortalLayout>
   );
 };
 

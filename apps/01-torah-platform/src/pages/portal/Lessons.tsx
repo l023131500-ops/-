@@ -3,7 +3,6 @@ import { motion } from "framer-motion";
 import { BookOpen, Plus, Trash2, MapPin, Clock, Users, Mic, Video } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
-import PortalLayout from "@/components/portal/PortalLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -112,7 +111,6 @@ const Lessons = () => {
   };
 
   return (
-    <PortalLayout>
       <div className="max-w-4xl mx-auto space-y-6">
         <div className="flex items-center justify-between">
           <div>
@@ -285,7 +283,6 @@ const Lessons = () => {
           )}
         </div>
       </div>
-    </PortalLayout>
   );
 };
 
