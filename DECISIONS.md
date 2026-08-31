@@ -10098,3 +10098,99 @@
      STEERING; מערכות/סכימות מוגנות (08/09/bkalut-app/bkalot-admin/
      `zr_*`/webhook NEDARIM3873/`csj`/`csj_src`/`igud`/15-egod) לא
      נגעו.
+
+## 31/08/2026 (LOOP A) — 01-torah-platform: `storage.objects` — כל משתמש מחובר יכול היה לכתוב לתיקיית טננט זר בבאקטים הציבוריים
+
+749. **ההקשר.** סבב ~375. המשך ישיר לסבב הקודם (#747-748, סגירת פער
+     ה-DELETE על `materials`). P0 (מערכת 14) אומת `done`. P1 (35)
+     אסור per HARD STEERING. P2 (32/36) `core.build_tasks` נשאר 0
+     `todo`. לפי הנחיית המשימה סרקתי זוויות פחות-חשופות: מדיניות
+     storage buckets. `list_tables` (סכימת `storage`) הראה 5 באקטים
+     ציבוריים של 01-torah-platform (`portal-assets`, `materials-media`,
+     `newsletters`, `site-images`, `shop-images`, מ-
+     `20260519000004_storage_seed.sql`). `pg_policies` על
+     `storage.objects` חשף `authenticated_write_torah_buckets` (INSERT):
+     `with_check = (auth.uid() is not null) and (bucket_id = ANY(...))`
+     — שום בדיקת תפקיד/טננט בכלל, רק "יש משתמש מחובר". גרפ בקוד-לקוח
+     הראה ששני נתיבי-העלאה אמיתיים בנויים עם קידומת tenant_id:
+     `materials-media`: `"${tenant.id}/${ts}-${rand}.${ext}"`
+     (`portal/Materials.tsx` שורה 61) ו-`portal-assets`:
+     `"gallery/${tenant.id}/..."` (`portal/Gallery.tsx` שורה 41) — שתי
+     טבלאות-בעלים חיות (`materials`, `gallery_images`) עם `tenant_id`
+     ו-RLS משלהן, אך שכבת ה-storage לא אכפה שום זיקה בין ה-uploader
+     לבין קידומת ה-tenant_id שהוא כותב תחתיה. (בדקתי גם
+     `PortalSettingsTab.tsx` שמעלה ל-`backgrounds/`, `rabbi-photos/`,
+     `activity/` — אלה מפנים לטבלאות `rabbi_portals`/`org_portals`
+     שלא קיימות בסכימה החיה כלל, כלומר קוד מת/לא-פעיל, ולכן לא
+     נגעתי בנתיבים האלה כדי לא לשנות התנהגות על מוסכמת-נתיב לא-
+     ידועה.)
+
+750. **הממצא.** אימות חי מול `bieebmnmkffwbqlsfozh` בטרנזקציית
+     `BEGIN...ROLLBACK` (`set local role authenticated` +
+     `request.jwt.claims` עם `sub` של משתמש אמיתי **ללא כל שורת
+     `user_roles`**, כלומר משתמש-מחובר גנרי בלי שיוך לטננט כלשהו):
+     `insert into storage.objects (bucket_id, name, ...)` הצליח
+     **ללא שגיאה** גם ל-`materials-media/<tenant-זר>/malicious.pdf`
+     וגם ל-`portal-assets/gallery/<tenant-זר>/pwned.jpg` —
+     `remaining_before_fix=1` בשני הבאקטים. מכיוון שה-`owner`
+     הראשון-שכותב הופך לבעלים (ומדיניות `owner_update_torah_buckets`/
+     `owner_delete_torah_buckets` הקיימות תלויות ב-`owner = auth.uid()`),
+     תוקף חיצוני יכול היה גם "לתפוס" נתיב-קובץ של טננט זר ולחסום/
+     לדרוס אותו לצמיתות ברגע שהאפליקציה עצמה מנסה לכתוב לאותו שם
+     (upsert). זו חציית-הרשאה חיה ובת-הגעה היום — כל משתמש רשום
+     במערכת, לא רק תוקף עם תפקיד — ולא מכוסה משום תיקון קודם ב-
+     31/08 (כל התיקונים הקודמים כיסו RLS על טבלאות `public.*` או
+     Edge Functions, לא את `storage.objects`).
+
+     **מה נבנה ואומת.** מיגרציה חדשה
+     (`20260831180000_storage_tenant_scope_write.sql`) מוסיפה
+     `public.torah_bucket_write_allowed(_bucket text, _name text)`
+     (SECURITY DEFINER) ומחליפה את `authenticated_write_torah_buckets`
+     כך שתתבסס עליה: עבור `materials-media` (מקטע-נתיב ראשון) ו-
+     `portal-assets` בצורת `gallery/<uuid>/...` (מקטע-נתיב שני) —
+     אם המקטע נראה כמו UUID ששייך לטננט קיים ב-`public.tenants`,
+     הפונקציה דורשת `public.user_in_tenant(_tenant_id)` (פונקציה
+     קיימת: כל תפקיד בטננט או super_admin) לפני שה-INSERT מותר; כל
+     שאר הבאקטים/צורות-הנתיב (כולל `newsletters`, `site-images`,
+     `shop-images`, ו-`portal-assets` שאינו בצורת `gallery/<uuid>`)
+     ממשיכים בהתנהגות הקודמת ללא שינוי — אין להם מוסכמת-קידומת-טננט
+     בקוד-לקוח חי, כך שאין סיכון-רגרסיה. גילוי-ביניים: הענקת EXECUTE
+     על הפונקציה ל-`anon`/`authenticated` נדרשת בפועל — ניסיון ראשון
+     לבטלה (כדי לסגור אזהרת-לינטר `*_security_definer_function_
+     executable`) שבר את אכיפת ה-RLS עצמה עם `permission denied for
+     function`, כי ביטוי `with check` ב-RLS מתבצע כתפקיד-הקורא
+     (`authenticated`/`anon`), לא כבעל-הפונקציה — SECURITY DEFINER
+     מעלה הרשאות רק *בתוך* גוף הפונקציה, לא בקריאה אליה. שוחזר ה-
+     GRANT (`storage_tenant_scope_write_restore_exec_grant`), אותה
+     תבנית מדויקת שכבר קיימת ומקובלת על `has_tenant_role`/
+     `user_in_tenant`.
+
+     אימות חי אחרי ה-apply: אותה תבנית-תקיפה בדיוק (משתמש-מחובר בלי
+     `user_roles`) נכשלת עכשיו עם `42501: new row violates row-level
+     security policy for table "objects"` בשני הבאקטים; הענקת תפקיד
+     `member` זמני (בתוך אותה טרנזקציה, `ROLLBACK` בסוף) לאותו משתמש
+     בטננט-היעד הופכת את אותה כתיבה בדיוק ל-מותרת (וכך גם `moderator`
+     ו-super_admin חוצה-טננטים, תואם למדיניות-הקריאה שכבר קיימת);
+     נתיבים לא-tenant-prefixed (`backgrounds/`, `rabbi-photos/`,
+     `newsletters`, `shop-images`) נבדקו בנפרד ונשארו פתוחים כרגיל
+     לכל משתמש מחובר — אי-רגרסיה מאומתת. `COUNT` נפרד אחרי כל
+     `ROLLBACK` אישר אפס שאריות ב-`storage.objects` וב-`user_roles`
+     בכל שלב. `get_advisors(security)` לפני/אחרי: הלינטים הכוללים
+     זזו מ-72 ל-74 — שתי אזהרות `WARN` חדשות
+     (`anon_security_definer_function_executable`/
+     `authenticated_security_definer_function_executable`) על הפונקציה
+     החדשה, אותה תבנית מקובלת שכבר קיימת זהה על `has_tenant_role`/
+     `user_in_tenant` (שתיהן כבר `anon`/`authenticated`-executable
+     SECURITY DEFINER), ולא חושפות מידע רגיש — הפונקציה מחזירה רק
+     בוליאני מבוסס-tenant_id ציבורי. אין שינוי בקוד-לקוח: שני נתיבי-
+     ההעלאה הקיימים (`Materials.tsx`, `Gallery.tsx`) ממשיכים לעבוד
+     בלי שינוי כי הם כבר בונים נתיב עם קידומת tenant_id אמיתית של
+     המשתמש שלהם. אין שליחה/חיוב/מייל אמיתיים בכל שלב. אפס רגרסיה —
+     קובץ מיגרציה אחד, פונקציה חדשה אחת, מדיניות INSERT אחת הוחלפה;
+     שום מדיניות SELECT/UPDATE/DELETE קיימת על `storage.objects` לא
+     נגעה. נדחף לענף חדש
+     `fix/01-torah-platform-storage-tenant-scope-0831` (`a74de9d5`).
+     לא מוזג, main לא נגע. System 35 KioskFleet לא נגע, per HARD
+     STEERING; מערכות/סכימות מוגנות (08/09/bkalut-app/bkalot-admin/
+     `zr_*`/webhook NEDARIM3873/`csj`/`csj_src`/`igud`/15-egod) לא
+     נגעו.
