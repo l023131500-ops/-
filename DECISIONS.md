@@ -9092,3 +9092,65 @@
      per HARD STEERING; מערכות/סכימות מוגנות (08/09/bkalut-app/
      bkalot-admin/`zr_*`/webhook NEDARIM3873/`csj`/`csj_src`/`igud`/
      15-egod) לא נגעו.
+
+711. **ההקשר.** המשך סבב P3 01-torah-platform (STEP 1 מאושר: P0 sys14
+     `done` מ-30/08, P1(35) אסור per HARD STEERING, P2(32/36) build_tasks
+     0 todo, 15-egod עדיין לא ב-`list_projects`). סוכן Explore חיפש
+     מחלקת-באג חדשה שלא נסרקה, עם רשימת כל מה שכבר תוקן/נחסם כדי לא
+     לחזור על עצמו. המועמד הראשון שהציע ("`materials` בלי RLS בכלל")
+     התברר **false positive** — `pg_class.relrowsecurity=true` בבדיקה
+     חיה, בדיוק התמרון-מפני-ניחוש-סכימה שכבר תועד בתקרית #629 — הסוכן
+     הסיק מ-`grep` על קובצי מיגרציה בלי לבדוק את מצב ה-DB החי.
+
+712. **הממצא האמיתי.** `materials_tenant_write_upd` (RLS על `materials`)
+     היא `using`/`with check` זהים: `is_super_admin(...) OR
+     has_tenant_role(..., 'tenant_admin') OR has_tenant_role(...,
+     'moderator') OR has_tenant_role(..., 'member')` — **אותה מחלקה**
+     של "RLS מגבילה שורות, לא עמודות" כמו `raised_ils`/
+     `orders`/`donations` קודם לכן, אבל כאן הפער הוא בין תפקידים
+     (`member` מול `moderator`/`tenant_admin`), לא בין role כללי ל-
+     service_role. מסך המודרציה היחיד (`admin/Content.tsx`,
+     `updateStatus()`) מיועד ל-moderator/tenant_admin, אבל `member`
+     רגיל באותו טננט (המדיניות מוגבלת-טננט, לא מוגבלת-בעלים) יכול
+     לקרוא ישירות `.from("materials").update({status:"approved"})`
+     על **כל** קובץ בטננט — כולל קבצים שהעלה מישהו אחר — ולעקוף
+     מודרציה לגמרי (אישור-עצמי, דחייה זדונית של קובץ של חבר אחר,
+     או קידום ל-`featured_on_homepage`/`display_in_public_profile`
+     בלי אישור מנהל). `user_roles` החי מכיל היום רק 2 שורות
+     `super_admin` ואפס `tenant_admin`/`moderator`/`member` (וגם
+     `memberships` ריקה) — כמו בסבבים הקודמים על `raised_ils`/
+     `orders`, נדרשה שורת-`user_roles` זמנית כדי להדגים את התפקיד,
+     אבל זה לא הופך את הפער לפחות אמיתי: ברגע שהאפליקציה תתחיל
+     להקצות תפקיד `member` אמיתי (התכל'ס של העמודה קיימת ומוגדרת
+     ב-enum `app_role` מיום 1), הפער ייפער מיד.
+
+713. **מה נבנה ואומת.** מיגרציה
+     `20260831070000_materials_protect_moderation_fields.sql`: טריגר
+     `before update` (`protect_materials_moderation_fields()`,
+     plpgsql, `set search_path = public, pg_temp`) שמחזיר
+     `status`/`rejection_reason`/`display_in_public_profile`/
+     `featured_on_homepage` לערכם הישן אלא אם המבצע הוא
+     `moderator`/`tenant_admin` (או `super_admin`, כלול כבר בתוך
+     `has_tenant_role`). עמודות `title`/`description`/`category`/
+     `subcategory` נשארות פתוחות לעריכה חופשית — אף UI לא מגביל
+     אותן והן לא שדות-החלטת-מודרציה. אומת בשלוש טרנזקציות
+     rolled-back על `bieebmnmkffwbqlsfozh` עם שני משתמשים אמיתיים
+     (`f25f6e65` בתור התוקף/המודרטור, `3c03f8db` בתור בעל הקובץ)
+     ושורת-`user_roles` זמנית לכל תרחיש: (1) **לפני** התיקון —
+     ה-`member` הצליח לשנות גם `status` וגם `title` על קובץ שלא שלו
+     (אישר את הבאג). (2) **אחרי** התיקון, אותה התקפה בדיוק כ-`member`
+     (`status`/`rejection_reason`/`featured_on_homepage`/
+     `display_in_public_profile`) — כל השדות המוגנים נשארו בערכם
+     המקורי, בעוד `description` (שדה לא-מוגן) כן התעדכן — מוכיח הגנה
+     עמודה-ספציפית ולא חסימת-שורה. (3) `moderator` אמיתי (אותו
+     `user_id`, תפקיד שונה) הצליח לאשר את הקובץ כרגיל — מוכיח שנתיב
+     המודרציה הלגיטימי לא נפגע. כל שלוש הטרנזקציות הסתיימו ב-
+     `ROLLBACK`; אומת גם ב-`COUNT`נפרד שאין שאריות (0 שורות `QA DELETE
+     ME%`, 0 שורות `user_roles` זמניות). `get_advisors(security)` הופעל
+     אחרי ה-apply — אין אזהרה חדשה על `materials` או על הפונקציה
+     החדשה. אין שינוי `.tsx`/`.ts` — מיגרציית SQL בלבד. אין
+     שליחה/חיוב/מייל אמיתיים. נדחף לענף חדש
+     `fix/01-torah-platform-materials-moderation-fields-0831`. לא
+     מוזג, main לא נגע. System 35 KioskFleet לא נגע, per HARD STEERING;
+     מערכות/סכימות מוגנות (08/09/bkalut-app/bkalot-admin/`zr_*`/webhook
+     NEDARIM3873/`csj`/`csj_src`/`igud`/15-egod) לא נגעו.
