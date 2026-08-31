@@ -73,8 +73,8 @@ const PortalSettings = () => {
         font_color: (meta.font_color as string) || "light",
         portal_language: data.language || "עברית",
       });
-      // public.portal_photos does not exist in the live schema (verified via MCP) --
-      // this stays empty until that table is added; harmless no-op in the meantime.
+      // public.portal_photos exists live (20260831030000); "as any" stays only
+      // because this repo doesn't regenerate generated-types.ts per migration.
       const { data: ph } = await supabase.from("portal_photos" as any).select("*").eq("teacher_id", data.id).order("created_at", { ascending: false });
       setPhotos((ph as any) || []);
     }

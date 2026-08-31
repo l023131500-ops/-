@@ -60,8 +60,8 @@ const RabbiPublic = () => {
       setPrayerTimes(prayerData || []);
     }
 
-    // public.portal_photos does not exist in the live schema (verified via MCP) --
-    // gallery stays empty until that table is added.
+    // public.portal_photos exists live (20260831030000); "as any" stays only
+    // because this repo doesn't regenerate generated-types.ts per migration.
     const { data: photosData } = await supabase.from("portal_photos" as any).select("*").eq("teacher_id", profile.id);
     setPhotos((photosData as any) || []);
 
