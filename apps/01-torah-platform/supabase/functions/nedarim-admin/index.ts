@@ -122,6 +122,19 @@ Deno.serve(async (req) => {
       if (!ownedTxn) {
         return json({ ok: false, error: "transaction_id does not belong to this tenant" }, 403);
       }
+    } else if (!cfg?.mosad_id) {
+      // No transaction_id to scope by (e.g. GetHistoryJson, which lists by date range
+      // only) AND this tenant has no dedicated Mosad account — it is on the shared
+      // fallback account together with other unconfigured tenants. Nedarim Plus's
+      // history API is scoped only by MosadId, so forwarding this would hand back
+      // EVERY tenant's transactions on that shared account (donor names, phones,
+      // amounts) to this tenant's admin. Block it; this tenant must get its own
+      // nedarim_configs row before it can use account-wide, non-transaction-scoped
+      // actions.
+      return json({
+        ok: false,
+        error: "action requires a transaction_id, or a dedicated Mosad account for this tenant",
+      }, 403);
     }
 
     // RESERVED_KEYS are always server-computed from the verified tenant_id above; `extra`
