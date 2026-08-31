@@ -80,7 +80,7 @@ export default function Checkout() {
           customer_email: customer.email || null,
           shipping_address: customer.address,
           shipping_city: customer.city,
-          notes: customer.notes,
+          shipping_notes: customer.notes,
           total_ils: total,
           status: "pending",
           payment_status: "pending",
