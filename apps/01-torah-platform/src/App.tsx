@@ -81,6 +81,7 @@ const PortalSchedule = lazy(() => import("@/pages/portal/Schedule"));
 const PortalParticipants = lazy(() => import("@/pages/portal/Participants"));
 const PortalMaterials = lazy(() => import("@/pages/portal/Materials"));
 const PortalForums = lazy(() => import("@/pages/portal/Forums"));
+const PortalChat = lazy(() => import("@/pages/portal/Chat"));
 const PortalKashrut = lazy(() => import("@/pages/portal/Kashrut"));
 const PortalSynagogues = lazy(() => import("@/pages/portal/Synagogues"));
 const PortalCommunityServices = lazy(() => import("@/pages/portal/CommunityServices"));
@@ -242,6 +243,7 @@ export default function App() {
                     <Route path="participants" element={<PortalParticipants />} />
                     <Route path="materials" element={<PortalMaterials />} />
                     <Route path="forums" element={<PortalForums />} />
+                    <Route path="chat" element={<PortalChat />} />
                     <Route path="kashrut" element={<PortalKashrut />} />
                     <Route path="synagogues" element={<PortalSynagogues />} />
                     <Route path="community-services" element={<PortalCommunityServices />} />
