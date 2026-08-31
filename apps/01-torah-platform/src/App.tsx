@@ -146,6 +146,7 @@ const AdminRabbiQuestions = lazy(() => import("@/pages/admin/RabbiQuestions"));
 const PortalLessons = lazy(() => import("@/pages/portal/Lessons"));
 const PortalPrayerTimes = lazy(() => import("@/pages/portal/PrayerTimes"));
 const PortalPortalSettings = lazy(() => import("@/pages/portal/PortalSettings"));
+const PortalAnalytics = lazy(() => import("@/pages/portal/Analytics"));
 
 // ---- Guru-Portal Public Pages ----
 const Invite = lazy(() => import("@/pages/public/Invite"));
@@ -278,6 +279,7 @@ export default function App() {
                     <Route path="lessons" element={<PortalLessons />} />
                     <Route path="prayer-times" element={<PortalPrayerTimes />} />
                     <Route path="portal-settings" element={<PortalPortalSettings />} />
+                    <Route path="analytics" element={<PortalAnalytics />} />
                   </Route>
 
                   {/* Super Admin */}

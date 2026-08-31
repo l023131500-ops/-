@@ -40,6 +40,7 @@ import {
   GraduationCap,
   Bell,
   ScrollText,
+  BarChart3,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Navbar } from "./Navbar";
@@ -229,6 +230,15 @@ export function PortalLayout() {
   // "מודעות לציבור"): table + generic tenant_read/tenant_write RLS existed
   // since 20260519000002 but zero UI anywhere ever referenced it. Unconditional
   // like kashrut/chat/ads below -- not restricted to a single tenant type.
+  //
+  // "דוחות ואנליטיקס בסיסיים" (architecture.md §5.1, a shared module bullet
+  // separate from "דשבורד עם widgets") had no screen at all -- the only chart
+  // anywhere in the app was admin/Analytics.tsx, cross-tenant and
+  // super-admin-only. pages/portal/Analytics.tsx reuses the existing
+  // tenant-scoped RLS (lessons/leads/attendance readable by any tenant
+  // member, donations by tenant_admin only, mirroring Dashboard.tsx's own
+  // donations query) -- no new grant needed. Unconditional, like materials/
+  // forums/gallery above.
   const items = [
     { to: "/portal", icon: LayoutDashboard, label: "סקירה", end: true },
     { to: "/portal/schedule", icon: Calendar, label: "לוח שיעורים" },
@@ -249,6 +259,7 @@ export function PortalLayout() {
     { to: "/portal/orders", icon: ShoppingBag, label: "הזמנות" },
     { to: "/portal/messages", icon: Mail, label: "הודעות" },
     { to: "/portal/attendance", icon: CheckSquare, label: "נוכחות" },
+    { to: "/portal/analytics", icon: BarChart3, label: "דוחות ואנליטיקס" },
     { to: "/portal/tips", icon: Lightbulb, label: "טיפים יומיים" },
     { to: "/portal/bulk-upload", icon: Upload, label: "העלאה מרובה" },
     { to: "/portal/study-schedule", icon: CalendarDays, label: "ימי לימוד" },
