@@ -62,10 +62,12 @@ const AdminDashboard = () => {
 
   const fetchAll = async () => {
     setLoading(true);
-    const [lessonsRes, teachersRes, seekersRes, contactsRes, rabbiPortalsRes, orgPortalsRes, nedarimRes, studyDaysRes, synagoguesRes, shulPortalsRes] = await Promise.all([
+    const [lessonsRes, leadsRes, contactsRes, rabbiPortalsRes, orgPortalsRes, nedarimRes, studyDaysRes, synagoguesRes, shulPortalsRes] = await Promise.all([
       supabase.from("lessons").select("*").order("created_at", { ascending: false }),
-      supabase.from("teacher_leads").select("*").order("created_at", { ascending: false }),
-      supabase.from("seeker_leads").select("*").order("created_at", { ascending: false }),
+      // teacher_leads/seeker_leads never existed on the live multi-tenant schema --
+      // folded into `leads` with a `kind` column during the tenant migration,
+      // same rename MatchingTab.tsx already accounts for.
+      supabase.from("leads").select("*").order("created_at", { ascending: false }),
       supabase.from("contact_messages").select("*").order("created_at", { ascending: false }),
       supabase.from("rabbi_portals").select("*").order("created_at", { ascending: false }),
       supabase.from("org_portals").select("*").order("created_at", { ascending: false }),
@@ -75,8 +77,12 @@ const AdminDashboard = () => {
       supabase.from("synagogue_portals").select("*").order("created_at", { ascending: false }),
     ]);
     if (lessonsRes.data) setLessons(lessonsRes.data);
-    if (teachersRes.data) setTeacherLeads(teachersRes.data);
-    if (seekersRes.data) setSeekerLeads(seekersRes.data);
+    if (leadsRes.data) {
+      setTeacherLeads(leadsRes.data.filter((x: any) => x.kind === "teacher_offer"));
+      setSeekerLeads(leadsRes.data.filter((x: any) => (x.kind || "lesson_request") === "lesson_request"));
+    } else if (leadsRes.error) {
+      console.error("AdminDashboard: failed to load leads", leadsRes.error.message);
+    }
     if (contactsRes.data) setContactMessages(contactsRes.data);
     if (rabbiPortalsRes.data) setRabbiPortals(rabbiPortalsRes.data);
     if (orgPortalsRes.data) setOrgPortals(orgPortalsRes.data);
@@ -915,7 +921,7 @@ const AdminDashboard = () => {
               </div>
             </TabsContent>
 
-            {/* Teacher Leads Tab */}
+            {/* Teacher Leads Tab (source: leads where kind=teacher_offer) */}
             <TabsContent value="teachers">
               <div className="space-y-3">
                 {teacherLeads.map((t) => (
@@ -931,16 +937,14 @@ const AdminDashboard = () => {
                         <div className="flex flex-wrap gap-3 text-sm font-body text-muted-foreground">
                           {t.phone && <span className="flex items-center gap-1"><Phone className="w-3 h-3" /> {t.phone}</span>}
                           {t.email && <span className="flex items-center gap-1"><Mail className="w-3 h-3" /> {t.email}</span>}
-                          {t.city && <span className="flex items-center gap-1"><MapPin className="w-3 h-3" /> {t.city}</span>}
+                          {t.area && <span className="flex items-center gap-1"><MapPin className="w-3 h-3" /> {t.area}</span>}
                         </div>
-                        {t.subjects?.length > 0 && (
+                        {t.preferred_subject && (
                           <div className="flex flex-wrap gap-1 mt-2">
-                            {t.subjects.map((s: string) => (
-                              <span key={s} className="px-2 py-0.5 rounded-full bg-gold/10 text-gold text-xs font-body">{s}</span>
-                            ))}
+                            <span className="px-2 py-0.5 rounded-full bg-gold/10 text-gold text-xs font-body">{t.preferred_subject}</span>
                           </div>
                         )}
-                        {t.notes && <p className="font-body text-xs text-muted-foreground mt-2">💬 {t.notes}</p>}
+                        {t.message && <p className="font-body text-xs text-muted-foreground mt-2">💬 {t.message}</p>}
                       </div>
                     </div>
                   </div>
@@ -949,24 +953,23 @@ const AdminDashboard = () => {
               </div>
             </TabsContent>
 
-            {/* Seeker Leads Tab */}
+            {/* Seeker Leads Tab (source: leads where kind=lesson_request) */}
             <TabsContent value="seekers">
               <div className="space-y-3">
                 {seekerLeads.map((s) => (
                   <div key={s.id} className="bg-card rounded-2xl border border-border p-5 hover:border-magenta/30 transition-all">
                     <div className="flex items-center gap-2 mb-1">
-                      <h3 className="font-display text-base font-bold text-card-foreground">{s.contact_name}</h3>
+                      <h3 className="font-display text-base font-bold text-card-foreground">{s.full_name}</h3>
                       <Badge className="bg-gradient-magenta text-primary-foreground font-body">
                         {s.status === "new" ? "✨ חדש" : s.status}
                       </Badge>
                     </div>
                     <div className="flex flex-wrap gap-3 text-sm font-body text-muted-foreground">
                       {s.phone && <span className="flex items-center gap-1"><Phone className="w-3 h-3" /> {s.phone}</span>}
-                      {s.city && <span className="flex items-center gap-1"><MapPin className="w-3 h-3" /> {s.city}</span>}
-                      {s.lesson_type && <span>סוג: {s.lesson_type}</span>}
-                      {s.subject && <span>נושא: {s.subject}</span>}
+                      {s.area && <span className="flex items-center gap-1"><MapPin className="w-3 h-3" /> {s.area}</span>}
+                      {s.preferred_subject && <span>נושא: {s.preferred_subject}</span>}
                     </div>
-                    {s.notes && <p className="font-body text-xs text-muted-foreground mt-2">💬 {s.notes}</p>}
+                    {s.message && <p className="font-body text-xs text-muted-foreground mt-2">💬 {s.message}</p>}
                   </div>
                 ))}
                 {seekerLeads.length === 0 && <p className="text-center font-body text-muted-foreground py-16">אין פניות עדיין</p>}
