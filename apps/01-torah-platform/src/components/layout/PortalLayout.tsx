@@ -27,6 +27,7 @@ import {
   MessageCircle,
   Clock,
   UserCog,
+  GraduationCap,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Navbar } from "./Navbar";
@@ -69,16 +70,24 @@ export function PortalLayout() {
         ]
       : [];
 
-  // ארגון (architecture.md §5.2 "ארגון": "ניהול בתי כנסת קשורים"). synagogues +
-  // its RLS (synagogues_tenant_write_*) are not restricted to religious_council
-  // -- any tenant_admin/moderator/member of the owning tenant may write -- and
+  // ארגון (architecture.md §5.2 "ארגון": "ניהול בתי כנסת קשורים" +
+  // "ניהול מגידי שיעור משויכים לארגון"). synagogues + its RLS
+  // (synagogues_tenant_write_*) are not restricted to religious_council --
+  // any tenant_admin/moderator/member of the owning tenant may write -- and
   // the /portal/synagogues route+screen were already built+verified for
   // build_tasks#22, but PortalLayout.tsx only ever linked it for
   // religious_council, so the 3 live organization tenants had no nav path to
   // manage their linked synagogues despite the spec listing it for them too.
+  // "ניהול מגידי שיעור" was a second, separate spec line for organization --
+  // public.teachers had a tenant_id column but zero write RLS and zero screen
+  // anywhere (build_tasks#42, migration 20260831260000 added the tenant-scoped
+  // read/write RLS this new /portal/teachers screen relies on).
   const orgItems =
     tenant?.type === "organization"
-      ? [{ to: "/portal/synagogues", icon: Building2, label: "בתי כנסת קשורים" }]
+      ? [
+          { to: "/portal/synagogues", icon: Building2, label: "בתי כנסת קשורים" },
+          { to: "/portal/teachers", icon: GraduationCap, label: "מגידי שיעור" },
+        ]
       : [];
 
   // רב / מורה הוראה (architecture.md §5.2): "שאל את הרב" – ניהול שאלות ותשובות.
