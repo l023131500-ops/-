@@ -1,6 +1,6 @@
 import { Outlet, NavLink } from "react-router-dom";
 import { useSuperAdminGate } from "@/hooks/useSuperAdmin";
-import { LayoutDashboard, Building2, Users, Sparkles, MessageSquare, ShoppingCart, BarChart3, Lightbulb, MessageCircle, Settings2 } from "lucide-react";
+import { LayoutDashboard, Building2, Users, Sparkles, MessageSquare, ShoppingCart, BarChart3, Lightbulb, MessageCircle, Settings2, ShieldAlert } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Navbar } from "./Navbar";
 
@@ -22,6 +22,7 @@ export function AdminLayout() {
     { to: "/admin/tips", icon: Lightbulb, label: "טיפים יומיים" },
     { to: "/admin/forums", icon: MessageCircle, label: "פורומים" },
     { to: "/admin/teacher-features", icon: Settings2, label: "הגדרות מורים" },
+    { to: "/admin/audit-log", icon: ShieldAlert, label: "יומן ביקורת" },
   ];
 
   return (

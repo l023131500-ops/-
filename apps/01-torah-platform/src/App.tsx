@@ -102,6 +102,7 @@ const AdminMatching = lazy(() => import("@/pages/admin/Matching"));
 const AdminLeads = lazy(() => import("@/pages/admin/Leads"));
 const AdminCommerce = lazy(() => import("@/pages/admin/Commerce"));
 const AdminAnalytics = lazy(() => import("@/pages/admin/Analytics"));
+const AdminAuditLog = lazy(() => import("@/pages/admin/AuditLog"));
 
 // 404
 const NotFound = lazy(() => import("@/pages/NotFound"));
@@ -271,6 +272,7 @@ export default function App() {
                     <Route path="leads" element={<AdminLeads />} />
                     <Route path="commerce" element={<AdminCommerce />} />
                     <Route path="analytics" element={<AdminAnalytics />} />
+                    <Route path="audit-log" element={<AdminAuditLog />} />
                     <Route path="tips" element={<AdminTips />} />
                     <Route path="forums" element={<AdminForums />} />
                     <Route path="teacher-features" element={<AdminTeacherFeatures />} />
