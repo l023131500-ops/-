@@ -10253,3 +10253,70 @@
      מוזג, main לא נגע. System 35 KioskFleet לא נגע, per HARD STEERING;
      מערכות/סכימות מוגנות (08/09/bkalut-app/bkalot-admin/`zr_*`/webhook
      NEDARIM3873/`csj`/`csj_src`/`igud`/15-egod) לא נגעו.
+
+## 31/08/2026 (LOOP A) — 01-torah-platform: `forum_posts` — member זר יכול לחטוף/למחוק פוסט של member אחר
+
+753. **ההקשר.** המשך סבב P3 01-torah-platform (STEP 1 מאושר: P0 sys14
+     `done` מ-30/08, P1(35) אסור per HARD STEERING, P2(32/36)
+     `core.build_tasks` 0 `todo`, 15-egod עדיין לא ב-`list_projects`).
+     סבב #724-725 סגר את `is_pinned`/`is_locked` על `forum_posts` אבל
+     השאיר במפורש את `title`/`body`/`attachments` "חופשי לעריכה לכל
+     member בטננט" — בהנחה מוטעית שזה תוכן-שיתופי כמו קטלוג `materials`.
+     בדקתי את ההנחה הזו: בניגוד ל-`materials`, ל-`forum_posts` יש
+     עמודת-בעלות אמיתית (`user_id`, ה-author), ומסך היחיד שכותב לטבלה
+     (`admin/Forums.tsx`, `delete()`/`update({is_pinned})`/
+     `update({is_locked})`) לא מסנן לפי בעלים כלל — מסתמך לגמרי על
+     `forum_posts_tenant_write`, מדיניות `ALL` יחידה שמזהה `member` זהה
+     לגמרי ל-`moderator`/`tenant_admin` בלי שום בדיקת `user_id`.
+
+754. **הממצא.** אימות חי מול `bieebmnmkffwbqlsfozh` בטרנזקציה: משתמש
+     עם תפקיד `member` בלבד בטננט (`3c03f8db`, אפס תפקידים אחרים) יצר
+     פוסט-בדיקה בבעלות משתמש אחר (`f25f6e65`) ואז הריץ ישירות `UPDATE
+     forum_posts SET title='HIJACKED', body='defaced', user_id=<תוקף>
+     WHERE id=...` — הצליח **ללא שגיאה**, כולל גניבת ה-`user_id` עצמו
+     (תוקף יכול "לתפוס" בעלות על הפוסט). `DELETE` על אותו פוסט זר גם
+     הצליח. כל member בטננט יכול היה אם כך להשחית או למחוק כל פוסט של
+     כל member אחר באותו טננט, לא רק שדות-מודרציה.
+
+     **מה נבנה ואומת.** מיגרציה
+     `20260831200000_forum_posts_protect_content_ownership.sql`:
+     הרחבת הטריגר הקיים `protect_forum_posts_moderation_fields`
+     (מ-#725) כך שבנוסף ל-`is_pinned`/`is_locked` הוא גם מחזיר
+     `title`/`body`/`attachments`/`user_id` לערכם הישן ב-UPDATE, אלא
+     אם המבצע הוא `tenant_admin`/`moderator`/`super_admin` **או** ה-
+     author המקורי של הפוסט (`auth.uid() = old.user_id`) — revert
+     שקט, לא שגיאה, אותה תבנית כמו השדות הקודמים. בנוסף, טריגר `BEFORE
+     DELETE` חדש (`protect_forum_posts_delete`, אותה צורה כמו
+     `protect_materials_delete` מ-#748) שחוסם DELETE (עם `RAISE
+     EXCEPTION`) אלא אם `super_admin`/`tenant_admin`/`moderator` **או**
+     ה-author המקורי (בניגוד ל-`materials` — כאן יש נתיב-מחיקה-עצמית
+     לגיטימי כי `user_id` הוא עמודת-בעלות אמיתית, לא רק תוכן משותף).
+
+     אימות חי אחרי ה-apply, כל בדיקה בטרנזקציה נפרדת שנמחקה אוטומטית
+     (לא הייתה אף COMMIT באף אחת): (1) אותה תקיפה בדיוק (member זר
+     מעדכן title/body/user_id) — עכשיו חוזרת בשקט לערך המקורי, אין
+     שגיאה, `SELECT` מיד אחרי מאשר `title`/`body`/`user_id` ללא שינוי.
+     (2) אותו member זר מנסה `DELETE` — נכשל עם `P0001: only the post
+     author, a moderator, or a tenant admin may delete a forum post`.
+     (3) ה-author האמיתי (עם תפקיד `member` בטננט) עורך את הפוסט של
+     עצמו (`UPDATE ... RETURNING`) — מצליח, השינוי נקלט בפועל; ואז
+     מוחק את הפוסט של עצמו (`DELETE ... RETURNING`) — מצליח, מחזיר את
+     השורה עם הכותרת שהוא בעצמו ערך קודם (מוכיח שה-UPDATE וה-DELETE
+     שניהם עבדו על אותה שורה באותה טרנזקציה). (4) `moderator` אמיתי
+     (משתמש אחר, תפקיד זמני) מוחק פוסט **של מישהו אחר** בהצלחה — הנתיב
+     הלגיטימי של מודרציה לא נפגע. `COUNT` נפרד אחרי כל טרנזקציה (כל
+     הבדיקות בוצעו בקריאות MCP נפרדות ללא `COMMIT` מפורש כלל — אומת
+     ישירות שחיבור-בדיקה לא-מחויב נמחק אוטומטית: שורת-בדיקה f001 מ-
+     בדיקת-הבסיס לפני-התיקון נעלמה גם בלי `ROLLBACK` מפורש) אישר אפס
+     שאריות: 0 שורות `forum_posts` בטווח ה-UUID של הבדיקה, 0 שורות
+     `user_roles` זמניות. `get_advisors(security)`: 74 לינטים לפני
+     ואחרי הסבב — ללא שינוי, אפס איזכור חדש של `forum_posts`. אין שינוי
+     בקוד-לקוח (`admin/Forums.tsx` ממשיך לעבוד ללא שינוי — מודרטור
+     אמיתי עדיין יכול הכל, ורק תוקף לא-מודרטור-לא-author נחסם). אין
+     שליחה/חיוב/מייל אמיתיים. אפס רגרסיה — קובץ מיגרציה אחד, פונקציה
+     קיימת אחת הורחבה + פונקציה/טריגר חדשים אחד; שום מדיניות/טריגר
+     קיים אחר לא נגעו. נדחף לענף חדש
+     `fix/01-torah-platform-forum-post-ownership-0831`. לא מוזג, main
+     לא נגע. System 35 KioskFleet לא נגע, per HARD STEERING; מערכות/
+     סכימות מוגנות (08/09/bkalut-app/bkalot-admin/`zr_*`/webhook
+     NEDARIM3873/`csj`/`csj_src`/`igud`/15-egod) לא נגעו.
