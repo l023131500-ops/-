@@ -1,6 +1,6 @@
 import { Link, useLocation } from "react-router-dom";
 import {
-  LayoutDashboard, Calendar, Users, FileText, Settings, LogOut, BookOpen, MessageSquare, ShieldCheck, Building2, Mail, ClipboardCheck, BadgeCheck
+  LayoutDashboard, Calendar, Users, FileText, Settings, LogOut, BookOpen, MessageSquare, ShieldCheck, Building2, Mail, ClipboardCheck, BadgeCheck, HeartHandshake, Heart
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useRole } from "@/hooks/useRole";
@@ -43,6 +43,8 @@ const menuByType: Record<string, { icon: any; label: string; path: string }[]> =
     { icon: Building2, label: "בתי כנסת באזור", path: "/portal/synagogues" },
     { icon: BookOpen, label: "שיעורים באזור", path: "/portal/lessons" },
     { icon: Calendar, label: "לוח פעילות", path: "/portal/schedule" },
+    { icon: HeartHandshake, label: "שירותי קהילה", path: "/portal/community-services" },
+    { icon: Heart, label: "אזכרות ויארצייט", path: "/portal/azkarot" },
   ],
 };
 
