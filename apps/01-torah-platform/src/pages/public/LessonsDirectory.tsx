@@ -11,6 +11,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useTenant } from "@/hooks/useTenant";
 import { useAuth } from "@/hooks/useAuth";
 import { Skeleton } from "@/components/ui/skeleton";
+import { toast } from "sonner";
 
 const DAY_NAMES = ["ראשון", "שני", "שלישי", "רביעי", "חמישי", "שישי", "שבת"];
 
@@ -117,10 +118,15 @@ export default function LessonsDirectory() {
 
   const toggleBookmark = async (lessonId: string, isSaved: boolean) => {
     if (!user?.id) return;
-    if (isSaved) {
-      await supabase.from("lesson_bookmarks").delete().eq("user_id", user.id).eq("lesson_id", lessonId);
-    } else {
-      await supabase.from("lesson_bookmarks").insert({ user_id: user.id, lesson_id: lessonId });
+    const { error } = isSaved
+      ? await supabase.from("lesson_bookmarks").delete().eq("user_id", user.id).eq("lesson_id", lessonId)
+      : await supabase.from("lesson_bookmarks").insert({ user_id: user.id, lesson_id: lessonId });
+    if (error) {
+      // e.g. a double-click race hits the UNIQUE(user_id, lesson_id) constraint
+      // with a 23505 on insert. Surface it instead of refetching as if it worked --
+      // the star would otherwise flip to "saved" while no row exists (or vice versa).
+      toast.error(isSaved ? "הסרת השיעור מהשמורים נכשלה" : "שמירת השיעור נכשלה");
+      return;
     }
     queryClient.invalidateQueries({ queryKey: ["lesson-bookmarks", user.id] });
   };
