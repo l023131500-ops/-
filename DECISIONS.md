@@ -9229,3 +9229,59 @@
      per HARD STEERING; מערכות/סכימות מוגנות (08/09/bkalut-app/
      bkalot-admin/`zr_*`/webhook NEDARIM3873/`csj`/`csj_src`/`igud`/
      15-egod) לא נגעו.
+
+717. **ההקשר.** המשך סבב P3 01-torah-platform (STEP 1 מאושר: P0 sys14
+     `done`, P1(35) אסור per HARD STEERING, P2(32/36) build_tasks 0
+     todo, 15-egod עדיין לא ב-`list_projects`). הסבב הקודם (#714-716)
+     נעל את צד ה-**כתיבה** של `rabbi_questions` אבל השאיר הערה
+     מפורשת שצד ה-**קריאה** עדיין פתוח — בדקתי את זה עכשיו כמחלקת-
+     באג נפרדת ואמיתית: דליפת PII, לא עקיפת-מודרציה.
+
+718. **הממצא.** `rabbi_questions_tenant_read` (RLS SELECT) היא
+     `user_in_tenant(tenant_id) OR (is_public=true AND answer IS NOT
+     NULL)`. `user_in_tenant()` נכון לכל חבר בטננט — לא מבחין בין
+     `member` רגיל ל-`moderator`/`tenant_admin` — אז כל `member`
+     חתום-פנימה יכול היה `.from("rabbi_questions").select("*")` ולקרוא
+     כל שאלה של **כל חבר אחר** בטננט, כולל `from_name`/`from_email`
+     ותוכן השאלה המלא, גם כש-`is_public=false` וגם כשהיא אנונימית —
+     לפני שרב בכלל ענה. `public/RabbiQuestions.tsx` מסנן
+     `is_public=true and answer is not null` בצד הלקוח בלבד — זה לא
+     גבול אבטחה, RLS הוא. אותה מחלקה בדיוק חלה גם על
+     `rabbi_questions_tenant_write_del`: `member` רגיל יכול למחוק כל
+     שאלה בטננט, לא רק "שלו" (וגם אין עמודת בעלים בטבלה, אז "שלו" לא
+     בר-הגדרה בכלל — אין שום שימוש לגיטימי ל-`member` במחיקה
+     רחבה-טננט). המסך היחיד שקורא/עונה על הכל (`admin/RabbiQuestions.tsx`,
+     שנבנה בסבב הקודם) הוא מסך moderator/tenant_admin לפי מיקומו
+     בתפריט הניהול — אז הגבלת קריאה+מחיקה מלאה ל-moderator/
+     tenant_admin/super_admin לא פוגעת בשום יכולת לגיטימית.
+
+719. **מה נבנה ואומת.** מיגרציה
+     `20260831090000_rabbi_questions_restrict_read_to_moderators.sql`:
+     `drop policy + create policy` על `rabbi_questions_tenant_read`
+     (SELECT) ו-`rabbi_questions_tenant_write_del` (DELETE) — שתיהן
+     מוגבלות עכשיו ל-`is_super_admin OR has_tenant_role(...,
+     'tenant_admin') OR has_tenant_role(..., 'moderator')`, בעוד ה-
+     SELECT משאיר גם את הענף הציבורי `(is_public=true AND answer IS
+     NOT NULL)` פתוח לכולם (כולל anon) בדיוק כמו קודם. אין שינוי
+     `.tsx`/`.ts` — מיגרציית SQL בלבד. אומת חי ב-`bieebmnmkffwbqlsfozh`
+     עם שני משתמשים אמיתיים (`f25f6e65` בתור moderator שיוצר את
+     הנתונים כדי לעקוף גם את טריגר-ההגנה מהסבב הקודם, `3c03f8db` בתור
+     ה-member התוקף) בכמה טרנזקציות rolled-back: (1) **לפני** התיקון —
+     ה-member קרא בהצלחה `from_name`/`from_email`/`question` מלאים של
+     שאלה פרטית-אנונימית של מישהו אחר (אישר את הדליפה). (2) **אחרי**
+     התיקון, אותו member רואה רק את השורה הציבורית-שנענתה, לא את
+     הפרטית — ומחיקה שלו על השורה הפרטית נחסמה (אומת עם `COUNT` נפרד
+     תחת role postgres, לא רק היעדר-נראות מתחת ל-RLS של אותו member).
+     (3) `moderator` אמיתי (אותו user_id, תפקיד שונה) רואה את שתי
+     השורות וגם מוחק בהצלחה — מוכיח שנתיב המודרציה הלגיטימי לא נפגע.
+     (4) `anon` (לא מחובר) רואה רק את השורה הציבורית-שנענתה — זהה
+     להתנהגות מלפני התיקון. כל הטרנזקציות הסתיימו ב-`ROLLBACK`;
+     `COUNT` נפרד אימת 0 שורות `QA DELETE ME%`/`qa-delete-me` ו-0
+     שורות `user_roles` זמניות אחרי כל אחת. `get_advisors(security)`
+     הופעל אחרי ה-apply — 70 lints (זהה לבסיס של הסבב הקודם), אפס
+     איזכור חדש של `rabbi_questions`. אין שליחה/חיוב/מייל אמיתיים,
+     TEST MODE מכובד. נדחף לענף חדש
+     `fix/01-torah-platform-rabbi-questions-read-leak-0831`. לא מוזג,
+     main לא נגע. System 35 KioskFleet לא נגע, per HARD STEERING;
+     מערכות/סכימות מוגנות (08/09/bkalut-app/bkalot-admin/`zr_*`/webhook
+     NEDARIM3873/`csj`/`csj_src`/`igud`/15-egod) לא נגעו.
