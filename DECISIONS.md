@@ -8200,3 +8200,53 @@
      NEDARIM3873/`csj`/`csj_src`/`igud`/15-egod) לא נגעו. אין
      שליחה/חיוב אמיתיים בסבב זה (רק כתיבת שורות CSV-בדיקה, לא הורץ
      מול הדאטהבייס האמיתי כי מדובר בבאג לוגיקת-לקוח טהור).
+
+## 31/08/2026 (LOOP A, סבב נוסף ו') — `public/FindLesson.tsx` (`/find-lesson`): תפריט "נושא הלימוד" קרא עמודה שלא קיימת (`name_he`) — כל הבחירות ריקות
+
+663. **ההקשר.** P0 (מערכת 14) אומת שוב `done`. P1 (35) אסור per
+     HARD STEERING. P2 (32/36) אומת שוב כ-0 שורות `todo`. `15-egod`
+     עדיין לא נגיש דרך ה-MCP. סוכן Explore נשלח לסרוק קבצים
+     שמסבבים קודמים כיסו פחות (רשימת `PrayerTimesTab`/`Forums`/
+     `RabbiPublic`/`RabbiQuestions`/`Invite`/`DonationSuccess`/
+     `SynagogueDetail`/`Attendance`/`Analytics`/`Commerce`/טפסים/
+     `lib/*Excel*`/`shop/*` ועוד) בחיפוש אחר אותן מחלקות-באג
+     שכבר נמצאו שוב ושוב (אי-התאמת שם-עמודה, בליעת שגיאות, נתיב-
+     כתיבה שלא קיים). מועמד יחיד חזק חזר: `FindLesson.tsx` שורה 122.
+
+664. **הממצא.** `pages/public/FindLesson.tsx` (מנותב חי וללא-אימות
+     ב-`/find-lesson`, `App.tsx:188`) בונה את תפריט "נושא הלימוד"
+     מ-`topics` (שאילתה על `lesson_topics` שדה `select("*")`) ומרנדר
+     `<SelectItem key={t.id} value={t.name_he}>{t.name_he}</SelectItem>`
+     — אך `information_schema.columns` החי מול `bieebmnmkffwbqlsfozh`
+     מאשר ש-`lesson_topics` מכילה `id, slug, name, parent_id,
+     description, icon, sort_order, is_active, created_at` — **אין
+     עמודת `name_he` בכלל**. `topics_read` מתירה SELECT ל-`public`
+     (כולל אנונימי), ויש 22 נושאים פעילים חיים (`is_active=true`)
+     עם שמות עבריים אמיתיים בעמודת `name` (למשל "גמרא"/"הלכה"/
+     "דף יומי"). כלומר `t.name_he` היה תמיד `undefined` — גם ה-
+     `value` וגם התווית המוצגת של **כל** פריטי התפריט היו ריקים,
+     כך שמבקר לא יכול היה לבחור נושא לימוד בטופס הזה כלל (ותוצאת
+     הבחירה גם נשלחת ל-`leads.preferred_subject`/`raw_data.topic`
+     בהגשה — נשארת ריקה גם שם).
+
+665. **מה נעשה + אימות.** שינוי חד-שורתי: שני המקומות הוחלפו
+     מ-`t.name_he` ל-`t.name`. `npx esbuild --bundle
+     --packages=external --jsx=automatic` על הקובץ המלא נקי (רק
+     אזהרות `import.meta` הרגילות שחוזרות בכל קובץ באפליקציה הזו).
+     אומת מול הסכמה החיה: `SELECT column_name FROM
+     information_schema.columns WHERE table_name='lesson_topics'`
+     מאשר את רשימת העמודות לעיל; `SELECT count(*) FROM lesson_topics
+     WHERE is_active=true` מחזיר 22; `SELECT id,name FROM
+     lesson_topics WHERE is_active=true ORDER BY sort_order LIMIT 3`
+     מחזיר שורות עם `name` עברי אמיתי (למשל "גמרא"). סימולציית
+     רינדור ישן-מול-חדש ב-Node על אותן שורות אמיתיות: הקוד הישן
+     מפיק `{key}` בלבד (value/label חסרים לגמרי), הקוד החדש מפיק
+     `{key,value,label}` מלאים עם הטקסט העברי הנכון. `git diff
+     --stat`: קובץ אחד, 1+/1-, שינוי מזערי וממוקד. נדחף לענף חדש
+     `fix/01-torah-platform-findlesson-topic-name-0831` (`1d5ecdfd`)
+     — לא מוזג, main לא נגע. System 35 KioskFleet לא נגע, per HARD
+     STEERING; P2 (32/36) `build_tasks` נשאר 0 todo; מערכות/סכימות
+     מוגנות (08/09/bkalut-app/bkalot-admin/`zr_*`/webhook
+     NEDARIM3873/`csj`/`csj_src`/`igud`/15-egod) לא נגעו. אין
+     שליחה/חיוב אמיתיים בסבב זה (רק שאילתות SELECT מול הדאטהבייס
+     האמיתי, אין כתיבה/מחיקה).
