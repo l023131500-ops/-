@@ -8865,3 +8865,83 @@
      לא מוזג, main לא נגע. System 35 KioskFleet לא נגע, per HARD
      STEERING; מערכות/סכימות מוגנות (08/09/bkalut-app/bkalot-admin/
      `zr_*`/webhook NEDARIM3873/`csj`/`csj_src`/`igud`/15-egod) לא נגעו.
+
+## 31/08/2026 (LOOP A, סבב נוסף) — `nedarim-create-payment`: החנות סמכה על מחיר שהלקוח עצמו כתב, לא על `products.price_ils` — זיוף הזמנה זולה שהתשלום האמיתי היה מכבד
+
+700. **ההקשר.** המשך אותה שיטת חקירה חופשית (הבעיות הפתוחות היחידות
+     ב-01-torah-platform — #260/#261/#203/#201/#172/#138 — כולן עדיין
+     חסומות על הכרעת-בעלים, לא נגעתי בהן). שני סוכני Explore/
+     general-purpose סרקו אזורים פחות-מבוקרים (`components/bulk`,
+     `components/studyday`, `lib/lessonExcel*`, edge functions
+     `nedarim-admin`/`chat`/`search-lessons`). ממצא ראשון (`.filter
+     ("raw_request->>our_payment_id", "eq", ...)` ב-`nedarim-webhook`)
+     התברר כ-false-positive באימות עצמי — PostgREST תומך רשמית
+     בתחביר `->>` בתוך שם עמודה של פילטר, וה-webhook כבר עובד נכון.
+     ממצא שני (`ExcelImportExport.tsx`/`StudyDayExcelImportExport.tsx`
+     לא מפצלים מחרוזת ימים מופרדת-פסיקים) התברר כקוד מת לגמרי —
+     `grep` מאשר אפס מייבאים לשני הקבצים בכל הריפו; מסלול ה-bulk-upload
+     החי (`pages/portal/BulkUpload.tsx`) הוא יישום CSV נפרד לחלוטין
+     שלא נוגע ב-`schedule_days`. חקירה נוספת ב-`SynagogueShowcase.tsx`
+     (`lessonsToBlocks` קורא `l.specific_date`/`l.schedule_days`/
+     `l.synagogue_portal_id`/`l.org_name` שאינם קיימים בכלל בטבלת
+     `lessons` החיה) התבררה כתסמין של אותה בעיה כבר-פתוחה #260 —
+     `synagogue_portals`/`org_portals`/`study_day_events` עצמן אינן
+     קיימות ב-DB (`information_schema.tables` מאושר ריק לשלושתן),
+     כך שכל תת-המערכת הזו כבר חסומה על הכרעת-מוצר קיימת.
+
+701. **הממצא האמיתי.** קריאה מלאה של `src/pages/shop/Checkout.tsx` +
+     `supabase/functions/nedarim-create-payment/index.ts`: ה-checkout
+     יוצר שורת `orders`+`order_items` עם `total_ils`/`unit_price_ils`
+     שמגיעים ישירות מ-`useCart` (zustand, `persist` ב-localStorage —
+     ניתן לעריכה חופשית בצד הלקוח, וגם בלי זה — כל בקשת רשת ל-`orders`/
+     `order_items` נכתבת ישירות ע"י הדפדפן). מדיניות ה-RLS על שתי
+     הטבלאות (`orders_insert`/`oi_insert`, migration
+     `20260519000003_commerce.sql`) היא `with check (true)` במפורש —
+     "אורחים יכולים להזמין". `nedarim-create-payment` כבר מכיל בדיקת
+     אבטחה קיימת ומתועדת לתרחיש `donation_id`/`order_id` (סעיף 1a,
+     הערה מפורטת מ-25/08 בערך) — אך היא בודקת רק
+     `ord.total_ils === body.amount`, כלומר שהסכום המבוקש תואם את מה
+     שהלקוח *עצמו* כתב בשורת ה-`orders` בזמן ה-INSERT — לא שהוא תואם
+     את `products.price_ils` האמיתי. תוקף (גם אנונימי) יכול לכתוב
+     ישירות שורת `orders`+`order_items` עם `total_ils`/`unit_price_ils`
+     מזויפים-נמוכים (למשל ₪1 במקום ₪500), לבקש תשלום נדרים אמיתי על
+     הסכום המזויף (שעובר את הבדיקה הקיימת כי הוא תואם-לעצמו), להשלים
+     תשלום אמיתי דרך ה-iframe החוקי, וה-webhook יסמן את ההזמנה
+     `payment_status=captured` במחיר המזויף — פער-הכנסות אמיתי, מאותה
+     חומרה כמו הבאגים הקריטיים שכבר תוקנו בעבר בקובץ הזה (#196, #194).
+
+702. **מה נבנה.** בתוך אותו בלוק `if (body.order_id)` ב-
+     `nedarim-create-payment/index.ts`, אחרי הבדיקה הקיימת: שליפת כל
+     `order_items` של ההזמנה, שליפת `products.price_ils` האמיתי לכל
+     `product_id` מעורב, וחישוב `realTotal = Σ(quantity × real
+     price_ils)`. אם `|realTotal - body.amount| > 0.01` — הבקשה נדחית
+     ב-400 `"order total does not match live product prices"` *לפני*
+     יצירת ה-iframe. פריט ללא `product_id` (לא קורה היום בקוד החי)
+     ממשיך ליפול-חזרה על `unit_price_ils` הקיים, כך שאין רגרסיה
+     לתרחיש שלא קיים בפועל. תוסף טהור בתוך הבלוק הקיים — לא נגעתי
+     בתרחיש `donation_id` (אין מוצרים/מחירים שם, לא רלוונטי) ולא
+     בשום דבר אחר בקובץ.
+
+703. **אימות.** `npx esbuild --bundle` + מאזן-סוגריים ידני (57/57
+     מסולסלים, 133/133 עגולים) — נקי. אימות SQL בשתי טרנזקציות
+     rolled-back על `bieebmnmkffwbqlsfozh` (מוצר אמיתי ₪500, הזמנה
+     מזויפת ₪1 מול הזמנה כנה ₪1000 בשני יחידות): החישוב ב-SQL תואם
+     בדיוק את הלוגיקה ב-TypeScript, ומאשר שההזמנה הכנה לא הייתה
+     נדחית ואילו המזויפת כן — אפס שאריות אחרי `ROLLBACK`. פרסתי את
+     הפונקציה (`deploy_edge_function`, `verify_jwt=false` כפי שהיה,
+     גרסה 2→3) ואימתתי `get_edge_function` תואם בית-לבית לקובץ
+     המקומי. אימות **חי אמיתי** מול הפונקציה הפרוסה בפועל (לא סימולציה
+     בלבד): יצרתי מוצר+הזמנה+פריט-הזמנה אמיתיים (`QA DELETE ME`,
+     ₪500 אמיתי מול ₪1 מזויף) וקראתי ל-endpoint החי דרך `curl` פעמיים
+     — הבקשה המזויפת (amount=1) חזרה `400 {"ok":false,"error":"order
+     total does not match live product prices"}`; אחרי עדכון ההזמנה
+     למחיר האמיתי (₪500) אותה קריאה בדיוק חזרה `200 {"ok":true,
+     "iframe_url":...}` — כלומר הזרימה החוקית לא נפגעה. ה-iframe_url
+     שהוחזר **מעולם לא נפתח/נשלח** — אין חיוב אמיתי בסבב זה, תואם
+     כלל מצב-הטסט. מחקתי את כל שורות ה-QA (`products`/`orders`/
+     `order_items`/`nedarim_transactions`) מיד אחרי — אושר אפס שאריות
+     בשאילתת `count(*)`. נדחף לענף חדש
+     `fix/01-torah-platform-checkout-price-tampering-0831`. לא מוזג,
+     main לא נגע. System 35 KioskFleet לא נגע, per HARD STEERING;
+     מערכות/סכימות מוגנות (08/09/bkalut-app/bkalot-admin/`zr_*`/
+     webhook NEDARIM3873/`csj`/`csj_src`/`igud`/15-egod) לא נגעו.

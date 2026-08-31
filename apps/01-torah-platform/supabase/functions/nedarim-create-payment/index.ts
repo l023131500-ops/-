@@ -118,6 +118,36 @@ Deno.serve(async (req) => {
       if (!ord || ord.tenant_id !== body.tenant_id || ord.payment_status !== "pending" || Number(ord.total_ils) !== Number(body.amount)) {
         return json({ ok: false, error: "order_id does not match a pending order for this tenant/amount" }, 400);
       }
+
+      // orders_insert/oi_insert RLS is "with check (true)" (guest checkout needs
+      // it), so the total_ils match just above only proves the requested amount
+      // matches whatever total the client itself chose to write into `orders`
+      // at insert time -- not that it reflects the real product prices. A
+      // forged order_items row (fabricated low unit_price_ils matching a
+      // fabricated low orders.total_ils) would sail through that check and get
+      // paid for less than the products actually cost. Recompute the total from
+      // order_items x live products.price_ils and reject any mismatch, closing
+      // this gap the same way the donation_id/amount check above closes its own.
+      const { data: items } = await supabase
+        .from("order_items")
+        .select("product_id, quantity, unit_price_ils")
+        .eq("order_id", body.order_id);
+      if (items?.length) {
+        const productIds = [...new Set(items.map((i) => i.product_id).filter(Boolean))];
+        const { data: products } = productIds.length
+          ? await supabase.from("products").select("id, price_ils").in("id", productIds)
+          : { data: [] as { id: string; price_ils: number }[] };
+        const priceMap = new Map((products ?? []).map((p) => [p.id, Number(p.price_ils)]));
+        const realTotal = items.reduce((sum, it) => {
+          const realPrice = it.product_id && priceMap.has(it.product_id)
+            ? priceMap.get(it.product_id)!
+            : Number(it.unit_price_ils);
+          return sum + realPrice * it.quantity;
+        }, 0);
+        if (Math.abs(realTotal - Number(body.amount)) > 0.01) {
+          return json({ ok: false, error: "order total does not match live product prices" }, 400);
+        }
+      }
     }
 
     // 1. Load tenant's Nedarim config (mosad_id + api_valid per tenant)
