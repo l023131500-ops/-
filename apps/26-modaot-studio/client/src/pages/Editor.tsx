@@ -39,6 +39,7 @@ import {
   CheckCheck,
   Mic,
   Video,
+  SquareStack,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -65,6 +66,13 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuLabel,
+  DropdownMenuItem,
+} from "@/components/ui/dropdown-menu";
 import { useToast } from "@/hooks/use-toast";
 
 import CanvasStage from "@/components/CanvasStage";
@@ -99,6 +107,59 @@ interface BackgroundRow {
   engine: string;
   dataUrl: string;
   createdAt: number;
+}
+
+// פריסות "קטע" — היכן על הקנבס תמוקם תמונת-רקע נוספת שאינה הרקע הכללי (פריט 54,
+// "הוספת רקעים נוספים לקטעים בעמוד"). כל פריסה היא פונקציה טהורה של מידות הקנבס.
+type SectionKey = "top" | "bottom" | "right" | "left";
+const SECTION_PRESETS: { key: SectionKey; label: string; rect: (w: number, h: number) => { x: number; y: number; width: number; height: number } }[] = [
+  { key: "top", label: "רצועה עליונה", rect: (w, h) => ({ x: 0, y: 0, width: w, height: Math.round(h * 0.35) }) },
+  { key: "bottom", label: "רצועה תחתונה", rect: (w, h) => ({ x: 0, y: Math.round(h * 0.65), width: w, height: Math.round(h * 0.35) }) },
+  { key: "right", label: "מחצית ימין", rect: (w, h) => ({ x: Math.round(w * 0.5), y: 0, width: Math.round(w * 0.5), height: h }) },
+  { key: "left", label: "מחצית שמאל", rect: (w, h) => ({ x: 0, y: 0, width: Math.round(w * 0.5), height: h }) },
+];
+
+// כפתור+תפריט קטן (משמש בספריית הרקעים, בוריאנטים של AI, ובתצוגה המוגדלת) להוספת
+// תמונת רקע כשכבה על קטע מהעמוד, לצד האפשרות הקיימת להחיל אותה כרקע הכללי כולו.
+function SectionBgMenu({
+  dataUrl,
+  onAdd,
+  className,
+  testId,
+}: {
+  dataUrl: string;
+  onAdd: (dataUrl: string, section: SectionKey) => void;
+  className: string;
+  testId?: string;
+}) {
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <button
+          type="button"
+          className={className}
+          title="הוסף כרקע לקטע בעמוד (לא מחליף את הרקע הכללי)"
+          onClick={(e) => e.stopPropagation()}
+          data-testid={testId}
+        >
+          <SquareStack className="h-3 w-3 text-white" />
+        </button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end" dir="rtl" className="border-[#C9A227]/30 bg-[#0E1830] text-[#F5EEDD]">
+        <DropdownMenuLabel className="text-[#F5EEDD]/70">הוסף כרקע לקטע</DropdownMenuLabel>
+        {SECTION_PRESETS.map((p) => (
+          <DropdownMenuItem
+            key={p.key}
+            onClick={() => onAdd(dataUrl, p.key)}
+            className="cursor-pointer text-[#F5EEDD] focus:bg-[#C9A227]/20 focus:text-[#F5EEDD]"
+            data-testid={`menuitem-section-${p.key}`}
+          >
+            {p.label}
+          </DropdownMenuItem>
+        ))}
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
 }
 
 // שולף עד 4 צבעי פלטה (ראשי+משני) מ-kitJson לתצוגת נקודות-צבע קטנה בכרטיס
@@ -295,6 +356,7 @@ export default function Editor() {
 
   // ---- ניהול שכבות: הוספה / מחיקה / שכפול / נראות / נעילה / סדר ----
   const maxZ = () => doc!.layers.reduce((m, l) => Math.max(m, l.z ?? 0), 0);
+  const minZ = () => doc!.layers.reduce((m, l) => Math.min(m, l.z ?? 0), 0);
 
   // הוספת שכבת טקסט חופשית מעל המודעה (ניתנת לגרירה/עריכה/מחיקה)
   function handleAddTextLayer() {
@@ -662,6 +724,32 @@ export default function Editor() {
     toast({ title: "הרקע הנבחר הוחל" });
     setAiVariants([]);
     setAiDialogOpen(false);
+  }
+
+  // הוספת תמונת-רקע (מהספרייה / AI / וריאנט) כשכבת-תמונה על קטע מהעמוד בלבד —
+  // לא מחליפה את הרקע הכללי (background), אלא מוסיפה שכבת image נוספת בפריסה
+  // מוגדרת-מראש (SECTION_PRESETS), ממוקמת מתחת לכל שאר השכבות (z נמוך מהמינימום
+  // הקיים) כדי שהיא תשב מעל הרקע הראשי אך מתחת לטקסט/עיטורים — ניתנת לגרירה/מחיקה
+  // ככל שכבת תמונה רגילה, ר' פריט 54 ב-build_tasks.
+  function addSectionBackground(dataUrl: string, sectionKey: SectionKey) {
+    const preset = SECTION_PRESETS.find((s) => s.key === sectionKey) ?? SECTION_PRESETS[0];
+    const rect = preset.rect(doc!.width, doc!.height);
+    const id = nextId("secbg");
+    const layer: ImageLayer = {
+      id,
+      type: "image",
+      src: dataUrl,
+      x: rect.x,
+      y: rect.y,
+      width: rect.width,
+      height: rect.height,
+      fit: "cover",
+      label: `רקע לקטע: ${preset.label}`,
+      z: minZ() - 1,
+    };
+    updateDoc({ ...doc!, layers: [...doc!.layers, layer] });
+    setSelectedId(id);
+    toast({ title: `הרקע נוסף כ${preset.label} — ניתן לגרור/למחוק כמו כל שכבה` });
   }
 
   async function handleSaveProject() {
@@ -1566,16 +1654,23 @@ export default function Editor() {
           {aiVariants.length > 0 && (
             <div className="grid grid-cols-2 gap-2" data-testid="grid-ai-background-variants">
               {aiVariants.map((v) => (
-                <button
-                  key={v.engine}
-                  type="button"
-                  onClick={() => applyAiBackgroundVariant(v)}
-                  className="overflow-hidden rounded-md border border-[#C9A227]/30 text-right hover:border-[#C9A227]"
-                  data-testid={`button-ai-variant-${v.engine}`}
-                >
-                  <img src={v.dataUrl} alt={v.label} className="h-24 w-full object-cover" />
-                  <span className="block px-2 py-1 text-xs text-[#F5EEDD]/80">{v.label}</span>
-                </button>
+                <div key={v.engine} className="group relative overflow-hidden rounded-md border border-[#C9A227]/30 hover:border-[#C9A227]">
+                  <button
+                    type="button"
+                    onClick={() => applyAiBackgroundVariant(v)}
+                    className="block w-full text-right"
+                    data-testid={`button-ai-variant-${v.engine}`}
+                  >
+                    <img src={v.dataUrl} alt={v.label} className="h-24 w-full object-cover" />
+                    <span className="block px-2 py-1 text-xs text-[#F5EEDD]/80">{v.label}</span>
+                  </button>
+                  <SectionBgMenu
+                    dataUrl={v.dataUrl}
+                    onAdd={addSectionBackground}
+                    className="absolute left-1 top-1 rounded bg-black/60 p-1 opacity-0 transition-opacity group-hover:opacity-100"
+                    testId={`button-ai-variant-section-${v.engine}`}
+                  />
+                </div>
               ))}
             </div>
           )}
@@ -1613,6 +1708,12 @@ export default function Editor() {
                     >
                       <Eye className="h-3 w-3 text-white" />
                     </button>
+                    <SectionBgMenu
+                      dataUrl={bg.dataUrl}
+                      onAdd={addSectionBackground}
+                      className="absolute right-1 top-1 rounded bg-black/60 p-1 opacity-0 transition-opacity group-hover:opacity-100"
+                      testId={`button-library-bg-section-${bg.id}`}
+                    />
                   </div>
                 ))}
               </div>
@@ -1635,7 +1736,7 @@ export default function Editor() {
               className="max-h-[70vh] w-full rounded-md object-contain"
             />
           )}
-          <DialogFooter>
+          <DialogFooter className="gap-2 sm:justify-start">
             <Button
               className="bg-[#C9A227] text-[#0B1220] hover:bg-[#C9A227]/90"
               onClick={() => {
@@ -1644,8 +1745,37 @@ export default function Editor() {
               }}
               data-testid="button-library-preview-apply"
             >
-              החל רקע זה
+              החל כרקע כללי
             </Button>
+            {libraryPreview && (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className="gap-1.5 border-[#C9A227]/40 text-[#F5EEDD]"
+                    data-testid="button-library-preview-section"
+                  >
+                    <SquareStack className="h-4 w-4" /> הוסף כרקע לקטע
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="start" dir="rtl" className="border-[#C9A227]/30 bg-[#0E1830] text-[#F5EEDD]">
+                  <DropdownMenuLabel className="text-[#F5EEDD]/70">בחר מיקום בעמוד</DropdownMenuLabel>
+                  {SECTION_PRESETS.map((p) => (
+                    <DropdownMenuItem
+                      key={p.key}
+                      onClick={() => {
+                        addSectionBackground(libraryPreview.dataUrl, p.key);
+                        setLibraryPreview(null);
+                      }}
+                      className="cursor-pointer text-[#F5EEDD] focus:bg-[#C9A227]/20 focus:text-[#F5EEDD]"
+                      data-testid={`menuitem-library-preview-section-${p.key}`}
+                    >
+                      {p.label}
+                    </DropdownMenuItem>
+                  ))}
+                </DropdownMenuContent>
+              </DropdownMenu>
+            )}
           </DialogFooter>
         </DialogContent>
       </Dialog>
