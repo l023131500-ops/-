@@ -1,6 +1,6 @@
 import { Outlet, NavLink, Navigate, useLocation } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
-import { useTenant } from "@/hooks/useTenant";
+import { useTenant, useTenantFeature } from "@/hooks/useTenant";
 import {
   LayoutDashboard,
   Calendar,
@@ -26,6 +26,7 @@ import {
   Newspaper,
   MessageCircle,
   Clock,
+  UserCog,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Navbar } from "./Navbar";
@@ -33,6 +34,7 @@ import { Navbar } from "./Navbar";
 export function PortalLayout() {
   const { user, loading } = useAuth();
   const { tenant } = useTenant();
+  const hasLessons = useTenantFeature("lessons");
   const loc = useLocation();
 
   if (loading) {
@@ -77,10 +79,20 @@ export function PortalLayout() {
       ? [{ to: "/portal/rabbi-questions", icon: MessageCircle, label: "שאל את הרב" }]
       : [];
 
+  // pages/portal/Lessons.tsx ("השיעורים שלי") is a personal self-listing screen
+  // (scoped to rabbi_user_id, feeds the same public lessons directory the
+  // "lessons" tenant feature already gates in Navbar.tsx) -- distinct from the
+  // tenant-wide /portal/schedule above. It existed fully built and routed but
+  // was never in this nav (and self-wrapped a dead decoy layout -- also fixed).
+  const lessonsItems = hasLessons
+    ? [{ to: "/portal/lessons", icon: BookOpen, label: "השיעורים שלי" }]
+    : [];
+
   const items = [
     { to: "/portal", icon: LayoutDashboard, label: "סקירה", end: true },
     { to: "/portal/schedule", icon: Calendar, label: "לוח שיעורים" },
     { to: "/portal/participants", icon: Users, label: "משתתפים" },
+    ...lessonsItems,
     ...councilItems,
     ...rabbiItems,
     { to: "/portal/materials", icon: FileText, label: "חומרי לימוד" },
@@ -97,6 +109,7 @@ export function PortalLayout() {
     { to: "/portal/bulk-upload", icon: Upload, label: "העלאה מרובה" },
     { to: "/portal/study-schedule", icon: CalendarDays, label: "ימי לימוד" },
     { to: "/portal/settings", icon: Settings, label: "הגדרות" },
+    { to: "/portal/portal-settings", icon: UserCog, label: "הגדרות פורטל אישי" },
   ];
 
   return (

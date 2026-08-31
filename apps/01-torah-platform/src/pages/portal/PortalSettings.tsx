@@ -3,7 +3,6 @@ import type { Json } from "@/integrations/supabase/types";
 import { Settings, Save, Upload, Image as ImageIcon, Trash2, ExternalLink, Copy } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
-import PortalLayout from "@/components/portal/PortalLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -158,7 +157,6 @@ const PortalSettings = () => {
   const publicUrl = profile.id ? buildRabbiUrl(profile.id) : "";
 
   return (
-    <PortalLayout>
       <div className="max-w-4xl mx-auto space-y-6">
         <div className="flex items-start justify-between flex-wrap gap-3">
           <div>
@@ -310,7 +308,6 @@ const PortalSettings = () => {
           </Button>
         </div>
       </div>
-    </PortalLayout>
   );
 };
 
