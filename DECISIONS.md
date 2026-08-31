@@ -10194,3 +10194,62 @@
      STEERING; מערכות/סכימות מוגנות (08/09/bkalut-app/bkalot-admin/
      `zr_*`/webhook NEDARIM3873/`csj`/`csj_src`/`igud`/15-egod) לא
      נגעו.
+
+## 31/08/2026 (LOOP A) — 01-torah-platform: `storage.objects` UPDATE — אותו פער-טננט, נתיב-עקיפה שני (rename)
+
+751. **ההקשר.** סבב ~376. המשך ישיר לסבב הקודם (#749-750, סגירת
+     ה-INSERT על `storage.objects`). P0 (מערכת 14) `done`. P1 (35)
+     אסור per HARD STEERING. P2 (32/36) `core.build_tasks` נשאר 0
+     `todo`. הסבב הקודם תיקן רק את `authenticated_write_torah_buckets`
+     (INSERT) והשאיר במפורש את `owner_update_torah_buckets`/
+     `owner_delete_torah_buckets` בלי לגעת — "שום מדיניות SELECT/
+     UPDATE/DELETE קיימת ... לא נגעה". בדקתי אם ההשארה הזו בטוחה:
+     `pg_policies` על `storage.objects` הראה ש-`owner_update_torah_buckets`
+     (UPDATE) הוגדרה עם `using ((owner = auth.uid()) and (bucket_id =
+     ANY(...)))` **בלי** `with_check` נפרד. לפי סמנטיקת RLS של
+     PostgreSQL ל-UPDATE, כש-`with_check` לא מוגדר Postgres משתמש
+     ב-`using` גם לבדיקת השורה החדשה — כלומר הבדיקה היחידה על השורה
+     *אחרי* העדכון היא `owner = auth.uid()` (ללא שינוי), ו**מעולם לא**
+     נבדק ה-`name`/`bucket_id` החדשים. כל משתמש שהוא `owner` של
+     אובייקט כלשהו באחד מ-5 הבאקטים (כלומר כל מי שהעלה אי-פעם קובץ
+     לגיטימי תחת הטננט שלו-עצמו) יכול אם כך לקרוא ל-`UPDATE ... SET
+     name = '<טננט-זר>/...'` ולהעביר את הקובץ לתיקיית טננט אחר —
+     עוקף לגמרי את בדיקת ה-tenant שנוספה ל-INSERT בסבב הקודם, דרך
+     verb אחר (rename/move).
+
+752. **הממצא + התיקון.** אימות חי מול `bieebmnmkffwbqlsfozh` בטרנזקציית
+     `BEGIN...ROLLBACK`: משתמש-בדיקה עם תפקיד `member` בטננט A בלבד
+     הכניס קובץ לגיטימי ל-`materials-media/<טננט A>/legit.pdf` (מותר),
+     ואז ביצע `UPDATE` ששינה את ה-`name` ל-`materials-media/<טננט
+     B>/pwned.pdf` — **הצליח ללא שגיאה**, כשה-`owner` נשאר אותו תוקף
+     ואין לו שום תפקיד בטננט B. אותו סיכון-תפיסת-נתיב/דריסה שתועד
+     בסבב הקודם על ה-INSERT, מגיע עכשיו דרך UPDATE.
+
+     מיגרציה חדשה (`20260831190000_storage_tenant_scope_update.sql`)
+     מחליפה את `owner_update_torah_buckets`: משאירה את אותו `using`
+     (`owner = auth.uid()` + בבאקט מתוך ה-5), ומוסיפה `with_check`
+     מפורש עם אותו תנאי `owner = auth.uid()` **וגם**
+     `public.torah_bucket_write_allowed(bucket_id, name)` — הפונקציה
+     שכבר קיימת ואושרה מהסבב הקודם, ללא פונקציה/הרשאה חדשה. אין נגיעה
+     ב-`owner_delete_torah_buckets` (DELETE אין לו `name` חדש לבדוק —
+     אין וקטור מקביל שם).
+
+     אימות חי אחרי ה-apply (`apply_migration` ישיר, אין edge function):
+     אותה תקיפה בדיוק (rename לתוך תיקיית טננט B) נכשלת עכשיו עם
+     `42501: new row violates row-level security policy for table
+     "objects"`. אי-רגרסיה מאומתת בשלוש בדיקות נפרדות באותה טרנזקציה:
+     עדכון-מטא-דאטה-בלבד על קובץ קיים בתוך הטננט העצמי הצליח, שינוי-
+     שם בתוך אותה תיקיית-טננט הצליח, ו-rename בבאקט לא-tenant-prefixed
+     (`newsletters`) הצליח כרגיל ללא שינוי. `COUNT` נפרד אחרי כל
+     `ROLLBACK` אישר אפס שאריות ב-`storage.objects` וב-`user_roles`.
+     `get_advisors(security)`: 74 לינטים לפני ואחרי — ללא שינוי (אותה
+     פונקציה קיימת נעשה בה שימוש חוזר, שום grant/פונקציה חדשה לא
+     נוספו). אין שינוי בקוד-לקוח — אף מסך לא קורא ל-UPDATE על
+     `storage.objects` בנתיב tenant-prefixed היום, זו סגירת-פער
+     הגנתית טהורה. אין שליחה/חיוב/מייל אמיתיים בכל שלב. אפס רגרסיה —
+     קובץ מיגרציה אחד, מדיניות UPDATE אחת הוחלפה; שום מדיניות אחרת
+     לא נגעה. נדחף לאותו ענף מצטבר של היום
+     `fix/01-torah-platform-storage-tenant-scope-0831`. לא
+     מוזג, main לא נגע. System 35 KioskFleet לא נגע, per HARD STEERING;
+     מערכות/סכימות מוגנות (08/09/bkalut-app/bkalot-admin/`zr_*`/webhook
+     NEDARIM3873/`csj`/`csj_src`/`igud`/15-egod) לא נגעו.
