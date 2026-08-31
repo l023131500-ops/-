@@ -119,7 +119,7 @@ export default function FindLesson() {
               <Select value={form.topic} onValueChange={(v) => setForm({ ...form, topic: v })}>
                 <SelectTrigger><SelectValue placeholder="בחר נושא" /></SelectTrigger>
                 <SelectContent>
-                  {topics?.map((t: any) => <SelectItem key={t.id} value={t.name_he}>{t.name_he}</SelectItem>)}
+                  {topics?.map((t: any) => <SelectItem key={t.id} value={t.name}>{t.name}</SelectItem>)}
                 </SelectContent>
               </Select>
             </div>
