@@ -8071,3 +8071,69 @@
      (32/36) `build_tasks` נשאר 0 todo; מערכות/סכימות מוגנות (08/09/
      bkalut-app/bkalot-admin/`zr_*`/webhook NEDARIM3873/`csj`/`csj_src`/
      `igud`/15-egod) לא נגעו. אין שליחה/חיוב אמיתיים בסבב זה.
+
+## 31/08/2026 (LOOP A, סבב נוסף ד') — `public/LessonsDirectory.tsx` (`/lessons`, מאגר השיעורים הציבורי): שמירת/הסרת שיעור מהמועדפים התעלמה משגיאת Supabase ורעננה כאילו הצליחה
+
+656. **ההקשר.** P0 (מערכת 14) אומת שוב `done`. P1 (35) אסור per HARD
+     STEERING. P2 (32/36) אומת שוב כ-0 שורות `todo`. `15-egod` עדיין
+     לא נגיש דרך ה-MCP הזה. הענף הקודם (`fix/01-torah-platform-
+     audit-0831d`) כבר נדחף ונקי — נפתח ענף חדש מעליו. סוכן Explore
+     נשלח לסרוק את רשימת הקבצים-המועמדים שטרם נגעו בהם בשום קומיט
+     (admin/{Dashboard,LeadsGuru,TenantDetail,Tenants}, portal/
+     {Forums,Profile,StudySchedule,BulkUpload}, public/{About,
+     Accessibility,Contact,DonationSuccess,Home,LessonsDirectory,
+     Mourning,Privacy}, shop/*, קומפוננטות admin/portal/synagogue/
+     questionnaire) בחיפוש אחרי מחלקה 2 (שגיאת Supabase מושלכת + טוסט-
+     הצלחה תמידי). מצא מועמד יחיד תואם-מדויק במחלקה: `toggleBookmark`
+     ב-`LessonsDirectory.tsx`.
+
+657. **הממצא.** `pages/public/LessonsDirectory.tsx` נטען בראוט **חי**
+     `/lessons` (`App.tsx:186`, ללא שער אימות — עמוד ציבורי, כפתור
+     הכוכב מוצג רק כש-`user` קיים). `toggleBookmark()` (שורות 118-126
+     לפני התיקון) קרא ל-`.insert()`/`.delete()` על `lesson_bookmarks`
+     **בלי** לפרק את `{ error }` המוחזר, ומיד קרא
+     `queryClient.invalidateQueries(...)` בלי תנאי — מרענן את רשימת
+     המועדפים כאילו הפעולה הצליחה תמיד. אומת ישירות מול הסכמה החיה על
+     `bieebmnmkffwbqlsfozh`: `pg_constraint` על `lesson_bookmarks`
+     מאשר `UNIQUE (user_id, lesson_id)` אמיתי (בנוסף ל-FK על
+     `user_id`/`lesson_id` ול-PK). כפתור הכוכב ב-JSX (שורות 213-220
+     המקוריות) **אין** לו guard נגד לחיצה כפולה/disabled-מצב-בטעינה —
+     כלומר לחיצה כפולה מהירה (double-click) שולחת שני `INSERT` זהים
+     ברצף, השני מהם נכשל אמיתית ב-`23505 unique_violation`. `pg_policies`
+     על הטבלה (`lesson_bookmarks_insert_own`/`_delete_own`) דורשות
+     `user_id = auth.uid()` — נבדק גם מסלול-כשל שני (session שפג/
+     תפוגת-הרשאה) שגם בו השגיאה הייתה מושלכת באותה צורה. גריפ מלא על
+     `src/` אישר: זה קובץ הכתיבה היחיד ל-`lesson_bookmarks` באפליקציה
+     (טבלה זו כבר אומתה כ"מחוברת ותקינה" בסעיף 652, אך הבדיקה ההיא לא
+     כיסתה טיפול-שגיאות בצד הקריאה).
+
+658. **מה נעשה.** נוסף `import { toast } from "sonner"` (תואם-דפוס
+     ל-`admin/Messages.tsx`/`admin/Leads.tsx`/`admin/Tips.tsx`).
+     `toggleBookmark` פורק כעת `const { error } = ...` משתי הפעולות
+     (insert/delete), ובמקרה של שגיאה מציג `toast.error` עם הודעה
+     תלוית-כיוון ("שמירת השיעור נכשלה"/"הסרת השיעור מהשמורים נכשלה")
+     ו-`return` **בלי** לרענן את השאילתה — כך שהכוכב לא "יתהפך" בממשק
+     כשלא קרה שום שינוי אמיתי בטבלה. במקרה הצלחה ההתנהגות זהה-לגמרי
+     לקודם (`invalidateQueries`), אין שינוי בנתיב המוצלח.
+
+659. **אימות.** `esbuild --bundle --packages=external --jsx=automatic`
+     על הקובץ המלא נקי (רק אזהרות `import.meta`/iife הרגילות שחוזרות
+     בכל קובץ באפליקציה הזו). אומת חי מול `bieebmnmkffwbqlsfozh`
+     בבלוק `DO $$...$$` **יחיד**: תחת `SET LOCAL ROLE authenticated`
+     + JWT-claim מזויף למשתמש-QA קיים (`aedf4073-...`, טננט אמיתי),
+     בוצע בדיוק ה-`INSERT` שהקוד שולח על שיעור אמיתי-קיים — הצליח;
+     מיד אחריו בוצע **אותו** `INSERT` שוב (מדמה double-click) בתוך
+     תת-בלוק `EXCEPTION` — נכשל מיידית ב-`unique_violation (23505)`,
+     בדיוק השגיאה שהקוד הישן היה משליך בשקט. `SELECT count(*)`
+     *בתוך* אותה טרנזקציה (`RAISE NOTICE`) אישר את קיום השורה, ואז
+     נזרקה `RAISE EXCEPTION 'ROLLBACK_TEST_CLEANUP'` שנתפסת ב-
+     `EXCEPTION WHEN OTHERS` לגלגול-אחורה מלא. `SELECT count(*)` נפרד
+     **אחרי** הריצה (קריאה חדשה, לא בתוך אותה טרנזקציה) אישר `0`
+     שורות שיוריות ל-`(user_id, lesson_id)` הזה — אפס שאריות, אין
+     נזק לנתונים אמיתיים. `git diff --stat`: קובץ אחד, 10+/4-,
+     תוספתי בעיקרו (אין שינוי בנתיב ההצלחה הקיים). נדחף לענף חדש
+     `fix/01-torah-platform-lessons-bookmark-error-0831` (`d992da25`)
+     — לא מוזג. System 35 KioskFleet לא נגע, per HARD STEERING; P2
+     (32/36) `build_tasks` נשאר 0 todo; מערכות/סכימות מוגנות (08/09/
+     bkalut-app/bkalot-admin/`zr_*`/webhook NEDARIM3873/`csj`/`csj_src`/
+     `igud`/15-egod) לא נגעו. אין שליחה/חיוב אמיתיים בסבב זה.
