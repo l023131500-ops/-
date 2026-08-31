@@ -28,6 +28,11 @@ export default function JoinTeacher() {
         full_name: form.name,
         phone: form.phone,
         email: form.email,
+        // area/preferred_subject are real leads columns that LeadsGuru.tsx
+        // displays and searches on for every lead kind — must be set here
+        // too, not just tucked away in raw_data (see FindLesson.tsx).
+        area: form.location || null,
+        preferred_subject: form.topics || null,
         raw_data: { topics: form.topics, experience: form.experience, location: form.location, bio: form.bio },
       });
       if (error) throw error;
