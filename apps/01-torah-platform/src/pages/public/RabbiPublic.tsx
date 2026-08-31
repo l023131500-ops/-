@@ -46,7 +46,16 @@ const RabbiPublic = () => {
     };
     setProfile(profile);
 
-    const { data: lessonsData } = await supabase.from("lessons").select("*").eq("rabbi_user_id", profile.id).eq("is_active", true);
+    // Same moderation gate as LessonsDirectory.tsx/LessonDetail.tsx: RLS
+    // (lessons_tenant_read) only checks the tenant is active, not is_approved
+    // -- without this filter a rabbi's public page showed lessons a moderator
+    // had not yet approved (or had rejected while leaving is_active untouched).
+    const { data: lessonsData } = await supabase
+      .from("lessons")
+      .select("*")
+      .eq("rabbi_user_id", profile.id)
+      .eq("is_active", true)
+      .eq("is_approved", true);
     setLessons(lessonsData || []);
 
     // synagogues has no FK back to a rabbi's profile (only a free-text rabbi_name),

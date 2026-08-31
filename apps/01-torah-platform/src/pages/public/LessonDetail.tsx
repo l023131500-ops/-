@@ -14,7 +14,20 @@ export default function LessonDetail() {
     queryKey: ["lesson", id],
     enabled: !!id,
     queryFn: async () => {
-      const { data } = await supabase.from("lessons").select("*").eq("id", id!).maybeSingle();
+      // lessons_tenant_read (RLS) only checks the tenant is active -- it does
+      // NOT check is_approved/is_active, unlike LessonsDirectory.tsx's list
+      // query. Without this filter, a lesson a moderator rejected (or an
+      // admin deactivated after publication) stays fully viewable forever at
+      // its direct /lessons/:id URL for anyone who has the link (verified
+      // live: an anon-role SELECT on an is_approved=false/is_active=false row
+      // returned the full row).
+      const { data } = await supabase
+        .from("lessons")
+        .select("*")
+        .eq("id", id!)
+        .eq("is_active", true)
+        .eq("is_approved", true)
+        .maybeSingle();
       return data;
     },
   });
