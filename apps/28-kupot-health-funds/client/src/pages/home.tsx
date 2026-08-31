@@ -13,6 +13,12 @@ import {
 } from "@/components/ui/select";
 import { TopicCard } from "@/components/TopicCard";
 import { BrandLogo } from "@/components/BrandLogo";
+import {
+  HeroCompareIllustration,
+  FundTrackIcon,
+  GovTrackIcon,
+  NgoTrackIcon,
+} from "@/components/illustrations";
 import { API_BASE } from "@/lib/queryClient";
 import {
   type HfTopic,
@@ -184,15 +190,23 @@ export default function Home() {
               מחירון
             </a>
           </div>
-          <p className="mt-4 max-w-2xl text-sm leading-relaxed text-muted-foreground sm:text-base">
-            מידע ברור ומכובד על זכויות והטבות בקופות החולים בישראל, לצד זכויות
-            ממשלה וסיוע מעמותות. ניתן לסנן לפי נושא, קטגוריה וקופה, להיעזר ביועץ
-            חכם להתאמת קופה, ולהשאיר פרטים לבדיקת מעבר.
-          </p>
-          <div className="mt-5 flex flex-wrap gap-2">
-            <Stat value={counts.fund} label="נושאי קופות חולים" />
-            <Stat value={counts.gov} label="זכויות ממשלה" />
-            <Stat value={counts.ngo} label="עמותות וסיוע" />
+          <div className="mt-4 flex flex-wrap items-start justify-between gap-6">
+            <div className="max-w-2xl">
+              <p className="text-sm leading-relaxed text-muted-foreground sm:text-base">
+                מידע ברור ומכובד על זכויות והטבות בקופות החולים בישראל, לצד זכויות
+                ממשלה וסיוע מעמותות. ניתן לסנן לפי נושא, קטגוריה וקופה, להיעזר ביועץ
+                חכם להתאמת קופה, ולהשאיר פרטים לבדיקת מעבר.
+              </p>
+              <div className="mt-5 flex flex-wrap gap-2">
+                <Stat icon={<FundTrackIcon className="h-4 w-4 text-primary" />} value={counts.fund} label="נושאי קופות חולים" />
+                <Stat icon={<GovTrackIcon className="h-4 w-4 text-primary" />} value={counts.gov} label="זכויות ממשלה" />
+                <Stat icon={<NgoTrackIcon className="h-4 w-4 text-primary" />} value={counts.ngo} label="עמותות וסיוע" />
+              </div>
+            </div>
+            {/* דקורטיבי בלבד, גודל קבוע — לא תלוי בנתונים אסינכרוניים, ולכן
+                אינו מוסיף CLS למקטעים שכבר נמדדו בקפידה בעמוד הזה. מוסתר
+                מתחת ל-sm כדי לא לדחוק את הטקסט במסך צר. */}
+            <HeroCompareIllustration className="hidden h-28 w-36 shrink-0 text-primary sm:block" />
           </div>
         </div>
       </header>
@@ -476,14 +490,25 @@ export default function Home() {
   );
 }
 
-function Stat({ value, label }: { value: number; label: string }) {
+function Stat({
+  value,
+  label,
+  icon,
+}: {
+  value: number;
+  label: string;
+  icon?: React.ReactNode;
+}) {
   return (
-    <div className="rounded-lg border border-card-border bg-card px-3 py-2">
-      {/* אותו טעם כמו בלשוניות: 0 → 435 משנה רוחב ומזיז את שתי הפסקאות שלידו. */}
-      <span className="inline-block min-w-[3.5ch] text-lg font-extrabold tabular-nums text-primary">
-        {value}
-      </span>
-      <span className="mr-1.5 text-xs text-muted-foreground">{label}</span>
+    <div className="flex items-center gap-2 rounded-lg border border-card-border bg-card px-3 py-2">
+      {icon}
+      <div>
+        {/* אותו טעם כמו בלשוניות: 0 → 435 משנה רוחב ומזיז את שתי הפסקאות שלידו. */}
+        <span className="inline-block min-w-[3.5ch] text-lg font-extrabold tabular-nums text-primary">
+          {value}
+        </span>
+        <span className="mr-1.5 text-xs text-muted-foreground">{label}</span>
+      </div>
     </div>
   );
 }
