@@ -8250,3 +8250,44 @@
      NEDARIM3873/`csj`/`csj_src`/`igud`/15-egod) לא נגעו. אין
      שליחה/חיוב אמיתיים בסבב זה (רק שאילתות SELECT מול הדאטהבייס
      האמיתי, אין כתיבה/מחיקה).
+
+## 31/08/2026 (LOOP A, סבב נוסף ז') — `portal/Lessons.tsx` (`/portal/lessons`): `toggleActive` התעלם משגיאת Supabase והציג הצלחה תמיד
+
+666. **ההקשר.** נבדק מחדש: P0 (מערכת 14) `done`. P1 (35) אסור per
+     HARD STEERING. P2 (32/36) `build_tasks` עדיין 0 שורות `todo`.
+     `15-egod` עדיין לא נגיש דרך ה-MCP. סוכן Explore נשלח לסרוק
+     רשימת קבצים שעדיין לא נסרקו באף סבב קודם (`admin/Analytics`,
+     `admin/Commerce`, `admin/Forums`, `admin/Leads*`, `admin/Tenants`,
+     `portal/Attendance`, `portal/Dashboard`, `portal/Donations`,
+     `portal/Forums`, `portal/Lessons`, `portal/Orders`,
+     `portal/Profile`, `portal/Schedule`, `public/About`,
+     `public/Contact`, `public/DonationSuccess`, `public/JoinTeacher`,
+     `shop/*`, `components/bulk/*`, `components/studyday/*`,
+     `lib/*Excel*` ועוד) בחיפוש אחר אותה מחלקת-באג שכבר נמצאה שוב
+     ושוב. מועמד יחיד חזר: `portal/Lessons.tsx` שורה 148.
+
+667. **הממצא + מה נעשה + אימות.** `toggleActive` (כפתור "השבת"/"הפעל"
+     ליד כל שיעור ב-`/portal/lessons`, ראוט חי מאומת ב-`App.tsx:246`)
+     קרא ל-`supabase.from("lessons").update({is_active}).eq("id",id)`
+     **בלי** ללכוד את `error` המוחזר, ומיד קרא ל-`fetchData()` כאילו
+     הצליח — בעוד ש-`addLesson`/`deleteLesson` **באותו קובץ ממש**
+     (שורות 131-132, 141-142) כן לוכדים `error` ומציגים `toast.error`.
+     אומת חי מול `pg_policies` על `bieebmnmkffwbqlsfozh` ש-
+     `lessons_tenant_write_upd` הוא policy **תנאי אמיתי** (דורש
+     `is_super_admin` או `has_tenant_role(...,'tenant_admin'/'moderator'/
+     'member')` על ה-`tenant_id` של אותה שורה) — כלומר זה נתיב-כשל
+     אמיתי ובר-הגעה (שינוי תפקיד/tenant לא תואם), לא היפותטי. תוקן
+     חד-שורתי: נלכד `error`, `toast.error("שגיאה בעדכון סטטוס
+     השיעור")` וחזרה (`return`) לפני `fetchData()`, תואם בדיוק לתבנית
+     הקיימת של `addLesson`/`deleteLesson` באותו קובץ. `npx esbuild
+     --bundle --packages=external --jsx=automatic` על הקובץ המלא נקי
+     (רק אזהרות `import.meta` הרגילות). `git diff --stat`: קובץ אחד,
+     2+/1-, תוספתי-מתקן בלבד. נדחף לענף חדש
+     `fix/01-torah-platform-lessons-toggle-active-error-0831`
+     (`65783972`) — לא מוזג, main לא נגע. System 35 KioskFleet לא
+     נגע, per HARD STEERING; P2 (32/36) `build_tasks` נשאר 0 todo;
+     מערכות/סכימות מוגנות (08/09/bkalut-app/bkalot-admin/`zr_*`/
+     webhook NEDARIM3873/`csj`/`csj_src`/`igud`/15-egod) לא נגעו. אין
+     שליחה/חיוב אמיתיים בסבב זה (רק שאילתות SELECT/information_schema
+     ו-`pg_policies` מול הדאטהבייס האמיתי, אין כתיבה/מחיקה בטבלת
+     ייצור).
