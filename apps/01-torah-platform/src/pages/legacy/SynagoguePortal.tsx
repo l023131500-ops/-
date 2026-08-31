@@ -14,6 +14,7 @@ import SynagogueShowcaseCarousel from "@/components/synagogue/SynagogueShowcaseC
 import SynagogueExcelImportExport from "@/components/synagogue/SynagogueExcelImportExport";
 import SynagogueFullAccessRequest, { FEATURE_OPTIONS } from "@/components/synagogue/SynagogueFullAccessRequest";
 import PrayerTimesTab from "@/components/portal/PrayerTimesTab";
+import ZmanimTab from "@/components/portal/ZmanimTab";
 import agudLogo from "@/assets/agud-logo.webp";
 
 const teal = "hsl(180 45% 30%)";
@@ -292,7 +293,15 @@ export default function SynagoguePortal() {
             </TabsContent>
           )}
 
-          {FEATURE_OPTIONS.filter((f) => f.id !== "prayer_times" && portal.features_enabled?.[f.id]).map((f) => (
+          {portal.features_enabled?.zmanim && (
+            <TabsContent value="zmanim">
+              <div className="bg-white rounded-2xl border p-5" style={{ borderColor: 'hsl(180 45% 30% / 0.2)' }}>
+                <ZmanimTab city={portal.city} />
+              </div>
+            </TabsContent>
+          )}
+
+          {FEATURE_OPTIONS.filter((f) => f.id !== "prayer_times" && f.id !== "zmanim" && portal.features_enabled?.[f.id]).map((f) => (
             <TabsContent key={f.id} value={f.id}>
               <div className="bg-white rounded-2xl border p-8 text-center" style={{ borderColor: 'hsl(180 45% 30% / 0.2)' }}>
                 <div className="text-4xl mb-3">{f.emoji}</div>

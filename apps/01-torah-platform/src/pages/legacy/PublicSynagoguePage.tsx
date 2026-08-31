@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { BACKGROUND_PRESETS } from "@/components/portal/PortalSettingsTab";
 import PublicContactForm from "@/components/portal/PublicContactForm";
+import PublicZmanim from "@/components/portal/PublicZmanim";
 import { normalizeToBlocks, blockLabel, type ScheduleBlock } from "@/lib/studyDayLessons";
 
 export default function PublicSynagoguePage() {
@@ -153,6 +154,9 @@ export default function PublicSynagoguePage() {
             )}
           </div>
         </div>
+
+        {/* Zmanim */}
+        {portal.features_enabled?.zmanim && <PublicZmanim city={portal.city} />}
 
         {/* Donation */}
         {portal.donation_link && (
