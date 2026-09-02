@@ -3939,3 +3939,70 @@ round's work.
   already reconciled). Recommend `gesturesettings.js` next, since it is the
   smaller of the two remaining pieces.
 
+
+- **2026-09-02, session 6 — Reconciled the §4 configurable exit-gesture
+  slice of the `feat/kiosk-exit-gesture-config-0825` snapshot the previous
+  entry recommended next.** The real commit is `9c59819`: every device has
+  enforced a hardcoded 5-tap top-left-corner exit gesture since
+  `KioskActivity` existed — §4's own spec ("מחוֹת יציאה מדורגות... הכל ניתן
+  להגדרה בלוח — כמה הקשות, איזו פינה, אורך החזקה, קודים") only ever had the
+  code half configurable (`exitcode.js`). Adds `exit_gesture_taps`
+  (clamped [3,10]), `exit_gesture_corner` (enum tl/tr/bl/br), and
+  `exit_gesture_hold_ms` (clamped [0,5000]) as full per-device policy
+  fields, wired through every layer `display_orientation` already uses:
+  `src/gesturesettings.js` (new validator, dependency-free), `db.js`
+  (devices/templates/policy_snapshots columns), `policy.js`
+  (`applyDevicePolicy` validation + `pushConfigUpdate`), `devicepayload.js`
+  (console allow-list), `routes/devices.js` + `routes/templates.js` (REST),
+  `routes/agent.js` (enroll + heartbeat), `usbpackage.js` (offline USB
+  Route D payload), `templatepolicy.js`. Android: `Prefs` adds the three
+  keys; `AgentClient` persists them on every config path (initial connect,
+  heartbeat, pushed `update_config`) the same silent-persist shape as
+  maintenance/signage; `KioskActivity` generalizes the corner-tap check to
+  all four corners and adds an optional hold-to-confirm on the final tap.
+
+  `git cherry-pick -n 9c59819` onto the current tip hit conflicts in every
+  file this commit's own history straddles a since-superseded lineage of:
+  `payment_mode` was later refactored to the current radio-button console
+  UI (kept the tip's actual radio implementation, dropped the snapshot's
+  now-superseded select-based `pay-mode` UI and its duplicate `tpl-pay-on`
+  template-builder markup — same "drop the dead reintroduced label map"
+  call the app-OTA-update/orientation-lock rounds already made for
+  `PAYMENT_MODE_INFO`), and orientation-lock's own badge (kept the tip's
+  already-restored `ORIENTATION_LABELS` pill instead of re-adding a
+  duplicate from this older snapshot). Every other touched file
+  (`gesturesettings.js`/`.test.mjs`, `db.js`, `usbpackage.js`,
+  `templatepolicy.js`+test, `EnrollActivity.kt`, `Prefs.kt`) applied with
+  zero conflicts.
+
+  Verified **live**: booted the real server against a scratch SQLite DB,
+  logged in as the seeded admin, created a real enrollment, enrolled a
+  device — enroll response defaults `exitGestureTaps/Corner/HoldMs` to
+  `5`/`"tl"`/`0` (today's hardcoded behavior, unchanged for every existing
+  device). `PATCH /devices/:id {"exitGestureCorner":"middle"}` 400s with
+  the Hebrew "פינה לא נתמכת" error; a valid PATCH (`8`/`"br"`/`1500`)
+  persists and the very next `POST /agent/heartbeat` reflects it in
+  `config`; an out-of-range tap count (`99`) clamps to `10`. `GET /devices`
+  (console list) surfaces all three fields; creating a template with
+  gesture settings and `POST`ing `/templates/:id/apply` against the device
+  correctly overwrote its policy (`4`/`"tr"`/`800`). Full suite **250/250**
+  (was 231/231 — +19: `gesturesettings.test.mjs` plus new assertions across
+  `devicepayload`/`snapshots`/`templatepolicy`/`usbpackage` tests).
+  `node --check` clean on every touched/added JS file; `AgentClient.kt`/
+  `KioskActivity.kt`/`EnrollActivity.kt`/`Prefs.kt` brace/paren-balance
+  clean (no Android SDK in this sandbox to compile, same limitation as
+  every prior Kotlin-touching entry).
+
+  Committed+pushed to `l023131500-ops/zol` branch
+  `feat/kiosk-exit-gesture-config-reconcile-0902` (`fbfc044`) — **not
+  merged**, cut from the same furthest-forward tip as every entry above (so
+  it also carries launcher/payment-modes/Routes-C-D/Route-A/shared-write-
+  guard/schedule-offline-persist/install-wizard/landing-page/app-OTA-
+  update/orientation-lock). **Not deployed** — same Railway-promote
+  blocker as every prior zol-targeted entry.
+
+  What remains unreconciled from the `feat/kiosk-exit-gesture-config-0825`
+  snapshot: `installsteps.js` (a second, server-stored-progress
+  install-checklist implementation, distinct from the simpler
+  `localStorage`-based wizard already reconciled) — real, still-missing,
+  self-contained scope for a future round.
