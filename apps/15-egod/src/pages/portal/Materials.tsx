@@ -1,6 +1,8 @@
 import { useState, useRef, useEffect } from "react";
 import { toPng } from "html-to-image";
 import PortalLayout from "@/components/portal/PortalLayout";
+import FeatureLocked from "@/components/portal/FeatureLocked";
+import { useFeatureGate } from "@/hooks/useFeatureGate";
 import { FileText, Download, Palette, ArrowRight, Upload, Trash2, FileUp, Clock, CheckCircle2, XCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -34,6 +36,7 @@ const PALETTES = [
 
 const Materials = () => {
   const { user } = useAuth();
+  const { locked, checked } = useFeatureGate("materials_upload");
   const [profile, setProfile] = useState<any>(null);
   const [active, setActive] = useState<TemplateKey | null>(null);
   const [palette, setPalette] = useState(PALETTES[0]);
@@ -259,6 +262,10 @@ const Materials = () => {
   }
 
   const tpl = TEMPLATES.find(t => t.key === active)!;
+
+  if (checked && locked) {
+    return <PortalLayout><FeatureLocked /></PortalLayout>;
+  }
 
   return (
     <PortalLayout>

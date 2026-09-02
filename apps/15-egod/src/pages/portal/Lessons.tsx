@@ -4,6 +4,8 @@ import { BookOpen, Plus, Trash2, MapPin, Clock, Users, Mic, Video } from "lucide
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import PortalLayout from "@/components/portal/PortalLayout";
+import FeatureLocked from "@/components/portal/FeatureLocked";
+import { useFeatureGate } from "@/hooks/useFeatureGate";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -50,6 +52,7 @@ const ChipPicker = ({ options, selected, onChange, label }: {
 
 const Lessons = () => {
   const { user } = useAuth();
+  const { locked, checked } = useFeatureGate("lessons");
   const [lessons, setLessons] = useState<any[]>([]);
   const [profileId, setProfileId] = useState<string | null>(null);
   const [showAdd, setShowAdd] = useState(false);
@@ -108,6 +111,10 @@ const Lessons = () => {
     await supabase.from("lessons").update({ is_active: !current }).eq("id", id);
     fetchData();
   };
+
+  if (checked && locked) {
+    return <PortalLayout><FeatureLocked /></PortalLayout>;
+  }
 
   return (
     <PortalLayout>

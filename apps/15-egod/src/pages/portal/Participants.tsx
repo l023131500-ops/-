@@ -4,6 +4,8 @@ import { Users, Plus, Search, Phone, Mail, UserCheck, UserX } from "lucide-react
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import PortalLayout from "@/components/portal/PortalLayout";
+import FeatureLocked from "@/components/portal/FeatureLocked";
+import { useFeatureGate } from "@/hooks/useFeatureGate";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
@@ -12,6 +14,7 @@ import { toast } from "sonner";
 
 const Participants = () => {
   const { user } = useAuth();
+  const { locked, checked } = useFeatureGate("participants");
   const [participants, setParticipants] = useState<any[]>([]);
   const [lessons, setLessons] = useState<any[]>([]);
   const [selectedLesson, setSelectedLesson] = useState<string>("");
@@ -48,6 +51,10 @@ const Participants = () => {
     const matchLesson = !selectedLesson || p.lesson_id === selectedLesson;
     return matchSearch && matchLesson;
   });
+
+  if (checked && locked) {
+    return <PortalLayout><FeatureLocked /></PortalLayout>;
+  }
 
   return (
     <PortalLayout>
