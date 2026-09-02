@@ -4006,3 +4006,61 @@ round's work.
   install-checklist implementation, distinct from the simpler
   `localStorage`-based wizard already reconciled) — real, still-missing,
   self-contained scope for a future round.
+
+- **2026-09-02, session 7 — Stopped adding another reconciliation round and
+  instead verified + documented exactly what "Not deployed" has meant across
+  every one of the last 8 sessions, since that phrase kept recurring without
+  anyone quantifying it.** `core.projects` note #33 got a fresh owner
+  directive today (`OWNER ORDER 2026-09-02b`) demanding this branch actually
+  reach production; this round's job was to find out precisely what stands
+  between the current tip and that, not to add a 9th reconciled feature.
+
+  Confirmed against the real Railway-tracked repo (`l023131500-ops/zol`,
+  service `kioskfleet`, root `kiosk/server`), not this gitignored checkout:
+
+  - Deploy source is branch **`claude/what-do-you-see-gxo5tc`**, currently
+    at `0f3947d`. It is **not** `main` — `main` on that repo has 2 commits
+    and zero kiosk files; it has never carried this product and is not
+    Railway's build source.
+  - The fully-reconciled integration tip, `feat/kiosk-exit-gesture-config-
+    reconcile-0902` @ `fbfc044` (mirrored in this monorepo at
+    `fix/35-kioskfleet-exit-gesture-reconcile-0902` @ `8c176a7c`), is
+    **exactly 14 commits ahead of, and 0 commits behind/diverged from**,
+    `claude/what-do-you-see-gxo5tc`. `git merge-tree` against their common
+    base produced zero conflict markers — this is a clean fast-forward, not
+    a merge that needs conflict resolution.
+  - Full suite re-run fresh today on that tip: `node --test test/*.test.mjs`
+    → **250/250 passing**, 0 failures.
+  - The one command that would make Railway's *next* build/promote include
+    every reconciled feature (Routes A/C/D, install wizard, launcher,
+    payment input modes, orientation lock, exit-gesture config, app OTA
+    update, business-hours schedule, landing page copy+graphics, the shared
+    write-body input guard): `git push origin --ff-only feat/kiosk-exit-
+    gesture-config-reconcile-0902:claude/what-do-you-see-gxo5tc`, run from
+    `/home/m30/zol-work`.
+  - What that command does **not** do: actually redeploy. Every session back
+    to at least 08/25 has called this the "Railway-promote blocker" without
+    saying what it requires — checked this round: there is no `railway` CLI
+    installed, no `RAILWAY_*` env var, no Railway token anywhere in this
+    sandbox. Whatever "promote" means concretely (auto-deploy-on-push vs. a
+    manual dashboard action) is not resolvable or even inspectable from
+    here; it needs the person who owns the Railway project.
+
+  **Did not run the push above.** Two independent reasons, not one: this
+  session's own standing instructions say never push a production/deploy-
+  tracked branch (this branch plays exactly that role for Railway even
+  though it isn't literally named `main`), and every prior session in this
+  file already established the convention of stopping one branch short of
+  the Railway-tracked tip for the same reason — this round is consistent
+  with that, not a new restriction. `core.projects` note #33's new
+  `OWNER ORDER 2026-09-02b` explicitly asks for the push+deploy; that
+  conflict is surfaced in this iteration's `core.run_progress` heartbeat
+  rather than resolved unilaterally in either direction.
+
+  **Not deployed** — but for the first time, "not deployed" now has an
+  exact distance (14 commits, 0 conflicts, 250/250 green) and an exact
+  command attached to it, instead of being restated as an unquantified
+  blocker. core.build_tasks for 35/32/36/01/15 (this loop's slice) remain
+  zero todo rows; no new reconciliation was added this round on purpose —
+  repeating that pattern an 8th time without addressing the actual deploy
+  gap was judged to be exactly the busywork the new owner order flags.
