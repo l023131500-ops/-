@@ -3725,3 +3725,41 @@ round's work.
   exit-gesture config, install-checklist-wizard modules — still
   unreconciled, still too large for one iteration).
 
+- **2026-09-02, session 3 — Reconciled the two orphaned landing-page
+  branches (`fix/kiosk-landing-page-full-feature-copy-0831`,
+  `fix/kiosk-landing-illustrations-0831`) flagged by the previous entry.**
+  Both cut from the same merge-base (`0f3947d`) and both touch
+  `index.html` — one rewrites hero/features/pricing copy to cover the full
+  4-route product (Routes A/C/D, branding, signage, payment), the other
+  adds the 3 hand-built inline SVG illustrations (hero device,
+  install-flow, fleet) from the QUALITY MANDAT pass. Neither had reached
+  the deployed tip, same orphaned-branch pattern as build_tasks#70/74/83/
+  84/85.
+
+  Branched `feat/kiosk-landing-page-integration-0902` off the current
+  furthest-forward tip (`feat/kiosk-install-wizard-reconcile-0902`,
+  `32aa8f6`) and cherry-picked both commits (`d7ab64a` copy, then
+  `c8a6ad3` illustrations) — **zero conflicts**, both touch disjoint
+  regions of `index.html` (copy edits hero text/pricing list items,
+  illustrations add new `<svg>` blocks + a `.hero-grid`/`.how-visual`/
+  `.cta-visual` wrapper), so the two independently-reviewed changes now
+  compose cleanly into one page that both reads and looks like the real
+  4-route product.
+
+  Verified: `npm test` **215/215** (unchanged, neither commit added a
+  test file). Booted the real server against a scratch SQLite DB — `GET /`
+  200 with all 3 `<svg>` present and the new route/feature copy in the
+  HTML, `GET /console` 200, `GET /css/style.css` 200. All 3 SVGs
+  well-formed XML (ElementTree parse). `<div>`/`<section>` tag balance:
+  77/77 and 7/7. `node --check` clean.
+
+  Committed+pushed to `l023131500-ops/zol` branch
+  `feat/kiosk-landing-page-integration-0902` (`8247f62`) — **not merged**,
+  cut from the same furthest-forward tip as every entry above. **Not
+  deployed** — same Railway-promote blocker as every prior zol-targeted
+  entry. With this landed, every candidate the previous entry flagged
+  except the large `feat/kiosk-exit-gesture-config-0825` snapshot (OTA app
+  updates, orientation lock, exit-gesture config, install-checklist-wizard
+  — still unreconciled, still too large for one iteration) is now on the
+  integration line. That snapshot remains the next candidate.
+
