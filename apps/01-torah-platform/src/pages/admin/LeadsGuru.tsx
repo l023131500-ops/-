@@ -18,6 +18,7 @@ const AdminLeads = () => {
   const [leads, setLeads] = useState<any[]>([]);
   const [search, setSearch] = useState("");
   const [filterStatus, setFilterStatus] = useState("all");
+  const [busyId, setBusyId] = useState<string | null>(null);
   const { toast } = useToast();
 
   const fetchLeads = async () => {
@@ -28,11 +29,17 @@ const AdminLeads = () => {
   useEffect(() => { fetchLeads(); }, []);
 
   const updateStatus = async (id: string, status: string) => {
-    const { error } = await supabase.from("leads").update({ status }).eq("id", id);
-    if (error) {
-      toast({ title: "שגיאה", description: error.message, variant: "destructive" });
-    } else {
-      fetchLeads();
+    if (busyId) return;
+    setBusyId(id);
+    try {
+      const { error } = await supabase.from("leads").update({ status }).eq("id", id);
+      if (error) {
+        toast({ title: "שגיאה", description: error.message, variant: "destructive" });
+      } else {
+        await fetchLeads();
+      }
+    } finally {
+      setBusyId(null);
     }
   };
 
@@ -89,7 +96,7 @@ const AdminLeads = () => {
                     <td className="p-4 text-muted-foreground">{l.preferred_subject || "—"}</td>
                     <td className="p-4 text-muted-foreground">{new Date(l.created_at).toLocaleDateString("he-IL")}</td>
                     <td className="p-4">
-                      <Select value={l.status || "new"} onValueChange={v => updateStatus(l.id, v)}>
+                      <Select value={l.status || "new"} onValueChange={v => updateStatus(l.id, v)} disabled={busyId === l.id}>
                         <SelectTrigger className="w-32 h-8 text-xs">
                           <SelectValue />
                         </SelectTrigger>

@@ -25,7 +25,7 @@ export default function Donations() {
               <div className="font-medium">{d.donor_name} — {formatILS(d.amount_ils)}</div>
               <div className="text-sm text-muted-foreground">{new Date(d.created_at).toLocaleDateString("he-IL")}{d.dedication_for_name ? ` · ${d.dedication_for_name}` : ""}</div>
             </div>
-            <Badge variant={d.payment_status === "paid" ? "success" : "outline"}>{d.payment_status}</Badge>
+            <Badge variant={d.payment_status === "captured" ? "success" : "outline"}>{d.payment_status}</Badge>
           </CardContent></Card>
         ))}
       </div>

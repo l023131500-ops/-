@@ -65,10 +65,17 @@ Deno.serve(async (req) => {
       const { data: tenants } = await admin.from("tenants").select("id, name, slug");
       const tenantMap = Object.fromEntries((tenants || []).map((t: any) => [t.id, t]));
 
-      // Get emails from auth.users via admin API
-      const { data: authList } = await admin.auth.admin.listUsers({ perPage: 500 });
+      // Get emails from auth.users via admin API. listUsers() paginates (default
+      // 50/page), so page through until exhausted - otherwise users past page 1
+      // silently show a blank email/last-login in the admin list.
+      const authUsers: any[] = [];
+      for (let page = 1; ; page++) {
+        const { data: authList } = await admin.auth.admin.listUsers({ page, perPage: 1000 });
+        authUsers.push(...(authList?.users || []));
+        if (!authList?.users || authList.users.length < 1000) break;
+      }
       const emailMap = Object.fromEntries(
-        (authList.users || []).map((u: any) => [u.id, { email: u.email, last_sign_in_at: u.last_sign_in_at }]),
+        authUsers.map((u: any) => [u.id, { email: u.email, last_sign_in_at: u.last_sign_in_at }]),
       );
 
       const rolesByUser: Record<string, any[]> = {};
@@ -156,9 +163,17 @@ Deno.serve(async (req) => {
           .from("user_roles")
           .select("tenant_id, role")
           .eq("user_id", user_id);
-        const allowed = (targetRoles || []).some(
-          (r: any) => tenantAdminTenants.includes(r.tenant_id) && r.role !== "super_admin",
-        );
+        // updateUserById changes the password on the user's single global auth
+        // account, not just their access within the caller's tenant. Requiring
+        // only ONE matching role (.some) let a tenant_admin reset the password
+        // of a user who ALSO holds a role in a tenant they don't manage --
+        // hijacking that other tenant's access too. Require EVERY role the
+        // target holds to be within tenants the caller manages.
+        const allowed =
+          (targetRoles || []).length > 0 &&
+          (targetRoles || []).every(
+            (r: any) => r.role !== "super_admin" && tenantAdminTenants.includes(r.tenant_id),
+          );
         if (!allowed) return jr({ ok: false, error: "אין הרשאה למשתמש זה" }, 403);
       }
 
@@ -176,8 +191,17 @@ Deno.serve(async (req) => {
           return jr({ ok: false, error: "אין הרשאה לטננט זה" }, 403);
         if (role === "super_admin") return jr({ ok: false, error: "אסור" }, 403);
       }
-      await admin.from("user_roles").delete().eq("user_id", user_id).eq("tenant_id", tenant_id || null);
-      await admin.from("user_roles").insert({ user_id, tenant_id: tenant_id || null, role, permissions: {} });
+      // .eq("tenant_id", null) sends "tenant_id=eq.null" to PostgREST, which
+      // 400s (22P02: invalid input syntax for type uuid) instead of matching
+      // NULL rows -- a global (tenant_id null) role could never be replaced.
+      // .is() is required for a NULL comparison.
+      const delQuery = admin.from("user_roles").delete().eq("user_id", user_id);
+      const { error: delErr } = tenant_id
+        ? await delQuery.eq("tenant_id", tenant_id)
+        : await delQuery.is("tenant_id", null);
+      if (delErr) return jr({ ok: false, error: delErr.message }, 500);
+      const { error: insErr } = await admin.from("user_roles").insert({ user_id, tenant_id: tenant_id || null, role, permissions: {} });
+      if (insErr) return jr({ ok: false, error: insErr.message }, 500);
       return jr({ ok: true });
     }
 
@@ -192,9 +216,17 @@ Deno.serve(async (req) => {
           .from("user_roles")
           .select("tenant_id, role")
           .eq("user_id", user_id);
-        const allowed = (targetRoles || []).some(
-          (r: any) => tenantAdminTenants.includes(r.tenant_id) && r.role !== "super_admin",
-        );
+        // deleteUser removes the user's single global auth account outright,
+        // not just their membership in the caller's tenant. Requiring only ONE
+        // matching role (.some) let a tenant_admin permanently delete a user
+        // who ALSO holds a role in a tenant they don't manage -- destroying
+        // that other tenant's access too. Require EVERY role the target holds
+        // to be within tenants the caller manages (same fix as update_password).
+        const allowed =
+          (targetRoles || []).length > 0 &&
+          (targetRoles || []).every(
+            (r: any) => r.role !== "super_admin" && tenantAdminTenants.includes(r.tenant_id),
+          );
         if (!allowed) return jr({ ok: false, error: "אין הרשאה" }, 403);
       }
 

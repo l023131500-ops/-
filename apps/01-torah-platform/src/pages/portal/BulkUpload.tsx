@@ -43,16 +43,52 @@ const FIELD_ALIASES: Record<string, string> = {
   description: "description",
 };
 
+// RFC4180-style tokenizer: respects quoted fields, so a comma or newline
+// inside a quoted value (as Excel/Google Sheets emit for e.g. an address
+// like "רחוב הרצל 5, ירושלים") doesn't shift every later column.
+function tokenizeCSV(text: string): string[][] {
+  const rows: string[][] = [];
+  let row: string[] = [];
+  let field = "";
+  let inQuotes = false;
+
+  for (let i = 0; i < text.length; i++) {
+    const c = text[i];
+    if (inQuotes) {
+      if (c === '"') {
+        if (text[i + 1] === '"') { field += '"'; i++; }
+        else inQuotes = false;
+      } else {
+        field += c;
+      }
+    } else if (c === '"') {
+      inQuotes = true;
+    } else if (c === ",") {
+      row.push(field); field = "";
+    } else if (c === "\r") {
+      // skip, handled on the paired \n
+    } else if (c === "\n") {
+      row.push(field); field = "";
+      rows.push(row); row = [];
+    } else {
+      field += c;
+    }
+  }
+  if (field.length > 0 || row.length > 0) { row.push(field); rows.push(row); }
+
+  return rows.filter((r) => !(r.length === 1 && r[0].trim() === ""));
+}
+
 function parseCSV(text: string): ParsedRow[] {
-  const lines = text.trim().split(/\r?\n/);
-  if (lines.length < 2) return [];
-  const rawHeaders = lines[0].split(",").map((h) => h.trim().replace(/^"|"$/g, "").toLowerCase());
+  const rows = tokenizeCSV(text);
+  if (rows.length < 2) return [];
+  const rawHeaders = rows[0].map((h) => h.trim().toLowerCase());
   const headers = rawHeaders.map((h) => FIELD_ALIASES[h] || h);
 
-  return lines.slice(1).filter((l) => l.trim()).map((line, i) => {
-    const values = line.split(",").map((v) => v.trim().replace(/^"|"$/g, ""));
+  return rows.slice(1).map((values, i) => {
+    const trimmed = values.map((v) => v.trim());
     const obj: Record<string, string> = {};
-    headers.forEach((h, idx) => { obj[h] = values[idx] || ""; });
+    headers.forEach((h, idx) => { obj[h] = trimmed[idx] || ""; });
 
     const errors: string[] = [];
     if (!obj.title) errors.push("חסרה כותרת");

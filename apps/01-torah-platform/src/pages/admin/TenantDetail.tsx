@@ -1,18 +1,42 @@
 import { useParams, Link } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { useQuery } from "@tanstack/react-query";
-import { ArrowRight, ExternalLink } from "lucide-react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { ArrowRight, ExternalLink, Plus, Globe, UserCheck, UserX, KeyRound, Copy } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
+import { Badge } from "@/components/ui/badge";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { buildInviteUrl, sanitizePublicUrls } from "@/lib/site";
+
+const STATUS_LABEL: Record<string, string> = { pending: "ממתין לאישור", active: "פעיל", suspended: "מושעה", archived: "בארכיון" };
+
+const generatePassword = () => {
+  const chars = "abcdefghijkmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+  return Array.from({ length: 10 }, () => chars[Math.floor(Math.random() * chars.length)]).join("");
+};
+
+const PLANS = [
+  { v: "trial", l: "ניסיון" },
+  { v: "standard", l: "רגיל" },
+  { v: "premium", l: "פרימיום" },
+  { v: "union", l: "איגוד" },
+];
 
 export default function TenantDetail() {
   const { id } = useParams();
+  const qc = useQueryClient();
   const [features, setFeatures] = useState<any>(null);
+  const [savingFeatures, setSavingFeatures] = useState(false);
+  const [subOpen, setSubOpen] = useState(false);
+  const [subForm, setSubForm] = useState({ plan: "standard", expires_at: "", payment_method: "", notes: "" });
+  const [domainInput, setDomainInput] = useState("");
 
   const { data: tenant } = useQuery({
     queryKey: ["tenant-admin", id],
@@ -23,14 +47,133 @@ export default function TenantDetail() {
     },
   });
 
+  const { data: subscriptions } = useQuery({
+    queryKey: ["tenant-subscriptions", id],
+    enabled: !!id,
+    queryFn: async () => {
+      const { data, error } = await supabase.from("tenant_subscriptions").select("*").eq("tenant_id", id!).order("created_at", { ascending: false });
+      if (error) throw error;
+      return data || [];
+    },
+  });
+
+  const { data: invites } = useQuery({
+    queryKey: ["tenant-invites", id],
+    enabled: !!id,
+    queryFn: async () => {
+      const { data, error } = await supabase.from("tenant_invites").select("*").eq("tenant_id", id!).order("created_at", { ascending: false });
+      if (error) throw error;
+      return data || [];
+    },
+  });
+
+  const [inviteForm, setInviteForm] = useState({ email: "", full_name: "", initial_password: generatePassword() });
+  const [inviteOpen, setInviteOpen] = useState(false);
+
+  const setStatus = useMutation({
+    mutationFn: async (status: string) => {
+      const { error } = await supabase.from("tenants").update({ status, activated_at: status === "active" ? new Date().toISOString() : tenant?.activated_at }).eq("id", id!);
+      if (error) throw error;
+    },
+    onSuccess: (_d, status) => { toast.success(`הטננט עודכן למצב: ${STATUS_LABEL[status] || status}`); qc.invalidateQueries({ queryKey: ["tenant-admin", id] }); qc.invalidateQueries({ queryKey: ["all-tenants"] }); },
+    onError: (e: any) => toast.error(e.message),
+  });
+
+  const createInvite = useMutation({
+    mutationFn: async () => {
+      const { error } = await supabase.from("tenant_invites").insert({
+        tenant_id: id!,
+        email: inviteForm.email.trim().toLowerCase(),
+        full_name: inviteForm.full_name || tenant?.display_name || tenant?.name,
+        initial_password: inviteForm.initial_password,
+        role: "tenant_admin",
+      });
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      toast.success("הזמנת כניסה חדשה נוצרה");
+      setInviteOpen(false);
+      setInviteForm({ email: "", full_name: "", initial_password: generatePassword() });
+      qc.invalidateQueries({ queryKey: ["tenant-invites", id] });
+    },
+    onError: (e: any) => toast.error(e.message),
+  });
+
+  const copyInviteDetails = (inv: any) => {
+    const url = buildInviteUrl(inv.invite_code, inv.email);
+    const raw = `🎓 פורטל – איגוד השיעורים\n\nשלום ${inv.full_name},\nנפתח עבורך פורטל אישי במערכת.\n\n🔗 לחץ להפעלה (הקוד והמייל ימולאו אוטומטית):\n${url}\n\n📧 מייל: ${inv.email}\n🔑 קוד הזמנה: ${inv.invite_code}\n🔒 סיסמה ראשונית: ${inv.initial_password}\n\nניתן לשנות את הסיסמה לאחר הכניסה.`;
+    navigator.clipboard.writeText(sanitizePublicUrls(raw));
+    toast.success("פרטי ההזמנה הועתקו! ניתן לשלוח בוואטסאפ או במייל");
+  };
+
+  const createSubscription = useMutation({
+    mutationFn: async () => {
+      const { error } = await supabase.from("tenant_subscriptions").insert({
+        tenant_id: id!,
+        plan: subForm.plan,
+        expires_at: subForm.expires_at || null,
+        payment_method: subForm.payment_method || null,
+        notes: subForm.notes || null,
+        is_active: true,
+      });
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      toast.success("רישיון נוסף");
+      setSubOpen(false);
+      setSubForm({ plan: "standard", expires_at: "", payment_method: "", notes: "" });
+      qc.invalidateQueries({ queryKey: ["tenant-subscriptions", id] });
+    },
+    onError: (e: any) => toast.error(e.message),
+  });
+
+  const toggleSubscriptionActive = useMutation({
+    mutationFn: async ({ subId, is_active }: { subId: string; is_active: boolean }) => {
+      const { error } = await supabase.from("tenant_subscriptions").update({ is_active }).eq("id", subId);
+      if (error) throw error;
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["tenant-subscriptions", id] }),
+    onError: (e: any) => toast.error(e.message),
+  });
+
   useEffect(() => {
     if (tenant?.tenant_features) setFeatures(Array.isArray(tenant.tenant_features) ? tenant.tenant_features[0] : tenant.tenant_features);
   }, [tenant]);
 
+  useEffect(() => {
+    setDomainInput(tenant?.custom_domain || "");
+  }, [tenant?.custom_domain]);
+
+  const DOMAIN_RE = /^[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?(\.[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?)+$/i;
+
+  const saveDomain = useMutation({
+    mutationFn: async (raw?: string) => {
+      const value = (raw ?? domainInput).trim().toLowerCase().replace(/^https?:\/\//, "").replace(/\/+$/, "");
+      if (value && !DOMAIN_RE.test(value)) throw new Error("כתובת דומיין לא תקינה (לדוגמה: mc-galil.org.il)");
+      const { error } = await supabase.from("tenants").update({ custom_domain: value || null }).eq("id", id!);
+      if (error) {
+        if (error.code === "23505") throw new Error("הדומיין הזה כבר משויך לטננט אחר");
+        throw error;
+      }
+    },
+    onSuccess: () => {
+      toast.success("הדומיין נשמר. יש להוסיף רשומת CNAME אצל ספק הדומיין ולעדכן את רשימת נטפרי.");
+      qc.invalidateQueries({ queryKey: ["tenant-admin", id] });
+    },
+    onError: (e: any) => toast.error(e.message),
+  });
+
   const saveFeatures = async () => {
-    if (!features) return;
-    const { error } = await supabase.from("tenant_features").update(features).eq("tenant_id", id!);
-    if (error) toast.error(error.message); else toast.success("תכונות נשמרו");
+    if (!features || savingFeatures) return;
+    setSavingFeatures(true);
+    try {
+      const { error } = await supabase.from("tenant_features").update(features).eq("tenant_id", id!);
+      if (error) toast.error(error.message); else toast.success("תכונות נשמרו");
+    } catch (e: any) {
+      toast.error(e?.message || "שגיאה בשמירת התכונות");
+    } finally {
+      setSavingFeatures(false);
+    }
   };
 
   if (!tenant) return <div>טוען...</div>;
@@ -43,7 +186,58 @@ export default function TenantDetail() {
         <span className="text-muted-foreground">/{tenant.slug}</span>
         <Button asChild size="sm" variant="outline"><a href={`/t/${tenant.slug}`} target="_blank"><ExternalLink className="ml-1 h-3 w-3" /> צפה באתר</a></Button>
       </div>
+
       <Card>
+        <CardHeader className="flex flex-row items-center justify-between">
+          <CardTitle className="flex items-center gap-2">
+            אישור וכניסה
+            <Badge variant={tenant.status === "active" ? "success" : tenant.status === "suspended" ? "destructive" : "outline"}>{STATUS_LABEL[tenant.status] || tenant.status}</Badge>
+          </CardTitle>
+          <div className="flex gap-2">
+            {tenant.status !== "active" && (
+              <Button size="sm" onClick={() => setStatus.mutate("active")} disabled={setStatus.isPending} className="gap-1"><UserCheck className="h-4 w-4" />אשר טננט</Button>
+            )}
+            {tenant.status === "active" && (
+              <Button size="sm" variant="outline" onClick={() => setStatus.mutate("suspended")} disabled={setStatus.isPending} className="gap-1"><UserX className="h-4 w-4" />השעה</Button>
+            )}
+          </div>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          {(invites || []).length === 0 && <div className="text-sm text-muted-foreground">אין הזמנת כניסה עבור טננט זה — אף אחד לא יכול להתחבר עדיין.</div>}
+          {(invites || []).map((inv: any) => (
+            <div key={inv.id} className="flex items-center justify-between gap-3 border-b py-3 last:border-b-0">
+              <div>
+                <div className="font-medium">{inv.full_name}</div>
+                <div className="text-sm text-muted-foreground" dir="ltr">{inv.email}</div>
+                <div className="text-xs text-muted-foreground">{inv.used_at ? `נוצל ב-${new Date(inv.used_at).toLocaleDateString("he-IL")}` : `פתוח, בתוקף עד ${new Date(inv.expires_at).toLocaleDateString("he-IL")}`}</div>
+              </div>
+              {!inv.used_at && (
+                <Button size="sm" variant="outline" onClick={() => copyInviteDetails(inv)} className="gap-1"><Copy className="h-3 w-3" />העתק הזמנה</Button>
+              )}
+            </div>
+          ))}
+          <Dialog open={inviteOpen} onOpenChange={setInviteOpen}>
+            <DialogTrigger asChild><Button size="sm" variant="outline" className="gap-1"><KeyRound className="h-4 w-4" />הזמנת כניסה חדשה</Button></DialogTrigger>
+            <DialogContent dir="rtl">
+              <DialogHeader><DialogTitle>הזמנת כניסה חדשה</DialogTitle></DialogHeader>
+              <div className="space-y-3">
+                <div><Label>שם מלא</Label><Input value={inviteForm.full_name} onChange={(e) => setInviteForm({ ...inviteForm, full_name: e.target.value })} placeholder={tenant.display_name || tenant.name} /></div>
+                <div><Label>מייל *</Label><Input type="email" dir="ltr" value={inviteForm.email} onChange={(e) => setInviteForm({ ...inviteForm, email: e.target.value })} /></div>
+                <div>
+                  <Label className="flex items-center justify-between">
+                    <span>סיסמה ראשונית *</span>
+                    <button type="button" onClick={() => setInviteForm(f => ({ ...f, initial_password: generatePassword() }))} className="text-xs text-primary hover:underline font-medium">צור סיסמה חדשה</button>
+                  </Label>
+                  <Input value={inviteForm.initial_password} onChange={(e) => setInviteForm({ ...inviteForm, initial_password: e.target.value })} dir="ltr" className="font-mono tracking-wider" />
+                </div>
+                <Button onClick={() => createInvite.mutate()} disabled={!inviteForm.email || createInvite.isPending}>{createInvite.isPending ? "יוצר..." : "צור הזמנה"}</Button>
+              </div>
+            </DialogContent>
+          </Dialog>
+        </CardContent>
+      </Card>
+
+      <Card className="mt-6">
         <CardHeader><CardTitle>תכונות מופעלות</CardTitle></CardHeader>
         <CardContent className="space-y-2">
           {features && Object.keys(features).filter((k) => typeof features[k] === "boolean").map((k) => (
@@ -52,7 +246,91 @@ export default function TenantDetail() {
               <Switch checked={features[k]} onCheckedChange={(v) => setFeatures({ ...features, [k]: v })} />
             </div>
           ))}
-          <Button onClick={saveFeatures} className="mt-4">שמור</Button>
+          <Button onClick={saveFeatures} disabled={savingFeatures} className="mt-4">{savingFeatures ? "שומר..." : "שמור"}</Button>
+        </CardContent>
+      </Card>
+
+      <Card className="mt-6">
+        <CardHeader className="flex flex-row items-center justify-between">
+          <CardTitle>רישיון ומנוי</CardTitle>
+          <Dialog open={subOpen} onOpenChange={setSubOpen}>
+            <DialogTrigger asChild><Button size="sm"><Plus className="ml-2 h-4 w-4" /> רישיון חדש</Button></DialogTrigger>
+            <DialogContent>
+              <DialogHeader><DialogTitle>הוספת רישיון</DialogTitle></DialogHeader>
+              <div className="space-y-3">
+                <div>
+                  <Label>תוכנית</Label>
+                  <Select value={subForm.plan} onValueChange={(v) => setSubForm({ ...subForm, plan: v })}>
+                    <SelectTrigger><SelectValue /></SelectTrigger>
+                    <SelectContent>{PLANS.map((p) => <SelectItem key={p.v} value={p.v}>{p.l}</SelectItem>)}</SelectContent>
+                  </Select>
+                </div>
+                <div><Label>תאריך תפוגה</Label><Input type="date" value={subForm.expires_at} onChange={(e) => setSubForm({ ...subForm, expires_at: e.target.value })} /></div>
+                <div><Label>אמצעי תשלום</Label><Input value={subForm.payment_method} onChange={(e) => setSubForm({ ...subForm, payment_method: e.target.value })} placeholder="נדרים פלוס / העברה בנקאית / אחר" /></div>
+                <div><Label>הערות</Label><Textarea value={subForm.notes} onChange={(e) => setSubForm({ ...subForm, notes: e.target.value })} /></div>
+                <Button onClick={() => createSubscription.mutate()} disabled={createSubscription.isPending}>{createSubscription.isPending ? "שומר..." : "צור רישיון"}</Button>
+              </div>
+            </DialogContent>
+          </Dialog>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          {(subscriptions || []).length === 0 && <div className="text-sm text-muted-foreground">אין רישיון רשום לארגון זה.</div>}
+          {(subscriptions || []).map((s: any) => {
+            const expired = s.expires_at && new Date(s.expires_at) < new Date();
+            return (
+              <div key={s.id} className="flex items-center justify-between border-b py-3 last:border-b-0">
+                <div className="flex items-center gap-3 flex-wrap">
+                  <Badge variant="secondary">{PLANS.find((p) => p.v === s.plan)?.l || s.plan}</Badge>
+                  {expired && <Badge variant="destructive">פג תוקף</Badge>}
+                  <div className="text-sm">
+                    <div>התחלה: {new Date(s.starts_at).toLocaleDateString("he-IL")}{s.expires_at && ` · תפוגה: ${new Date(s.expires_at).toLocaleDateString("he-IL")}`}</div>
+                    {s.payment_method && <div className="text-muted-foreground">{s.payment_method}</div>}
+                    {s.notes && <div className="text-muted-foreground">{s.notes}</div>}
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Label className="text-sm text-muted-foreground">פעיל</Label>
+                  <Switch
+                    checked={s.is_active}
+                    onCheckedChange={(v) => toggleSubscriptionActive.mutate({ subId: s.id, is_active: v })}
+                  />
+                </div>
+              </div>
+            );
+          })}
+        </CardContent>
+      </Card>
+
+      <Card className="mt-6">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2"><Globe className="h-4 w-4" /> דומיין מותאם אישית</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          <div>
+            <Label>כתובת הדומיין (ללא https://)</Label>
+            <Input
+              value={domainInput}
+              onChange={(e) => setDomainInput(e.target.value)}
+              placeholder="mc-galil.org.il"
+              dir="ltr"
+            />
+          </div>
+          <p className="text-sm text-muted-foreground">
+            הפעלת דומיין מותאם מציגה את האתר הציבורי + הפורטל של הארגון הזה בלבד תחת הדומיין. יש
+            להגדיר CNAME אצל ספק הדומיין ולאחר מכן להוסיף את הדומיין ל
+            <Link to="/admin/whitelist" className="underline mx-1">רשימת נטפרי</Link>
+            כדי שהאתר יעבור סינון תוכן.
+          </p>
+          <div className="flex gap-2">
+            <Button onClick={() => saveDomain.mutate()} disabled={saveDomain.isPending}>
+              {saveDomain.isPending ? "שומר..." : "שמור דומיין"}
+            </Button>
+            {tenant.custom_domain && (
+              <Button variant="outline" onClick={() => { setDomainInput(""); saveDomain.mutate(""); }} disabled={saveDomain.isPending}>
+                הסר דומיין
+              </Button>
+            )}
+          </div>
         </CardContent>
       </Card>
     </div>

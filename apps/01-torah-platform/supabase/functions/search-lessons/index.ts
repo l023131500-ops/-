@@ -37,7 +37,15 @@ serve(async (req) => {
 
     // Cap per caller IP, before the table dumps and before the AI call, so a
     // blocked request costs neither database work nor credit.
-    const ip = (req.headers.get("x-forwarded-for") ?? "").split(",")[0].trim() || "unknown";
+    // cf-connecting-ip is set by Cloudflare's edge from the real TCP connection
+    // and can't be spoofed by the caller. The first entry of x-forwarded-for
+    // CAN be spoofed -- Supabase appends the real IP after whatever the caller
+    // sent rather than replacing it -- so a caller could mint a fresh fake IP
+    // per request and get a fresh rate-limit bucket every time, defeating this
+    // cap entirely and re-opening the table-dump + OPENAI_API_KEY spend it guards.
+    const ip = (req.headers.get("cf-connecting-ip") ?? "").trim() ||
+      (req.headers.get("x-forwarded-for") ?? "").split(",").map((s) => s.trim()).filter(Boolean).pop() ||
+      "unknown";
     const windowStart = new Date(Math.floor(Date.now() / 3_600_000) * 3_600_000).toISOString();
     const { data: gate, error: gateError } = await supabase.rpc("ai_rate_limit_hit", {
       p_bucket: `search-lessons:${ip}`,
@@ -60,31 +68,59 @@ serve(async (req) => {
       throw new Error("Missing env vars");
     }
 
+    // Columns below match the live `lessons` table (public.lessons has no
+    // synagogue_name/subject/lesson_style/rabbi_role/target_audience/
+    // is_recurring/schedule_days/specific_date/is_recorded/is_live_stream/
+    // schedule_notes — those were carried over from a stale recovered bundle
+    // and made every query here fail with 42703, taking the whole chatbot
+    // search down). title/topic_free_text/style/audience/date_specific are
+    // the real equivalents; the rest have no live equivalent and are dropped.
+    //
+    // is_active is also required here -- lessons_tenant_write_ins lets a
+    // moderator pause/cancel a lesson via is_active=false without revoking
+    // is_approved, and this query (unlike LessonsDirectory.tsx's public list
+    // and the ivr-search/ivr-agent phone functions, which both already
+    // filter on is_active) was still surfacing a deactivated lesson --
+    // including its contact_phone/contact_email -- to every web chatbot
+    // visitor even though it had been pulled from the public directory.
     const { data: lessons } = await supabase
       .from("lessons")
       .select(
-        "id, city, neighborhood, synagogue_name, subject, lesson_style, rabbi_name, rabbi_role, language, target_audience, is_recurring, schedule_days, specific_date, is_recorded, is_live_stream, contact_phone, contact_email, schedule_notes",
+        "id, city, neighborhood, title, topic_free_text, style, rabbi_name, language, audience, day_of_week, date_specific, recording_url, stream_url, contact_phone, contact_email",
       )
       .eq("is_approved", true)
+      .eq("is_active", true)
       .order("created_at", { ascending: false });
 
-    // public_token is the capability that opens a portal — it must never enter
-    // the prompt, because a steered answer can read the prompt back out.
-    const { data: synagogues } = await supabase
-      .from("synagogue_portals")
-      .select("id, synagogue_name, city, neighborhood, contact_phone, contact_email")
-      .order("created_at", { ascending: false });
-    const { data: orgs } = await supabase
-      .from("org_portals")
-      .select("id, org_name, contact_phone, contact_email")
-      .order("created_at", { ascending: false });
+    // synagogue_portals and org_portals do not exist in the live schema (the
+    // legacy self-service portal subsystem was never backed by real tables);
+    // querying them here threw 42703 on every request. There is no live
+    // replacement source for these two prompt sections, so they are left
+    // empty rather than querying tables that don't exist.
+    const synagogues: unknown[] = [];
+    const orgs: unknown[] = [];
 
     const lessonsJson = JSON.stringify(lessons || [], null, 1);
-    const synagoguesJson = JSON.stringify(synagogues || [], null, 1);
-    const orgsJson = JSON.stringify(orgs || [], null, 1);
+    const synagoguesJson = JSON.stringify(synagogues, null, 1);
+    const orgsJson = JSON.stringify(orgs, null, 1);
 
+    // submit_seeker/submit_teacher ACTION field names below must match
+    // public.leads' real columns (full_name, preferred_subject) -- FloatingChatBot.tsx
+    // spreads this parsed JSON straight into a `leads` insert with no
+    // renaming. The previous names (contact_name/subject/subjects) don't
+    // exist on `leads` at all, so every submit_seeker/submit_teacher save
+    // failed with 42703 and was silently swallowed by the chatbot's catch
+    // block, telling the visitor it saved when it never did (verified live:
+    // BEGIN/ROLLBACK insert with the old field names throws
+    // "column ... does not exist"; same insert with full_name/
+    // preferred_subject succeeds as anon under tenant_accepts_public_intake).
+    // submit_lesson is left as-is: even with correct `lessons` column names
+    // it is still rejected by lessons_tenant_write_ins RLS for an anonymous
+    // caller (INSERT there requires tenant_admin/moderator/member/super_admin),
+    // so fixing only the field names would not make it work -- that needs a
+    // schema/RLS decision, not a payload fix.
     const systemPrompt =
-      `אתה סוכן של "איגוד השיעורים" - פלטפורמה ארצית לחיפוש שיעורי תורה.\n\nשיעורים:\n${lessonsJson}\n\nבתי כנסת:\n${synagoguesJson}\n\nארגונים:\n${orgsJson}\n\nכללים:\n1. ענה בעברית בלשון תורנית מכבדת.\n2. הצג 1-3 תוצאות רלוונטיות בלבד מתוך המאגר.\n3. לכל תוצאה: שם הרב, נושא, מיקום, זמנים.\n4. תשובות קצרות וממוקדות.\n5. אם המשתמש רוצה להוסיף שיעור או להצטרף כמגיד, אסוף פרטים (שם, טלפון, עיר, נושא) והוסף בסוף:\n   - להוספת שיעור: [ACTION:submit_lesson]{"rabbi_name":"...","subject":"...","city":"...","phone":"..."}\n   - לבקשת מגיד שיעור: [ACTION:submit_seeker]{"contact_name":"...","phone":"...","city":"...","subject":"..."}\n   - להצטרפות כמגיד: [ACTION:submit_teacher]{"full_name":"...","phone":"...","city":"...","subjects":"..."}\n6. אחרי ACTION, כתוב: "הפרטים נשמרו בהצלחה!"`;
+      `אתה סוכן של "איגוד השיעורים" - פלטפורמה ארצית לחיפוש שיעורי תורה.\n\nשיעורים:\n${lessonsJson}\n\nבתי כנסת:\n${synagoguesJson}\n\nארגונים:\n${orgsJson}\n\nכללים:\n1. ענה בעברית בלשון תורנית מכבדת.\n2. הצג 1-3 תוצאות רלוונטיות בלבד מתוך המאגר.\n3. לכל תוצאה: שם הרב, נושא, מיקום, זמנים.\n4. תשובות קצרות וממוקדות.\n5. אם המשתמש רוצה להוסיף שיעור או להצטרף כמגיד, אסוף פרטים (שם, טלפון, עיר, נושא) והוסף בסוף:\n   - להוספת שיעור: [ACTION:submit_lesson]{"rabbi_name":"...","subject":"...","city":"...","phone":"..."}\n   - לבקשת מגיד שיעור: [ACTION:submit_seeker]{"full_name":"...","phone":"...","city":"...","preferred_subject":"..."}\n   - להצטרפות כמגיד: [ACTION:submit_teacher]{"full_name":"...","phone":"...","city":"...","preferred_subject":"..."}\n6. אחרי ACTION, כתוב: "הפרטים נשמרו בהצלחה!"`;
 
     const aiMessages = [
       { role: "system", content: systemPrompt },

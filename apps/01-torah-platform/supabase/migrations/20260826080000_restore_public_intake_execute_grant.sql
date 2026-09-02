@@ -1,0 +1,31 @@
+-- 20260825220000_legacy_admin_rpc_lockdown.sql revoked EXECUTE on nine
+-- SECURITY DEFINER functions from anon/authenticated, believing all nine to
+-- be dead code from the pre-Supabase-Auth "bkalut" scaffold (confirmed zero
+-- references anywhere in apps/01-torah-platform/src or supabase/functions).
+-- That check only grepped application source -- it missed that
+-- public.tenant_accepts_public_intake(uuid) is also called directly inside
+-- three live RLS WITH CHECK policies:
+--   leads_insert            (public.leads)
+--   rabbi_questions_insert   (public.rabbi_questions)
+--   portal_messages_insert   (public.portal_messages)
+-- A role needs EXECUTE on a function to invoke it even when that function is
+-- SECURITY DEFINER (SECURITY DEFINER only changes whose privileges apply
+-- *inside* the function body, not who may call it). With EXECUTE revoked,
+-- every anon/authenticated insert attempt on these three tables now fails
+-- with 42501 "permission denied for function tenant_accepts_public_intake"
+-- before the policy's own boolean logic ever runs -- silently breaking every
+-- public lead-capture form (Contact/FindLesson/RequestLesson/JoinTeacher/
+-- Questionnaire), the public "Ask the Rabbi" form, and every public portal
+-- contact form, for every tenant, regardless of that tenant's
+-- is_public/status flags. This is a live regression, not a hardening --
+-- confirmed live via MCP (anon role insert into leads fails with exactly
+-- this 42501 today).
+--
+-- tenant_accepts_public_intake itself only returns a boolean (whether a
+-- tenant is status='active' and is_public=true) -- it reveals no row data,
+-- unlike the other eight functions revoked in that migration (which read
+-- password hashes / full tenant+teacher+lesson data / brute-forceable admin
+-- login). Restoring EXECUTE on this one function only, to anon+authenticated
+-- only, does not reopen any of the real holes that migration closed.
+
+grant execute on function public.tenant_accepts_public_intake(uuid) to anon, authenticated;

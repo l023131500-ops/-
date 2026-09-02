@@ -6,7 +6,16 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
-import { Search, Check, Eye, ArrowLeft, RefreshCw, Inbox, Copy, CheckCheck } from "lucide-react";
+import { Search, Check, Eye, ArrowLeft, RefreshCw, Inbox, Copy, CheckCheck, Wallet, Undo2, Ban } from "lucide-react";
+
+const TX_STATUS_LABEL: Record<string, string> = {
+  pending: "⏳ ממתין",
+  completed: "✓ הושלם",
+  success: "✓ הושלם",
+  failed: "✗ נכשל",
+  refunded: "↩ זוכה",
+  cancelled: "✗ בוטל",
+};
 
 const NedarimManagement = () => {
   const [submissions, setSubmissions] = useState<any[]>([]);
@@ -14,19 +23,85 @@ const NedarimManagement = () => {
   const [filter, setFilter] = useState("");
   const [copied, setCopied] = useState(false);
 
+  const [transactions, setTransactions] = useState<any[]>([]);
+  const [txLoading, setTxLoading] = useState(true);
+  const [busyTxId, setBusyTxId] = useState<string | null>(null);
+
   const webhookUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/nedarim-webhook`;
 
-  useEffect(() => { fetchSubmissions(); }, []);
+  useEffect(() => { fetchSubmissions(); fetchTransactions(); }, []);
 
   const fetchSubmissions = async () => {
     setLoading(true);
+    // nedarim_submissions is a shared table fed by the org-wide Nedarim Plus
+    // webhook and carries a mosad_id per row -- other institutions' forms land
+    // here too (their raw_json can hold real ID numbers / health / income
+    // data), so this app must only ever read its own Mosad's rows (7016674,
+    // matching nedarim_configs.mosad_id for every tenant of this platform).
     const { data } = await supabase
       .from("nedarim_submissions")
       .select("*")
+      .eq("mosad_id", "7016674")
       .order("created_at", { ascending: false });
     if (data) setSubmissions(data);
     setLoading(false);
   };
+
+  const fetchTransactions = async () => {
+    setTxLoading(true);
+    const { data, error } = await supabase
+      .from("nedarim_transactions")
+      .select("*")
+      .order("created_at", { ascending: false });
+    if (error) toast.error("שגיאה בטעינת עסקאות: " + error.message);
+    if (data) setTransactions(data);
+    setTxLoading(false);
+  };
+
+  // Real money movement against the live Nedarim Plus processor — requires an
+  // explicit admin confirmation per call, cannot be triggered accidentally.
+  const runNedarimAction = async (
+    tx: any,
+    action: "RefundTransaction" | "CancelInvoice",
+    confirmMessage: string,
+  ) => {
+    if (busyTxId || !tx.transaction_id) return;
+    if (!confirm(confirmMessage)) return;
+    setBusyTxId(tx.id);
+    const { data, error } = await supabase.functions.invoke("nedarim-admin", {
+      body: {
+        action,
+        tenant_id: tx.tenant_id,
+        transaction_id: tx.transaction_id,
+        ...(action === "RefundTransaction" ? { amount: tx.amount_ils } : {}),
+      },
+    });
+    setBusyTxId(null);
+    if (error) {
+      toast.error("שגיאה בפעולה מול נדרים פלוס: " + error.message);
+      return;
+    }
+    if (!data?.ok) {
+      toast.error("נדרים פלוס דחה את הבקשה: " + (data?.result?.Message || data?.error || data?.status));
+      return;
+    }
+    toast.success(action === "RefundTransaction" ? "העסקה זוכתה בהצלחה" : "החשבונית בוטלה בהצלחה");
+    fetchTransactions();
+  };
+
+  const refundTransaction = (tx: any) =>
+    runNedarimAction(
+      tx,
+      "RefundTransaction",
+      `לזכות את העסקה ${tx.transaction_id} בסך ${tx.amount_ils} ₪? הפעולה שולחת בקשת זיכוי אמיתית לנדרים פלוס ואינה הפיכה.`,
+    );
+
+  const cancelTransaction = (tx: any) =>
+    runNedarimAction(
+      tx,
+      "CancelInvoice",
+      `לבטל את החשבונית של עסקה ${tx.transaction_id}? הפעולה שולחת בקשת ביטול אמיתית לנדרים פלוס ואינה הפיכה.`,
+    );
 
   const publishToLessons = async (sub: any) => {
     const lessonData = {
@@ -112,6 +187,74 @@ const NedarimManagement = () => {
                 <p className="font-body text-xs text-muted-foreground">{stat.label}</p>
               </div>
             ))}
+          </div>
+
+          {/* Payment transactions */}
+          <div className="mb-8">
+            <div className="flex items-center justify-between mb-3">
+              <h2 className="font-display text-xl font-bold text-card-foreground flex items-center gap-2">
+                <Wallet className="w-5 h-5 text-gold" /> עסקאות תשלום ({transactions.length})
+              </h2>
+              <Button variant="outline" size="sm" onClick={fetchTransactions} className="gap-1">
+                <RefreshCw className="w-4 h-4" /> רענון
+              </Button>
+            </div>
+            <div className="space-y-3">
+              {transactions.map(tx => (
+                <div key={tx.id} className="bg-card rounded-2xl border border-border p-5 hover:border-gold/30 transition-all">
+                  <div className="flex items-start justify-between gap-4">
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 mb-2 flex-wrap">
+                        <h3 className="font-display font-bold text-card-foreground">{tx.amount_ils ? `₪${tx.amount_ils}` : "—"}</h3>
+                        <Badge className={`font-body ${
+                          tx.status === "completed" || tx.status === "success" ? "bg-gradient-teal text-primary-foreground" :
+                          tx.status === "failed" ? "bg-destructive/15 text-destructive" :
+                          tx.status === "refunded" || tx.status === "cancelled" ? "bg-muted text-muted-foreground" :
+                          "bg-gradient-gold text-primary-foreground"
+                        }`}>
+                          {TX_STATUS_LABEL[tx.status] || tx.status || "—"}
+                        </Badge>
+                      </div>
+                      <div className="flex flex-wrap gap-3 text-sm font-body text-muted-foreground">
+                        {tx.transaction_id ? <span>מזהה: {tx.transaction_id}</span> : <span className="text-destructive/70">אין מזהה עסקה (עדיין לא אושרה)</span>}
+                        {tx.confirmation_code && <span>אישור: {tx.confirmation_code}</span>}
+                      </div>
+                      {tx.error_message && <p className="font-body text-xs text-destructive mt-1">⚠ {tx.error_message}</p>}
+                      <p className="font-body text-xs text-muted-foreground/60 mt-1">
+                        {new Date(tx.created_at).toLocaleString("he-IL")}
+                      </p>
+                    </div>
+                    <div className="flex gap-2 flex-shrink-0">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        disabled={!tx.transaction_id || busyTxId === tx.id}
+                        onClick={() => refundTransaction(tx)}
+                        className="gap-1 font-body border-gold/30 text-gold hover:bg-gold/10"
+                        title="זיכוי מלא (Refund)"
+                      >
+                        <Undo2 className="w-3 h-3" /> זיכוי
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        disabled={!tx.transaction_id || busyTxId === tx.id}
+                        onClick={() => cancelTransaction(tx)}
+                        className="gap-1 font-body border-destructive/30 text-destructive hover:bg-destructive/10"
+                        title="ביטול חשבונית (Cancel Invoice)"
+                      >
+                        <Ban className="w-3 h-3" /> ביטול
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+              {transactions.length === 0 && (
+                <p className="text-center font-body text-muted-foreground py-10">
+                  {txLoading ? "טוען..." : "אין עסקאות תשלום עדיין."}
+                </p>
+              )}
+            </div>
           </div>
 
           {/* Search & Refresh */}

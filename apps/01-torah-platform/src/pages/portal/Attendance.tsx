@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
 import { useTenant } from "@/hooks/useTenant";
 import { toast } from "sonner";
+import { localDateString } from "@/lib/utils";
 
 type LessonRow = { id: string; title: string; rabbi_name: string | null; time_hhmm: string | null };
 type ParticipantRow = { id: string; full_name: string; phone: string | null };
@@ -50,7 +51,7 @@ export default function Attendance() {
     queryKey: ["attendance-records", tenant?.id, selectedLesson],
     enabled: !!tenant?.id && !!selectedLesson,
     queryFn: async () => {
-      const today = new Date().toISOString().split("T")[0];
+      const today = localDateString();
       const { data, error } = await supabase
         .from("attendance")
         .select("participant_id, is_present")
@@ -70,7 +71,7 @@ export default function Attendance() {
   const saveAttendance = useMutation({
     mutationFn: async () => {
       if (!selectedLesson || !tenant?.id) throw new Error("חסר נתונים");
-      const today = new Date().toISOString().split("T")[0];
+      const today = localDateString();
       const rows = participants.map((p) => ({
         tenant_id: tenant!.id,
         lesson_id: selectedLesson,
@@ -80,7 +81,7 @@ export default function Attendance() {
       }));
       const { error } = await supabase
         .from("attendance")
-        .upsert(rows, { onConflict: "tenant_id,lesson_id,participant_id,date" });
+        .upsert(rows, { onConflict: "participant_id,lesson_id,date" });
       if (error) throw error;
     },
     onSuccess: () => {
@@ -144,7 +145,10 @@ export default function Attendance() {
               <Card
                 key={l.id}
                 className={`cursor-pointer transition-colors ${selectedLesson === l.id ? "border-primary bg-primary/5" : "hover:border-primary/50"}`}
-                onClick={() => setSelectedLesson(l.id)}
+                onClick={() => {
+                  setSelectedLesson(l.id);
+                  setAttendance({});
+                }}
               >
                 <div className="p-3">
                   <div className="font-medium text-sm">{l.title}</div>

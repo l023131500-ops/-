@@ -22,7 +22,7 @@ export default function Messages() {
           <Card key={m.id}><CardContent className="py-4">
             <div className="flex items-center justify-between mb-2">
               <div className="font-medium">{m.subject}</div>
-              {!m.read_at && <Badge>חדש</Badge>}
+              {m.status === "new" && <Badge>חדש</Badge>}
             </div>
             <div className="text-sm text-foreground/85 whitespace-pre-wrap">{m.body}</div>
             <div className="text-xs text-muted-foreground mt-2">{new Date(m.created_at).toLocaleDateString("he-IL")}</div>

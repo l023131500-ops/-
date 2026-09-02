@@ -38,7 +38,31 @@ export default function DonationPage() {
   const [donor, setDonor] = useState({ name: "", phone: "", email: "" });
   const [dedication, setDedication] = useState({ enabled: false, for_name: "", type: "" });
   const [iframeUrl, setIframeUrl] = useState<string | null>(null);
+  const [pendingDonationId, setPendingDonationId] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+
+  // The Nedarim iframe shows its own confirmation screen when the payment
+  // completes, but never tells this page -- nedarim-webhook (the IPN)
+  // flips donations.payment_status server-side, independently of anything
+  // the browser sees. Poll that status while the iframe is up so a
+  // successful/failed payment actually takes the donor to /donate/success
+  // instead of leaving them stuck looking at Nedarim's own page forever.
+  useEffect(() => {
+    if (!pendingDonationId) return;
+    const interval = setInterval(async () => {
+      const { data: status } = await supabase.rpc("donation_payment_status", { _donation_id: pendingDonationId });
+      if (status === "captured") {
+        clearInterval(interval);
+        nav("/donate/success");
+      } else if (status === "failed") {
+        clearInterval(interval);
+        toast.error("התשלום נכשל. נא לנסות שוב.");
+        setIframeUrl(null);
+        setPendingDonationId(null);
+      }
+    }, 3000);
+    return () => clearInterval(interval);
+  }, [pendingDonationId, nav]);
 
   const { data: campaign } = useQuery({
     queryKey: ["campaign", campaignSlug, tenant?.id],
@@ -61,6 +85,7 @@ export default function DonationPage() {
   const finalAmount = customAmount ? parseFloat(customAmount) : amount;
 
   const handleDonate = async () => {
+    if (loading) return;
     if (!tenant || !finalAmount || finalAmount < 5) {
       toast.error("נא להזין סכום תקין");
       return;
@@ -68,45 +93,62 @@ export default function DonationPage() {
     if (!donor.name || !donor.phone) { toast.error("נא למלא שם וטלפון"); return; }
     setLoading(true);
     try {
-      // Create donation row first
-      const { data: donation, error: donErr } = await supabase
+      // Generate the id client-side instead of reading it back via
+      // .insert().select(): for an anonymous donor (no user_id) the row fails
+      // the "donations_self_read" RLS policy (user_id = auth.uid() is NULL =
+      // NULL -> not true), and Postgres raises "new row violates row-level
+      // security policy" for any INSERT ... RETURNING whose row isn't
+      // SELECT-visible to the inserting role -- so anonymous donations never
+      // even reached the payment step. Knowing the id upfront needs no
+      // RETURNING. Also: donations has no payment_type/installments columns
+      // (that shape doesn't exist in the schema at all -- every donation
+      // insert was failing outright with "column does not exist"); the real
+      // columns are is_recurring/recurring_months.
+      const donationId = crypto.randomUUID();
+      const { error: donErr } = await supabase
         .from("donations")
         .insert({
+          id: donationId,
           tenant_id: tenant.id,
           campaign_id: campaign?.id || null,
           donor_name: donor.name,
           donor_phone: donor.phone,
           donor_email: donor.email || null,
           amount_ils: finalAmount,
-          payment_type: paymentType,
-          installments: paymentType === "HK" ? installments : 1,
+          is_recurring: paymentType === "HK",
+          recurring_months: paymentType === "HK" ? installments : null,
           dedication_for_name: dedication.enabled ? dedication.for_name : null,
           dedication_type: dedication.enabled ? dedication.type : null,
           user_id: user?.id || null,
           payment_status: "pending",
-        })
-        .select()
-        .single();
+        });
       if (donErr) throw donErr;
 
+      // nedarim-create-payment expects donor/dedication as nested objects
+      // (see its PaymentRequest interface) -- it validates on body.donor?.name
+      // and body.donor?.phone, so flat donor_name/donor_phone fields are
+      // silently ignored by TS at the call site but always undefined on the
+      // function side, which fails its required-field check and 400s on
+      // every single donation attempt, before the Nedarim iframe is ever
+      // reached.
       const { data: payRes, error: payErr } = await supabase.functions.invoke("nedarim-create-payment", {
         body: {
           purpose: "donation",
           tenant_id: tenant.id,
-          donation_id: donation.id,
+          donation_id: donationId,
           amount: finalAmount,
           payment_type: paymentType,
-          installments,
-          donor_name: donor.name,
-          donor_phone: donor.phone,
-          donor_email: donor.email,
-          dedication_for_name: dedication.for_name,
-          dedication_type: dedication.type,
+          recurring_months: paymentType === "HK" ? installments : undefined,
+          donor: { name: donor.name, phone: donor.phone, email: donor.email || undefined },
+          dedication: dedication.enabled
+            ? { type: dedication.type, for_name: dedication.for_name }
+            : undefined,
         },
       });
       if (payErr) throw payErr;
       if (!payRes?.iframe_url) throw new Error("לא הצלחנו ליצור עמוד תשלום");
       setIframeUrl(payRes.iframe_url);
+      setPendingDonationId(donationId);
     } catch (err: any) {
       toast.error("שגיאה: " + err.message);
     } finally {
@@ -124,7 +166,7 @@ export default function DonationPage() {
           </CardContent>
         </Card>
         <div className="text-center mt-4">
-          <Button variant="outline" onClick={() => setIframeUrl(null)}>חזור</Button>
+          <Button variant="outline" onClick={() => { setIframeUrl(null); setPendingDonationId(null); }}>חזור</Button>
         </div>
       </div>
     );

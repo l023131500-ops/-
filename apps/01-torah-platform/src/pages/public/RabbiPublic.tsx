@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { BACKGROUND_PRESETS } from "@/types/portalDesign";
+import { DAY_NAMES } from "@/types/questionnaire";
 
 const RabbiPublic = () => {
   const { id } = useParams<{ id: string }>();
@@ -25,36 +26,68 @@ const RabbiPublic = () => {
   }, [id]);
 
   const fetchRabbi = async () => {
-    // Try to find profile by public_token or id
-    let query = supabase.from("profiles").select("*").eq("is_approved", true);
-    const { data: byToken } = await query.eq("public_token", id).maybeSingle();
-    const profile = byToken || (await supabase.from("profiles").select("*").eq("id", id).eq("is_approved", true).maybeSingle()).data;
-    
-    if (!profile) { setLoading(false); return; }
+    // profiles.id doubles as the public rabbi-page id -- there's no separate
+    // public_token column on profiles (that concept lives only on teachers/
+    // synagogues, a different table this page doesn't use).
+    const { data: profileRow } = await supabase.from("profiles").select("*").eq("id", id).maybeSingle();
+    if (!profileRow) { setLoading(false); return; }
+    const meta = (profileRow.meta as Record<string, string>) || {};
+    const profile = {
+      ...profileRow,
+      rabbi_photo_url: profileRow.avatar_url,
+      contact_whatsapp: profileRow.whatsapp,
+      email: meta.email,
+      about_text: meta.about_text,
+      donation_link: meta.donation_link,
+      logo_url: meta.logo_url,
+      custom_background_url: meta.custom_background_url,
+      background_preset: meta.background_preset,
+      font_color: meta.font_color,
+    };
     setProfile(profile);
 
-    const { data: lessonsData } = await supabase.from("lessons").select("*").eq("teacher_id", profile.id).eq("is_active", true);
+    // Same moderation gate as LessonsDirectory.tsx/LessonDetail.tsx: RLS
+    // (lessons_tenant_read) only checks the tenant is active, not is_approved
+    // -- without this filter a rabbi's public page showed lessons a moderator
+    // had not yet approved (or had rejected while leaving is_active untouched).
+    const { data: lessonsData } = await supabase
+      .from("lessons")
+      .select("*")
+      .eq("rabbi_user_id", profile.id)
+      .eq("is_active", true)
+      .eq("is_approved", true);
     setLessons(lessonsData || []);
 
-    const { data: syns } = await supabase.from("synagogues").select("*").eq("teacher_id", profile.id);
-    setSynagogues(syns || []);
-    if (syns && syns.length > 0) {
-      const { data: pts } = await supabase.from("prayer_times").select("*").in("synagogue_id", syns.map(s => s.id));
-      setPrayerTimes(pts || []);
+    // synagogues has no FK back to a rabbi's profile (only a free-text rabbi_name),
+    // so a name match could show someone else's synagogue -- but preferred_tenant_id
+    // (already used below for the contact form) is a real FK to this rabbi's own
+    // tenant, and synagogues/prayer_times are tenant-scoped, so that's a reliable join.
+    if (profile.preferred_tenant_id) {
+      const { data: synData } = await supabase.from("synagogues").select("*").eq("tenant_id", profile.preferred_tenant_id);
+      setSynagogues(synData || []);
+      const { data: prayerData } = await supabase.from("prayer_times").select("*").eq("tenant_id", profile.preferred_tenant_id);
+      setPrayerTimes(prayerData || []);
     }
 
-    const { data: photosData } = await supabase.from("portal_photos").select("*").eq("teacher_id", profile.id);
-    setPhotos(photosData || []);
+    // public.portal_photos exists live (20260831030000); "as any" stays only
+    // because this repo doesn't regenerate generated-types.ts per migration.
+    const { data: photosData } = await supabase.from("portal_photos" as any).select("*").eq("teacher_id", profile.id);
+    setPhotos((photosData as any) || []);
 
     setLoading(false);
   };
 
   const handleContact = async () => {
     if (!contactForm.sender_name || !contactForm.sender_phone) { toast.error("נא למלא שם וטלפון"); return; }
+    if (!profile.preferred_tenant_id) { toast.error("שליחת פנייה פרטית אינה זמינה לפרופיל זה"); return; }
     setSending(true);
     const { error } = await supabase.from("portal_messages").insert({
-      teacher_id: profile.id,
-      ...contactForm,
+      tenant_id: profile.preferred_tenant_id,
+      from_name: contactForm.sender_name,
+      from_phone: contactForm.sender_phone,
+      from_email: contactForm.sender_email || null,
+      subject: `פנייה דרך הדף הציבורי של ${profile.full_name}`,
+      body: contactForm.message,
     });
     setSending(false);
     if (error) { toast.error("שגיאה בשליחה"); return; }
@@ -114,17 +147,17 @@ const RabbiPublic = () => {
             <div className="grid gap-3">
               {lessons.map(l => (
                 <div key={l.id} className="bg-card rounded-xl border border-border p-4">
-                  <h3 className="font-bold text-foreground">{l.subject}</h3>
+                  <h3 className="font-bold text-foreground">{l.title || l.topic_free_text}</h3>
                   <div className="flex flex-wrap gap-3 mt-2 text-sm text-muted-foreground">
                     {l.city && <span className="flex items-center gap-1"><MapPin className="w-3 h-3" />{l.city} {l.neighborhood || ""}</span>}
-                    {l.schedule_time && <span className="flex items-center gap-1"><Clock className="w-3 h-3" />{l.schedule_time}</span>}
-                    {l.synagogue_name && <span>📍 {l.synagogue_name}</span>}
+                    {l.time_hhmm && <span className="flex items-center gap-1"><Clock className="w-3 h-3" />{l.time_hhmm}</span>}
+                    {l.address && <span>📍 {l.address}</span>}
                   </div>
-                  {l.schedule_days?.length > 0 && (
+                  {(l.day_of_week != null || l.date_specific) && (
                     <div className="flex gap-1 mt-2">
-                      {l.schedule_days.map((d: string) => (
-                        <span key={d} className="bg-secondary/10 text-secondary text-xs px-2 py-1 rounded-full">{d}</span>
-                      ))}
+                      <span className="bg-secondary/10 text-secondary text-xs px-2 py-1 rounded-full">
+                        {l.day_of_week != null ? DAY_NAMES[l.day_of_week] : l.date_specific}
+                      </span>
                     </div>
                   )}
                 </div>
@@ -149,7 +182,7 @@ const RabbiPublic = () => {
                     <div className="flex flex-wrap gap-2 mt-3">
                       {synPrayers.map(pt => (
                         <span key={pt.id} className="bg-muted/50 text-foreground text-xs px-3 py-1.5 rounded-lg">
-                          {pt.prayer_type} {pt.time} {pt.day_of_week !== "יומי" && `(${pt.day_of_week})`}
+                          {pt.prayer_type} {pt.time_hhmm} {pt.day_of_week != null ? `(${DAY_NAMES[pt.day_of_week]})` : "(יומי)"}
                         </span>
                       ))}
                     </div>
@@ -172,22 +205,30 @@ const RabbiPublic = () => {
           </motion.section>
         )}
 
-        {/* Contact Form */}
-        <motion.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}
-          className="bg-card rounded-2xl border border-border p-6">
-          <h2 className="font-heading text-xl font-bold text-foreground mb-4 flex items-center gap-2">
-            <Send className="w-5 h-5 text-secondary" />יצירת קשר
-          </h2>
-          <div className="space-y-3">
-            <Input placeholder="שם מלא *" value={contactForm.sender_name} onChange={e => setContactForm(p => ({ ...p, sender_name: e.target.value }))} />
-            <Input placeholder="טלפון *" value={contactForm.sender_phone} onChange={e => setContactForm(p => ({ ...p, sender_phone: e.target.value }))} />
-            <Input placeholder="מייל" value={contactForm.sender_email} onChange={e => setContactForm(p => ({ ...p, sender_email: e.target.value }))} />
-            <Textarea placeholder="הודעה" value={contactForm.message} onChange={e => setContactForm(p => ({ ...p, message: e.target.value }))} rows={3} />
-            <Button onClick={handleContact} disabled={sending} className="w-full bg-secondary text-secondary-foreground hover:bg-gold-dark">
-              {sending ? "שולח..." : "שלח פנייה"}
-            </Button>
-          </div>
-        </motion.section>
+        {/* Contact Form -- needs the rabbi's profile to have a preferred_tenant_id,
+            since portal_messages.tenant_id is required and this page has no other
+            tenant to attach an anonymous message to. */}
+        {profile.preferred_tenant_id ? (
+          <motion.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}
+            className="bg-card rounded-2xl border border-border p-6">
+            <h2 className="font-heading text-xl font-bold text-foreground mb-4 flex items-center gap-2">
+              <Send className="w-5 h-5 text-secondary" />יצירת קשר
+            </h2>
+            <div className="space-y-3">
+              <Input placeholder="שם מלא *" value={contactForm.sender_name} onChange={e => setContactForm(p => ({ ...p, sender_name: e.target.value }))} />
+              <Input placeholder="טלפון *" value={contactForm.sender_phone} onChange={e => setContactForm(p => ({ ...p, sender_phone: e.target.value }))} />
+              <Input placeholder="מייל" value={contactForm.sender_email} onChange={e => setContactForm(p => ({ ...p, sender_email: e.target.value }))} />
+              <Textarea placeholder="הודעה" value={contactForm.message} onChange={e => setContactForm(p => ({ ...p, message: e.target.value }))} rows={3} />
+              <Button onClick={handleContact} disabled={sending} className="w-full bg-secondary text-secondary-foreground hover:bg-gold-dark">
+                {sending ? "שולח..." : "שלח פנייה"}
+              </Button>
+            </div>
+          </motion.section>
+        ) : (profile.phone || profile.contact_whatsapp) && (
+          <p className="text-center text-sm text-muted-foreground">
+            ליצירת קשר, אנא השתמשו בפרטי הקשר המפורטים למטה
+          </p>
+        )}
 
         {/* Contact Info */}
         {(profile.phone || profile.email || profile.contact_whatsapp) && (

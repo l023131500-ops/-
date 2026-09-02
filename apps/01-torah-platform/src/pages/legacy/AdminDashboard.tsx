@@ -38,6 +38,7 @@ const AdminDashboard = () => {
   const [editData, setEditData] = useState<any>({});
   const [expandedLesson, setExpandedLesson] = useState<string | null>(null);
   const [importing, setImporting] = useState(false);
+  const [busyId, setBusyId] = useState<string | null>(null);
   const [newRabbiName, setNewRabbiName] = useState("");
   const [newOrgName, setNewOrgName] = useState("");
   const [copiedToken, setCopiedToken] = useState<string | null>(null);
@@ -61,21 +62,34 @@ const AdminDashboard = () => {
 
   const fetchAll = async () => {
     setLoading(true);
-    const [lessonsRes, teachersRes, seekersRes, contactsRes, rabbiPortalsRes, orgPortalsRes, nedarimRes, studyDaysRes, synagoguesRes, shulPortalsRes] = await Promise.all([
+    const [lessonsRes, leadsRes, contactsRes, rabbiPortalsRes, orgPortalsRes, nedarimRes, studyDaysRes, synagoguesRes, shulPortalsRes] = await Promise.all([
       supabase.from("lessons").select("*").order("created_at", { ascending: false }),
-      supabase.from("teacher_leads").select("*").order("created_at", { ascending: false }),
-      supabase.from("seeker_leads").select("*").order("created_at", { ascending: false }),
-      supabase.from("contact_messages").select("*").order("created_at", { ascending: false }),
+      // teacher_leads/seeker_leads never existed on the live multi-tenant schema --
+      // folded into `leads` with a `kind` column during the tenant migration,
+      // same rename MatchingTab.tsx already accounts for.
+      supabase.from("leads").select("*").order("created_at", { ascending: false }),
+      // contact_messages never existed on the live schema -- inbound contact
+      // (ContactSection.tsx, Footer.tsx) writes to portal_messages.
+      supabase.from("portal_messages").select("*").order("created_at", { ascending: false }),
       supabase.from("rabbi_portals").select("*").order("created_at", { ascending: false }),
       supabase.from("org_portals").select("*").order("created_at", { ascending: false }),
-      supabase.from("nedarim_submissions").select("*").order("created_at", { ascending: false }),
+      // nedarim_submissions is a shared table fed by the org-wide Nedarim Plus
+      // webhook and carries a mosad_id per row -- other institutions' forms land
+      // here too (their raw_json can hold real ID numbers / health / income
+      // data), so this app must only ever read its own Mosad's rows (7016674,
+      // matching nedarim_configs.mosad_id for every tenant of this platform).
+      supabase.from("nedarim_submissions").select("*").eq("mosad_id", "7016674").order("created_at", { ascending: false }),
       supabase.from("study_day_events").select("*").order("created_at", { ascending: false }),
       supabase.from("synagogues").select("*").order("created_at", { ascending: false }),
       supabase.from("synagogue_portals").select("*").order("created_at", { ascending: false }),
     ]);
     if (lessonsRes.data) setLessons(lessonsRes.data);
-    if (teachersRes.data) setTeacherLeads(teachersRes.data);
-    if (seekersRes.data) setSeekerLeads(seekersRes.data);
+    if (leadsRes.data) {
+      setTeacherLeads(leadsRes.data.filter((x: any) => x.kind === "teacher_offer"));
+      setSeekerLeads(leadsRes.data.filter((x: any) => (x.kind || "lesson_request") === "lesson_request"));
+    } else if (leadsRes.error) {
+      console.error("AdminDashboard: failed to load leads", leadsRes.error.message);
+    }
     if (contactsRes.data) setContactMessages(contactsRes.data);
     if (rabbiPortalsRes.data) setRabbiPortals(rabbiPortalsRes.data);
     if (orgPortalsRes.data) setOrgPortals(orgPortalsRes.data);
@@ -93,7 +107,10 @@ const AdminDashboard = () => {
   };
 
   const approveLesson = async (id: string) => {
+    if (busyId) return;
+    setBusyId(`lesson:${id}`);
     const { error } = await supabase.from("lessons").update({ is_approved: true, status: "approved" }).eq("id", id);
+    setBusyId(null);
     if (!error) {
       toast.success("השיעור אושר לפרסום!");
       setLessons(prev => prev.map(l => l.id === id ? { ...l, is_approved: true, status: "approved" } : l));
@@ -101,7 +118,10 @@ const AdminDashboard = () => {
   };
 
   const rejectLesson = async (id: string) => {
+    if (busyId) return;
+    setBusyId(`lesson:${id}`);
     const { error } = await supabase.from("lessons").update({ is_approved: false, status: "rejected" }).eq("id", id);
+    setBusyId(null);
     if (!error) {
       toast.info("השיעור נדחה");
       setLessons(prev => prev.map(l => l.id === id ? { ...l, is_approved: false, status: "rejected" } : l));
@@ -109,15 +129,18 @@ const AdminDashboard = () => {
   };
 
   const softDeleteLesson = async (id: string) => {
-    if (!confirm("למחוק לצמיתות מהמאגר? השיעור יוסתר מכל הצופים.")) return;
+    if (busyId || !confirm("למחוק לצמיתות מהמאגר? השיעור יוסתר מכל הצופים.")) return;
+    setBusyId(`lesson:${id}`);
     // Try hard delete first; if RLS blocks → fall back to soft delete (status=deleted)
     const { error: delErr } = await supabase.from("lessons").delete().eq("id", id);
     if (!delErr) {
+      setBusyId(null);
       toast.success("השיעור נמחק");
       setLessons(prev => prev.filter(l => l.id !== id));
       return;
     }
     const { error } = await supabase.from("lessons").update({ is_approved: false, status: "deleted" }).eq("id", id);
+    setBusyId(null);
     if (!error) {
       toast.success("השיעור הוסר מהמאגר");
       setLessons(prev => prev.filter(l => l.id !== id));
@@ -127,16 +150,37 @@ const AdminDashboard = () => {
   };
 
   const deleteStudyDay = async (id: string) => {
-    if (!confirm("למחוק יום עיון זה לצמיתות?")) return;
+    if (busyId || !confirm("למחוק יום עיון זה לצמיתות?")) return;
+    setBusyId(`study-day:${id}`);
     const { error } = await supabase.from("study_day_events").delete().eq("id", id);
     if (!error) {
+      setBusyId(null);
       toast.success("יום העיון נמחק");
       setStudyDayEvents(prev => prev.filter(e => e.id !== id));
     } else {
       await supabase.from("study_day_events").update({ status: "deleted", is_approved: false }).eq("id", id);
+      setBusyId(null);
       setStudyDayEvents(prev => prev.filter(e => e.id !== id));
       toast.success("יום העיון הוסר");
     }
+  };
+
+  const approveStudyDay = async (id: string) => {
+    if (busyId) return;
+    setBusyId(`study-day:${id}`);
+    const { error } = await supabase.from("study_day_events").update({ is_approved: true, status: "approved" }).eq("id", id);
+    setBusyId(null);
+    if (error) toast.error("שגיאה: " + error.message);
+    else { toast.success("אושר"); fetchAll(); }
+  };
+
+  const rejectStudyDay = async (id: string) => {
+    if (busyId) return;
+    setBusyId(`study-day:${id}`);
+    const { error } = await supabase.from("study_day_events").update({ is_approved: false, status: "rejected" }).eq("id", id);
+    setBusyId(null);
+    if (error) toast.error("שגיאה: " + error.message);
+    else { toast.info("בוטל"); fetchAll(); }
   };
 
   const startEditing = (lesson: any) => {
@@ -145,9 +189,11 @@ const AdminDashboard = () => {
   };
 
   const saveEdit = async () => {
-    if (!editingLesson) return;
+    if (!editingLesson || busyId) return;
+    setBusyId(`lesson:${editingLesson}`);
     const { id, created_at, updated_at, ...updateFields } = editData;
     const { error } = await supabase.from("lessons").update(updateFields).eq("id", editingLesson);
+    setBusyId(null);
     if (!error) {
       toast.success("השיעור עודכן בהצלחה!");
       setLessons(prev => prev.map(l => l.id === editingLesson ? { ...l, ...updateFields } : l));
@@ -292,26 +338,34 @@ const AdminDashboard = () => {
 
   // ─── Bulk approve all lessons of a portal ───
   const approveAllForRabbi = async (rabbiName: string) => {
+    if (busyId) return;
+    setBusyId(`rabbi:${rabbiName}`);
     const { error, count } = await supabase
       .from("lessons")
       .update({ is_approved: true, status: "approved" }, { count: "exact" })
       .eq("rabbi_name", rabbiName)
       .neq("is_approved", true);
+    setBusyId(null);
     if (error) { toast.error("שגיאה: " + error.message); return; }
     toast.success(`${count ?? 0} שיעורים אושרו`);
     fetchAll();
   };
   const approveAllForOrg = async (orgName: string) => {
+    if (busyId) return;
+    setBusyId(`org:${orgName}`);
     const { error, count } = await supabase
       .from("lessons")
       .update({ is_approved: true, status: "approved" }, { count: "exact" })
       .eq("org_name", orgName)
       .neq("is_approved", true);
+    setBusyId(null);
     if (error) { toast.error("שגיאה: " + error.message); return; }
     toast.success(`${count ?? 0} שיעורים אושרו`);
     fetchAll();
   };
   const approveAllForShulPortal = async (portalId: string) => {
+    if (busyId) return;
+    setBusyId(`shul:${portalId}`);
     const { error: e1, count: c1 } = await supabase
       .from("lessons")
       .update({ is_approved: true, status: "approved" }, { count: "exact" })
@@ -322,6 +376,7 @@ const AdminDashboard = () => {
       .update({ is_approved: true, status: "approved" }, { count: "exact" })
       .eq("session_id", portalId)
       .neq("is_approved", true);
+    setBusyId(null);
     if (e1 || e2) { toast.error("שגיאה באישור"); return; }
     toast.success(`${(c1 ?? 0) + (c2 ?? 0)} פריטים אושרו`);
     fetchAll();
@@ -329,18 +384,26 @@ const AdminDashboard = () => {
 
   // ─── Generic action handlers ───
   const genericApprove = async (table: any, id: string) => {
+    if (busyId) return;
+    setBusyId(`${table}:${id}`);
     const { error } = await supabase.from(table).update({ status: "approved" }).eq("id", id);
+    setBusyId(null);
     if (error) toast.error("שגיאה: " + error.message);
     else { toast.success("אושר"); fetchAll(); }
   };
   const genericReject = async (table: any, id: string) => {
+    if (busyId) return;
+    setBusyId(`${table}:${id}`);
     const { error } = await supabase.from(table).update({ status: "rejected" }).eq("id", id);
+    setBusyId(null);
     if (error) toast.error("שגיאה: " + error.message);
     else { toast.info("נדחה"); fetchAll(); }
   };
   const genericDelete = async (table: any, id: string, label: string) => {
-    if (!confirm(`למחוק את ${label}?`)) return;
+    if (busyId || !confirm(`למחוק את ${label}?`)) return;
+    setBusyId(`${table}:${id}`);
     const { error } = await supabase.from(table).delete().eq("id", id);
+    setBusyId(null);
     if (error) toast.error("שגיאה במחיקה: " + error.message);
     else { toast.success("נמחק"); fetchAll(); }
   };
@@ -362,6 +425,8 @@ const AdminDashboard = () => {
 
   // Approve nedarim submission → create lesson
   const approveNedarim = async (sub: any) => {
+    if (busyId) return;
+    setBusyId(`nedarim_submissions:${sub.id}`);
     const r = sub.raw_data || {};
     const lessonData = {
       rabbi_name: sub.name || "ממתין",
@@ -376,8 +441,9 @@ const AdminDashboard = () => {
       is_approved: true,
     };
     const { error } = await supabase.from("lessons").insert(lessonData);
-    if (error) { toast.error("שגיאה ביצירת השיעור"); return; }
+    if (error) { setBusyId(null); toast.error("שגיאה ביצירת השיעור"); return; }
     await supabase.from("nedarim_submissions").update({ status: "published" }).eq("id", sub.id);
+    setBusyId(null);
     toast.success("השיעור נוצר ופורסם!");
     fetchAll();
   };
@@ -669,21 +735,21 @@ const AdminDashboard = () => {
                         <div className="flex flex-wrap gap-1.5">
                           {lesson.status === "pending" && (
                             <>
-                              <Button size="sm" onClick={() => approveLesson(lesson.id)} className="bg-gradient-teal text-primary-foreground gap-1 font-body font-bold shadow-sm">
+                              <Button size="sm" onClick={() => approveLesson(lesson.id)} disabled={busyId === `lesson:${lesson.id}`} className="bg-gradient-teal text-primary-foreground gap-1 font-body font-bold shadow-sm">
                                 <Check className="w-3 h-3" /> אשר
                               </Button>
-                              <Button size="sm" variant="outline" onClick={() => rejectLesson(lesson.id)} className="text-destructive gap-1 font-body border-destructive/30">
+                              <Button size="sm" variant="outline" onClick={() => rejectLesson(lesson.id)} disabled={busyId === `lesson:${lesson.id}`} className="text-destructive gap-1 font-body border-destructive/30">
                                 <X className="w-3 h-3" /> דחה
                               </Button>
                             </>
                           )}
                           {lesson.status === "approved" && (
-                            <Button size="sm" variant="outline" onClick={() => rejectLesson(lesson.id)} className="text-destructive gap-1 font-body border-destructive/30">
+                            <Button size="sm" variant="outline" onClick={() => rejectLesson(lesson.id)} disabled={busyId === `lesson:${lesson.id}`} className="text-destructive gap-1 font-body border-destructive/30">
                               <X className="w-3 h-3" /> בטל
                             </Button>
                           )}
                           {lesson.status === "rejected" && (
-                            <Button size="sm" onClick={() => approveLesson(lesson.id)} className="bg-gradient-teal text-primary-foreground gap-1 font-body font-bold">
+                            <Button size="sm" onClick={() => approveLesson(lesson.id)} disabled={busyId === `lesson:${lesson.id}`} className="bg-gradient-teal text-primary-foreground gap-1 font-body font-bold">
                               <Check className="w-3 h-3" /> אשר
                             </Button>
                           )}
@@ -699,7 +765,7 @@ const AdminDashboard = () => {
                           <Button size="sm" variant="outline" onClick={() => shareLesson(lesson)} className="gap-1 font-body">
                             <Share2 className="w-3 h-3" />
                           </Button>
-                          <Button size="sm" variant="outline" onClick={() => softDeleteLesson(lesson.id)} className="gap-1 font-body border-destructive/30 text-destructive hover:bg-destructive/10" title="מחק לצמיתות">
+                          <Button size="sm" variant="outline" onClick={() => softDeleteLesson(lesson.id)} disabled={busyId === `lesson:${lesson.id}`} className="gap-1 font-body border-destructive/30 text-destructive hover:bg-destructive/10" title="מחק לצמיתות">
                             <Trash2 className="w-3 h-3" />
                           </Button>
                           <Button
@@ -862,7 +928,7 @@ const AdminDashboard = () => {
               </div>
             </TabsContent>
 
-            {/* Teacher Leads Tab */}
+            {/* Teacher Leads Tab (source: leads where kind=teacher_offer) */}
             <TabsContent value="teachers">
               <div className="space-y-3">
                 {teacherLeads.map((t) => (
@@ -878,16 +944,14 @@ const AdminDashboard = () => {
                         <div className="flex flex-wrap gap-3 text-sm font-body text-muted-foreground">
                           {t.phone && <span className="flex items-center gap-1"><Phone className="w-3 h-3" /> {t.phone}</span>}
                           {t.email && <span className="flex items-center gap-1"><Mail className="w-3 h-3" /> {t.email}</span>}
-                          {t.city && <span className="flex items-center gap-1"><MapPin className="w-3 h-3" /> {t.city}</span>}
+                          {t.area && <span className="flex items-center gap-1"><MapPin className="w-3 h-3" /> {t.area}</span>}
                         </div>
-                        {t.subjects?.length > 0 && (
+                        {t.preferred_subject && (
                           <div className="flex flex-wrap gap-1 mt-2">
-                            {t.subjects.map((s: string) => (
-                              <span key={s} className="px-2 py-0.5 rounded-full bg-gold/10 text-gold text-xs font-body">{s}</span>
-                            ))}
+                            <span className="px-2 py-0.5 rounded-full bg-gold/10 text-gold text-xs font-body">{t.preferred_subject}</span>
                           </div>
                         )}
-                        {t.notes && <p className="font-body text-xs text-muted-foreground mt-2">💬 {t.notes}</p>}
+                        {t.message && <p className="font-body text-xs text-muted-foreground mt-2">💬 {t.message}</p>}
                       </div>
                     </div>
                   </div>
@@ -896,24 +960,23 @@ const AdminDashboard = () => {
               </div>
             </TabsContent>
 
-            {/* Seeker Leads Tab */}
+            {/* Seeker Leads Tab (source: leads where kind=lesson_request) */}
             <TabsContent value="seekers">
               <div className="space-y-3">
                 {seekerLeads.map((s) => (
                   <div key={s.id} className="bg-card rounded-2xl border border-border p-5 hover:border-magenta/30 transition-all">
                     <div className="flex items-center gap-2 mb-1">
-                      <h3 className="font-display text-base font-bold text-card-foreground">{s.contact_name}</h3>
+                      <h3 className="font-display text-base font-bold text-card-foreground">{s.full_name}</h3>
                       <Badge className="bg-gradient-magenta text-primary-foreground font-body">
                         {s.status === "new" ? "✨ חדש" : s.status}
                       </Badge>
                     </div>
                     <div className="flex flex-wrap gap-3 text-sm font-body text-muted-foreground">
                       {s.phone && <span className="flex items-center gap-1"><Phone className="w-3 h-3" /> {s.phone}</span>}
-                      {s.city && <span className="flex items-center gap-1"><MapPin className="w-3 h-3" /> {s.city}</span>}
-                      {s.lesson_type && <span>סוג: {s.lesson_type}</span>}
-                      {s.subject && <span>נושא: {s.subject}</span>}
+                      {s.area && <span className="flex items-center gap-1"><MapPin className="w-3 h-3" /> {s.area}</span>}
+                      {s.preferred_subject && <span>נושא: {s.preferred_subject}</span>}
                     </div>
-                    {s.notes && <p className="font-body text-xs text-muted-foreground mt-2">💬 {s.notes}</p>}
+                    {s.message && <p className="font-body text-xs text-muted-foreground mt-2">💬 {s.message}</p>}
                   </div>
                 ))}
                 {seekerLeads.length === 0 && <p className="text-center font-body text-muted-foreground py-16">אין פניות עדיין</p>}
@@ -926,14 +989,14 @@ const AdminDashboard = () => {
                 {contactMessages.map((msg) => (
                   <div key={msg.id} className="bg-card rounded-2xl border border-border p-5 hover:border-primary/20 transition-all">
                     <div className="flex items-center gap-2 mb-2">
-                      <h3 className="font-body font-bold text-card-foreground">{msg.name}</h3>
-                      {msg.role && <Badge variant="outline" className="font-body border-teal/30 text-primary">{msg.role}</Badge>}
+                      <h3 className="font-body font-bold text-card-foreground">{msg.from_name}</h3>
+                      {msg.status && msg.status !== "new" && <Badge variant="outline" className="font-body border-teal/30 text-primary">{msg.status}</Badge>}
                       {msg.subject && <Badge variant="outline" className="font-body border-gold/30 text-gold">{msg.subject}</Badge>}
                     </div>
-                    <p className="font-body text-sm text-muted-foreground mb-2">{msg.message}</p>
+                    <p className="font-body text-sm text-muted-foreground mb-2">{msg.body}</p>
                     <div className="flex gap-3 text-xs font-body text-muted-foreground">
-                      {msg.phone && <span className="flex items-center gap-1"><Phone className="w-3 h-3" /> {msg.phone}</span>}
-                      {msg.email && <span className="flex items-center gap-1"><Mail className="w-3 h-3" /> {msg.email}</span>}
+                      {msg.from_phone && <span className="flex items-center gap-1"><Phone className="w-3 h-3" /> {msg.from_phone}</span>}
+                      {msg.from_email && <span className="flex items-center gap-1"><Mail className="w-3 h-3" /> {msg.from_email}</span>}
                     </div>
                   </div>
                 ))}
@@ -990,14 +1053,16 @@ const AdminDashboard = () => {
                       />
                       <Button
                         onClick={async () => {
-                          if (!newRabbiName.trim()) return;
+                          if (busyId || !newRabbiName.trim()) return;
+                          setBusyId("create-rabbi-portal");
                           const { data, error } = await supabase.from("rabbi_portals").insert({ rabbi_name: newRabbiName.trim() }).select().single();
-                          if (!error && data) {
-                            setRabbiPortals(prev => [data, ...prev]);
-                            setNewRabbiName("");
-                            toast.success("קישור לרב נוצר!");
-                          }
+                          setBusyId(null);
+                          if (error || !data) { toast.error("שגיאה ביצירת קישור: " + (error?.message || "")); return; }
+                          setRabbiPortals(prev => [data, ...prev]);
+                          setNewRabbiName("");
+                          toast.success("קישור לרב נוצר!");
                         }}
+                        disabled={busyId === "create-rabbi-portal"}
                         className="bg-gradient-gold text-navy font-body font-bold gap-2"
                       >
                         <Plus className="w-4 h-4" /> צור קישור
@@ -1049,6 +1114,7 @@ const AdminDashboard = () => {
                               <Button
                                 size="sm"
                                 onClick={() => approveAllForRabbi(p.rabbi_name)}
+                                disabled={busyId === `rabbi:${p.rabbi_name}`}
                                 className="bg-gradient-teal text-primary-foreground gap-1 font-body font-bold text-xs"
                               >
                                 <Check className="w-3 h-3" /> אשר את כל השיעורים
@@ -1094,14 +1160,16 @@ const AdminDashboard = () => {
                       />
                       <Button
                         onClick={async () => {
-                          if (!newOrgName.trim()) return;
+                          if (busyId || !newOrgName.trim()) return;
+                          setBusyId("create-org-portal");
                           const { data, error } = await supabase.from("org_portals").insert({ org_name: newOrgName.trim() }).select().single();
-                          if (!error && data) {
-                            setOrgPortals(prev => [data, ...prev]);
-                            setNewOrgName("");
-                            toast.success("קישור לארגון נוצר!");
-                          }
+                          setBusyId(null);
+                          if (error || !data) { toast.error("שגיאה ביצירת קישור: " + (error?.message || "")); return; }
+                          setOrgPortals(prev => [data, ...prev]);
+                          setNewOrgName("");
+                          toast.success("קישור לארגון נוצר!");
                         }}
+                        disabled={busyId === "create-org-portal"}
                         className="bg-gradient-teal text-primary-foreground font-body font-bold gap-2"
                       >
                         <Plus className="w-4 h-4" /> צור קישור
@@ -1153,6 +1221,7 @@ const AdminDashboard = () => {
                               <Button
                                 size="sm"
                                 onClick={() => approveAllForOrg(p.org_name)}
+                                disabled={busyId === `org:${p.org_name}`}
                                 className="bg-gradient-teal text-primary-foreground gap-1 font-body font-bold text-xs"
                               >
                                 <Check className="w-3 h-3" /> אשר את כל השיעורים
@@ -1225,6 +1294,7 @@ const AdminDashboard = () => {
                                 variant="ghost"
                                 size="icon"
                                 onClick={() => genericDelete("synagogue_portals", p.id, p.synagogue_name)}
+                                disabled={busyId === `synagogue_portals:${p.id}`}
                                 className="text-muted-foreground hover:text-destructive h-8 w-8"
                               >
                                 <Trash2 className="w-4 h-4" />
@@ -1238,6 +1308,7 @@ const AdminDashboard = () => {
                               <Button
                                 size="sm"
                                 onClick={() => approveAllForShulPortal(p.id)}
+                                disabled={busyId === `shul:${p.id}`}
                                 className="bg-gradient-teal text-primary-foreground gap-1 font-body font-bold text-xs"
                               >
                                 <Check className="w-3 h-3" /> אשר את כל השיעורים
@@ -1344,22 +1415,16 @@ const AdminDashboard = () => {
                               <Download className="w-3 h-3" />
                             </Button>
                             {!ev.is_approved && (
-                              <Button size="sm" onClick={async () => {
-                                const { error } = await supabase.from("study_day_events").update({ is_approved: true, status: "approved" }).eq("id", ev.id);
-                                if (!error) { toast.success("אושר"); fetchAll(); }
-                              }} className="bg-gradient-teal text-primary-foreground gap-1 font-body font-bold">
+                              <Button size="sm" onClick={() => approveStudyDay(ev.id)} disabled={busyId === `study-day:${ev.id}`} className="bg-gradient-teal text-primary-foreground gap-1 font-body font-bold">
                                 <Check className="w-3 h-3" /> אשר
                               </Button>
                             )}
                             {ev.is_approved && (
-                              <Button size="sm" variant="outline" onClick={async () => {
-                                const { error } = await supabase.from("study_day_events").update({ is_approved: false, status: "rejected" }).eq("id", ev.id);
-                                if (!error) { toast.info("בוטל"); fetchAll(); }
-                              }} className="text-destructive gap-1 font-body border-destructive/30">
+                              <Button size="sm" variant="outline" onClick={() => rejectStudyDay(ev.id)} disabled={busyId === `study-day:${ev.id}`} className="text-destructive gap-1 font-body border-destructive/30">
                                 <X className="w-3 h-3" /> בטל
                               </Button>
                             )}
-                            <Button size="sm" variant="outline" onClick={() => deleteStudyDay(ev.id)} className="gap-1 font-body border-destructive/30 text-destructive hover:bg-destructive/10" title="מחק לצמיתות">
+                            <Button size="sm" variant="outline" onClick={() => deleteStudyDay(ev.id)} disabled={busyId === `study-day:${ev.id}`} className="gap-1 font-body border-destructive/30 text-destructive hover:bg-destructive/10" title="מחק לצמיתות">
                               <Trash2 className="w-3 h-3" />
                             </Button>
                           </div>
@@ -1448,10 +1513,10 @@ const AdminDashboard = () => {
                       <div className="flex flex-wrap gap-1.5">
                         {sub.status === "new" && (
                           <>
-                            <Button size="sm" onClick={() => approveNedarim(sub)} className="bg-gradient-teal text-primary-foreground gap-1 font-body font-bold">
+                            <Button size="sm" onClick={() => approveNedarim(sub)} disabled={busyId === `nedarim_submissions:${sub.id}`} className="bg-gradient-teal text-primary-foreground gap-1 font-body font-bold">
                               <Check className="w-3 h-3" /> אשר ופרסם
                             </Button>
-                            <Button size="sm" variant="outline" onClick={() => genericReject("nedarim_submissions", sub.id)} className="text-destructive gap-1 font-body border-destructive/30">
+                            <Button size="sm" variant="outline" onClick={() => genericReject("nedarim_submissions", sub.id)} disabled={busyId === `nedarim_submissions:${sub.id}`} className="text-destructive gap-1 font-body border-destructive/30">
                               <X className="w-3 h-3" /> דחה
                             </Button>
                           </>
@@ -1465,7 +1530,7 @@ const AdminDashboard = () => {
                         <Button size="sm" variant="outline" onClick={() => shareText(`${sub.name} - ${sub.phone} - ${sub.subject || ""}`)} className="gap-1 font-body">
                           <Share2 className="w-3 h-3" />
                         </Button>
-                        <Button size="sm" variant="outline" onClick={() => genericDelete("nedarim_submissions", sub.id, "פנייה זו")} className="gap-1 font-body border-destructive/30 text-destructive">
+                        <Button size="sm" variant="outline" onClick={() => genericDelete("nedarim_submissions", sub.id, "פנייה זו")} disabled={busyId === `nedarim_submissions:${sub.id}`} className="gap-1 font-body border-destructive/30 text-destructive">
                           <Trash2 className="w-3 h-3" />
                         </Button>
                       </div>
@@ -1504,7 +1569,7 @@ const AdminDashboard = () => {
                           <Button size="sm" variant="outline" onClick={() => shareText(`🏛️ ${s.name} • ${s.city || ""} ${s.address || ""}`)} className="gap-1 font-body">
                             <Share2 className="w-3 h-3" />
                           </Button>
-                          <Button size="sm" variant="outline" onClick={() => genericDelete("synagogues", s.id, s.name)} className="gap-1 font-body border-destructive/30 text-destructive">
+                          <Button size="sm" variant="outline" onClick={() => genericDelete("synagogues", s.id, s.name)} disabled={busyId === `synagogues:${s.id}`} className="gap-1 font-body border-destructive/30 text-destructive">
                             <Trash2 className="w-3 h-3" />
                           </Button>
                         </div>
@@ -1636,7 +1701,7 @@ const AdminDashboard = () => {
                     <Textarea value={editData.submitter_notes || ""} onChange={(e) => setEditData({...editData, submitter_notes: e.target.value})} rows={2} />
                   </div>
 
-                  <Button onClick={saveEdit} className="w-full bg-gradient-brand text-primary-foreground font-body font-bold py-6 hover:opacity-90 gap-2">
+                  <Button onClick={saveEdit} disabled={busyId === `lesson:${editingLesson}`} className="w-full bg-gradient-brand text-primary-foreground font-body font-bold py-6 hover:opacity-90 gap-2">
                     <Save className="w-5 h-5" />
                     שמור שינויים
                   </Button>
@@ -1708,14 +1773,14 @@ const AdminDashboard = () => {
 
                   <div className="flex gap-2 flex-wrap pt-2">
                     {viewingNedarim.status === "new" && (
-                      <Button onClick={() => { approveNedarim(viewingNedarim); setViewingNedarim(null); }} className="bg-gradient-teal text-primary-foreground gap-1 font-body font-bold">
+                      <Button onClick={() => { approveNedarim(viewingNedarim); setViewingNedarim(null); }} disabled={busyId === `nedarim_submissions:${viewingNedarim.id}`} className="bg-gradient-teal text-primary-foreground gap-1 font-body font-bold">
                         <Check className="w-4 h-4" /> אשר ופרסם כשיעור
                       </Button>
                     )}
                     <Button variant="outline" onClick={() => downloadJsonAsTxt(viewingNedarim.raw_data || viewingNedarim, `nedarim_${viewingNedarim.id}`)} className="gap-1 font-body border-gold/30 text-gold">
                       <Download className="w-4 h-4" /> הורד
                     </Button>
-                    <Button variant="outline" onClick={() => genericDelete("nedarim_submissions", viewingNedarim.id, "פנייה זו").then(() => setViewingNedarim(null))} className="gap-1 font-body border-destructive/30 text-destructive">
+                    <Button variant="outline" onClick={() => genericDelete("nedarim_submissions", viewingNedarim.id, "פנייה זו").then(() => setViewingNedarim(null))} disabled={busyId === `nedarim_submissions:${viewingNedarim.id}`} className="gap-1 font-body border-destructive/30 text-destructive">
                       <Trash2 className="w-4 h-4" /> מחק
                     </Button>
                   </div>

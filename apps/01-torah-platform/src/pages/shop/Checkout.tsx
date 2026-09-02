@@ -20,8 +20,9 @@ export default function Checkout() {
   const { tenant } = useTenant();
   const nav = useNavigate();
 
-  const [customer, setCustomer] = useState({ name: "", phone: "", email: "", address: "", city: "", notes: "" });
+  const [customer, setCustomer] = useState({ name: "", phone: "", email: "", address: "", city: "", zip: "", notes: "" });
   const [iframeUrl, setIframeUrl] = useState<string | null>(null);
+  const [pendingOrderId, setPendingOrderId] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -32,14 +33,46 @@ export default function Checkout() {
     if (user?.email) setCustomer((c) => ({ ...c, email: user.email! }));
   }, [user]);
 
+  // The Nedarim iframe shows its own confirmation screen when the payment
+  // completes, but never tells this page -- nedarim-webhook (the IPN)
+  // flips orders.payment_status server-side, independently of anything the
+  // browser sees. Poll that status while the iframe is up so a
+  // successful/failed payment actually takes the buyer to /order/success
+  // instead of leaving them stuck looking at Nedarim's own page forever.
+  useEffect(() => {
+    if (!pendingOrderId) return;
+    const interval = setInterval(async () => {
+      const { data: status } = await supabase.rpc("order_payment_status", { _order_id: pendingOrderId });
+      if (status === "captured") {
+        clearInterval(interval);
+        nav("/order/success");
+      } else if (status === "failed") {
+        clearInterval(interval);
+        toast.error("התשלום נכשל. נא לנסות שוב.");
+        setIframeUrl(null);
+        setPendingOrderId(null);
+      }
+    }, 3000);
+    return () => clearInterval(interval);
+  }, [pendingOrderId, nav]);
+
   const submit = async () => {
     if (!tenant || items.length === 0) return;
     if (!customer.name || !customer.phone || !customer.address) { toast.error("חסרים פרטים חובה"); return; }
     setLoading(true);
     try {
-      const { data: order, error } = await supabase
+      // Generate the id client-side instead of reading it back via
+      // .insert().select(): for a guest checkout (no user_id) the row fails
+      // the "orders_self_read" RLS policy (user_id = auth.uid() is NULL = NULL
+      // -> not true), and Postgres raises "new row violates row-level
+      // security policy" for any INSERT ... RETURNING whose row isn't
+      // SELECT-visible to the inserting role -- so guest orders never even
+      // reached the payment step. Knowing the id upfront needs no RETURNING.
+      const orderId = crypto.randomUUID();
+      const { error } = await supabase
         .from("orders")
         .insert({
+          id: orderId,
           tenant_id: tenant.id,
           user_id: user?.id || null,
           customer_name: customer.name,
@@ -47,43 +80,48 @@ export default function Checkout() {
           customer_email: customer.email || null,
           shipping_address: customer.address,
           shipping_city: customer.city,
-          notes: customer.notes,
+          shipping_zip: customer.zip || null,
+          shipping_notes: customer.notes,
           total_ils: total,
           status: "pending",
           payment_status: "pending",
-        })
-        .select()
-        .single();
+        });
       if (error) throw error;
 
       // Insert order_items
       const { error: itemsErr } = await supabase.from("order_items").insert(
         items.map((it) => ({
-          order_id: order.id,
+          order_id: orderId,
+          tenant_id: tenant.id,
           product_id: it.product_id,
           product_name: it.product_name,
           unit_price_ils: it.unit_price_ils,
           quantity: it.quantity,
-          subtotal_ils: it.unit_price_ils * it.quantity,
+          total_ils: it.unit_price_ils * it.quantity,
         })),
       );
       if (itemsErr) throw itemsErr;
 
+      // nedarim-create-payment expects donor as a nested object (see its
+      // PaymentRequest interface) -- it validates on body.donor?.name and
+      // body.donor?.phone, so flat donor_name/donor_phone fields are always
+      // undefined on the function side, which fails its required-field check
+      // and 400s on every single order, before the Nedarim iframe is ever
+      // reached.
       const { data: pay, error: payErr } = await supabase.functions.invoke("nedarim-create-payment", {
         body: {
           purpose: "shop_order",
           tenant_id: tenant.id,
-          order_id: order.id,
+          order_id: orderId,
           amount: total,
           payment_type: "Ragil",
-          donor_name: customer.name,
-          donor_phone: customer.phone,
-          donor_email: customer.email,
+          donor: { name: customer.name, phone: customer.phone, email: customer.email || undefined },
         },
       });
       if (payErr) throw payErr;
       if (!pay?.iframe_url) throw new Error("לא ניתן ליצור עמוד תשלום");
       setIframeUrl(pay.iframe_url);
+      setPendingOrderId(orderId);
     } catch (err: any) { toast.error(err.message); } finally { setLoading(false); }
   };
 
@@ -112,7 +150,10 @@ export default function Checkout() {
               </div>
               <div><Label>דוא״ל</Label><Input type="email" value={customer.email} onChange={(e) => setCustomer({ ...customer, email: e.target.value })} /></div>
               <div><Label>כתובת *</Label><Input value={customer.address} onChange={(e) => setCustomer({ ...customer, address: e.target.value })} /></div>
-              <div><Label>עיר</Label><Input value={customer.city} onChange={(e) => setCustomer({ ...customer, city: e.target.value })} /></div>
+              <div className="grid sm:grid-cols-2 gap-3">
+                <div><Label>עיר</Label><Input value={customer.city} onChange={(e) => setCustomer({ ...customer, city: e.target.value })} /></div>
+                <div><Label>מיקוד</Label><Input value={customer.zip} onChange={(e) => setCustomer({ ...customer, zip: e.target.value })} /></div>
+              </div>
               <div><Label>הערות</Label><Textarea value={customer.notes} onChange={(e) => setCustomer({ ...customer, notes: e.target.value })} /></div>
             </CardContent>
           </Card>

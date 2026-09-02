@@ -22,10 +22,14 @@ export default function ProductDetail() {
     queryKey: ["product", slug, tenant?.id],
     enabled: !!tenant?.id && !!slug,
     queryFn: async () => {
+      // PostgREST treats , and ( ) in an .or() filter string as condition/group
+      // separators; without escaping, a slug containing them could break out
+      // of the intended filter and append arbitrary clauses.
+      const safeSlug = slug!.replace(/[,()]/g, "\\$&");
       const { data } = await supabase
         .from("products").select("*")
         .eq("tenant_id", tenant!.id)
-        .or(`slug.eq.${slug},id.eq.${slug}`)
+        .or(`slug.eq.${safeSlug},id.eq.${safeSlug}`)
         .maybeSingle();
       return data;
     },
@@ -34,15 +38,16 @@ export default function ProductDetail() {
   if (isLoading) return <div className="container mx-auto px-4 py-10">טוען...</div>;
   if (!product) return <div className="container mx-auto px-4 py-10">מוצר לא נמצא</div>;
 
-  const inStock = product.stock_quantity === null || product.stock_quantity > 0;
+  const inStock = product.stock === null || product.stock > 0;
+  const image = product.images?.[0];
 
   return (
     <div className="container mx-auto px-4 py-10 max-w-5xl">
       <Button asChild variant="ghost" className="mb-4"><Link to="/shop"><ArrowRight className="ml-2 h-4 w-4" /> חזור לחנות</Link></Button>
       <div className="grid md:grid-cols-2 gap-8">
         <div>
-          {product.image_url ? (
-            <img src={product.image_url} alt={product.name} className="w-full aspect-square object-cover rounded-lg bg-muted" />
+          {image ? (
+            <img src={image} alt={product.name} className="w-full aspect-square object-cover rounded-lg bg-muted" />
           ) : (
             <div className="w-full aspect-square bg-muted rounded-lg flex items-center justify-center">
               <ShoppingBag className="h-24 w-24 text-muted-foreground/30" />
@@ -68,13 +73,13 @@ export default function ProductDetail() {
               </div>
               <div className="flex gap-3">
                 <Button size="lg" onClick={() => {
-                  addItem({ product_id: product.id, product_name: product.name, unit_price_ils: product.price_ils, quantity: qty, image_url: product.image_url });
+                  addItem({ product_id: product.id, product_name: product.name, unit_price_ils: product.price_ils, quantity: qty, image_url: image });
                   toast.success("נוסף לעגלה");
                 }}>
                   <ShoppingCart className="ml-2 h-4 w-4" /> הוסף לעגלה
                 </Button>
                 <Button size="lg" variant="gold" onClick={() => {
-                  addItem({ product_id: product.id, product_name: product.name, unit_price_ils: product.price_ils, quantity: qty, image_url: product.image_url });
+                  addItem({ product_id: product.id, product_name: product.name, unit_price_ils: product.price_ils, quantity: qty, image_url: image });
                   nav("/checkout");
                 }}>קנייה מהירה</Button>
               </div>

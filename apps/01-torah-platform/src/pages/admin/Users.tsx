@@ -44,7 +44,12 @@ async function callAdmin(action: string, payload: Record<string, any> = {}) {
     headers: { "Authorization": `Bearer ${token}`, "Content-Type": "application/json" },
     body: JSON.stringify({ action, ...payload }),
   });
-  const json = await res.json();
+  let json: any;
+  try {
+    json = await res.json();
+  } catch {
+    throw new Error(res.ok ? "שגיאה" : `שגיאת שרת (${res.status})`);
+  }
   if (!json.ok) throw new Error(json.error || "שגיאה");
   return json;
 }
@@ -53,6 +58,7 @@ export default function Users() {
   const qc = useQueryClient();
   const [createOpen, setCreateOpen] = useState(false);
   const [pwUser, setPwUser] = useState<AppUser | null>(null);
+  const [roleUser, setRoleUser] = useState<AppUser | null>(null);
 
   const { data, isLoading } = useQuery({
     queryKey: ["admin-users-list"],
@@ -119,6 +125,9 @@ export default function Users() {
                     )}
                   </div>
                   <div className="flex gap-2">
+                    <Button size="sm" variant="outline" onClick={() => setRoleUser(u)}>
+                      <UserCog className="ml-1 h-3 w-3" /> תפקיד
+                    </Button>
                     <Button size="sm" variant="outline" onClick={() => setPwUser(u)}>
                       <KeyRound className="ml-1 h-3 w-3" /> סיסמה
                     </Button>
@@ -143,6 +152,17 @@ export default function Users() {
       {/* Password Dialog */}
       <Dialog open={!!pwUser} onOpenChange={(o) => !o && setPwUser(null)}>
         {pwUser && <PasswordDialog user={pwUser} onDone={() => setPwUser(null)} />}
+      </Dialog>
+
+      {/* Role Dialog */}
+      <Dialog open={!!roleUser} onOpenChange={(o) => !o && setRoleUser(null)}>
+        {roleUser && (
+          <RoleDialog
+            user={roleUser}
+            tenants={tenants}
+            onDone={() => { setRoleUser(null); qc.invalidateQueries({ queryKey: ["admin-users-list"] }); }}
+          />
+        )}
       </Dialog>
     </div>
   );
@@ -200,6 +220,99 @@ function CreateUserDialog({ tenants, onDone }: { tenants: any[]; onDone: () => v
       <DialogFooter>
         <Button onClick={() => mut.mutate()} disabled={mut.isPending || !email || !password || !fullName}>
           {mut.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : "צור משתמש"}
+        </Button>
+      </DialogFooter>
+    </DialogContent>
+  );
+}
+
+function RoleDialog({ user, tenants, onDone }: { user: AppUser; tenants: any[]; onDone: () => void }) {
+  const NEW_ENTRY = "__new__";
+  const [selected, setSelected] = useState<string>(user.roles.length ? "0" : NEW_ENTRY);
+  const existing = selected === NEW_ENTRY ? null : user.roles[Number(selected)];
+  const [role, setRole] = useState(existing?.role || "member");
+  const [tenantId, setTenantId] = useState<string>(existing?.tenant_id || "");
+
+  const pick = (v: string) => {
+    setSelected(v);
+    const entry = v === NEW_ENTRY ? null : user.roles[Number(v)];
+    setRole(entry?.role || "member");
+    setTenantId(entry?.tenant_id || "");
+  };
+
+  // update_role deletes-then-inserts scoped to the tenant_id it's sent, not
+  // the tenant_id the edited row happened to have -- so when editing an
+  // existing entry the tenant must stay fixed to that entry's tenant (else
+  // "editing" would silently leave the old row in place and add a new one
+  // in the newly-picked tenant instead of moving it).
+  const effectiveTenantId = existing ? (existing.tenant_id || "") : tenantId;
+
+  const mut = useMutation({
+    mutationFn: () => callAdmin("update_role", {
+      user_id: user.id, role, tenant_id: role === "super_admin" ? null : (effectiveTenantId || null),
+    }),
+    onSuccess: () => { toast.success("התפקיד עודכן"); onDone(); },
+    onError: (e: any) => toast.error(e.message),
+  });
+
+  return (
+    <DialogContent className="max-w-md">
+      <DialogHeader><DialogTitle>ניהול תפקיד — {user.display_name || user.email}</DialogTitle></DialogHeader>
+      <div className="space-y-3">
+        {user.roles.length > 0 && (
+          <div>
+            <Label>תפקיד קיים לעריכה</Label>
+            <Select value={selected} onValueChange={pick}>
+              <SelectTrigger><SelectValue /></SelectTrigger>
+              <SelectContent>
+                {user.roles.map((r, i) => (
+                  <SelectItem key={i} value={String(i)}>
+                    {ROLES.find((x) => x.value === r.role)?.label || r.role}
+                    {r.tenant?.name && ` · ${r.tenant.name}`}
+                  </SelectItem>
+                ))}
+                <SelectItem value={NEW_ENTRY}>+ הוסף תפקיד חדש</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        )}
+        <div>
+          <Label>תפקיד</Label>
+          <Select value={role} onValueChange={setRole}>
+            <SelectTrigger><SelectValue /></SelectTrigger>
+            <SelectContent>
+              {ROLES.map((r) => <SelectItem key={r.value} value={r.value}>{r.label}</SelectItem>)}
+            </SelectContent>
+          </Select>
+        </div>
+        {role !== "super_admin" && existing && (
+          <div>
+            <Label>ארגון (טננט)</Label>
+            <div className="text-sm px-3 py-2 rounded-md border bg-muted/40">
+              {existing.tenant?.name || "— (לא ניתן לשנות טננט לתפקיד קיים; הוסיפו תפקיד חדש במקום)"}
+            </div>
+          </div>
+        )}
+        {role !== "super_admin" && !existing && (
+          <div>
+            <Label>ארגון (טננט)</Label>
+            <Select value={tenantId} onValueChange={setTenantId}>
+              <SelectTrigger><SelectValue placeholder="בחר ארגון" /></SelectTrigger>
+              <SelectContent>
+                {tenants.map((t) => <SelectItem key={t.id} value={t.id}>{t.name}</SelectItem>)}
+              </SelectContent>
+            </Select>
+          </div>
+        )}
+        <div className="text-sm text-muted-foreground">
+          {existing
+            ? "השמירה תעדכן את התפקיד עבור אותו טננט."
+            : "השמירה תוסיף תפקיד חדש למשתמש (בנוסף לקיימים)."}
+        </div>
+      </div>
+      <DialogFooter>
+        <Button onClick={() => mut.mutate()} disabled={mut.isPending || (role !== "super_admin" && !effectiveTenantId)}>
+          {mut.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : "עדכן תפקיד"}
         </Button>
       </DialogFooter>
     </DialogContent>

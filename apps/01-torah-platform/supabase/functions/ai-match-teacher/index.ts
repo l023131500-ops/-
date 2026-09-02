@@ -31,7 +31,15 @@ Deno.serve(async (req) => {
     // Cap per caller IP. This function spends LOVABLE_API_KEY credit and its only
     // gate is verify_jwt — which the anon key satisfies, and that key is shipped to
     // every browser. Runs before the lead lookup, so a blocked request costs nothing.
-    const ip = (req.headers.get("x-forwarded-for") ?? "").split(",")[0].trim() || "unknown";
+    // cf-connecting-ip is set by Cloudflare's edge from the real TCP connection
+    // and can't be spoofed by the caller. The first entry of x-forwarded-for
+    // CAN be spoofed -- Supabase appends the real IP after whatever the caller
+    // sent rather than replacing it -- so a caller could mint a fresh fake IP
+    // per request and get a fresh rate-limit bucket every time, defeating this
+    // cap entirely and draining LOVABLE_API_KEY credit for free.
+    const ip = (req.headers.get("cf-connecting-ip") ?? "").trim() ||
+      (req.headers.get("x-forwarded-for") ?? "").split(",").map((s) => s.trim()).filter(Boolean).pop() ||
+      "unknown";
     const windowStart = new Date(Math.floor(Date.now() / 3_600_000) * 3_600_000).toISOString();
     const { data: gate, error: gateError } = await supabase.rpc("ai_rate_limit_hit", {
       p_bucket: `ai-match-teacher:${ip}`,
@@ -54,22 +62,38 @@ Deno.serve(async (req) => {
 
     if (!lead) return jr({ ok: false, error: "lead not found" }, 404);
 
-    // Fetch available maggidim
-    const { data: teachers } = await supabase
+    // Fetch available maggidim. memberships.user_id references auth.users, not
+    // public.profiles directly, so a single embedded select (memberships ->
+    // tenants -> profiles) has no FK path PostgREST can resolve and always
+    // fails with PGRST200 — fetch profiles separately and merge in JS.
+    const { data: memberships } = await supabase
       .from("memberships")
-      .select("user_id, tenant_id, tenants(name, city, region, type), profiles(full_name, phone, city, bio)")
+      .select("user_id, tenant_id, tenants(name, city, region, type)")
       .eq("role", "tenant_admin")
       .limit(50);
 
-    const teacherList = (teachers ?? [])
-      .filter((t: any) => t.tenants?.type === "maggid")
-      .map((t: any) => ({
-        user_id: t.user_id,
-        name: t.profiles?.full_name || t.tenants?.name,
-        city: t.profiles?.city || t.tenants?.city,
-        region: t.tenants?.region,
-        bio: t.profiles?.bio,
-      }));
+    const maggidMemberships = (memberships ?? []).filter((m: any) => m.tenants?.type === "maggid");
+    const userIds = maggidMemberships.map((m: any) => m.user_id);
+    const { data: teacherProfiles } = userIds.length
+      ? await supabase.from("profiles").select("id, full_name, phone, city, bio, meta").in("id", userIds)
+      : { data: [] as any[] };
+    const profileById = new Map((teacherProfiles ?? []).map((p: any) => [p.id, p]));
+
+    // architecture.md §5.2 מגיד: self-service "פנוי למסירת שיעורים נוספים"
+    // switch (profiles.meta.available_for_matching, set from PortalSettings.tsx).
+    // Missing key = available, so existing maggidim keep matching unchanged.
+    const teacherList = maggidMemberships
+      .filter((m: any) => (profileById.get(m.user_id)?.meta ?? {}).available_for_matching !== false)
+      .map((m: any) => {
+        const p = profileById.get(m.user_id);
+        return {
+          user_id: m.user_id,
+          name: p?.full_name || m.tenants?.name,
+          city: p?.city || m.tenants?.city,
+          region: m.tenants?.region,
+          bio: p?.bio,
+        };
+      });
 
     const prompt = `אתה עוזר התאמה במערכת איגוד השיעורים. בקשת ליד:
 - שם: ${lead.full_name}

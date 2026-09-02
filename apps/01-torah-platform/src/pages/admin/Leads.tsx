@@ -6,10 +6,12 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
+// leads.kind values, not leads.type — that column doesn't exist (see
+// Contact.tsx / FindLesson.tsx / RequestLesson.tsx / JoinTeacher.tsx).
 const TYPE_LABELS: Record<string, string> = {
   find_lesson: "אתר לי שיעור",
-  request_lesson: "בקש שיעור",
-  join_teacher: "הצטרף כמגיד",
+  lesson_request: "בקש שיעור",
+  teacher_offer: "הצטרף כמגיד",
   contact: "צור קשר",
 };
 
@@ -28,6 +30,7 @@ export default function Leads() {
       if (error) throw error;
     },
     onSuccess: () => { toast.success("עודכן"); qc.invalidateQueries({ queryKey: ["leads-all"] }); },
+    onError: (e: Error) => toast.error(e.message),
   });
   return (
     <div>
@@ -41,8 +44,8 @@ export default function Leads() {
                 <div className="text-sm text-muted-foreground">{l.email}</div>
               </div>
               <div className="flex gap-2 items-center">
-                <Badge variant="secondary">{TYPE_LABELS[l.type] || l.type}</Badge>
-                <Select value={l.status} onValueChange={(s) => update.mutate({ id: l.id, status: s })}>
+                <Badge variant="secondary">{TYPE_LABELS[l.kind] || l.kind}</Badge>
+                <Select value={l.status} onValueChange={(s) => update.mutate({ id: l.id, status: s })} disabled={update.isPending && update.variables?.id === l.id}>
                   <SelectTrigger className="w-32"><SelectValue /></SelectTrigger>
                   <SelectContent>
                     <SelectItem value="new">חדש</SelectItem>
@@ -52,7 +55,7 @@ export default function Leads() {
                 </Select>
               </div>
             </div>
-            {l.details && <pre className="text-xs bg-muted rounded p-2 overflow-x-auto">{JSON.stringify(l.details, null, 2)}</pre>}
+            {l.raw_data && <pre className="text-xs bg-muted rounded p-2 overflow-x-auto">{JSON.stringify(l.raw_data, null, 2)}</pre>}
             <div className="text-xs text-muted-foreground mt-2">{new Date(l.created_at).toLocaleString("he-IL")} · {l.tenants?.name}</div>
           </CardContent></Card>
         ))}

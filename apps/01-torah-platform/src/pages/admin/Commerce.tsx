@@ -35,7 +35,7 @@ export default function Commerce() {
                 <div className="font-medium">{d.donor_name} · {formatILS(d.amount_ils)}</div>
                 <div className="text-sm text-muted-foreground">{d.tenants?.name} · {new Date(d.created_at).toLocaleDateString("he-IL")}</div>
               </div>
-              <Badge variant={d.payment_status === "paid" ? "success" : "outline"}>{d.payment_status}</Badge>
+              <Badge variant={d.payment_status === "captured" ? "success" : "outline"}>{d.payment_status}</Badge>
             </CardContent></Card>
           ))}
         </TabsContent>
@@ -47,7 +47,7 @@ export default function Commerce() {
                 <div className="text-sm text-muted-foreground">{o.tenants?.name}</div>
               </div>
               <div className="flex gap-2">
-                <Badge variant={o.payment_status === "paid" ? "success" : "outline"}>{o.payment_status}</Badge>
+                <Badge variant={o.payment_status === "captured" ? "success" : "outline"}>{o.payment_status}</Badge>
                 <Badge>{o.status}</Badge>
               </div>
             </CardContent></Card>

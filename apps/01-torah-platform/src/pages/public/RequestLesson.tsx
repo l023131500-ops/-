@@ -21,11 +21,19 @@ export default function RequestLesson() {
     try {
       const { error } = await supabase.from("leads").insert({
         tenant_id: tenant.id,
-        type: "request_lesson",
+        // leads has `kind`/`raw_data`, not `type`/`details` — see Contact.tsx.
+        // "lesson_request" matches what MatchingGuru.tsx filters for the
+        // request-a-lesson column.
+        kind: "lesson_request",
         full_name: form.name,
         phone: form.phone,
         email: form.email,
-        details: { topic: form.topic, audience: form.audience, location: form.location, details: form.details },
+        // area/preferred_subject are real leads columns that LeadsGuru.tsx
+        // displays and searches on for every lead kind — must be set here
+        // too, not just tucked away in raw_data (see FindLesson.tsx).
+        area: form.location || null,
+        preferred_subject: form.topic || null,
+        raw_data: { topic: form.topic, audience: form.audience, location: form.location, details: form.details },
       });
       if (error) throw error;
       toast.success("הבקשה התקבלה — נחזור אליך בהקדם");

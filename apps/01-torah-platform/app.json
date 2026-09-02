@@ -8,11 +8,11 @@
   "repo": "l023131500-ops/torah-platform",
   "basePath": "/01",
   "supabase": {
-    "project": "uhnrgujbdxhhmoxcjria",
+    "project": "bieebmnmkffwbqlsfozh",
     "schema": "public"
   },
   "deployTarget": "lovable",
   "protected": false,
   "source": "not-vendored",
-  "note": "Main hub; billing via Nedarim."
+  "note": "Main hub; billing via Nedarim. Supabase project corrected 20/08/2026 — CONNECTIONS.md Phase 1 verification (reading the live .env) found 01 lives on bieebmnmkffwbqlsfozh, not the uhnrgujbdxhhmoxcjria hub project this file previously listed; core.projects and every applied migration/fix in DECISIONS.md already used bieebmnm."
 }

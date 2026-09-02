@@ -301,6 +301,7 @@ export default function AdminForums() {
                           variant="ghost"
                           title={post.is_pinned ? "הסר עיגון" : "עגן פוסט"}
                           onClick={() => togglePin.mutate({ id: post.id, is_pinned: !post.is_pinned })}
+                          disabled={togglePin.isPending}
                         >
                           <Pin className={`h-4 w-4 ${post.is_pinned ? "text-yellow-500 fill-yellow-500" : "text-muted-foreground"}`} />
                         </Button>
@@ -309,6 +310,7 @@ export default function AdminForums() {
                           variant="ghost"
                           title={post.is_locked ? "פתח נעילה" : "נעל פוסט"}
                           onClick={() => toggleLock.mutate({ id: post.id, is_locked: !post.is_locked })}
+                          disabled={toggleLock.isPending}
                         >
                           <Lock className={`h-4 w-4 ${post.is_locked ? "text-primary" : "text-muted-foreground"}`} />
                         </Button>

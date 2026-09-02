@@ -118,6 +118,14 @@ const FloatingChatBot = () => {
           // `kind` in the multi-tenant migration, and lessons has no `status`.
           // Every one of these inserts was failing — and the catch below
           // swallowed it, so the visitor was told their details were saved.
+          // submit_seeker/submit_teacher's actionData keys now match `leads`'
+          // real columns (full_name/preferred_subject — see the ACTION schema
+          // in supabase/functions/search-lessons/index.ts's system prompt).
+          // submit_lesson still 42703s regardless of actionData's shape:
+          // lessons_tenant_write_ins RLS requires a tenant role an anonymous
+          // chatbot visitor never has, and `lessons.title` is NOT NULL with
+          // no value ever collected for it — a schema/RLS-level gap, not a
+          // field-naming bug, so it is left as-is here.
           let error;
           if (actionType === "submit_lesson") {
             ({ error } = await supabase.from("lessons").insert({

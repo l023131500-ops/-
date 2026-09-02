@@ -40,14 +40,22 @@ const AdminMessages = () => {
   };
 
   const updateStatus = async (id: string, status: string) => {
-    await supabase.from("portal_messages").update({ status }).eq("id", id);
+    const { error } = await supabase.from("portal_messages").update({ status }).eq("id", id);
+    if (error) {
+      toast.error("עדכון הסטטוס נכשל");
+      return;
+    }
     toast.success("הסטטוס עודכן");
     load();
   };
 
   const remove = async (id: string) => {
     if (!confirm("למחוק את הפנייה?")) return;
-    await supabase.from("portal_messages").delete().eq("id", id);
+    const { error } = await supabase.from("portal_messages").delete().eq("id", id);
+    if (error) {
+      toast.error("המחיקה נכשלה");
+      return;
+    }
     toast.success("נמחק");
     load();
   };
@@ -98,18 +106,19 @@ const AdminMessages = () => {
                 <div className="flex items-start justify-between gap-4 mb-2">
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-1">
-                      <p className="font-medium text-foreground">{m.sender_name}</p>
+                      <p className="font-medium text-foreground">{m.from_name}</p>
                       <Badge className={`${status.color} hover:${status.color}`}>{status.label}</Badge>
                       {m.profiles?.full_name && (
                         <span className="text-xs text-muted-foreground">למגיד: {m.profiles.full_name}</span>
                       )}
                     </div>
+                    {m.subject && <p className="text-sm font-medium text-muted-foreground mb-1">{m.subject}</p>}
                     <div className="flex items-center gap-3 text-xs text-muted-foreground mb-2">
-                      {m.sender_phone && <span className="flex items-center gap-1"><Phone className="w-3 h-3" />{m.sender_phone}</span>}
-                      {m.sender_email && <span dir="ltr">{m.sender_email}</span>}
+                      {m.from_phone && <span className="flex items-center gap-1"><Phone className="w-3 h-3" />{m.from_phone}</span>}
+                      {m.from_email && <span dir="ltr">{m.from_email}</span>}
                       <span>{new Date(m.created_at).toLocaleString("he-IL")}</span>
                     </div>
-                    {m.message && <p className="text-foreground text-sm bg-muted/50 p-3 rounded-lg">{m.message}</p>}
+                    {m.body && <p className="text-foreground text-sm bg-muted/50 p-3 rounded-lg">{m.body}</p>}
                   </div>
                 </div>
                 <div className="flex gap-2 mt-3">

@@ -22,7 +22,7 @@ export default function Kashrut() {
         {(data || []).map((k: any) => (
           <Card key={k.id}>
             <CardHeader>
-              <Badge variant="success" className="w-fit mb-1">{k.certification_level || "כשרות"}</Badge>
+              <Badge variant="success" className="w-fit mb-1">{k.hechsher_level || "כשרות"}</Badge>
               <CardTitle className="text-lg">{k.business_name}</CardTitle>
               <CardDescription>{k.business_type}</CardDescription>
             </CardHeader>

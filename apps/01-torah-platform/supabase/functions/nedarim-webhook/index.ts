@@ -34,13 +34,21 @@ const NEDARIM_ALLOWED_IPS = new Set([
 const ENFORCE_IP_CHECK = (Deno.env.get("NEDARIM_ENFORCE_IP") || "true") === "true";
 
 function getClientIp(req: Request): string {
-  // Supabase Edge Functions מקבלות את ה-IP דרך headers
+  // Supabase Edge Functions run behind Cloudflare: cf-connecting-ip is set by
+  // Cloudflare's own edge from the actual TCP connection and cannot be
+  // overridden by the caller -- the correct primary source for an IP
+  // allowlist check like this one. x-forwarded-for is NOT safe to read as
+  // "first entry" here: Supabase appends the real client IP to whatever the
+  // caller already sent rather than replacing it, so a caller can prepend
+  // any IP it likes (e.g. the Nedarim IP itself, to walk straight through
+  // this allowlist) and the first entry will be that spoofed value. If we
+  // ever fall back to x-forwarded-for, only the LAST entry (the one
+  // Supabase's own edge appended) is trustworthy.
+  const cfIp = req.headers.get("cf-connecting-ip") || "";
   const xff = req.headers.get("x-forwarded-for") || "";
   const realIp = req.headers.get("x-real-ip") || "";
-  const cfIp = req.headers.get("cf-connecting-ip") || "";
-  // x-forwarded-for עשוי להכיל רשימה — נקח את הראשון
-  const fromXff = xff.split(",")[0].trim();
-  return fromXff || realIp || cfIp || "";
+  const lastXff = xff.split(",").map((s) => s.trim()).filter(Boolean).pop() || "";
+  return cfIp || lastXff || realIp || "";
 }
 
 Deno.serve(async (req) => {
@@ -57,14 +65,17 @@ Deno.serve(async (req) => {
 
     if (!ipOk) {
       console.warn("[nedarim-webhook] rejected: IP not allowed", clientIp);
-      // לוג ל-DB גם כן — עטוף ב-try/catch כי insert לא חושף .catch()
+      // tenant_id is unknown at this point (rejected before payload is parsed) --
+      // the column is nullable specifically for this orphan/security-log case.
       try {
-        await supabase.from("nedarim_transactions").insert({
+        const { error: logErr } = await supabase.from("nedarim_transactions").insert({
+          tenant_id: null,
           status: "rejected_ip",
           amount_ils: 0,
           webhook_payload: { rejected_ip: clientIp, headers: Object.fromEntries(req.headers.entries()) },
           error_message: `IP ${clientIp} not in Nedarim Plus allowlist`,
         });
+        if (logErr) console.error("[nedarim-webhook] failed to log IP rejection:", logErr);
       } catch (logErr) {
         console.warn("[nedarim-webhook] failed to log IP rejection:", logErr);
       }
@@ -162,7 +173,8 @@ Deno.serve(async (req) => {
       }
     }
 
-    // 2. If no pending found, insert a new transaction row
+    // 2. If no pending found, insert a new transaction row (orphan -- no our_payment_id
+    // match, so tenant is unknown; the column is nullable for exactly this case).
     if (!txnId) {
       const ins = await supabase
         .from("nedarim_transactions")
@@ -177,6 +189,7 @@ Deno.serve(async (req) => {
         })
         .select("id")
         .maybeSingle();
+      if (ins.error) console.error("[nedarim-webhook] failed to log orphan transaction:", ins.error);
       txnId = ins.data?.id ?? null;
     }
 
@@ -184,7 +197,13 @@ Deno.serve(async (req) => {
     const refId = foundDonationId || foundOrderId || "";
     if (isSuccess && refId) {
       if (purpose === "donation" || purpose === "subscription" || foundDonationId) {
-        await supabase
+        // Idempotent capture: only the webhook call that actually flips
+        // payment_status away from "captured" gets the row back. Nedarim (or
+        // our own retry logic upstream) can redeliver the same IPN more than
+        // once for one payment -- without this guard a redelivered webhook
+        // would fall through to the campaign-total update below a second
+        // time and double-count the same donation.
+        const { data: don } = await supabase
           .from("donations")
           .update({
             payment_status: "captured",
@@ -195,28 +214,40 @@ Deno.serve(async (req) => {
             receipt_number: receiptDocNum || undefined,
             receipt_issued_at: receiptDocNum ? new Date().toISOString() : undefined,
           })
-          .eq("id", foundDonationId || refId);
-
-        // Update campaign raised total
-        const { data: don } = await supabase
-          .from("donations")
-          .select("campaign_id, amount_ils, tenant_id")
           .eq("id", foundDonationId || refId)
+          .neq("payment_status", "captured")
+          .select("campaign_id, amount_ils, tenant_id")
           .maybeSingle();
 
+        // Update campaign raised total -- compare-and-swap retry loop instead
+        // of read-then-write, because two different donations to the same
+        // campaign can both be captured within the same instant (two donors,
+        // or two webhook deliveries for two different payments) and a plain
+        // read-then-write here silently loses whichever update lands second.
         if (don?.campaign_id) {
-          const { data: c } = await supabase
-            .from("donation_campaigns")
-            .select("raised_ils")
-            .eq("id", don.campaign_id)
-            .maybeSingle();
-          await supabase
-            .from("donation_campaigns")
-            .update({ raised_ils: (c?.raised_ils || 0) + don.amount_ils })
-            .eq("id", don.campaign_id);
+          for (let attempt = 0; attempt < 5; attempt++) {
+            const { data: c } = await supabase
+              .from("donation_campaigns")
+              .select("raised_ils")
+              .eq("id", don.campaign_id)
+              .maybeSingle();
+            const before = c?.raised_ils;
+            let cas = supabase
+              .from("donation_campaigns")
+              .update({ raised_ils: (before || 0) + don.amount_ils })
+              .eq("id", don.campaign_id);
+            cas = before == null ? cas.is("raised_ils", null) : cas.eq("raised_ils", before);
+            const { data: updated } = await cas.select("id").maybeSingle();
+            if (updated) break;
+          }
         }
       } else if (purpose === "shop_order" || foundOrderId) {
-        await supabase
+        // Same idempotent-capture guard as the donation branch above: only
+        // the delivery that actually flips payment_status away from
+        // "captured" gets the row back, so a redelivered IPN for an
+        // already-captured order falls through without decrementing stock
+        // a second time for the same paid order.
+        const { data: ord } = await supabase
           .from("orders")
           .update({
             payment_status: "captured",
@@ -225,7 +256,24 @@ Deno.serve(async (req) => {
             payment_meta: payload,
             paid_at: new Date().toISOString(),
           })
-          .eq("id", foundOrderId || refId);
+          .eq("id", foundOrderId || refId)
+          .neq("payment_status", "captured")
+          .select("id")
+          .maybeSingle();
+
+        if (ord?.id) {
+          const { data: orderItems } = await supabase
+            .from("order_items")
+            .select("product_id, quantity")
+            .eq("order_id", ord.id);
+          for (const item of orderItems || []) {
+            if (!item.product_id) continue;
+            await supabase.rpc("decrement_product_stock", {
+              _product_id: item.product_id,
+              _qty: item.quantity,
+            });
+          }
+        }
       }
     } else if (!isSuccess && refId) {
       // Mark as failed

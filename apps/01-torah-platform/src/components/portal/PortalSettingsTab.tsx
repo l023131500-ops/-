@@ -49,6 +49,7 @@ const PortalSettingsTab = ({ portalId, portalType, portalData, onUpdate }: Porta
   const [photos, setPhotos] = useState<any[]>([]);
   const [loadingPhotos, setLoadingPhotos] = useState(true);
   const [uploading, setUploading] = useState(false);
+  const [saving, setSaving] = useState(false);
   const [newCaption, setNewCaption] = useState("");
   const photoInputRef = useRef<HTMLInputElement>(null);
   const bgInputRef = useRef<HTMLInputElement>(null);
@@ -88,7 +89,10 @@ const PortalSettingsTab = ({ portalId, portalType, portalData, onUpdate }: Porta
   const tableName = portalType === "rabbi" ? "rabbi_portals" : "org_portals";
 
   const saveAbout = async () => {
+    if (saving) return;
+    setSaving(true);
     const { error } = await supabase.from(tableName).update({ about_text: aboutText }).eq("id", portalId);
+    setSaving(false);
     if (!error) {
       toast.success("טקסט אודות נשמר!");
       onUpdate({ ...portalData, about_text: aboutText });
@@ -96,6 +100,8 @@ const PortalSettingsTab = ({ portalId, portalType, portalData, onUpdate }: Porta
   };
 
   const saveContactInfo = async () => {
+    if (saving) return;
+    setSaving(true);
     const updates = {
       contact_phone: contactPhone,
       contact_email: contactEmail,
@@ -105,6 +111,7 @@ const PortalSettingsTab = ({ portalId, portalType, portalData, onUpdate }: Porta
       contact_mailing_address: contactMailingAddress,
     };
     const { error } = await supabase.from(tableName).update(updates).eq("id", portalId);
+    setSaving(false);
     if (!error) {
       toast.success("פרטי קשר נשמרו!");
       onUpdate({ ...portalData, ...updates });
@@ -112,8 +119,11 @@ const PortalSettingsTab = ({ portalId, portalType, portalData, onUpdate }: Porta
   };
 
   const saveCustomSections = async () => {
+    if (saving) return;
+    setSaving(true);
     const filtered = customSections.filter(s => s.title.trim() || s.content.trim());
     const { error } = await supabase.from(tableName).update({ custom_sections: filtered }).eq("id", portalId);
+    setSaving(false);
     if (!error) {
       toast.success("קטגוריות נשמרו!");
       onUpdate({ ...portalData, custom_sections: filtered });
@@ -127,7 +137,10 @@ const PortalSettingsTab = ({ portalId, portalType, portalData, onUpdate }: Porta
   };
 
   const selectPreset = async (presetId: string) => {
+    if (saving) return;
+    setSaving(true);
     const { error } = await supabase.from(tableName).update({ background_preset: presetId, custom_background_url: "" }).eq("id", portalId);
+    setSaving(false);
     if (!error) {
       setSelectedPreset(presetId);
       toast.success("רקע נבחר!");
@@ -136,8 +149,11 @@ const PortalSettingsTab = ({ portalId, portalType, portalData, onUpdate }: Porta
   };
 
   const saveFontColor = async (color: string) => {
+    if (saving) return;
+    setSaving(true);
     setFontColor(color);
     const { error } = await supabase.from(tableName).update({ font_color: color }).eq("id", portalId);
+    setSaving(false);
     if (!error) {
       toast.success(color === "light" ? "גופן בהיר נבחר" : "גופן כהה נבחר");
       onUpdate({ ...portalData, font_color: color });
@@ -145,9 +161,12 @@ const PortalSettingsTab = ({ portalId, portalType, portalData, onUpdate }: Porta
   };
 
   const saveDonationSettings = async () => {
+    if (saving) return;
+    setSaving(true);
     const updates: any = { donation_link: donationLink };
     if (portalType === "rabbi") updates.lesson_download_url = lessonDownloadUrl;
     const { error } = await supabase.from(tableName).update(updates).eq("id", portalId);
+    setSaving(false);
     if (!error) {
       toast.success("קישורים נשמרו!");
       onUpdate({ ...portalData, ...updates });
@@ -246,6 +265,7 @@ const PortalSettingsTab = ({ portalId, portalType, portalData, onUpdate }: Porta
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={() => selectPreset(preset.id)}
+              disabled={saving}
               className={`h-20 rounded-xl ${preset.css} border-2 transition-all flex items-center justify-center ${
                 selectedPreset === preset.id ? "border-gold ring-2 ring-gold/30" : "border-border/50 hover:border-gold/30"
               }`}
@@ -272,6 +292,7 @@ const PortalSettingsTab = ({ portalId, portalType, portalData, onUpdate }: Porta
         <div className="flex gap-3">
           <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}
             onClick={() => saveFontColor("light")}
+            disabled={saving}
             className={`flex-1 py-4 rounded-xl border-2 transition-all flex items-center justify-center gap-2 font-body font-bold ${
               fontColor === "light" ? "border-gold ring-2 ring-gold/30 bg-gray-900 text-white" : "border-border bg-gray-800 text-white/70 hover:border-gold/30"
             }`}>
@@ -279,6 +300,7 @@ const PortalSettingsTab = ({ portalId, portalType, portalData, onUpdate }: Porta
           </motion.button>
           <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}
             onClick={() => saveFontColor("dark")}
+            disabled={saving}
             className={`flex-1 py-4 rounded-xl border-2 transition-all flex items-center justify-center gap-2 font-body font-bold ${
               fontColor === "dark" ? "border-gold ring-2 ring-gold/30 bg-white text-gray-900" : "border-border bg-gray-100 text-gray-600 hover:border-gold/30"
             }`}>
@@ -303,7 +325,7 @@ const PortalSettingsTab = ({ portalId, portalType, portalData, onUpdate }: Porta
               <Input value={lessonDownloadUrl} onChange={e => setLessonDownloadUrl(e.target.value)} placeholder="https://drive.google.com/..." className="border-gold/20 focus:border-gold/50" />
             </div>
           </div>
-          <Button onClick={saveDonationSettings} className="mt-4 bg-gradient-teal text-primary-foreground font-body font-bold gap-2">
+          <Button onClick={saveDonationSettings} disabled={saving} className="mt-4 bg-gradient-teal text-primary-foreground font-body font-bold gap-2">
             שמור קישורים
           </Button>
         </div>
@@ -319,7 +341,7 @@ const PortalSettingsTab = ({ portalId, portalType, portalData, onUpdate }: Porta
           rows={4}
           className="border-gold/20 focus:border-gold/50 mb-3"
         />
-        <Button onClick={saveAbout} className="bg-gradient-teal text-primary-foreground font-body font-bold gap-2">
+        <Button onClick={saveAbout} disabled={saving} className="bg-gradient-teal text-primary-foreground font-body font-bold gap-2">
           שמור אודות
         </Button>
       </div>
@@ -355,7 +377,7 @@ const PortalSettingsTab = ({ portalId, portalType, portalData, onUpdate }: Porta
             <Input value={contactMailingAddress} onChange={e => setContactMailingAddress(e.target.value)} placeholder="ת.ד. ..." className="border-gold/20 focus:border-gold/50" />
           </div>
         </div>
-        <Button onClick={saveContactInfo} className="mt-4 bg-gradient-teal text-primary-foreground font-body font-bold gap-2">
+        <Button onClick={saveContactInfo} disabled={saving} className="mt-4 bg-gradient-teal text-primary-foreground font-body font-bold gap-2">
           שמור פרטי קשר
         </Button>
       </div>
@@ -395,7 +417,7 @@ const PortalSettingsTab = ({ portalId, portalType, portalData, onUpdate }: Porta
             <Plus className="w-4 h-4" /> הוסף קטגוריה
           </Button>
           {customSections.length > 0 && (
-            <Button onClick={saveCustomSections} className="bg-gradient-gold text-navy font-body font-bold gap-2">
+            <Button onClick={saveCustomSections} disabled={saving} className="bg-gradient-gold text-navy font-body font-bold gap-2">
               שמור קטגוריות
             </Button>
           )}

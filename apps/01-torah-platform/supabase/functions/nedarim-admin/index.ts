@@ -105,6 +105,50 @@ Deno.serve(async (req) => {
     if (!mosadId) return json({ ok: false, error: "Mosad ID not configured for tenant" }, 400);
     if (!apiPassword) return json({ ok: false, error: "ApiPassword not configured for tenant" }, 500);
 
+    // When a tenant has no dedicated nedarim_configs row, it falls back to the shared
+    // platform-default Mosad account (env NEDARIM_MOSAD_ID/NEDARIM_API_PASSWORD) — other
+    // unconfigured tenants share that SAME account. Any action that targets a specific
+    // transaction_id must be confirmed to belong to THIS tenant's own transaction log
+    // before being forwarded, otherwise a tenant_admin could refund/cancel/query another
+    // tenant's transaction simply by supplying its id (verified live: 2/5 tenants on this
+    // project currently share the fallback account, so this is reachable today).
+    if (body.transaction_id) {
+      const { data: ownedTxn } = await supabase
+        .from("nedarim_transactions")
+        .select("id")
+        .eq("tenant_id", body.tenant_id)
+        .eq("transaction_id", body.transaction_id)
+        .maybeSingle();
+      if (!ownedTxn) {
+        return json({ ok: false, error: "transaction_id does not belong to this tenant" }, 403);
+      }
+    } else if (!cfg?.mosad_id) {
+      // No transaction_id to scope by (e.g. GetHistoryJson, which lists by date range
+      // only) AND this tenant has no dedicated Mosad account — it is on the shared
+      // fallback account together with other unconfigured tenants. Nedarim Plus's
+      // history API is scoped only by MosadId, so forwarding this would hand back
+      // EVERY tenant's transactions on that shared account (donor names, phones,
+      // amounts) to this tenant's admin. Block it; this tenant must get its own
+      // nedarim_configs row before it can use account-wide, non-transaction-scoped
+      // actions.
+      return json({
+        ok: false,
+        error: "action requires a transaction_id, or a dedicated Mosad account for this tenant",
+      }, 403);
+    }
+
+    // RESERVED_KEYS are always server-computed from the verified tenant_id above; `extra`
+    // must never be able to override them — it is spread last below, so without this
+    // filter a client-supplied extra.MosadId/ApiPassword/Action/etc would silently win.
+    const RESERVED_KEYS = new Set(["action", "mosadid", "apipassword", "transactionid", "amount", "fromdate", "todate"]);
+    const safeExtra = body.extra
+      ? Object.fromEntries(
+          Object.entries(body.extra)
+            .filter(([k]) => !RESERVED_KEYS.has(k.toLowerCase()))
+            .map(([k, v]) => [k, String(v)]),
+        )
+      : {};
+
     // Build Nedarim API request
     const formData = new URLSearchParams({
       Action: body.action,
@@ -114,7 +158,7 @@ Deno.serve(async (req) => {
       ...(body.amount ? { Amount: String(body.amount) } : {}),
       ...(body.from_date ? { FromDate: body.from_date } : {}),
       ...(body.to_date ? { ToDate: body.to_date } : {}),
-      ...(body.extra ? Object.fromEntries(Object.entries(body.extra).map(([k, v]) => [k, String(v)])) : {}),
+      ...safeExtra,
     });
 
     console.log(`[nedarim-admin] ${body.action} for tenant ${body.tenant_id} by ${user.id}`);

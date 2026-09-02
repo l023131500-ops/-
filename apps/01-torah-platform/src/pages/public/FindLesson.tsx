@@ -38,7 +38,15 @@ export default function FindLesson() {
       // leads stores the kind in `kind` and the free-form answers in `raw_data`;
       // the old `type`/`details` names no longer exist, so every submission of
       // this form was silently rejected by PostgREST.
+      //
+      // The id is generated client-side (same pattern as DonationPage.tsx/
+      // Checkout.tsx) because anon has no leads_tenant_read access, so
+      // `.insert().select()` would fail RLS on the RETURNING clause even
+      // though the plain insert succeeds — this is the only way anon can
+      // learn the new row's id to pass to ai-match-teacher below.
+      const leadId = crypto.randomUUID();
       const { error } = await supabase.from("leads").insert({
+        id: leadId,
         tenant_id: tenant.id,
         kind: "find_lesson",
         source: "find-lesson-form",
@@ -51,11 +59,26 @@ export default function FindLesson() {
       });
       if (error) throw error;
 
-      // Attempt AI matching
+      // ai-match-teacher's contract is { lead_id }, not the raw form fields —
+      // it looks the lead up itself (service role, bypasses RLS) to build the
+      // AI prompt. The previous payload had no lead_id, so the function always
+      // returned "missing lead_id" and matches was never populated.
       const { data: match } = await supabase.functions.invoke("ai-match-teacher", {
-        body: { topic: form.topic, location: form.location, time_pref: form.time_pref, tenant_id: tenant.id },
+        body: { lead_id: leadId },
       });
-      if (match?.matches) setMatches(match.matches);
+      // The function's matches are AI output shaped as {user_id, score, reason}
+      // (see supabase/functions/ai-match-teacher/index.ts) — it never returns
+      // display fields like title/teacher_name/location. profiles_read_basic
+      // grants anon SELECT on public.profiles, so fetch the matched teachers'
+      // names/cities client-side, same as the edge function does server-side.
+      if (match?.matches?.length) {
+        const ids = match.matches.map((m: any) => m.user_id).filter(Boolean);
+        const { data: profiles } = ids.length
+          ? await supabase.from("profiles").select("id, full_name, city").in("id", ids)
+          : { data: [] as any[] };
+        const profileById = new Map((profiles || []).map((p: any) => [p.id, p]));
+        setMatches(match.matches.map((m: any) => ({ ...m, profile: profileById.get(m.user_id) })));
+      }
 
       toast.success("הפנייה נשלחה — נחזור אליך בהקדם");
       setForm({ name: "", phone: "", topic: "", location: "", time_pref: "", notes: "" });
@@ -96,7 +119,7 @@ export default function FindLesson() {
               <Select value={form.topic} onValueChange={(v) => setForm({ ...form, topic: v })}>
                 <SelectTrigger><SelectValue placeholder="בחר נושא" /></SelectTrigger>
                 <SelectContent>
-                  {topics?.map((t: any) => <SelectItem key={t.id} value={t.name_he}>{t.name_he}</SelectItem>)}
+                  {topics?.map((t: any) => <SelectItem key={t.id} value={t.name}>{t.name}</SelectItem>)}
                 </SelectContent>
               </Select>
             </div>
@@ -126,10 +149,12 @@ export default function FindLesson() {
           <h2 className="font-heading text-2xl mb-4">הצעות שמצאנו לך</h2>
           <div className="grid gap-3">
             {matches.map((m: any) => (
-              <Card key={m.id}>
+              <Card key={m.user_id}>
                 <CardHeader>
-                  <CardTitle className="text-lg">{m.title}</CardTitle>
-                  <CardDescription>{m.teacher_name} · {m.location}</CardDescription>
+                  <CardTitle className="text-lg">{m.profile?.full_name || "מגיד שיעור"}</CardTitle>
+                  <CardDescription>
+                    {m.profile?.city ? `${m.profile.city} · ` : ""}{m.reason}
+                  </CardDescription>
                 </CardHeader>
               </Card>
             ))}

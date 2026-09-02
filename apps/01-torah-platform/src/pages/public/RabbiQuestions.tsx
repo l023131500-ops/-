@@ -41,10 +41,10 @@ export default function RabbiQuestions() {
       const { error } = await supabase.from("rabbi_questions").insert({
         tenant_id: tenant.id,
         question: form.question,
-        asker_name: form.anonymous ? null : form.name,
-        asker_email: form.email || null,
+        from_name: form.anonymous ? null : form.name,
+        from_email: form.email || null,
         is_anonymous: form.anonymous,
-        is_public: true,
+        is_public: false,
       });
       if (error) throw error;
       toast.success("השאלה נשלחה. תקבל מענה בקרוב");
@@ -81,7 +81,7 @@ export default function RabbiQuestions() {
             <CardHeader>
               <Badge variant="secondary" className="w-fit mb-1">שאלה</Badge>
               <CardTitle className="text-lg">{q.question}</CardTitle>
-              <CardDescription>{q.is_anonymous ? "אנונימי" : q.asker_name}</CardDescription>
+              <CardDescription>{q.is_anonymous ? "אנונימי" : q.from_name}</CardDescription>
             </CardHeader>
             <CardContent>
               <Badge variant="default" className="mb-2">תשובת הרב</Badge>

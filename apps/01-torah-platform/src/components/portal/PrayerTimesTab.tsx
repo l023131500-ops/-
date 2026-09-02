@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import { Plus, Trash2, Clock, MapPin, Phone, Save, X, Building2, Edit3 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -23,14 +23,17 @@ const PrayerTimesTab = ({ orgId }: PrayerTimesTabProps) => {
   const [synForm, setSynForm] = useState({ name: "", address: "", city: "", neighborhood: "", phone: "", notes: "" });
   const [addingPrayer, setAddingPrayer] = useState<string | null>(null); // synagogue_id
   const [prayerForm, setPrayerForm] = useState({ prayer_type: "שחרית", day_of_week: "יומי", time: "", notes: "", custom_category: "" });
+  const loadSeq = useRef(0);
 
   useEffect(() => { fetchData(); }, [orgId]);
 
   const fetchData = async () => {
+    const seq = ++loadSeq.current;
     const [synRes, ptRes] = await Promise.all([
       supabase.from("synagogues").select("*").eq("org_id", orgId).order("created_at", { ascending: false }),
       supabase.from("prayer_times").select("*").order("created_at", { ascending: false }),
     ]);
+    if (seq !== loadSeq.current) return;
     const syns = synRes.data || [];
     setSynagogues(syns);
     // Filter prayer times to only our synagogues
@@ -190,10 +193,12 @@ const PrayerTimesTab = ({ orgId }: PrayerTimesTabProps) => {
                         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="bg-muted/30 rounded-xl p-3 mb-3 space-y-2 border border-border/50">
                           <div className="grid grid-cols-4 gap-2">
                             <select value={prayerForm.prayer_type} onChange={e => setPrayerForm(f => ({ ...f, prayer_type: e.target.value }))}
+                              aria-label="סוג תפילה"
                               className="rounded-md border border-gold/20 bg-background px-2 py-1.5 text-xs font-body">
                               {PRAYER_TYPES.map(t => <option key={t} value={t}>{t}</option>)}
                             </select>
                             <select value={prayerForm.day_of_week} onChange={e => setPrayerForm(f => ({ ...f, day_of_week: e.target.value }))}
+                              aria-label="יום בשבוע"
                               className="rounded-md border border-gold/20 bg-background px-2 py-1.5 text-xs font-body">
                               {DAY_OPTIONS.map(d => <option key={d} value={d}>{d}</option>)}
                             </select>

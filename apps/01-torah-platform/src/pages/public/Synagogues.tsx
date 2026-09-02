@@ -32,8 +32,8 @@ export default function Synagogues() {
                 </CardHeader>
                 <CardContent className="space-y-2 text-sm">
                   {s.address && <div className="flex items-center gap-2 text-muted-foreground"><MapPin className="h-3 w-3" /> {s.address}{s.city ? `, ${s.city}` : ""}</div>}
-                  {s.gabai_name && <div className="flex items-center gap-2 text-muted-foreground"><User className="h-3 w-3" /> {s.gabai_name}</div>}
-                  {s.contact_phone && <div className="flex items-center gap-2 text-muted-foreground"><Phone className="h-3 w-3" /> {s.contact_phone}</div>}
+                  {s.gabbai_name && <div className="flex items-center gap-2 text-muted-foreground"><User className="h-3 w-3" /> {s.gabbai_name}</div>}
+                  {s.gabbai_phone && <div className="flex items-center gap-2 text-muted-foreground"><Phone className="h-3 w-3" /> {s.gabbai_phone}</div>}
                 </CardContent>
               </Card>
             </Link>

@@ -46,6 +46,8 @@ const Mourning = lazy(() => import("@/pages/public/Mourning"));
 const Kashrut = lazy(() => import("@/pages/public/Kashrut"));
 const Mikvaot = lazy(() => import("@/pages/public/Mikvaot"));
 const Azkarot = lazy(() => import("@/pages/public/Azkarot"));
+const Newsletters = lazy(() => import("@/pages/public/Newsletters"));
+const Announcements = lazy(() => import("@/pages/public/Announcements"));
 
 // Shop
 const ShopCatalog = lazy(() => import("@/pages/shop/ShopCatalog"));
@@ -71,6 +73,8 @@ const PortalBulkUpload = lazy(() => import("@/pages/portal/BulkUpload"));
 const PortalStudySchedule = lazy(() => import("@/pages/portal/StudySchedule"));
 const Questionnaire = lazy(() => import("@/pages/public/Questionnaire"));
 const AdminTips = lazy(() => import("@/pages/admin/Tips"));
+const AdminTopics = lazy(() => import("@/pages/admin/Topics"));
+const AdminWhitelist = lazy(() => import("@/pages/admin/Whitelist"));
 const AdminForums = lazy(() => import("@/pages/admin/Forums"));
 const AdminTeacherFeatures = lazy(() => import("@/pages/admin/TeacherFeatures"));
 
@@ -80,8 +84,20 @@ const PortalSchedule = lazy(() => import("@/pages/portal/Schedule"));
 const PortalParticipants = lazy(() => import("@/pages/portal/Participants"));
 const PortalMaterials = lazy(() => import("@/pages/portal/Materials"));
 const PortalForums = lazy(() => import("@/pages/portal/Forums"));
+const PortalChat = lazy(() => import("@/pages/portal/Chat"));
+const PortalKashrut = lazy(() => import("@/pages/portal/Kashrut"));
+const PortalSynagogues = lazy(() => import("@/pages/portal/Synagogues"));
+const PortalTeachers = lazy(() => import("@/pages/portal/Teachers"));
+const PortalCommunityServices = lazy(() => import("@/pages/portal/CommunityServices"));
+const PortalAzkarot = lazy(() => import("@/pages/portal/Azkarot"));
+const PortalNewsletters = lazy(() => import("@/pages/portal/Newsletters"));
+const PortalAnnouncements = lazy(() => import("@/pages/portal/Announcements"));
+const PortalRabbiQuestions = lazy(() => import("@/pages/portal/RabbiQuestions"));
+const PortalHalachaDaily = lazy(() => import("@/pages/portal/HalachaDaily"));
+const PortalAds = lazy(() => import("@/pages/portal/Ads"));
 const PortalGallery = lazy(() => import("@/pages/portal/Gallery"));
 const PortalDonations = lazy(() => import("@/pages/portal/Donations"));
+const PortalCampaigns = lazy(() => import("@/pages/portal/Campaigns"));
 const PortalOrders = lazy(() => import("@/pages/portal/Orders"));
 const PortalMessages = lazy(() => import("@/pages/portal/Messages"));
 const PortalSettings = lazy(() => import("@/pages/portal/Settings"));
@@ -96,6 +112,7 @@ const AdminMatching = lazy(() => import("@/pages/admin/Matching"));
 const AdminLeads = lazy(() => import("@/pages/admin/Leads"));
 const AdminCommerce = lazy(() => import("@/pages/admin/Commerce"));
 const AdminAnalytics = lazy(() => import("@/pages/admin/Analytics"));
+const AdminAuditLog = lazy(() => import("@/pages/admin/AuditLog"));
 
 // 404
 const NotFound = lazy(() => import("@/pages/NotFound"));
@@ -123,11 +140,13 @@ const AdminLeadsGuru = lazy(() => import("@/pages/admin/LeadsGuru"));
 const AdminMatchingGuru = lazy(() => import("@/pages/admin/MatchingGuru"));
 const AdminMessages = lazy(() => import("@/pages/admin/Messages"));
 const AdminTeachers = lazy(() => import("@/pages/admin/Teachers"));
+const AdminRabbiQuestions = lazy(() => import("@/pages/admin/RabbiQuestions"));
 
 // ---- Guru-Portal Portal Pages ----
 const PortalLessons = lazy(() => import("@/pages/portal/Lessons"));
 const PortalPrayerTimes = lazy(() => import("@/pages/portal/PrayerTimes"));
 const PortalPortalSettings = lazy(() => import("@/pages/portal/PortalSettings"));
+const PortalAnalytics = lazy(() => import("@/pages/portal/Analytics"));
 
 // ---- Guru-Portal Public Pages ----
 const Invite = lazy(() => import("@/pages/public/Invite"));
@@ -197,6 +216,8 @@ export default function App() {
                     <Route path="/kashrut" element={<Kashrut />} />
                     <Route path="/mikvaot" element={<Mikvaot />} />
                     <Route path="/azkarot" element={<Azkarot />} />
+                    <Route path="/newsletters" element={<Newsletters />} />
+                    <Route path="/announcements" element={<Announcements />} />
 
                     <Route path="/shop" element={<ShopCatalog />} />
                     <Route path="/shop/:slug" element={<ProductDetail />} />
@@ -232,8 +253,20 @@ export default function App() {
                     <Route path="participants" element={<PortalParticipants />} />
                     <Route path="materials" element={<PortalMaterials />} />
                     <Route path="forums" element={<PortalForums />} />
+                    <Route path="chat" element={<PortalChat />} />
+                    <Route path="kashrut" element={<PortalKashrut />} />
+                    <Route path="synagogues" element={<PortalSynagogues />} />
+                    <Route path="teachers" element={<PortalTeachers />} />
+                    <Route path="community-services" element={<PortalCommunityServices />} />
+                    <Route path="azkarot" element={<PortalAzkarot />} />
+                    <Route path="newsletters" element={<PortalNewsletters />} />
+                    <Route path="announcements" element={<PortalAnnouncements />} />
+                    <Route path="rabbi-questions" element={<PortalRabbiQuestions />} />
+                    <Route path="halacha-daily" element={<PortalHalachaDaily />} />
+                    <Route path="ads" element={<PortalAds />} />
                     <Route path="gallery" element={<PortalGallery />} />
                     <Route path="donations" element={<PortalDonations />} />
+                    <Route path="campaigns" element={<PortalCampaigns />} />
                     <Route path="orders" element={<PortalOrders />} />
                     <Route path="messages" element={<PortalMessages />} />
                     <Route path="settings" element={<PortalSettings />} />
@@ -246,6 +279,7 @@ export default function App() {
                     <Route path="lessons" element={<PortalLessons />} />
                     <Route path="prayer-times" element={<PortalPrayerTimes />} />
                     <Route path="portal-settings" element={<PortalPortalSettings />} />
+                    <Route path="analytics" element={<PortalAnalytics />} />
                   </Route>
 
                   {/* Super Admin */}
@@ -258,7 +292,10 @@ export default function App() {
                     <Route path="leads" element={<AdminLeads />} />
                     <Route path="commerce" element={<AdminCommerce />} />
                     <Route path="analytics" element={<AdminAnalytics />} />
+                    <Route path="audit-log" element={<AdminAuditLog />} />
                     <Route path="tips" element={<AdminTips />} />
+                    <Route path="topics" element={<AdminTopics />} />
+                    <Route path="whitelist" element={<AdminWhitelist />} />
                     <Route path="forums" element={<AdminForums />} />
                     <Route path="teacher-features" element={<AdminTeacherFeatures />} />
                     {/* Guru-Portal Admin Pages */}
@@ -267,6 +304,7 @@ export default function App() {
                     <Route path="matching-guru" element={<AdminMatchingGuru />} />
                     <Route path="messages" element={<AdminMessages />} />
                     <Route path="teachers" element={<AdminTeachers />} />
+                    <Route path="rabbi-questions" element={<AdminRabbiQuestions />} />
                   </Route>
 
                   {/* Torah-Connect Legacy Routes (standalone, no layout wrapper) */}

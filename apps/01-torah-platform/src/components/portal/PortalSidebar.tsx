@@ -1,6 +1,6 @@
 import { Link, useLocation } from "react-router-dom";
-import { 
-  LayoutDashboard, Calendar, Users, FileText, Settings, LogOut, BookOpen, MessageSquare, ShieldCheck, Building2, Mail, ClipboardCheck
+import {
+  LayoutDashboard, Calendar, Users, FileText, Settings, LogOut, BookOpen, MessageSquare, MessagesSquare, ShieldCheck, Building2, Mail, ClipboardCheck, BadgeCheck, HeartHandshake, Heart, Newspaper, Megaphone
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useRole } from "@/hooks/useRole";
@@ -13,8 +13,11 @@ const baseItems = [
 ];
 const commonTail = [
   { icon: MessageSquare, label: "פורומים", path: "/portal/forums" },
+  { icon: MessagesSquare, label: "צ'אט פנימי", path: "/portal/chat" },
   { icon: Mail, label: "פניות", path: "/portal/messages" },
   { icon: FileText, label: "חומרי עזר", path: "/portal/materials" },
+  { icon: BadgeCheck, label: "תעודות כשרות", path: "/portal/kashrut" },
+  { icon: Megaphone, label: "באנרים ופרסום", path: "/portal/ads" },
   { icon: Settings, label: "הגדרות", path: "/portal/settings" },
 ];
 
@@ -37,6 +40,14 @@ const menuByType: Record<string, { icon: any; label: string; path: string }[]> =
     { icon: BookOpen, label: "שיעורי הארגון", path: "/portal/lessons" },
     { icon: Calendar, label: "לוח פעילות", path: "/portal/schedule" },
     { icon: Building2, label: "בתי הכנסת המשויכים", path: "/portal/prayer-times" },
+  ],
+  religious_council: [
+    { icon: Building2, label: "בתי כנסת באזור", path: "/portal/synagogues" },
+    { icon: BookOpen, label: "שיעורים באזור", path: "/portal/lessons" },
+    { icon: Calendar, label: "לוח פעילות", path: "/portal/schedule" },
+    { icon: HeartHandshake, label: "שירותי קהילה", path: "/portal/community-services" },
+    { icon: Heart, label: "אזכרות ויארצייט", path: "/portal/azkarot" },
+    { icon: Newspaper, label: "ניוזלטר / עלון", path: "/portal/newsletters" },
   ],
 };
 

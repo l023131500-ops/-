@@ -42,7 +42,9 @@ export default function Settings() {
 
   const saveNedarim = useMutation({
     mutationFn: async () => {
-      const { error } = await supabase.from("nedarim_configs").upsert({ tenant_id: tenant!.id, ...nedarim }, { onConflict: "tenant_id" });
+      const payload: Record<string, string> = { tenant_id: tenant!.id, mosad_id: nedarim.mosad_id };
+      if (nedarim.api_password.trim()) payload.api_password = nedarim.api_password;
+      const { error } = await supabase.from("nedarim_configs").upsert(payload, { onConflict: "tenant_id" });
       if (error) throw error;
     },
     onSuccess: () => toast.success("הגדרות סליקה נשמרו"),

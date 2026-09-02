@@ -15,19 +15,48 @@ const AdminMatching = () => {
   const [selectedTeacher, setSelectedTeacher] = useState<any | null>(null);
   const [aiLoading, setAiLoading] = useState(false);
   const [aiSuggestions, setAiSuggestions] = useState<string[]>([]);
+  const [assigning, setAssigning] = useState<string | null>(null);
+  const [showUnavailable, setShowUnavailable] = useState(false);
 
   const load = async () => {
-    const [{ data: l }, { data: t }] = await Promise.all([
+    const [{ data: l }, { data: m }] = await Promise.all([
       supabase.from("leads").select("*").order("created_at", { ascending: false }),
+      // profiles has no available_for_matching column — a maggid is really a
+      // tenant_admin membership on a type="maggid" tenant (same source the
+      // ai-match-teacher edge function scores against). memberships.user_id
+      // points at auth.users, not public.profiles, so profiles can't be
+      // embedded in this select (no FK path) — fetched separately below.
       supabase
-        .from("profiles")
-        .select("*")
-        .eq("available_for_matching", true)
-        .order("created_at", { ascending: false }),
+        .from("memberships")
+        .select("user_id, tenant_id, tenants(name, city, region, type, status)")
+        .eq("role", "tenant_admin"),
     ]);
     // Lesson-request leads on the left
     setLeads((l || []).filter((x: any) => (x.kind || "lesson_request") === "lesson_request"));
-    // Teachers on the right = opted-in profiles + teacher_offer leads (people from JoinTeacher form)
+    // Teachers on the right = maggid-tenant admins + teacher_offer leads (people from JoinTeacher form)
+    const maggidMemberships = (m || []).filter((row: any) => row.tenants?.type === "maggid");
+    const userIds = maggidMemberships.map((row: any) => row.user_id);
+    const { data: p } = userIds.length
+      ? await supabase.from("profiles").select("id, full_name, phone, city, neighborhood, bio, meta").in("id", userIds)
+      : { data: [] as any[] };
+    const profileById = new Map((p || []).map((row: any) => [row.id, row]));
+    const maggidim = maggidMemberships.map((row: any) => {
+      const profile = profileById.get(row.user_id);
+      // architecture.md §5.2 מגיד: "Switch פנוי למסירת שיעורים נוספים". Stored
+      // in profiles.meta (same pattern as every other PortalSettings.tsx
+      // field) — missing key means available (existing maggidim keep showing).
+      const meta = (profile?.meta as Record<string, unknown>) || {};
+      return {
+        id: row.user_id,
+        full_name: profile?.full_name || row.tenants?.name,
+        city: profile?.city || row.tenants?.city,
+        neighborhood: profile?.neighborhood,
+        organization_name: row.tenants?.name,
+        is_approved: row.tenants?.status === "active",
+        is_available: meta.available_for_matching !== false,
+        _phone: profile?.phone,
+      };
+    });
     const offerLeads = (l || [])
       .filter((x: any) => x.kind === "teacher_offer")
       .map((x: any) => ({
@@ -37,10 +66,11 @@ const AdminMatching = () => {
         subjects: x.preferred_subject ? x.preferred_subject.split(",").map((s: string) => s.trim()) : [],
         organization_name: "מועמד מהאתר",
         is_approved: false,
+        is_available: true,
         _isLead: true,
         _phone: x.phone,
       }));
-    setTeachers([...(t || []), ...offerLeads]);
+    setTeachers([...maggidim, ...offerLeads]);
   };
   useEffect(() => { load(); }, []);
 
@@ -48,23 +78,30 @@ const AdminMatching = () => {
     !s || fields.filter(Boolean).join(" ").toLowerCase().includes(s.toLowerCase());
 
   const filteredLeads = useMemo(() => leads.filter(l =>
-    matches(search, l.full_name, l.area, l.preferred_subject, l.notes)
+    matches(search, l.full_name, l.area, l.preferred_subject, l.message)
   ), [leads, search]);
 
   const filteredTeachers = useMemo(() => teachers.filter(t =>
+    (showUnavailable || t.is_available) &&
     matches(search, t.full_name, t.city, t.neighborhood, (t.subjects || []).join(" "), t.organization_name)
-  ), [teachers, search]);
+  ), [teachers, search, showUnavailable]);
 
   const assign = async (leadId: string, teacherId: string) => {
     if (teacherId.startsWith("lead:")) {
       toast.error("מועמד זה הגיע מטופס ההצטרפות ועדיין לא נפתח לו פורטל. יש ליצור עבורו פורטל קודם.");
       return;
     }
-    const { error } = await supabase.from("leads").update({ assigned_teacher_id: teacherId, status: "assigned" }).eq("id", leadId);
-    if (error) return toast.error(error.message);
-    toast.success("הליד שויך למגיד שיעור");
-    load();
-    setSelectedLead(null);
+    if (assigning === leadId) return;
+    setAssigning(leadId);
+    try {
+      const { error } = await supabase.from("leads").update({ assigned_teacher_user_id: teacherId, status: "assigned" }).eq("id", leadId);
+      if (error) return toast.error(error.message);
+      toast.success("הליד שויך למגיד שיעור");
+      load();
+      setSelectedLead(null);
+    } finally {
+      setAssigning(null);
+    }
   };
 
   const aiMatch = async () => {
@@ -72,21 +109,21 @@ const AdminMatching = () => {
     setAiLoading(true);
     setAiSuggestions([]);
     try {
-      const teacherSummary = teachers.slice(0, 50).map(t =>
-        `[${t.id}] ${t.full_name} | עיר: ${t.city || "—"} | נושאים: ${(t.subjects || []).join(", ") || "—"} | קהל: ${(t.target_audience || []).join(", ") || "—"}`
-      ).join("\n");
-      const prompt = `אני מחפש להתאים מבקש שיעור למגיד שיעור.\n\nמבקש:\nשם: ${selectedLead.full_name}\nאזור: ${selectedLead.area || "—"}\nנושא מועדף: ${selectedLead.preferred_subject || "—"}\nהערות: ${selectedLead.notes || "—"}\n\nרשימת מגידי שיעור:\n${teacherSummary}\n\nהחזר 3 מומלצים בפורמט: שם — נימוק קצר (משפט אחד). אל תוסיף הקדמות.`;
-      const res = await fetch(`https://hkkkynyoigzlttpynoeo.supabase.co/functions/v1/ai-match-teacher`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ prompt }),
+      const { data, error } = await supabase.functions.invoke("ai-match-teacher", {
+        body: { lead_id: selectedLead.id },
       });
-      const json = await res.json();
-      if (json.error) throw new Error(json.error);
-      const lines = (json.text || "").split("\n").filter((s: string) => s.trim());
+      if (error) throw error;
+      if (data?.error) throw new Error(data.error);
+      const matches = data?.matches || [];
+      if (!matches.length) toast.info("לא נמצאו התאמות");
+      const lines = matches.map((m: any) => {
+        const t = teachers.find((x: any) => x.id === m.user_id);
+        const name = t?.full_name || m.user_id;
+        return `${name}${m.score != null ? ` (${m.score}%)` : ""} — ${m.reason || ""}`;
+      });
       setAiSuggestions(lines);
     } catch (e: any) {
-      toast.error("שגיאה ב‑AI: " + e.message);
+      toast.error("שגיאה ב‑AI: " + (e.message || String(e)));
     } finally {
       setAiLoading(false);
     }
@@ -144,12 +181,12 @@ const AdminMatching = () => {
                   </div>
                   {selectedLead?.id === l.id && (
                     <div className="mt-3 pt-3 border-t border-border space-y-1 text-xs">
-                      {l.preferred_times && <p><strong>זמנים מועדפים:</strong> {l.preferred_times}</p>}
-                      {l.notes && <p><strong>הערות:</strong> {l.notes}</p>}
+                      {l.message && <p><strong>הודעה:</strong> {l.message}</p>}
                       {selectedTeacher && (
                         <Button size="sm" className="w-full mt-2 bg-gradient-to-l from-secondary to-gold-dark text-secondary-foreground gap-1"
+                          disabled={assigning === l.id}
                           onClick={(e) => { e.stopPropagation(); assign(l.id, selectedTeacher.id); }}>
-                          <ArrowLeftRight className="w-3 h-3" />שייך ל‑{selectedTeacher.full_name}
+                          <ArrowLeftRight className="w-3 h-3" />{assigning === l.id ? "משייך..." : `שייך ל‑${selectedTeacher.full_name}`}
                         </Button>
                       )}
                     </div>
@@ -162,8 +199,12 @@ const AdminMatching = () => {
 
           {/* Teachers column */}
           <div className="bg-card rounded-2xl border-2 border-border overflow-hidden">
-            <div className="bg-gradient-to-r from-secondary/10 to-card p-4 border-b border-border">
+            <div className="bg-gradient-to-r from-secondary/10 to-card p-4 border-b border-border space-y-2">
               <h2 className="font-heading text-xl font-bold flex items-center gap-2"><BookOpen className="w-5 h-5 text-secondary" />איגוד מגידי השיעורים – פנויים ({filteredTeachers.length})</h2>
+              <label className="flex items-center gap-2 text-xs text-muted-foreground cursor-pointer w-fit">
+                <input type="checkbox" checked={showUnavailable} onChange={(e) => setShowUnavailable(e.target.checked)} className="accent-secondary" />
+                הצג גם מגידים שסימנו עצמם "לא פנוי כרגע"
+              </label>
             </div>
             <div className="divide-y divide-border max-h-[70vh] overflow-y-auto">
               {filteredTeachers.map(t => (
@@ -177,12 +218,16 @@ const AdminMatching = () => {
                         {(t.subjects || []).slice(0, 3).map((s: string) => <Badge key={s} variant="outline" className="text-xs">{s}</Badge>)}
                       </div>
                     </div>
-                    <Badge variant={t.is_approved ? "default" : "outline"}>{t.is_approved ? "מאושר" : "ממתין"}</Badge>
+                    <div className="flex flex-col items-end gap-1">
+                      <Badge variant={t.is_approved ? "default" : "outline"}>{t.is_approved ? "מאושר" : "ממתין"}</Badge>
+                      {!t.is_available && <Badge variant="destructive" className="text-xs">לא פנוי כרגע</Badge>}
+                    </div>
                   </div>
                   {selectedTeacher?.id === t.id && selectedLead && (
                     <Button size="sm" className="w-full mt-2 bg-gradient-to-l from-secondary to-gold-dark text-secondary-foreground gap-1"
+                      disabled={assigning === selectedLead.id}
                       onClick={(e) => { e.stopPropagation(); assign(selectedLead.id, t.id); }}>
-                      <ArrowLeftRight className="w-3 h-3" />שייך את {selectedLead.full_name} →
+                      <ArrowLeftRight className="w-3 h-3" />{assigning === selectedLead.id ? "משייך..." : `שייך את ${selectedLead.full_name} →`}
                     </Button>
                   )}
                 </div>

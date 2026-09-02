@@ -1,32 +1,31 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Building2, Plus, Trash2, Clock, Edit2, Save, X } from "lucide-react";
-import { useAuth } from "@/hooks/useAuth";
+import { useTenant } from "@/hooks/useTenant";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { toast } from "sonner";
-import { PRAYER_TYPES, PRAYER_DAY_OPTIONS } from "@/types/questionnaire";
+import { PRAYER_TYPES, DAY_NAMES } from "@/types/questionnaire";
+
+const DAY_OF_WEEK_OPTIONS = [{ value: "daily", label: "יומי" }, ...DAY_NAMES.map((label, i) => ({ value: String(i), label }))];
 
 const PrayerTimes = () => {
-  const { user } = useAuth();
-  const [profileId, setProfileId] = useState<string | null>(null);
+  const { tenant } = useTenant();
   const [synagogues, setSynagogues] = useState<any[]>([]);
   const [prayerTimes, setPrayerTimes] = useState<any[]>([]);
   const [showAddSyn, setShowAddSyn] = useState(false);
   const [showAddPrayer, setShowAddPrayer] = useState<string | null>(null);
   const [synForm, setSynForm] = useState({ name: "", address: "", city: "", neighborhood: "", phone: "", notes: "" });
-  const [prayerForm, setPrayerForm] = useState({ prayer_type: "", day_of_week: "יומי", time: "", notes: "" });
+  const [prayerForm, setPrayerForm] = useState({ prayer_type: "", day_of_week: "daily", time: "", notes: "" });
 
-  useEffect(() => { if (user) fetchData(); }, [user]);
+  useEffect(() => { if (tenant?.id) fetchData(); }, [tenant?.id]);
 
   const fetchData = async () => {
-    const { data: profile } = await supabase.from("profiles").select("id").eq("user_id", user!.id).single();
-    if (!profile) return;
-    setProfileId(profile.id);
-    const { data: syns } = await supabase.from("synagogues").select("*").eq("teacher_id", profile.id);
+    if (!tenant?.id) return;
+    const { data: syns } = await supabase.from("synagogues").select("*").eq("tenant_id", tenant.id);
     setSynagogues(syns || []);
     if (syns && syns.length > 0) {
       const synIds = syns.map(s => s.id);
@@ -36,8 +35,16 @@ const PrayerTimes = () => {
   };
 
   const handleAddSyn = async () => {
-    if (!synForm.name || !profileId) { toast.error("נא להזין שם בית כנסת"); return; }
-    const { error } = await supabase.from("synagogues").insert({ ...synForm, teacher_id: profileId });
+    if (!synForm.name || !tenant?.id) { toast.error("נא להזין שם בית כנסת"); return; }
+    const { error } = await supabase.from("synagogues").insert({
+      tenant_id: tenant.id,
+      name: synForm.name,
+      address: synForm.address,
+      city: synForm.city,
+      neighborhood: synForm.neighborhood,
+      gabbai_phone: synForm.phone,
+      description: synForm.notes,
+    });
     if (error) { toast.error("שגיאה: " + error.message); return; }
     toast.success("בית הכנסת נוסף!");
     setShowAddSyn(false);
@@ -46,24 +53,34 @@ const PrayerTimes = () => {
   };
 
   const handleDeleteSyn = async (id: string) => {
-    await supabase.from("prayer_times").delete().eq("synagogue_id", id);
-    await supabase.from("synagogues").delete().eq("id", id);
+    const { error: prayerError } = await supabase.from("prayer_times").delete().eq("synagogue_id", id);
+    if (prayerError) { toast.error("שגיאה: " + prayerError.message); return; }
+    const { error } = await supabase.from("synagogues").delete().eq("id", id);
+    if (error) { toast.error("שגיאה: " + error.message); return; }
     toast.success("בית הכנסת נמחק");
     fetchData();
   };
 
   const handleAddPrayer = async () => {
-    if (!prayerForm.prayer_type || !prayerForm.time || !showAddPrayer) { toast.error("נא למלא סוג תפילה ושעה"); return; }
-    const { error } = await supabase.from("prayer_times").insert({ ...prayerForm, synagogue_id: showAddPrayer });
+    if (!prayerForm.prayer_type || !prayerForm.time || !showAddPrayer || !tenant?.id) { toast.error("נא למלא סוג תפילה ושעה"); return; }
+    const { error } = await supabase.from("prayer_times").insert({
+      tenant_id: tenant.id,
+      synagogue_id: showAddPrayer,
+      prayer_type: prayerForm.prayer_type,
+      day_of_week: prayerForm.day_of_week === "daily" ? null : Number(prayerForm.day_of_week),
+      time_hhmm: prayerForm.time,
+      notes: prayerForm.notes,
+    });
     if (error) { toast.error("שגיאה: " + error.message); return; }
     toast.success("זמן תפילה נוסף!");
     setShowAddPrayer(null);
-    setPrayerForm({ prayer_type: "", day_of_week: "יומי", time: "", notes: "" });
+    setPrayerForm({ prayer_type: "", day_of_week: "daily", time: "", notes: "" });
     fetchData();
   };
 
   const handleDeletePrayer = async (id: string) => {
-    await supabase.from("prayer_times").delete().eq("id", id);
+    const { error } = await supabase.from("prayer_times").delete().eq("id", id);
+    if (error) { toast.error("שגיאה: " + error.message); return; }
     toast.success("זמן התפילה נמחק");
     fetchData();
   };
@@ -115,10 +132,10 @@ const PrayerTimes = () => {
                 <div>
                   <h3 className="font-heading font-bold text-lg text-foreground">{syn.name}</h3>
                   {syn.address && <p className="text-sm text-muted-foreground">📍 {syn.address} {syn.city ? `- ${syn.city}` : ""}</p>}
-                  {syn.phone && <p className="text-sm text-muted-foreground">📞 {syn.phone}</p>}
+                  {syn.gabbai_phone && <p className="text-sm text-muted-foreground">📞 {syn.gabbai_phone}</p>}
                 </div>
                 <div className="flex gap-2">
-                  <Button size="sm" variant="outline" onClick={() => { setShowAddPrayer(syn.id); setPrayerForm({ prayer_type: "", day_of_week: "יומי", time: "", notes: "" }); }}>
+                  <Button size="sm" variant="outline" onClick={() => { setShowAddPrayer(syn.id); setPrayerForm({ prayer_type: "", day_of_week: "daily", time: "", notes: "" }); }}>
                     <Plus className="w-4 h-4 ml-1" />זמן תפילה
                   </Button>
                   <Button size="sm" variant="ghost" onClick={() => handleDeleteSyn(syn.id)}>
@@ -133,8 +150,8 @@ const PrayerTimes = () => {
                     <div key={pt.id} className="flex items-center justify-between bg-muted/50 rounded-lg px-3 py-2 text-sm">
                       <div>
                         <span className="font-medium text-foreground">{pt.prayer_type}</span>
-                        <span className="text-muted-foreground mr-2">{pt.time}</span>
-                        {pt.day_of_week !== "יומי" && <span className="text-xs text-muted-foreground">({pt.day_of_week})</span>}
+                        <span className="text-muted-foreground mr-2">{pt.time_hhmm}</span>
+                        {typeof pt.day_of_week === "number" && <span className="text-xs text-muted-foreground">({DAY_NAMES[pt.day_of_week]})</span>}
                       </div>
                       <button onClick={() => handleDeletePrayer(pt.id)} className="text-destructive/60 hover:text-destructive">
                         <X className="w-3 h-3" />
@@ -158,7 +175,7 @@ const PrayerTimes = () => {
               </Select>
               <Select value={prayerForm.day_of_week} onValueChange={v => setPrayerForm(p => ({ ...p, day_of_week: v }))}>
                 <SelectTrigger><SelectValue placeholder="יום" /></SelectTrigger>
-                <SelectContent>{PRAYER_DAY_OPTIONS.map(d => <SelectItem key={d} value={d}>{d}</SelectItem>)}</SelectContent>
+                <SelectContent>{DAY_OF_WEEK_OPTIONS.map(d => <SelectItem key={d.value} value={d.value}>{d.label}</SelectItem>)}</SelectContent>
               </Select>
               <Input placeholder="שעה (לדוג' 07:00)" value={prayerForm.time} onChange={e => setPrayerForm(p => ({ ...p, time: e.target.value }))} />
               <Input placeholder="הערות" value={prayerForm.notes} onChange={e => setPrayerForm(p => ({ ...p, notes: e.target.value }))} />

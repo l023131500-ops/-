@@ -18,7 +18,11 @@ export default function Azkarot() {
     queryKey: ["azkarot-upcoming", tenant?.id],
     enabled: !!tenant?.id,
     queryFn: async () => {
-      const { data } = await supabase.from("azkarot").select("*").eq("tenant_id", tenant!.id).order("created_at", { ascending: false }).limit(30);
+      // azkarot_tenant_read RLS only grants SELECT to tenant members/super-admin;
+      // this RPC exposes just the public-safe columns (no family contact PII) to
+      // anonymous visitors of tenants that accept public intake, mirroring the
+      // INSERT-side tenant_accepts_public_intake gate already in place.
+      const { data } = await supabase.rpc("azkarot_upcoming", { _tenant_id: tenant!.id });
       return data || [];
     },
   });
@@ -28,7 +32,19 @@ export default function Azkarot() {
     if (!tenant) return;
     setLoading(true);
     try {
-      const { error } = await supabase.from("azkarot").insert({ tenant_id: tenant.id, ...form });
+      // azkarot_tenant_write_ins RLS previously required a real tenant role
+      // (tenant_admin/moderator/member), same gap leads/portal_messages/
+      // rabbi_questions already had -- fixed live via
+      // tenant_accepts_public_intake(tenant_id) OR ... so an anonymous
+      // visitor on this public page can actually submit.
+      const { error } = await supabase.from("azkarot").insert({
+        tenant_id: tenant.id,
+        deceased_name: form.deceased_name,
+        date_of_death_hebrew: form.hebrew_date,
+        family_contact_name: form.submitter_name,
+        family_contact_phone: form.submitter_phone,
+        notes: form.relation || null,
+      });
       if (error) throw error;
       toast.success("האזכרה נרשמה");
       setForm({ submitter_name: "", submitter_phone: "", deceased_name: "", hebrew_date: "", relation: "" });
@@ -58,7 +74,7 @@ export default function Azkarot() {
       <h2 className="font-heading text-2xl mb-4">אזכרות אחרונות</h2>
       <div className="space-y-2">
         {(upcoming || []).map((a: any) => (
-          <Card key={a.id}><CardContent className="py-3 flex justify-between items-center"><div><div className="font-medium">{a.deceased_name}</div><div className="text-sm text-muted-foreground">{a.hebrew_date}{a.relation ? ` · ${a.relation}` : ""}</div></div></CardContent></Card>
+          <Card key={a.id}><CardContent className="py-3 flex justify-between items-center"><div><div className="font-medium">{a.deceased_name}</div><div className="text-sm text-muted-foreground">{a.date_of_death_hebrew}{a.notes ? ` · ${a.notes}` : ""}</div></div></CardContent></Card>
         ))}
       </div>
     </div>

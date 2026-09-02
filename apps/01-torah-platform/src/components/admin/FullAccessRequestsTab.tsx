@@ -13,6 +13,7 @@ export default function FullAccessRequestsTab() {
   const [loading, setLoading] = useState(true);
   const [drafts, setDrafts] = useState<Record<string, Record<string, boolean>>>({});
   const [saving, setSaving] = useState<string | null>(null);
+  const [deleting, setDeleting] = useState<string | null>(null);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -41,39 +42,53 @@ export default function FullAccessRequestsTab() {
 
   const save = async (req: any) => {
     setSaving(req.id);
-    const map = drafts[req.id] ?? {};
-    const approved = Object.entries(map).filter(([, v]) => v).map(([k]) => k);
+    try {
+      const map = drafts[req.id] ?? {};
+      const approved = Object.entries(map).filter(([, v]) => v).map(([k]) => k);
 
-    // 1. update the request
-    const { error: e1 } = await supabase
-      .from("synagogue_full_access_requests")
-      .update({ approved_features: approved, status: "reviewed", updated_at: new Date().toISOString() })
-      .eq("id", req.id);
+      // 1. update the request
+      const { error: e1 } = await supabase
+        .from("synagogue_full_access_requests")
+        .update({ approved_features: approved, status: "reviewed", updated_at: new Date().toISOString() })
+        .eq("id", req.id);
 
-    // 2. update the synagogue portal's features_enabled
-    let e2: any = null;
-    if (req.synagogue_portal_id) {
-      const featuresEnabled: Record<string, boolean> = { lessons: true, settings: true };
-      FEATURE_OPTIONS.forEach((f) => {
-        featuresEnabled[f.id] = approved.includes(f.id);
-      });
-      const r = await supabase
-        .from("synagogue_portals")
-        .update({ features_enabled: featuresEnabled })
-        .eq("id", req.synagogue_portal_id);
-      e2 = r.error;
+      // 2. update the synagogue portal's features_enabled
+      let e2: any = null;
+      if (req.synagogue_portal_id) {
+        const featuresEnabled: Record<string, boolean> = { lessons: true, settings: true };
+        FEATURE_OPTIONS.forEach((f) => {
+          featuresEnabled[f.id] = approved.includes(f.id);
+        });
+        const r = await supabase
+          .from("synagogue_portals")
+          .update({ features_enabled: featuresEnabled })
+          .eq("id", req.synagogue_portal_id);
+        e2 = r.error;
+      }
+      if (e1 || e2) return toast.error("שגיאה בשמירה");
+      toast.success("האישורים נשמרו וברגע זה הופעלו בפורטל בית הכנסת ✓");
+      load();
+    } catch {
+      toast.error("שגיאה בשמירה");
+    } finally {
+      setSaving(null);
     }
-    setSaving(null);
-    if (e1 || e2) return toast.error("שגיאה בשמירה");
-    toast.success("האישורים נשמרו וברגע זה הופעלו בפורטל בית הכנסת ✓");
-    load();
   };
 
   const remove = async (id: string) => {
     if (!confirm("למחוק את הבקשה?")) return;
-    await supabase.from("synagogue_full_access_requests").delete().eq("id", id);
-    toast.success("נמחק");
-    load();
+    if (deleting) return;
+    setDeleting(id);
+    try {
+      const { error } = await supabase.from("synagogue_full_access_requests").delete().eq("id", id);
+      if (error) return toast.error("שגיאה במחיקה");
+      toast.success("נמחק");
+      load();
+    } catch {
+      toast.error("שגיאה במחיקה");
+    } finally {
+      setDeleting(null);
+    }
   };
 
   if (loading) return <p className="text-center py-12 text-muted-foreground font-body">טוען בקשות...</p>;
@@ -106,8 +121,8 @@ export default function FullAccessRequestsTab() {
                 {req.note && <p className="font-body text-xs text-muted-foreground mt-2">💬 {req.note}</p>}
                 <p className="font-body text-xs text-muted-foreground/60 mt-1">{new Date(req.created_at).toLocaleString("he-IL")}</p>
               </div>
-              <Button size="sm" variant="outline" onClick={() => remove(req.id)} className="text-destructive border-destructive/30 gap-1">
-                <Trash2 className="w-3 h-3" /> מחק
+              <Button size="sm" variant="outline" onClick={() => remove(req.id)} disabled={deleting === req.id} className="text-destructive border-destructive/30 gap-1">
+                <Trash2 className="w-3 h-3" /> {deleting === req.id ? "מוחק..." : "מחק"}
               </Button>
             </div>
 

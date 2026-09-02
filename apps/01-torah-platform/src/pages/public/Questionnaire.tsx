@@ -78,7 +78,11 @@ export default function Questionnaire() {
         tenant_id?: string | null;
         status: string;
       } = {
-        kind: form.role,
+        // leads.kind is matched exactly by admin/MatchingGuru.tsx's queues
+        // ("lesson_request" / "teacher_offer") — the questionnaire's own
+        // role values ("seeker"/"teacher") never matched either, so every
+        // submission was silently invisible to the AI matching admin.
+        kind: form.role === "seeker" ? "lesson_request" : "teacher_offer",
         full_name: form.full_name,
         phone: form.phone,
         email: form.email || null,

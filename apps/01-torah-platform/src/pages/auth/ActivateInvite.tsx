@@ -20,7 +20,14 @@ export default function ActivateInvite() {
     e.preventDefault();
     setLoading(true);
     try {
-      const { data, error } = await supabase.functions.invoke("activate-invite", { body: form });
+      const { data, error } = await supabase.functions.invoke("activate-invite", {
+        body: {
+          invite_code: form.invite_code,
+          email: form.email,
+          password_input: form.initial_password,
+          new_password: form.new_password,
+        },
+      });
       if (error) throw error;
       if (data?.error) throw new Error(data.error);
       const { error: signErr } = await signIn(form.email, form.new_password || form.initial_password);
@@ -42,7 +49,7 @@ export default function ActivateInvite() {
             <div><Label>דוא״ל</Label><Input required type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} /></div>
             <div><Label>קוד הזמנה</Label><Input required value={form.invite_code} onChange={(e) => setForm({ ...form, invite_code: e.target.value })} /></div>
             <div><Label htmlFor="initial-password">סיסמה ראשונית (שניתנה)</Label><PasswordInput id="initial-password" required autoComplete="current-password" value={form.initial_password} onChange={(e) => setForm({ ...form, initial_password: e.target.value })} /></div>
-            <div><Label htmlFor="new-password">סיסמה חדשה (אופציונלי)</Label><PasswordInput id="new-password" autoComplete="new-password" value={form.new_password} onChange={(e) => setForm({ ...form, new_password: e.target.value })} /></div>
+            <div><Label htmlFor="new-password">סיסמה חדשה</Label><PasswordInput id="new-password" required autoComplete="new-password" value={form.new_password} onChange={(e) => setForm({ ...form, new_password: e.target.value })} /></div>
             <Button type="submit" className="w-full" disabled={loading}>{loading ? <Loader2 className="h-4 w-4 animate-spin" /> : "הפעל חשבון"}</Button>
             <div className="text-center text-sm text-muted-foreground">
               <Link to="/auth/sign-in" className="text-primary hover:underline">חזור להתחברות</Link>
