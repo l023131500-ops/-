@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { motion } from "framer-motion";
-import { BookOpen, MapPin, Clock, Phone, Mail, Send, Building2, MessageCircle, Printer, FileText, Download, PlayCircle, Music, Mic, Video } from "lucide-react";
+import { BookOpen, MapPin, Clock, Phone, Mail, Send, Building2, MessageCircle, Printer, FileText, Download, PlayCircle, Music, Mic, Video, LayoutList } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -242,6 +242,24 @@ const RabbiPublic = () => {
                 </div>
               ))}
             </div>
+          </motion.section>
+        )}
+
+        {/* Custom Sections */}
+        {!disabledFeatures.has("custom_sections") && Array.isArray(profile.custom_sections) && profile.custom_sections.length > 0 && (
+          <motion.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.27 }} className="space-y-4">
+            {profile.custom_sections
+              .filter((sec: any) => sec?.title || sec?.content)
+              .map((sec: any) => (
+                <div key={sec.id} className="bg-card rounded-xl border border-border p-4">
+                  {sec.title && (
+                    <h2 className="font-heading text-xl font-bold text-foreground mb-2 flex items-center gap-2">
+                      <LayoutList className="w-5 h-5 text-secondary" />{sec.title}
+                    </h2>
+                  )}
+                  {sec.content && <p className="text-sm text-muted-foreground whitespace-pre-wrap">{sec.content}</p>}
+                </div>
+              ))}
           </motion.section>
         )}
 

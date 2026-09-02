@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { Settings, Save, Upload, Image as ImageIcon, Trash2, ExternalLink, Copy } from "lucide-react";
+import { Settings, Save, Upload, Image as ImageIcon, Trash2, ExternalLink, Copy, Plus, LayoutList } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import PortalLayout from "@/components/portal/PortalLayout";
@@ -23,6 +23,7 @@ type Profile = {
 };
 
 type Photo = { id: string; image_url: string; caption: string | null };
+type CustomSection = { id: string; title: string; content: string };
 
 const empty: Profile = {
   full_name: "", phone: "", email: "", city: "", neighborhood: "",
@@ -37,6 +38,7 @@ const PortalSettings = () => {
   const { user } = useAuth();
   const [profile, setProfile] = useState<Profile>(empty);
   const [photos, setPhotos] = useState<Photo[]>([]);
+  const [customSections, setCustomSections] = useState<CustomSection[]>([]);
   const [saving, setSaving] = useState(false);
   const photoInput = useRef<HTMLInputElement>(null);
 
@@ -46,10 +48,16 @@ const PortalSettings = () => {
     const { data } = await supabase.from("profiles").select("*").eq("user_id", user!.id).maybeSingle();
     if (data) {
       setProfile({ ...empty, ...Object.fromEntries(Object.entries(data).map(([k,v]) => [k, v ?? (empty as any)[k] ?? ""])) } as Profile);
+      setCustomSections(Array.isArray(data.custom_sections) ? data.custom_sections as CustomSection[] : []);
       const { data: ph } = await supabase.from("portal_photos").select("*").eq("teacher_id", data.id).order("created_at", { ascending: false });
       setPhotos(ph || []);
     }
   };
+
+  const addSection = () => setCustomSections(s => [...s, { id: crypto.randomUUID(), title: "", content: "" }]);
+  const updateSection = (id: string, k: "title" | "content", v: string) =>
+    setCustomSections(s => s.map(sec => sec.id === id ? { ...sec, [k]: v } : sec));
+  const removeSection = (id: string) => setCustomSections(s => s.filter(sec => sec.id !== id));
 
   const update = (k: keyof Profile, v: string) => setProfile(p => ({ ...p, [k]: v }));
 
@@ -93,7 +101,7 @@ const PortalSettings = () => {
   const handleSave = async () => {
     setSaving(true);
     const { id, public_token, ...payload } = profile;
-    const { error } = await supabase.from("profiles").update(payload).eq("user_id", user!.id);
+    const { error } = await supabase.from("profiles").update({ ...payload, custom_sections: customSections }).eq("user_id", user!.id);
     setSaving(false);
     if (error) { toast.error("שגיאה בשמירה"); return; }
     toast.success("ההגדרות נשמרו בהצלחה!");
@@ -128,11 +136,12 @@ const PortalSettings = () => {
         </div>
 
         <Tabs defaultValue="profile" dir="rtl">
-          <TabsList className="grid grid-cols-4 w-full">
+          <TabsList className="grid grid-cols-5 w-full">
             <TabsTrigger value="profile">פרטי הרב</TabsTrigger>
             <TabsTrigger value="design">עיצוב</TabsTrigger>
             <TabsTrigger value="contact">פרטי קשר</TabsTrigger>
             <TabsTrigger value="gallery">גלריה</TabsTrigger>
+            <TabsTrigger value="sections">מקטעים</TabsTrigger>
           </TabsList>
 
           {/* PROFILE */}
@@ -244,6 +253,36 @@ const PortalSettings = () => {
                         className="absolute top-2 left-2 bg-destructive text-destructive-foreground rounded-full p-1.5 opacity-0 group-hover:opacity-100 transition">
                         <Trash2 className="w-3.5 h-3.5" />
                       </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </TabsContent>
+
+          {/* CUSTOM SECTIONS */}
+          <TabsContent value="sections" className="space-y-4 mt-4">
+            <div className="bg-card rounded-2xl p-6 border border-border space-y-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="font-medium flex items-center gap-2"><LayoutList className="w-4 h-4 text-secondary" />מקטעים מותאמים אישית</h3>
+                  <p className="text-xs text-muted-foreground mt-1">הוסף בלוקים נוספים (למשל: שאלות נפוצות, מסלול לימוד, המלצות) שיוצגו בדף הציבורי שלך</p>
+                </div>
+                <Button size="sm" onClick={addSection}><Plus className="w-4 h-4 ml-1" />הוסף מקטע</Button>
+              </div>
+              {customSections.length === 0 ? (
+                <p className="text-sm text-muted-foreground text-center py-8">אין מקטעים מותאמים אישית עדיין</p>
+              ) : (
+                <div className="space-y-3">
+                  {customSections.map(sec => (
+                    <div key={sec.id} className="bg-muted/30 rounded-xl border border-border p-4 space-y-2">
+                      <div className="flex items-center gap-2">
+                        <Input value={sec.title} onChange={(e) => updateSection(sec.id, "title", e.target.value)} placeholder="כותרת המקטע" className="flex-1" />
+                        <Button type="button" size="sm" variant="ghost" onClick={() => removeSection(sec.id)}>
+                          <Trash2 className="w-4 h-4 text-destructive" />
+                        </Button>
+                      </div>
+                      <Textarea value={sec.content} onChange={(e) => updateSection(sec.id, "content", e.target.value)} placeholder="תוכן המקטע" rows={4} />
                     </div>
                   ))}
                 </div>
