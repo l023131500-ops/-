@@ -18,6 +18,20 @@ const commonTail = [
   { icon: Settings, label: "הגדרות", path: "/portal/settings" },
 ];
 
+// Maps a nav item's path to the admin-configurable teacher_features.feature_key
+// that gates it (see TeacherFeaturesDialog.tsx FEATURE_KEYS). A path with no
+// entry here is never gated (always shown).
+const FEATURE_KEY_BY_PATH: Record<string, string> = {
+  "/portal/lessons": "lessons",
+  "/portal/schedule": "schedule",
+  "/portal/participants": "participants",
+  "/portal/attendance": "attendance",
+  "/portal/prayer-times": "prayer_times",
+  "/portal/forums": "forums_view",
+  "/portal/messages": "messages_inbox",
+  "/portal/materials": "materials_upload",
+};
+
 const menuByType: Record<string, { icon: any; label: string; path: string }[]> = {
   rabbi: [
     { icon: BookOpen, label: "השיעורים שלי", path: "/portal/lessons" },
@@ -46,17 +60,28 @@ const PortalSidebar = () => {
   const { isAdmin } = useRole();
   const [portalType, setPortalType] = useState<string>("rabbi");
   const [orgName, setOrgName] = useState<string | null>(null);
+  const [disabledFeatures, setDisabledFeatures] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     if (!user) return;
-    supabase.from("profiles").select("portal_type, organization_name").eq("user_id", user.id).maybeSingle()
+    supabase.from("profiles").select("id, portal_type, organization_name").eq("user_id", user.id).maybeSingle()
       .then(({ data }) => {
         if (data?.portal_type) setPortalType(data.portal_type);
         if (data?.organization_name) setOrgName(data.organization_name);
+        if (data?.id) {
+          supabase.from("teacher_features").select("feature_key, enabled").eq("teacher_id", data.id)
+            .then(({ data: features }) => {
+              setDisabledFeatures(new Set((features || []).filter(f => f.enabled === false).map(f => f.feature_key)));
+            });
+        }
       });
   }, [user]);
 
-  const menuItems = [...baseItems, ...(menuByType[portalType] || menuByType.rabbi), ...commonTail];
+  const menuItems = [...baseItems, ...(menuByType[portalType] || menuByType.rabbi), ...commonTail]
+    .filter(item => {
+      const key = FEATURE_KEY_BY_PATH[item.path];
+      return !key || !disabledFeatures.has(key);
+    });
   const portalLabel = portalType === "synagogue" ? "פורטל בית הכנסת" : portalType === "organization" ? "פורטל הארגון" : "פורטל מגיד השיעור";
 
   return (
