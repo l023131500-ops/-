@@ -3437,3 +3437,60 @@ any further KIOSK_BUILD.md gap. Route A (QR/zero-touch GMS provisioning,
 §3/§10-A) remains the next reconciliation candidate, unrelated to this
 round's work.
 
+- **§2★ז launcher — third reconciliation attempt, this one landed (2026-09-02)**
+  — a fresh read of KIOSK_BUILD.md against `/home/m30/zol-work`'s real tip
+  found §2★ז ("device access-code + unauthenticated launcher page") was
+  built and lost *twice* before this round: the Aug 11 entries above describe
+  it as complete, but by Aug 25 nothing matched a grep of the checkout, so it
+  was rebuilt from scratch on `feat/kiosk-launcher-access-code-0825`
+  (`8ed63cb`) — and that branch was *also* never merged into the deployed
+  tip (`claude/what-do-you-see-gxo5tc`), so it sat orphaned a second time
+  while orientation-lock/payment-modes/Route C+D landed independently on the
+  main line in the meantime. Exact same "built, tested, `core.build_tasks`
+  says done, but the deployable tip never got it" pattern as the Route C/D
+  finding above (build_tasks#70) and the 32/36/01 findings before it.
+
+  A straight merge of `8ed63cb` was not viable — the orphaned branch's own
+  history contains its own now-superseded versions of orientation-lock and
+  payment-mode, so the raw diff touched ~19 files with heavy unrelated
+  drift. Hand-ported just the isolated §2★ז pieces (new files
+  `src/accesscode.js`, `src/routes/launcher.js`, `public/launcher.html`,
+  `public/js/launcher.js`, `test/accesscode.test.mjs`; small wiring edits to
+  `src/db.js` (`access_code` column + `nextAccessCode()`), `src/index.js`
+  (mount `/api/public` + `GET /k/:code`), `src/routes/agent.js` +
+  `src/routes/devices.js` (both device-creation paths mint a code;
+  `POST /devices/:id/access-code/regenerate` added), `src/devicepayload.js`
+  (`access_code` reaches the console socket), `public/js/app.js` (device
+  card shows the code, copy-link/regenerate buttons, event labels)) onto a
+  fresh branch off the current tip.
+
+  Verified **live**, not just unit tests: booted the real server against a
+  scratch SQLite DB (dependencies are installed in `/home/m30/zol-work`,
+  unlike this gitignored checkout) — logged in as the seeded admin, created
+  an enrollment, enrolled a device over `/api/agent/enroll` and confirmed it
+  received a minted `access_code`; `GET /k/:code` returned 200 and served
+  the page; `GET /api/public/launcher/:code` resolved the device with an
+  empty items list; registered a client (`POST /api/clients`), approved it
+  for the device (`POST /devices/:id/clients/:clientId`), and confirmed it
+  then appeared in the launcher response; regenerated the access code and
+  confirmed the **old** code immediately 404s while the new one resolves;
+  confirmed `launcher_opened`/`access_code_regenerated` land in the device's
+  event log. Full suite **186/186** (was 178/178 before this round — +7
+  `accesscode.test.mjs`, +1 `devicepayload.test.mjs`). `node --check` clean
+  on every touched/added file. Zero regression — purely additive except the
+  5 small wiring edits, none of which change existing behavior for the
+  `access_code IS NULL` case (there is none left after the one-time
+  backfill, by construction).
+
+  Committed+pushed to `l023131500-ops/zol` branch
+  `feat/kiosk-launcher-reconcile-0902` (`629671e`) — **not merged**, same
+  convention as every prior zol push in this history.
+
+  **Not deployed** — same blocker as every zol-targeted entry above. This
+  branch was cut from the `feat/kiosk-payment-input-modes-0902` tip, so it
+  already carries Route C/D and the payment-mode work forward too —
+  `feat/kiosk-launcher-reconcile-0902` alone is now the single furthest-
+  forward branch and the one candidate for promoting the deployed tip.
+  Route A (QR/zero-touch GMS provisioning, §3/§10-A) remains the next
+  reconciliation candidate on top of it.
+
