@@ -17,6 +17,7 @@ const RabbiPublic = () => {
   const [prayerTimes, setPrayerTimes] = useState<any[]>([]);
   const [photos, setPhotos] = useState<any[]>([]);
   const [materials, setMaterials] = useState<any[]>([]);
+  const [disabledFeatures, setDisabledFeatures] = useState<Set<string>>(new Set());
   const [loading, setLoading] = useState(true);
   const [contactForm, setContactForm] = useState({ sender_name: "", sender_phone: "", sender_email: "", message: "" });
   const [sending, setSending] = useState(false);
@@ -32,6 +33,11 @@ const RabbiPublic = () => {
     const profile = byToken || (await supabase.from("profiles").select("*").eq("id", id).eq("is_approved", true).maybeSingle()).data;
     
     if (!profile) { setLoading(false); return; }
+
+    const { data: features } = await supabase.from("teacher_features").select("feature_key, enabled").eq("teacher_id", profile.id);
+    const disabled = new Set((features || []).filter(f => f.enabled === false).map(f => f.feature_key));
+    if (disabled.has("public_profile")) { setLoading(false); return; }
+    setDisabledFeatures(disabled);
     setProfile(profile);
 
     const { data: lessonsData } = await supabase.from("lessons").select("*").eq("teacher_id", profile.id).eq("is_active", true);
@@ -245,9 +251,9 @@ const RabbiPublic = () => {
         )}
 
         {/* Donation + Lesson Downloads */}
-        {(profile.donation_link || profile.lesson_download_url) && (
+        {((profile.donation_link && !disabledFeatures.has("donations")) || profile.lesson_download_url) && (
           <div className="flex flex-wrap gap-3 justify-center">
-            {profile.donation_link && (
+            {profile.donation_link && !disabledFeatures.has("donations") && (
               <a href={profile.donation_link} target="_blank" rel="noopener noreferrer">
                 <Button variant="outline" className="border-secondary text-secondary">🎁 תרומה</Button>
               </a>
