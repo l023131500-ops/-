@@ -3666,3 +3666,62 @@ round's work.
   landing-illustrations-0831`, `fix/kiosk-landing-page-full-feature-copy-
   0831`, `feat/kiosk-install-wizard-0831` remain unchecked.
 
+- **2026-09-02, session 2 — Reconciled orphaned install-wizard branch (§2★ב
+  "אשף התקנה", `KIOSK_BUILD.md` §10).** Checked the three branches the prior
+  entry left unchecked. `feat/kiosk-install-wizard-0831` (`06ab6dc`) is a
+  real, self-contained gap: on the real tip, an enrollment code was shown
+  once with zero install instructions — no way to obtain the APK (no
+  `/downloads` route existed anywhere) and only the static four-paragraph
+  `viewGuide()` text, with no ADB commands and no per-device progress
+  tracking. This is a different, simpler implementation than what this
+  file's Aug-11 entries describe for the same spec item
+  (`setupsteps.js`/`setupprogress.js`, server-stored per-device progress) —
+  and confirmed by grep that **neither** ever reached the real
+  `l023131500-ops/zol` tree: `setupsteps.js` doesn't exist there and
+  `viewGuide()` is still the only guide screen. So this checkout's own Aug-11
+  "done" claim for §2★ב was never true on the deployed tip either; `06ab6dc`
+  is the version that actually exists in the real repo's history.
+
+  The other two unchecked branches (`fix/kiosk-landing-illustrations-0831`,
+  `fix/kiosk-landing-page-full-feature-copy-0831`) were left orphaned rather
+  than reconciled this round — a real, single-file (`index.html`/`style.css`)
+  landing-copy-and-graphics candidate for a future iteration, deferred here
+  to keep this round to one complete improvement.
+
+  `git cherry-pick -n 06ab6dc` onto the current tip hit one conflict in
+  `app.js`'s `loadEnrollments()` row template (the tip's USB/QR package
+  buttons and the incoming wizard button both touched the same `<td>`);
+  resolved by keeping all three per-row actions (wizard, USB, QR) plus
+  delete in the existing `e-actions` cell convention. Adds
+  `openInstallWizard()` (checklist: download → enable USB debugging → adb
+  install → `adb shell dpm set-device-owner` → enter the code → verify,
+  each step a checkbox persisted in `localStorage` keyed by the
+  enrollment's code, copy-to-clipboard for the two real ADB commands from
+  `android/README.md`) plus a `/downloads` static mount for
+  `kiosk/releases` (same conditional-exists pattern as the existing `/docs`
+  mount) so a build placed there becomes downloadable with no further code
+  change.
+
+  Verified **live**: booted the real server against a scratch SQLite DB,
+  logged in as the seeded admin, created a real enrollment over
+  `POST /enrollments` and confirmed the response shape the new JS reads;
+  `GET /downloads/README.md` → 200 (mount live, `kiosk/releases/README.md`
+  present); `GET /downloads/kioskfleet-agent.apk` → 404 (no half-built
+  download promise until a real APK is placed there). Full suite
+  **215/215** (unchanged — this commit adds no new test file, matching the
+  upstream branch). `node --check` clean on both touched JS files.
+
+  Committed+pushed to `l023131500-ops/zol` branch
+  `feat/kiosk-install-wizard-reconcile-0902` (`32aa8f6`) — **not merged**,
+  cut from the same furthest-forward tip as every entry above (so it also
+  carries launcher/payment-modes/Routes-C-D/Route-A/shared-write-guard/
+  schedule-offline-persist). **Not deployed** — same Railway-promote
+  blocker as every prior zol-targeted entry. With this landed, every
+  KIOSK_BUILD.md install-facing gap this session found (launcher, payment
+  modes, Routes A/C/D, shared write guard, offline schedule, install
+  wizard) sits on one single unmerged branch. Next candidates: the two
+  landing-page branches noted above, or the large `feat/kiosk-exit-
+  gesture-config-0825` snapshot (OTA app updates, orientation lock,
+  exit-gesture config, install-checklist-wizard modules — still
+  unreconciled, still too large for one iteration).
+
