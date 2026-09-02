@@ -4,6 +4,8 @@ import { ClipboardCheck, Check, X, Send, AlertCircle, StickyNote } from "lucide-
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import PortalLayout from "@/components/portal/PortalLayout";
+import FeatureLocked from "@/components/portal/FeatureLocked";
+import { useFeatureGate } from "@/hooks/useFeatureGate";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -12,6 +14,7 @@ import { toast } from "sonner";
 
 const Attendance = () => {
   const { user } = useAuth();
+  const { locked, checked } = useFeatureGate("attendance");
   const [lessons, setLessons] = useState<any[]>([]);
   const [participants, setParticipants] = useState<any[]>([]);
   const [attendance, setAttendance] = useState<any[]>([]);
@@ -91,6 +94,10 @@ const Attendance = () => {
   const getStatus = (pid: string) => attendance.find(a => a.participant_id === pid);
   const presentCount = attendance.filter(a => a.was_present).length;
   const absentCount = attendance.filter(a => !a.was_present).length;
+
+  if (checked && locked) {
+    return <PortalLayout><FeatureLocked /></PortalLayout>;
+  }
 
   return (
     <PortalLayout>

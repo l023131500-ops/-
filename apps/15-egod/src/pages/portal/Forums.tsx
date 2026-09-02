@@ -4,6 +4,8 @@ import { MessageSquare, ChevronLeft, Send, ArrowRight, Pin } from "lucide-react"
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import PortalLayout from "@/components/portal/PortalLayout";
+import FeatureLocked from "@/components/portal/FeatureLocked";
+import { useFeatureGate } from "@/hooks/useFeatureGate";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -11,6 +13,7 @@ import { toast } from "sonner";
 
 const Forums = () => {
   const { user } = useAuth();
+  const { locked, checked } = useFeatureGate("forums_view");
   const [categories, setCategories] = useState<any[]>([]);
   const [selectedCat, setSelectedCat] = useState<any>(null);
   const [posts, setPosts] = useState<any[]>([]);
@@ -139,6 +142,10 @@ const Forums = () => {
         </div>
       </PortalLayout>
     );
+  }
+
+  if (checked && locked) {
+    return <PortalLayout><FeatureLocked /></PortalLayout>;
   }
 
   // Category list

@@ -4,6 +4,8 @@ import { Mail, Trash2, Check, X, Inbox } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import PortalLayout from "@/components/portal/PortalLayout";
+import FeatureLocked from "@/components/portal/FeatureLocked";
+import { useFeatureGate } from "@/hooks/useFeatureGate";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
@@ -16,6 +18,7 @@ const statusLabels: Record<string, { label: string; variant: "default" | "second
 
 const Messages = () => {
   const { user } = useAuth();
+  const { locked, checked } = useFeatureGate("messages_inbox");
   const [messages, setMessages] = useState<any[]>([]);
   const [profileId, setProfileId] = useState<string | null>(null);
 
@@ -43,6 +46,10 @@ const Messages = () => {
 
   const newCount = messages.filter(m => m.status === "new").length;
   const handledCount = messages.filter(m => m.status === "handled").length;
+
+  if (checked && locked) {
+    return <PortalLayout><FeatureLocked /></PortalLayout>;
+  }
 
   return (
     <PortalLayout>

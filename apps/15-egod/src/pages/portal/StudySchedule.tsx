@@ -5,6 +5,8 @@ import { Calendar, Plus, ChevronRight, ChevronLeft, Star, Download } from "lucid
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import PortalLayout from "@/components/portal/PortalLayout";
+import FeatureLocked from "@/components/portal/FeatureLocked";
+import { useFeatureGate } from "@/hooks/useFeatureGate";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -15,6 +17,7 @@ const daysOfWeek = ["א'", "ב'", "ג'", "ד'", "ה'", "ו'", "שבת"];
 
 const StudySchedule = () => {
   const { user } = useAuth();
+  const { locked, checked } = useFeatureGate("schedule");
   const [profile, setProfile] = useState<any>(null);
   const [currentDate, setCurrentDate] = useState(new Date());
   const [view, setView] = useState<"month" | "week" | "list">("month");
@@ -107,6 +110,10 @@ const StudySchedule = () => {
   };
 
   const monthName = currentDate.toLocaleDateString("he-IL", { month: "long", year: "numeric" });
+
+  if (checked && locked) {
+    return <PortalLayout><FeatureLocked /></PortalLayout>;
+  }
 
   return (
     <PortalLayout>

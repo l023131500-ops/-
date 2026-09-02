@@ -4,6 +4,8 @@ import { Building2, Plus, Trash2, Clock, Edit2, Save, X } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import PortalLayout from "@/components/portal/PortalLayout";
+import FeatureLocked from "@/components/portal/FeatureLocked";
+import { useFeatureGate } from "@/hooks/useFeatureGate";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -13,6 +15,7 @@ import { PRAYER_TYPES, PRAYER_DAY_OPTIONS } from "@/types/questionnaire";
 
 const PrayerTimes = () => {
   const { user } = useAuth();
+  const { locked, checked } = useFeatureGate("prayer_times");
   const [profileId, setProfileId] = useState<string | null>(null);
   const [synagogues, setSynagogues] = useState<any[]>([]);
   const [prayerTimes, setPrayerTimes] = useState<any[]>([]);
@@ -68,6 +71,10 @@ const PrayerTimes = () => {
     toast.success("זמן התפילה נמחק");
     fetchData();
   };
+
+  if (checked && locked) {
+    return <PortalLayout><FeatureLocked /></PortalLayout>;
+  }
 
   return (
     <PortalLayout>
