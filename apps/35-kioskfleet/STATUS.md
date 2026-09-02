@@ -3494,3 +3494,56 @@ round's work.
   Route A (QR/zero-touch GMS provisioning, §3/§10-A) remains the next
   reconciliation candidate on top of it.
 
+- **Route A (QR/zero-touch GMS provisioning) — fourth reconciliation, this
+  one landed (2026-09-02)** — the last entry's own "next candidate" note.
+  `feat/kiosk-route-a-qr-provisioning-0831` (`c62f875`) built §3/§10-A's QR
+  provisioning payload in full (server `qrprovision.js`, `POST
+  /api/enrollments/:id/qr-package`, `config.js`'s
+  `KIOSK_AGENT_APK_URL`/`_SIGNATURE_CHECKSUM`, a console "📱 QR (מסלול A)"
+  button next to the existing USB-package one, and the Android side —
+  `KioskDeviceAdminReceiver.onProfileProvisioningComplete` forwards the
+  QR's admin-extras `{server, code}` into `EnrollActivity`, which
+  auto-enrolls through the exact same `enroll()` path its manual button
+  already used, falling back to the manual form pre-filled with the server
+  address on any failure) — but that branch was cut *before* this session's
+  launcher/payment-mode/Route-C-D reconciliation work landed on the real
+  tip, so it sat orphaned exactly like the other three.
+
+  Unlike the launcher reconciliation, this one needed no hand-porting:
+  `git cherry-pick -n c62f875` onto the current tip applied with **zero
+  conflicts** — the orphaned branch's own now-superseded orientation-lock/
+  payment-mode commits underneath it never touched any of the 9 files this
+  specific commit changed, so the cherry-pick carried forward cleanly on
+  its own.
+
+  Verified **live**: booted the real server against a scratch SQLite DB,
+  logged in as the seeded admin, created an enrollment. With
+  `KIOSK_AGENT_APK_URL`/`_SIGNATURE_CHECKSUM` unset, `POST
+  /enrollments/:id/qr-package` returned a clean `501` (not a broken
+  payload). With both set, the same call returned the full
+  `PROVISIONING_*` payload (component name, APK download URL, signing
+  checksum, optional Wi-Fi SSID/password/security type, and the
+  admin-extras `{server, code}` bundle) and — confirmed via `GET
+  /api/enrollments` afterward — left the enrollment code **unused**,
+  exactly as designed (a Route A device only truly enrolls once it reaches
+  the network during provisioning, unlike the USB path which consumes its
+  code immediately). Unauthenticated request → `401`; nonexistent
+  enrollment id → `404`. `node --check` clean on every touched/added JS
+  file; brace/paren-balance check clean on both touched Kotlin files (no
+  Android SDK in this sandbox to compile, same limitation as every prior
+  Kotlin-touching entry). Full suite **202/202** (was 186/186 — +16
+  `qrprovision.test.mjs`).
+
+  Committed to `l023131500-ops/zol` branch
+  `feat/kiosk-route-a-qr-provisioning-reconcile-0902` (`3bd7d7d`), pushed —
+  **not merged**, same convention as every prior zol push in this history.
+
+  **Not deployed** — same blocker as every zol-targeted entry above. This
+  branch was cut from `feat/kiosk-launcher-reconcile-0902`'s tip, so it now
+  carries Route A forward together with the launcher/payment-mode/Route-C-D
+  work already reconciled — it is the single furthest-forward branch and
+  the candidate for promoting the deployed tip. With this landed, every
+  KIOSK_BUILD.md §3 install route (A/B/C/D) has real, tested, reconciled
+  code sitting on one unmerged branch; no further orphaned-branch
+  candidates are known in this system as of this round.
+
