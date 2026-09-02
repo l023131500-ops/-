@@ -18,6 +18,7 @@ const Forums = () => {
   const [profileName, setProfileName] = useState("");
   const [newMessage, setNewMessage] = useState("");
   const [sending, setSending] = useState(false);
+  const [access, setAccess] = useState<Record<string, { can_view: boolean; can_post: boolean }>>({});
   const bottomRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -27,8 +28,21 @@ const Forums = () => {
 
   const fetchProfile = async () => {
     const { data } = await supabase.from("profiles").select("id, full_name").eq("user_id", user!.id).single();
-    if (data) { setProfileId(data.id); setProfileName(data.full_name || ""); }
+    if (data) {
+      setProfileId(data.id);
+      setProfileName(data.full_name || "");
+      const { data: rows } = await supabase.from("teacher_forum_access").select("category_id, can_view, can_post").eq("teacher_id", data.id);
+      const amap: Record<string, { can_view: boolean; can_post: boolean }> = {};
+      (rows || []).forEach((r: any) => { amap[r.category_id] = { can_view: r.can_view, can_post: r.can_post }; });
+      setAccess(amap);
+    }
   };
+
+  // Admin-configured per-teacher grants (public.teacher_forum_access, set via TeacherFeaturesDialog);
+  // a category with no row is open by default, matching the seed_teacher_defaults() trigger.
+  const canView = (catId: string) => access[catId]?.can_view !== false;
+  const canPost = (catId: string) => access[catId]?.can_post !== false;
+  const visibleCategories = categories.filter((c) => canView(c.id));
 
   const fetchCategories = async () => {
     const { data } = await supabase.from("forum_categories").select("*").order("sort_order");
@@ -53,7 +67,7 @@ const Forums = () => {
   };
 
   const handleSend = async () => {
-    if (!newMessage.trim() || !profileId || !selectedCat) return;
+    if (!newMessage.trim() || !profileId || !selectedCat || !canPost(selectedCat.id)) return;
     setSending(true);
     const { error } = await supabase.from("forum_posts").insert({
       category_id: selectedCat.id,
@@ -106,18 +120,22 @@ const Forums = () => {
           </div>
 
           {/* Input */}
-          <div className="border-t border-border pt-3 flex gap-2">
-            <Input
-              value={newMessage}
-              onChange={e => setNewMessage(e.target.value)}
-              placeholder="כתוב הודעה..."
-              onKeyDown={e => e.key === "Enter" && !e.shiftKey && handleSend()}
-              className="flex-1"
-            />
-            <Button onClick={handleSend} disabled={sending || !newMessage.trim()} className="bg-secondary text-secondary-foreground">
-              <Send className="w-4 h-4" />
-            </Button>
-          </div>
+          {canPost(selectedCat.id) ? (
+            <div className="border-t border-border pt-3 flex gap-2">
+              <Input
+                value={newMessage}
+                onChange={e => setNewMessage(e.target.value)}
+                placeholder="כתוב הודעה..."
+                onKeyDown={e => e.key === "Enter" && !e.shiftKey && handleSend()}
+                className="flex-1"
+              />
+              <Button onClick={handleSend} disabled={sending || !newMessage.trim()} className="bg-secondary text-secondary-foreground">
+                <Send className="w-4 h-4" />
+              </Button>
+            </div>
+          ) : (
+            <p className="border-t border-border pt-3 text-center text-xs text-muted-foreground">אין לך הרשאה לפרסם בפורום זה — צפייה בלבד</p>
+          )}
         </div>
       </PortalLayout>
     );
@@ -133,7 +151,7 @@ const Forums = () => {
         </motion.div>
 
         <div className="space-y-3">
-          {categories.map((cat) => (
+          {visibleCategories.map((cat) => (
             <motion.div key={cat.id} initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }}
               onClick={() => openCategory(cat)}
               className="bg-card rounded-xl border border-border p-5 flex items-center gap-4 hover:border-secondary/30 transition-colors cursor-pointer">
@@ -150,7 +168,7 @@ const Forums = () => {
               </div>
             </motion.div>
           ))}
-          {categories.length === 0 && (
+          {visibleCategories.length === 0 && (
             <div className="text-center py-16">
               <MessageSquare className="w-16 h-16 text-muted-foreground/30 mx-auto mb-4" />
               <h3 className="font-heading text-xl font-bold text-foreground mb-2">אין פורומים</h3>
