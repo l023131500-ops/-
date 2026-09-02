@@ -3241,3 +3241,83 @@ to that constraint: they import only dependency-free modules (`hosts.js`,
   **Not deployed.** Same as every entry above — the Railway service serves the
   previous console until it is rebuilt from this checkout.
 
+- **this checkout is not what Railway runs, and this round found how far the
+  two have drifted.** 02/09/2026. Before starting the next feature here, went
+  looking for `core.build_tasks`'s §8 "קבוצות/תבניות" gap and found it already
+  closed — but not in this tree. `apps/35-kioskfleet/server` (this checkout)
+  has none of `templates.js`/`templatepolicy.js`/`policy.js`/`signage.js`/
+  `maintenance.js`/`snapshots.js`/`watchdog.js`/`analytics.js`/`alerts.js`,
+  every one of which already exists, is wired into the console
+  (`viewTemplates`/`applyTemplateModal`), and is live-tested (134 passing
+  tests before this round) in the **actual** repo Railway deploys from —
+  `l023131500-ops/zol`, branch `claude/what-do-you-see-gxo5tc`, root
+  `kiosk/server` — checked out separately at `/home/m30/zol-work` (a plain
+  `git worktree`/detached checkout of that branch is at `/tmp/zol-live-check`
+  for the duration of a round; neither path is part of this monorepo's git
+  history). §8/§9 are essentially done there already: templates cover URL/
+  allow-list/idle/zoom/schedule/signage/maintenance as independently-optional
+  fields, snapshots.js gives §9 "גיבוי/שחזור מדיניות" real backup/restore, and
+  watchdog/alerts/analytics cover the rest of §9's list. core.issues #215
+  already named this divergence; this round is the first to actually read the
+  real tree's file list rather than re-auditing this stale copy against
+  KIOSK_BUILD.md as if it were current.
+
+  Reading the real tree turned up a genuine, live bug instead: this checkout
+  had already had its write-path input-validation crash class closed by a
+  shared `inputguard.js` middleware (`fe81bea8`, one round in this same
+  history) — but that fix, like the templates feature, never reached the real
+  zol repo. Reproduced live against a real boot of the actual deployed tip
+  (`origin/claude/what-do-you-see-gxo5tc`, commit `0f3947d`): `PATCH
+  /devices/1 {"name":{"evil":true}}` and `{"linkId":true}` both threw an
+  unhandled exception — a raw better-sqlite3 bind error with its full stack
+  trace returned as the HTTP response body (500, plus an information leak) —
+  from an endpoint every customer's own JWT can reach. The same shape is
+  reachable through the device-token-authenticated `/api/agent/heartbeat`
+  (confirmed live: `battery` as an object 500s the same way) and `/ack`/
+  `/screenshot` (`commandId`), needing nothing but a still-unused enrollment
+  code, no JWT at all.
+
+  Ported `inputguard.js` into the real tree (adapted to its actual field set:
+  `ROW_ID_FIELDS = {linkId, commandId}`, `NON_SCALAR_FIELDS_ALLOWED =
+  {payload, deviceIds}` — `deviceIds` is new here versus this checkout's
+  version, because the real tree's §8 templates route
+  (`POST /templates/:id/apply`) takes an array of device ids that this
+  checkout never had), wired `app.use(guardWriteBody)` into `index.js` right
+  after `express.json()` so it covers the JWT and device-token routers alike,
+  and closed one more crash the array exemption itself would otherwise have
+  reopened: `routes/templates.js`'s apply loop called
+  `db.prepare(...).get(id)` on every raw array element with no per-element
+  check, so `{"deviceIds":[1,{"evil":true}]}` would 500 on the second entry
+  even with the new guard in place (the guard is explicitly told not to look
+  inside an allowed array). Fixed by validating each element with
+  `isValidRowId` and routing a bad one into the route's existing `skipped`
+  array — the same "an owner selecting a stale/partly-wrong list should not
+  lose every device's update because one entry was bad" reasoning the route's
+  own header comment already gives for an unowned/deleted id.
+
+  Verified against a real server boot of the patched tree: both live-crash
+  reproductions above now return a clean 400 (`שדה "name"/"linkId" אינו
+  תקין`) instead of a 500 with a leaked stack trace; the same for
+  `/heartbeat`'s `battery`. Normal `PATCH /devices/:id`, `/heartbeat`,
+  `POST /templates` and `POST /templates/:id/apply` all still succeed
+  unchanged. `POST /templates/:id/apply {"deviceIds":[1,{"evil":true},
+  "abc"]}` now applies to device 1 and reports the other two in `skipped`,
+  not a 500. `node --test test/**/*.test.mjs` on the real tree: 147/147
+  (134 pre-existing + 13 new in `test/inputguard.test.mjs`), zero failures —
+  a materially different, better baseline than this checkout's own
+  documented 70/71 (that one `node:sqlite` gap was already fixed on the real
+  tree, per its own commit `0f3947d`, before this round started).
+
+  Committed on a fresh branch off the real deployed tip (not this checkout,
+  and not merged — same convention as every prior zol push in this history):
+  `l023131500-ops/zol` branch `fix/kiosk-shared-write-guard-0902` (`23e8868`).
+
+  **Not deployed** — same as every zol-targeted entry above, and now doubly
+  true: even a merge of this branch only reaches Railway once someone
+  promotes it, and this checkout (`apps/35-kioskfleet`) still is not the
+  source of truth for what §8/§9 actually contain. Next round on this system
+  should read the real tree first, not this one, before claiming any further
+  KIOSK_BUILD.md gap — this file's own "מה כבר בנוי" baseline is now known
+  stale for §8/§9 and should not be trusted without re-checking `/home/m30/
+  zol-work` (or a fresh worktree of `origin/claude/what-do-you-see-gxo5tc`).
+
