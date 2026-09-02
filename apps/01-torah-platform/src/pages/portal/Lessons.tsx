@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { BookOpen, Plus, Trash2, MapPin, Clock, Users, Mic, Video } from "lucide-react";
+import { BookOpen, Plus, Trash2, MapPin, Clock, Users, Mic, Video, Send, MessageCircle, Mail, Loader2 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -59,6 +59,12 @@ const Lessons = () => {
   const [form, setForm] = useState(emptyForm);
   const [step, setStep] = useState(1);
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [notifyLesson, setNotifyLesson] = useState<any>(null);
+  const [notifySubject, setNotifySubject] = useState("");
+  const [notifyMessage, setNotifyMessage] = useState("");
+  const [notifyChannel, setNotifyChannel] = useState<"email" | "whatsapp" | "both">("both");
+  const [notifySending, setNotifySending] = useState(false);
+  const [notifyResult, setNotifyResult] = useState<any>(null);
 
   useEffect(() => { if (user) fetchData(); }, [user]);
 
@@ -160,6 +166,33 @@ const Lessons = () => {
     const { error } = await supabase.from("lessons").update({ is_active: !current }).eq("id", id).eq("rabbi_user_id", profileId);
     if (error) { toast.error("שגיאה בעדכון סטטוס השיעור"); return; }
     fetchData();
+  };
+
+  const openNotify = (lesson: any) => {
+    setNotifyLesson(lesson);
+    setNotifySubject(lesson.title || "");
+    setNotifyMessage("");
+    setNotifyChannel("both");
+    setNotifyResult(null);
+  };
+
+  const sendNotify = async () => {
+    if (!notifyLesson || !notifyMessage.trim()) { toast.error("נא להזין תוכן הודעה"); return; }
+    setNotifySending(true);
+    setNotifyResult(null);
+    try {
+      const { data, error } = await supabase.functions.invoke("notify-participants", {
+        body: { lesson_id: notifyLesson.id, subject: notifySubject, message: notifyMessage, channel: notifyChannel },
+      });
+      if (error) throw error;
+      if (!data?.ok) throw new Error(data?.error || "שליחה נכשלה");
+      setNotifyResult(data);
+      toast.success(`נשלח: ${data.sent} מייל · ${data.simulated} ממתין/וואטסאפ${data.failed ? ` · ${data.failed} נכשלו` : ""}`);
+    } catch (e: any) {
+      toast.error(e.message || "שגיאה בשליחת ההודעה");
+    } finally {
+      setNotifySending(false);
+    }
   };
 
   return (
@@ -322,6 +355,9 @@ const Lessons = () => {
                   )}
                 </div>
                 <div className="flex items-center gap-2 shrink-0 mr-3">
+                  <Button size="sm" variant="outline" onClick={() => openNotify(l)}>
+                    <Send className="w-4 h-4 ml-1" />הודעה למשתתפים
+                  </Button>
                   <Button size="sm" variant={l.is_active ? "outline" : "default"} onClick={() => toggleActive(l.id, l.is_active)}>
                     {l.is_active ? "השבת" : "הפעל"}
                   </Button>
@@ -340,6 +376,66 @@ const Lessons = () => {
             </div>
           )}
         </div>
+
+        <Dialog open={!!notifyLesson} onOpenChange={(o) => !o && setNotifyLesson(null)}>
+          <DialogContent dir="rtl" className="max-w-lg max-h-[85vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle>הודעה למשתתפי "{notifyLesson?.title}"</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4">
+              <div>
+                <label className="text-sm font-medium mb-1 block">נושא (למייל)</label>
+                <Input value={notifySubject} onChange={e => setNotifySubject(e.target.value)} placeholder="עדכון לגבי השיעור" />
+              </div>
+              <div>
+                <label className="text-sm font-medium mb-1 block">תוכן ההודעה *</label>
+                <Textarea value={notifyMessage} onChange={e => setNotifyMessage(e.target.value)} rows={4} placeholder="לדוגמה: השיעור השבוע יתקיים בשעה 21:00 במקום 20:00" />
+              </div>
+              <div>
+                <label className="text-sm font-medium mb-1 block">ערוץ שליחה</label>
+                <Select value={notifyChannel} onValueChange={(v: any) => setNotifyChannel(v)}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="both">מייל + וואטסאפ</SelectItem>
+                    <SelectItem value="email">מייל בלבד</SelectItem>
+                    <SelectItem value="whatsapp">וואטסאפ בלבד</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <Button className="w-full bg-secondary text-secondary-foreground hover:bg-gold-dark" onClick={sendNotify} disabled={notifySending || !notifyMessage.trim()}>
+                {notifySending ? <><Loader2 className="w-4 h-4 ml-2 animate-spin" />שולח...</> : <><Send className="w-4 h-4 ml-2" />שלח למשתתפים</>}
+              </Button>
+
+              {notifyResult && (
+                <div className="space-y-2 border-t border-border pt-3">
+                  <p className="text-sm text-muted-foreground">
+                    {notifyResult.sent} נשלחו במייל · {notifyResult.simulated} ממתין לפעולה (וואטסאפ / אין מפתח מייל מחובר)
+                    {notifyResult.failed ? ` · ${notifyResult.failed} נכשלו` : ""}
+                  </p>
+                  <div className="space-y-1 max-h-56 overflow-y-auto">
+                    {notifyResult.results?.map((r: any, i: number) => (
+                      <div key={i} className="flex items-center justify-between text-sm bg-muted/50 rounded-lg px-3 py-2">
+                        <span className="flex items-center gap-2">
+                          {r.channel === "email" ? <Mail className="w-3.5 h-3.5" /> : <MessageCircle className="w-3.5 h-3.5" />}
+                          {r.full_name} <span className="text-muted-foreground">({r.recipient})</span>
+                        </span>
+                        {r.wa_link ? (
+                          <a href={r.wa_link} target="_blank" rel="noopener noreferrer" className="text-secondary text-xs underline">
+                            פתח בוואטסאפ
+                          </a>
+                        ) : (
+                          <Badge variant={r.status === "sent" ? "default" : r.status === "failed" ? "destructive" : "outline"} className="text-xs">
+                            {r.status === "sent" ? "נשלח" : r.status === "failed" ? "נכשל" : "ממתין (מייל לא מחובר)"}
+                          </Badge>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          </DialogContent>
+        </Dialog>
       </div>
   );
 };
