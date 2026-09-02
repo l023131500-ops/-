@@ -34,6 +34,9 @@ import PriceTrend from './PriceTrend';
 import PropertyImagery from './PropertyImagery';
 import TransitLines from './TransitLines';
 import AreaAlertSignup from './AreaAlertSignup';
+import TabuRequestPanel from './TabuRequestPanel';
+import TikMeidaRequestPanel from './TikMeidaRequestPanel';
+import { sessionToken } from '@/lib/session';
 
 /** שלושת הכפתורים, בשפה של הלקוח. */
 const BUTTONS: { tier: ReportTier; title: string; sub: string }[] = [
@@ -49,11 +52,15 @@ export default function ReportView({
   input,
   layers: initialLayers,
   preloaded = null,
+  preloadedSlug = null,
   savedNote = null,
+  refresh = false,
 }: {
   q: string;
   tier: ReportTier;
   assetType?: AssetType;
+  /** §8 · המלצה 5 — עוקף את מטמון הפקה-חוזרת-קצרת-טווח (`/api/report`). */
+  refresh?: boolean;
   /**
    * ⚠️ הטיפוס הזה הוא מה שתפס את הבאג: העמוד כבר קרא `tatHelka` ו-`apartment`
    * מהכתובת, אבל הם לא היו כאן, ולכן נעצרו בגבול הרכיב בלי שאיש ישים לב.
@@ -76,6 +83,15 @@ export default function ReportView({
    * בתשלום בכל פתיחה שלו.
    */
   preloaded?: PropertyReport | null;
+  /**
+   * §8 · ה-slug הקבוע של הקישור, כשמגיעים דרך `/p/[slug]` (`SavedReportView`).
+   * ה-JSON השמור ב-DB הוא ה-`PropertyReport` הגולמי בלבד (ראה `saveReport`) —
+   * `permalink` מתווסף רק בתשובת ה-API החי, ולכן בנתיב הקבוע הוא לא מגיע דרך
+   * `data` בכלל; בלעדי הפרמטר הזה תכונות שתלויות ב-slug (כמו מטמון וידאו-רחוב,
+   * build_tasks id=2) היו נעלמות בשקט בדיוק בעמוד שבו יש להן הכי הרבה ערך —
+   * צפיות חוזרות באותו נכס.
+   */
+  preloadedSlug?: string | null;
   /** שורת ההסבר שמוצגת מעל דוח שמור. */
   savedNote?: React.ReactNode;
 }) {
@@ -147,6 +163,9 @@ export default function ReportView({
     if (input?.apartment) params.set('apartment', input.apartment);
     // §1 · שכבה שבוטלה ועולה כסף — לא נמשכת בכלל, ולא רק מוסתרת.
     if (skipListings) params.set('skipListings', '1');
+    // §8 · המלצה 5 — "הפק דוח מעודכן" חייב לעקוף את מטמון ההפקה-החוזרת,
+    // אחרת לחיצה מפורשת על "מעודכן" הייתה יכולה להחזיר עותק בן כמה שעות.
+    if (refresh) params.set('refresh', '1');
 
     /**
      * תקרת זמן לבקשה.
@@ -184,7 +203,7 @@ export default function ReportView({
       ctl.abort();
     };
   }, [q, tier, assetType, input?.entrance, input?.floor, input?.rooms,
-      input?.tatHelka, input?.apartment, skipListings, preloaded]);
+      input?.tatHelka, input?.apartment, skipListings, preloaded, refresh]);
 
   // הדגשת הקטגוריה שנמצאת כרגע מול העין.
   useEffect(() => {
@@ -204,6 +223,25 @@ export default function ReportView({
     Object.values(sectionRefs.current).forEach((el) => el && obs.observe(el));
     return () => obs.disconnect();
   }, [data, tier]);
+
+  /**
+   * build_tasks id=6 חלק (c) · "ההיסטוריה שלי" — לא נוגע בנתיב הציבורי עצמו:
+   * `sessionToken()` חוזר `null` מיידית ובלי שום קריאת רשת לצופה אנונימי (הרוב
+   * המכריע של הביקורים כאן), ורק כשיש כבר סשן more30 פעיל נשלחת קריאה שקטה
+   * לרישום הצפייה תחת אותו משתמש. לעולם לא חוסם/משנה את רינדור הדוח עצמו.
+   */
+  useEffect(() => {
+    if (!data) return;
+    const slug = preloadedSlug ?? (data as unknown as { permalink?: string | null }).permalink ?? null;
+    if (!slug) return;
+    const token = sessionToken();
+    if (!token) return;
+    fetch(apiUrl('/api/history'), {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+      body: JSON.stringify({ slug }),
+    }).catch(() => {});
+  }, [data, preloadedSlug]);
 
   const categories = useMemo(() => {
     if (!data) return [];
@@ -242,8 +280,10 @@ export default function ReportView({
   if (!data) return null;
 
   const t = data.title;
-  // ה-slug מגיע כשדה נוסף בתשובת ה-API ואינו חלק ממודל הדוח עצמו.
-  const permalink = (data as unknown as { permalink?: string | null }).permalink ?? null;
+  // ה-slug מגיע כשדה נוסף בתשובת ה-API ואינו חלק ממודל הדוח עצמו — ובנתיב
+  // הקבוע (`preloadedSlug`) הוא בכלל לא בתוך `data`, ראה ההערה על הפרמטר הזה.
+  const permalink =
+    preloadedSlug ?? (data as unknown as { permalink?: string | null }).permalink ?? null;
   const totalFacts = categories.reduce((s, c) => s + c.facts.length, 0);
   const filledFacts = categories.reduce(
     (s, c) => s + c.facts.filter((f) => f.value !== null).length,
@@ -251,7 +291,10 @@ export default function ReportView({
   );
 
   return (
-    <div className="pb-20">
+    // ⚠️ `data-permalink` — כדי ש-/api/pdf ו-/api/deck (Puppeteer headless)
+    // יוכלו לקרוא את ה-slug של הדוח שרונדר בפועל ולרשום אותו ב-report_exports
+    // (ראה logExport ב-lib/store.ts) — בלי זה כל הורדה נרשמת בלי שיוך לנכס.
+    <div className="pb-20" data-permalink={permalink ?? ''}>
       {/* ===== כותרת ===== */}
       <section className="hero-gradient text-white print:bg-surface print:text-black">
         <div className="mx-auto max-w-6xl px-5 py-10">
@@ -366,6 +409,25 @@ export default function ReportView({
 
       <div className="mx-auto max-w-6xl px-5">
         {savedNote}
+
+        {/* §8 · המלצה 5 — הדוח הוגש מעותק שמור טרי במקום הפקה חדשה בתשלום. */}
+        {!preloaded && data && data.cached && (
+          <div className="mt-6 rounded-2xl border border-line bg-bgsoft p-4 print:hidden">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <div className="text-[13.5px] leading-relaxed text-ink">
+                <b className="text-navy">דוח עדכני שכבר קיים.</b> כדי לחסוך תשלום חוזר על אותם
+                מקורות, זו ההפקה האחרונה לאותו נכס ולאותה רמה
+                {data.cachedAt ? ` — הופקה ב-${new Date(data.cachedAt).toLocaleString('he-IL')}` : ''}.
+              </div>
+              <a
+                href={apiUrl(`/report?${sharedQs}&tier=${tier}&refresh=1`)}
+                className="shrink-0 rounded-xl bg-teal px-5 py-2.5 text-[14px] font-bold text-white hover:bg-tealD"
+              >
+                הפק דוח חדש עכשיו
+              </a>
+            </div>
+          </div>
+        )}
 
         {/*
           §1 · מה שהלקוח בחר לא לכלול — נאמר במפורש, ולא נעלם בשקט.
@@ -495,7 +557,9 @@ export default function ReportView({
         {layers.includes('valuation') && <ValuationPanel valuation={data.valuation} />}
 
         {/* מפה אינטראקטיבית בכל הרמות; צילום ומפה אזורית — VIP (§2, §4). */}
-        {layers.includes('imagery') && <PropertyImagery report={data} tier={tier} />}
+        {layers.includes('imagery') && (
+          <PropertyImagery report={data} tier={tier} permalink={permalink} />
+        )}
 
         <div className="mt-4">
           <CertaintyLegend />
@@ -619,6 +683,8 @@ export default function ReportView({
         ))}
 
         {tier === 'vip' && <VipPanel report={data} />}
+        {tier === 'vip' && <TabuRequestPanel report={data} />}
+        {tier === 'vip' && <TikMeidaRequestPanel report={data} />}
 
         {/* more30-feature-expansion.md · נדל"ן: התראות על עסקאות חדשות באזור/רחוב */}
         <AreaAlertSignup

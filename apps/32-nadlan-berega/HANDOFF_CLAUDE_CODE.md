@@ -63,6 +63,8 @@ XPLAN_BASE=https://ags.iplan.gov.il/arcgis/rest/services/PlanningPublic/Xplan/Ma
 DATAGOV_TRANSPORT_RESOURCE=e873e6a2-66c1-494f-a677-f5e77348edb0
 DATAGOV_RENEWAL_RESOURCE=        # ראה סעיף 4 (Shapefile — עדיף GovMap WFS)
 DATAGOV_SCHOOLS_RESOURCE=        # מאגר ארצי לזיהוי
+DATAGOV_CRIME_RESOURCE=e311b6a1-be5a-4a82-8298-f3afbee07b6b   # אופציונלי — קוד כבר עם ברירת מחדל זהה, לדריסה כשמתפרסם מאגר שנה חדשה
+DATAGOV_CRIME_YEAR=2025          # אופציונלי — שנת המאגר שלמעלה, לתיוג התצוגה
 AI_PROVIDER=anthropic
 AI_API_KEY=                      # אופציונלי — מפעיל ניסוח AI מלא
 ```

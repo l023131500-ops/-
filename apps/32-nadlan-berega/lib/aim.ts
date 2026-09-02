@@ -26,6 +26,37 @@ export function haversineKm(lat1: number, lng1: number, lat2: number, lng2: numb
 }
 
 /**
+ * נקודה במרחק `distanceM` מטרים מ-(lat,lng) לכיוון `bearingDeg` (מעלות מצפון).
+ * נוסחת הגיאודזיה הכדורית הסטנדרטית (forward geodesic) — אותה רדיוס כדור-הארץ
+ * כמו `haversineKm` למעלה, כדי ששתי הפונקציות עקביות זו עם זו.
+ *
+ * משמש ל"סיור רחוב" (`streetWalk` ב-`buildreport.ts`): נקודת עיגון אחת על
+ * הרחוב (מיקום הפנורמה הקרובה ביותר לנכס, שכבר ידוע להיות **על** הכביש —
+ * בשונה מנקודת הנכס עצמה, שיכולה להיות מוסטת פנימה מהרחוב) + כיוון-לאורך-
+ * הרחוב (ניצב לאזימוט "מהפנורמה אל הבניין" שכבר מחושב ב-`aimQuality`) →
+ * כמה נקודות נוספות במרחקים גדלים על אותו רחוב.
+ */
+export function destinationPoint(
+  lat: number,
+  lng: number,
+  bearingDeg: number,
+  distanceM: number,
+): { lat: number; lng: number } {
+  const R = 6371000; // מטרים — עקבי עם haversineKm (6371 ק"מ)
+  const rad = Math.PI / 180;
+  const δ = distanceM / R;
+  const θ = bearingDeg * rad;
+  const φ1 = lat * rad;
+  const λ1 = lng * rad;
+
+  const φ2 = Math.asin(Math.sin(φ1) * Math.cos(δ) + Math.cos(φ1) * Math.sin(δ) * Math.cos(θ));
+  const λ2 =
+    λ1 + Math.atan2(Math.sin(θ) * Math.sin(δ) * Math.cos(φ1), Math.cos(δ) - Math.sin(φ1) * Math.sin(φ2));
+
+  return { lat: φ2 / rad, lng: (((λ2 / rad + 540) % 360) + 360) % 360 - 180 };
+}
+
+/**
  * אזימוט התחלתי במעלות מצפון, **מ**נקודה אחת **אל** השנייה.
  *
  * ⚠️ סדר הארגומנטים הוא כל ההבדל בין צילום נכון לצילום של המדרכה ממול.

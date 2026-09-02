@@ -117,6 +117,13 @@ export function envStatus(): EnvEntry[] {
       false,
       { secret: false },
     ),
+    entry(
+      'MAPILLARY_ACCESS_TOKEN',
+      'תצלום רחוב חלופי (חינמי) לפנורמה האינטראקטיבית, כשל-Google Street View אין כיסוי בנקודה.',
+      'בלעדיו הפנורמה מציגה "אין כיסוי" בנקודות שגוגל לא מכסה, במקום תצלום Mapillary חלופי.',
+      false,
+      { getUrl: 'https://www.mapillary.com/developer' },
+    ),
   ];
 }
 
@@ -284,6 +291,18 @@ export function sourceHealth(): SourceHealth[] {
         'אינו מופעל בפרויקט הענן — ולכן מוחזרת תמונה אפורה במקום צילום. ' +
         'להפעלה: Google Cloud Console → APIs & Services → הפעלת Street View Static API. ' +
         'עד אז הדוח מציג "לא זמין" ואינו מציג תמונה חלופית.',
+    },
+    {
+      name: 'פנורמה אינטראקטיבית 360°',
+      what: 'תצוגת רחוב חיה שהלקוח יכול לסובב בעצמו, בנקודת הנכס המדויקת',
+      status: has('GOOGLE_MAPS_API_KEY') ? 'live' : 'needs_key',
+      note: has('GOOGLE_MAPS_API_KEY')
+        ? 'עובד דרך Google Maps Embed API (חינמית לכל שימוש, בשונה מ-Street View Static). ' +
+          'אם "Maps Embed API" אינה מופעלת בפרויקט הענן — יוצג ריבוע ריק בתוך המסגרת; להפעלה: ' +
+          'Google Cloud Console → APIs & Services. נופל חזרה ל-Mapillary (אם ' +
+          (has('MAPILLARY_ACCESS_TOKEN') ? 'מוגדר) ' : 'לא מוגדר) ') +
+          'כשאין כיסוי Street View בנקודה.'
+        : 'נדרש GOOGLE_MAPS_API_KEY.',
     },
     {
       name: 'דירות מוצעות כרגע',

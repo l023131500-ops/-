@@ -77,10 +77,19 @@ export async function mikvaotNear(
     return [];
   }
 
+  // ⚠️ הכלה חד-כיוונית/דו-כיוונית בלי הגבלת אורך זיהתה בעבר יישוב שגוי כאותו
+  // יישוב רק כי שם אחד מוכל תת-מחרוזתית בשני (למשל "הרצליה" בתוך "הרצליה
+  // פיתוח"). מתירים הכלה רק כשההפרש קצר וכששני הצדדים ארוכים מספיק —
+  // בדיוק העיקרון של `verifyCity` ב-`lib/geocode.ts`.
+  const fuzzyCityMatch = (a: string, b: string): boolean => {
+    if (a.length < 4 || b.length < 4) return false;
+    const [short, long] = a.length <= b.length ? [a, b] : [b, a];
+    return long.startsWith(short) && long.length - short.length <= 3;
+  };
   const inCity = records.filter((r) => {
     const c = normCity(String(r.mikveCity ?? ''));
     const council = normCity(String(r.counciName ?? ''));
-    return c === want || council === want || c.includes(want) || want.includes(c);
+    return c === want || council === want || fuzzyCityMatch(c, want) || fuzzyCityMatch(council, want);
   });
   if (!inCity.length) return [];
 

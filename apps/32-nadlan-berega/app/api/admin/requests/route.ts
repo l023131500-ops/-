@@ -7,6 +7,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { adminGate } from '@/lib/adminauth';
 import { buildReport } from '@/lib/buildreport';
+import { publicBaseUrl } from '@/lib/baseurl';
 import { emailConfigured, sendEmail } from '@/lib/email';
 import { reportEmailHtml, reportEmailText } from '@/lib/reporthtml';
 import {
@@ -18,6 +19,7 @@ import {
   pendingCount,
   resetToPending,
   tabuForProperty,
+  tikMeidaForProperty,
   type RequestStatus,
 } from '@/lib/requests';
 
@@ -27,16 +29,6 @@ export const runtime = 'nodejs';
 export const maxDuration = 300;
 
 const STATUSES: RequestStatus[] = ['pending', 'processing', 'sent', 'failed'];
-
-/** כתובת הבסיס הציבורית — לתמונות ולקישורים בתוך המייל. */
-function publicBaseUrl(req: NextRequest): string {
-  const explicit = process.env.PUBLIC_BASE_URL?.trim();
-  if (explicit) return explicit.replace(/\/+$/, '');
-  const basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? '';
-  const host = req.headers.get('x-forwarded-host') ?? req.headers.get('host') ?? '';
-  const proto = req.headers.get('x-forwarded-proto') ?? 'https';
-  return `${proto}://${host}${basePath}`.replace(/\/+$/, '');
-}
 
 export async function GET(req: NextRequest) {
   const gate = await adminGate(req);
@@ -130,10 +122,17 @@ export async function POST(req: NextRequest) {
       entrance: claimed.entrance,
     }).catch(() => []);
 
+    // תיקי מידע להיתר שהונפקו בניהול, משויכים לנכס ברמת גוש/חלקה.
+    const tikMeidaDocs = await tikMeidaForProperty({
+      gush: report.title.gush,
+      helka: report.building.registeredHelka ?? report.title.helka,
+    }).catch(() => []);
+
     const baseUrl = publicBaseUrl(req);
     const html = reportEmailHtml(report, {
       baseUrl,
       tabuDocs,
+      tikMeidaDocs,
       customerName: claimed.full_name,
     });
 
@@ -163,6 +162,7 @@ export async function POST(req: NextRequest) {
       costUsd: report.costUsd,
       headline: report.title.headline,
       tabuAttached: tabuDocs.length,
+      tikMeidaAttached: tikMeidaDocs.length,
       warnings: report.warnings.length,
     });
   } catch (e: any) {

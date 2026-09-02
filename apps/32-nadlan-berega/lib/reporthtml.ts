@@ -12,7 +12,9 @@ import type { PropertyReport } from './buildreport';
 import { dealIdentity } from './buildreport';
 import { CERTAINTY_LABEL, TIER_LABEL, tierAllows, formatFactValue } from './report';
 import type { Fact } from './report';
-import type { TabuAnalysis, TabuDocRow } from './requests';
+import type { TabuAnalysis, TabuDocRow, TikMeidaDocRow } from './requests';
+import { computeStreetStats } from './streetstats';
+import { hasValuation } from './valuation';
 
 const INK = '#141619';
 const MUTED = '#6b7280';
@@ -183,6 +185,194 @@ function tabuBlock(docs: TabuDocRow[]): string {
 }
 
 /**
+ * "attach to client" של build_tasks id=5 — תיק מידע להיתר שהונפק בפועל
+ * ושויך לחלקה הזו (`tikMeidaForProperty`). בשונה מ-`tabuBlock`, אין כאן
+ * שדות משפטיים מנותחים בפני עצמם — התיק הוא PDF/תמונה רשמיים, וההערה
+ * (`note`) היא תמצות קצר שהצוות הקליד בעת ההעלאה, לא ניתוח AI.
+ */
+function tikMeidaBlock(docs: TikMeidaDocRow[]): string {
+  if (!docs.length) return '';
+
+  const blocks = docs.map((d) => {
+    const when = new Date(d.uploaded_at).toLocaleDateString('he-IL');
+    return `<div style="margin-top:10px;padding:12px;border:1px solid ${LINE};border-radius:8px;background:#fafafa">
+  <div style="font-size:13px;font-weight:800;color:${NAVY}">${esc(d.file_name)}</div>
+  <div style="font-size:11px;color:${MUTED}">התקבל מהוועדה המקומית · ${esc(when)}</div>
+  ${d.note ? `<div style="margin-top:6px;font-size:13px;line-height:1.8;color:${INK}">${esc(d.note)}</div>` : ''}
+</div>`;
+  });
+
+  return section(
+    'תיק מידע להיתר',
+    'המסמך הרשמי שהתקבל מהוועדה המקומית לתכנון ולבנייה, לפי בקשתך.',
+    blocks.join(''),
+  );
+}
+
+/**
+ * §7 · שכבת "הרחוב" — זהה בנתונים ל-`StreetPanel.tsx` (המסך), דרך
+ * `computeStreetStats` המשותף. לפני הרשומה הזו הסעיף היה קיים במסך בלבד:
+ * מי שרואה רק את המייל לא ראה כלל מה נמכר ברחוב הזה, למרות שהמידע כבר זורם
+ * לתשובת ה-API בכל רמה (אינו מושך מקור בתשלום).
+ */
+function streetBlock(report: PropertyReport): string {
+  const stats = computeStreetStats(report);
+  if (!stats) return '';
+
+  const aliasNote = stats.aliases.length
+    ? `<div style="margin-top:4px;font-size:12px;color:${MUTED}">מוכר גם בשם ${esc(stats.aliases.join(' · '))} — ומרשם העסקאות רושם לפעמים תחת הכינוי ולא תחת השם הרשמי, ולכן שני השמות נספרים כאן יחד.</div>`
+    : '';
+
+  if (stats.onStreet.length === 0) {
+    return section(
+      'הרחוב',
+      'מה שנמכר ברחוב הזה עצמו — לא באזור.',
+      `${aliasNote}<div style="margin-top:8px;font-size:14px;color:${MUTED}">לא נרשמה אף עסקה שנושאת את שם הרחוב הזה בתקופה שנבדקה. זה קורה ברחובות קצרים, ברחובות חדשים, וכשהמרשם רושם את העסקאות תחת כינוי אחר של הרחוב.</div>`,
+    );
+  }
+
+  const perSqmValue = stats.perSqm ? `${stats.perSqm.median.toLocaleString('he-IL')} ₪` : 'לא זמין';
+  const perSqmNote = stats.perSqm
+    ? `רוב העסקאות בין ${stats.perSqm.p25.toLocaleString('he-IL')} ל-${stats.perSqm.p75.toLocaleString('he-IL')} ₪ · ${stats.perSqm.count} עסקאות`
+    : 'אין עסקה עם שטח ומחיר שאפשר לחשב ממנה';
+  const spanValue = stats.span
+    ? `${heDate(stats.span.from)} – ${heDate(stats.span.to)}`
+    : 'לא זמין';
+
+  const statsRow = `<tr>
+  <td style="padding:9px 12px;border-bottom:1px solid ${LINE};font-size:13px;color:${MUTED}">עסקאות שנרשמו ברחוב</td>
+  <td style="padding:9px 12px;border-bottom:1px solid ${LINE};font-size:14px;font-weight:700;color:${INK}">${stats.onStreet.length}</td>
+  <td style="padding:9px 12px;border-bottom:1px solid ${LINE};font-size:11px;color:${MUTED}">מתוכן ${stats.homeSales} מכירות דירות${stats.suspect ? ` · ${stats.suspect} רשומות חריגות לא נספרו במחירים` : ''}</td>
+</tr>
+<tr>
+  <td style="padding:9px 12px;border-bottom:1px solid ${LINE};font-size:13px;color:${MUTED}">מחיר למ״ר חציוני ברחוב</td>
+  <td style="padding:9px 12px;border-bottom:1px solid ${LINE};font-size:14px;font-weight:700;color:${INK}">${esc(perSqmValue)}</td>
+  <td style="padding:9px 12px;border-bottom:1px solid ${LINE};font-size:11px;color:${MUTED}">${esc(perSqmNote)}</td>
+</tr>
+<tr>
+  <td style="padding:9px 12px;font-size:13px;color:${MUTED}">טווח התאריכים</td>
+  <td style="padding:9px 12px;font-size:14px;font-weight:700;color:${INK}">${esc(spanValue)}</td>
+  <td style="padding:9px 12px;font-size:11px;color:${MUTED}">מהעסקה הישנה ביותר ועד האחרונה שנמצאה</td>
+</tr>`;
+
+  const topRows = stats.rows.slice(0, 8);
+  const houseRows = topRows.length
+    ? `<table role="presentation" cellpadding="0" cellspacing="0" border="0" dir="rtl" style="width:100%;margin-top:10px;border-collapse:collapse;border:1px solid ${LINE}">
+  <tr style="background:#f8fafc">
+    <th style="padding:8px 10px;text-align:right;font-size:12px;color:${MUTED}">מספר בית</th>
+    <th style="padding:8px 10px;text-align:right;font-size:12px;color:${MUTED}">עסקאות</th>
+    <th style="padding:8px 10px;text-align:right;font-size:12px;color:${MUTED}">מכירות דירות</th>
+    <th style="padding:8px 10px;text-align:right;font-size:12px;color:${MUTED}">מחיר למ״ר חציוני</th>
+    <th style="padding:8px 10px;text-align:right;font-size:12px;color:${MUTED}">העסקה האחרונה</th>
+  </tr>
+  ${topRows
+    .map(
+      (r) => `<tr${r.isSubject ? ` style="background:#eefaf9"` : ''}>
+    <td style="padding:7px 10px;border-bottom:1px solid ${LINE};font-size:13px;font-weight:${r.isSubject ? 700 : 400}">${r.houseNum}${r.isSubject ? ' (הנכס שלכם)' : ''}</td>
+    <td style="padding:7px 10px;border-bottom:1px solid ${LINE};font-size:13px">${r.deals}</td>
+    <td style="padding:7px 10px;border-bottom:1px solid ${LINE};font-size:13px">${r.homeSales}</td>
+    <td style="padding:7px 10px;border-bottom:1px solid ${LINE};font-size:13px">${r.medianPerSqm ? r.medianPerSqm.toLocaleString('he-IL') + ' ₪' : '—'}</td>
+    <td style="padding:7px 10px;border-bottom:1px solid ${LINE};font-size:12px;color:${MUTED}">${r.lastDate ? heDate(r.lastDate) : '—'}</td>
+  </tr>`,
+    )
+    .join('')}
+</table>${
+        stats.rows.length > topRows.length
+          ? `<div style="margin-top:6px;font-size:11px;color:${MUTED}">מוצגים ${topRows.length} מתוך ${stats.rows.length} מספרי בית — הקרובים ביותר למספר הנכס.</div>`
+          : ''
+      }`
+    : '';
+
+  const subjectMissing =
+    stats.subjectNum != null && !stats.rows.some((r) => r.isSubject)
+      ? `<div style="margin-top:8px;font-size:12px;color:${MUTED}">במספר ${stats.subjectNum} עצמו לא נרשמה אף עסקה. המספרים שבטבלה הם השכנים הקרובים ביותר שכן נמכר בהם.</div>`
+      : '';
+
+  return section(
+    'הרחוב',
+    'מה שנמכר ברחוב הזה עצמו — לא באזור.',
+    `${aliasNote}${table(statsRow)}${houseRows}${subjectMissing}`,
+  );
+}
+
+/**
+ * §2 · הערכת שווי — זהה בנתונים ל-`ValuationPanel.tsx` (המסך) ולסליידר
+ * ה"הערכת שווי" בחפיסה (`Presentation.tsx`), שניהם קוראים מ-`report.valuation`
+ * בלי חישוב משלהם. לפני הרשומה הזו הסעיף לא היה קיים במייל בכלל — מי שקורא
+ * רק את המייל (הערוץ שדרכו הדוח שנרכש נשלח בפועל, `app/api/admin/requests`)
+ * לא ראה את טווח השווי, המספר שבגללו לקוח משלם על הדוח.
+ */
+function valuationBlock(report: PropertyReport): string {
+  const v = report.valuation;
+  if (!v) return '';
+  const ils = (n: number) => n.toLocaleString('he-IL');
+
+  if (!hasValuation(v)) {
+    const reg = v.regional;
+    return section(
+      'הערכת שווי',
+      null,
+      `<div style="margin-top:4px;font-size:14px;color:${INK}">${esc(v.notEnoughData)}</div>` +
+        (reg
+          ? `<div style="margin-top:10px;padding:12px;border:1px solid ${LINE};border-radius:8px;background:#fafafa">
+  <div style="font-size:12px;color:${MUTED}">מחיר למ״ר באזור, עדכני</div>
+  <div style="margin-top:2px;font-size:20px;font-weight:800;color:${TEAL}">${ils(reg.medianPerSqm)} ₪ למ״ר</div>
+  <div style="margin-top:4px;font-size:12px;line-height:1.7;color:${MUTED}">חציון של ${reg.count} עסקאות בסביבה הקרובה, ${esc(reg.windowLabel)}${
+              reg.latestDate ? `. העדכנית שבהן מ-${heDate(reg.latestDate)}` : ''
+            }. מקור: מרשם העסקאות של רשות המסים.</div>
+</div>`
+          : ''),
+    );
+  }
+
+  const compRows = v.comparables
+    .slice(0, 12)
+    .map(
+      (c) => `<tr>
+  <td style="padding:7px 10px;border-bottom:1px solid ${LINE};font-size:13px">${esc(heDate(c.date))}</td>
+  <td style="padding:7px 10px;border-bottom:1px solid ${LINE};font-size:13px">${esc(c.address ?? '—')}</td>
+  <td style="padding:7px 10px;border-bottom:1px solid ${LINE};font-size:12px;direction:ltr;text-align:right">${esc(c.parcelLabel ?? '—')}</td>
+  <td style="padding:7px 10px;border-bottom:1px solid ${LINE};font-size:13px">${c.price ? ils(c.price) + ' ₪' : '—'}</td>
+  <td style="padding:7px 10px;border-bottom:1px solid ${LINE};font-size:13px">${c.areaSqm ?? '—'}</td>
+  <td style="padding:7px 10px;border-bottom:1px solid ${LINE};font-size:13px">${c.pricePerSqm ? ils(c.pricePerSqm) : '—'}</td>
+  <td style="padding:7px 10px;border-bottom:1px solid ${LINE};font-size:12px;color:${MUTED}">${esc(c.proximityLabel)}</td>
+</tr>`,
+    )
+    .join('');
+
+  return section(
+    'הערכת שווי',
+    `${v.basis.label} · ${v.basis.count} עסקאות · ${v.basis.windowLabel}`,
+    `<div style="margin-top:6px;font-size:30px;font-weight:800;color:${TEAL}">${ils(v.low)} – ${ils(v.high)} ₪</div>
+<div style="margin-top:2px;font-size:13px;color:${MUTED}">אמצע הטווח: ${ils(v.mid)} ₪ · מחיר למ״ר בהשוואה: ${ils(v.medianPerSqm)} ₪ · שטח שעליו חושב: ${ils(v.areaSqm)} מ״ר (${esc(v.areaSource)})</div>
+<div style="margin-top:10px;font-size:13.5px;line-height:1.7;color:${INK}">${esc(v.explanation)}</div>
+${
+  v.wideSpread
+    ? `<div style="margin-top:8px;padding:10px 12px;border:1px solid #e6d5a8;background:#fdf8ec;border-radius:8px;font-size:12.5px;line-height:1.7;color:#7a5f1f">${esc(v.wideSpread)}</div>`
+    : ''
+}
+${
+  compRows
+    ? `<div style="margin-top:12px;font-size:13px;font-weight:700;color:${NAVY}">${v.comparables.length} העסקאות שההערכה נשענת עליהן</div>` +
+      `<table role="presentation" cellpadding="0" cellspacing="0" border="0" dir="rtl" style="width:100%;margin-top:6px;border-collapse:collapse;border:1px solid ${LINE}">
+  <tr style="background:#f8fafc">
+    <th style="padding:8px 10px;text-align:right;font-size:12px;color:${MUTED}">תאריך</th>
+    <th style="padding:8px 10px;text-align:right;font-size:12px;color:${MUTED}">כתובת</th>
+    <th style="padding:8px 10px;text-align:right;font-size:12px;color:${MUTED}">גוש/חלקה</th>
+    <th style="padding:8px 10px;text-align:right;font-size:12px;color:${MUTED}">מחיר</th>
+    <th style="padding:8px 10px;text-align:right;font-size:12px;color:${MUTED}">מ״ר</th>
+    <th style="padding:8px 10px;text-align:right;font-size:12px;color:${MUTED}">₪ למ״ר</th>
+    <th style="padding:8px 10px;text-align:right;font-size:12px;color:${MUTED}">קרבה</th>
+  </tr>
+  ${compRows}
+</table>`
+    : ''
+}
+<div style="margin-top:10px;font-size:11.5px;line-height:1.7;color:${MUTED}">ההערכה נגזרת ממחירים שנסגרו בפועל ונרשמו במרשם העסקאות של רשות המסים. היא אינה שמאות, אינה מחיר של הנכס הזה, ואינה מביאה בחשבון מצב פיזי, שיפוץ, כיווני אוויר או זכויות נוספות.</div>`,
+  );
+}
+
+/**
  * אילו עסקאות להציג בטבלה.
  *
  * ⚠️ חיתוך לפי קרבה בלבד ריק את הטבלה מכל עסקת השוואה באזור. נמצא בדוח אמיתי:
@@ -237,6 +427,8 @@ export interface ReportEmailOptions {
   baseUrl: string;
   /** נסחי טאבו מנותחים ששויכו לנכס. */
   tabuDocs?: TabuDocRow[];
+  /** תיקי מידע להיתר שהונפקו ושויכו לנכס. */
+  tikMeidaDocs?: TikMeidaDocRow[];
   /** מה שהלקוח כתב בטופס. */
   customerName?: string | null;
 }
@@ -257,6 +449,9 @@ export function reportEmailHtml(report: PropertyReport, opts: ReportEmailOptions
     }
     imgs.push(
       `<img src="${opts.baseUrl}/api/image?kind=satellite&${q}" width="560" alt="תצלום אוויר" style="display:block;width:100%;max-width:560px;border-radius:8px;border:1px solid ${LINE};margin-top:8px">`,
+    );
+    imgs.push(
+      `<div style="max-width:560px;margin-top:4px;font-size:11px;color:${MUTED}">מקור תצלום האוויר: Google Maps — גוגל אינו חושף תאריך צילום דרך שירות זה.</div>`,
     );
   }
 
@@ -379,6 +574,8 @@ export function reportEmailHtml(report: PropertyReport, opts: ReportEmailOptions
   ${warnings}
   ${imgs.length ? `<div style="margin-top:18px">${imgs.join('')}</div>` : ''}
   ${backgroundBlock}
+  ${valuationBlock(report)}
+  ${streetBlock(report)}
   ${categories}
   ${
     soldTable
@@ -395,6 +592,7 @@ export function reportEmailHtml(report: PropertyReport, opts: ReportEmailOptions
       : ''
   }
   ${tabuBlock(opts.tabuDocs ?? [])}
+  ${tikMeidaBlock(opts.tikMeidaDocs ?? [])}
 
   <div style="margin-top:26px;padding:14px;border:1px solid ${LINE};border-radius:8px;background:#fff;font-size:12px;line-height:1.8;color:${MUTED}">
     הדוח כולל ${filled} נתונים מתוך ${total} שנבדקו. הופק ב-${new Date(report.generatedAt).toLocaleString('he-IL')}.
@@ -465,6 +663,84 @@ export function reportEmailText(report: PropertyReport): string {
     );
   }
   lines.push('');
+
+  // ⚠️ אותה שכבת "הרחוב" ש-HTML/המסך כבר מציגים (§7) — ראו `streetBlock`.
+  const streetStats = computeStreetStats(report);
+  if (streetStats) {
+    lines.push('== הרחוב ==');
+    if (streetStats.aliases.length) {
+      lines.push(`מוכר גם בשם: ${streetStats.aliases.join(' · ')}`);
+    }
+    if (streetStats.onStreet.length === 0) {
+      lines.push(
+        'לא נרשמה אף עסקה שנושאת את שם הרחוב הזה בתקופה שנבדקה. זה קורה ברחובות קצרים, ברחובות חדשים, וכשהמרשם רושם את העסקאות תחת כינוי אחר של הרחוב.',
+      );
+    } else {
+      lines.push(
+        `עסקאות שנרשמו ברחוב: ${streetStats.onStreet.length} (מתוכן ${streetStats.homeSales} מכירות דירות${
+          streetStats.suspect ? ` · ${streetStats.suspect} רשומות חריגות לא נספרו במחירים` : ''
+        })`,
+      );
+      lines.push(
+        `מחיר למ"ר חציוני ברחוב: ${
+          streetStats.perSqm ? `${streetStats.perSqm.median.toLocaleString('he-IL')} ₪` : 'לא זמין'
+        }`,
+      );
+      lines.push(
+        `טווח התאריכים: ${
+          streetStats.span ? `${heDate(streetStats.span.from)} – ${heDate(streetStats.span.to)}` : 'לא זמין'
+        }`,
+      );
+      if (
+        streetStats.subjectNum != null &&
+        !streetStats.rows.some((r) => r.isSubject)
+      ) {
+        lines.push(
+          `במספר ${streetStats.subjectNum} עצמו לא נרשמה אף עסקה. המספרים שלהלן הם השכנים הקרובים ביותר שכן נמכר בהם.`,
+        );
+      }
+      for (const r of streetStats.rows.slice(0, 8)) {
+        lines.push(
+          `    מספר ${r.houseNum}${r.isSubject ? ' (הנכס שלכם)' : ''}: ${r.deals} עסקאות, ${r.homeSales} מכירות דירות, ${
+            r.medianPerSqm ? `${r.medianPerSqm.toLocaleString('he-IL')} ₪ למ"ר` : '— ₪ למ"ר'
+          }, עסקה אחרונה ${r.lastDate ? heDate(r.lastDate) : '—'}`,
+        );
+      }
+    }
+    lines.push('');
+  }
+
+  // ⚠️ אותו סעיף "הערכת שווי" ש-HTML/המסך כבר מציגים (§2) — ראו `valuationBlock`.
+  const v = report.valuation;
+  if (v) {
+    lines.push('== הערכת שווי ==');
+    if (!hasValuation(v)) {
+      lines.push(v.notEnoughData);
+      if (v.regional) {
+        lines.push(
+          `מחיר למ"ר באזור, עדכני: ${v.regional.medianPerSqm.toLocaleString('he-IL')} ₪ למ"ר — חציון של ${v.regional.count} עסקאות בסביבה הקרובה, ${v.regional.windowLabel}${
+            v.regional.latestDate ? `. העדכנית שבהן מ-${heDate(v.regional.latestDate)}` : ''
+          }.`,
+        );
+      }
+    } else {
+      lines.push(`${v.basis.label} · ${v.basis.count} עסקאות · ${v.basis.windowLabel}`);
+      lines.push(
+        `טווח שווי מוערך: ${v.low.toLocaleString('he-IL')} – ${v.high.toLocaleString('he-IL')} ₪  (אמצע: ${v.mid.toLocaleString('he-IL')} ₪)`,
+      );
+      lines.push(
+        `מחיר למ"ר בהשוואה: ${v.medianPerSqm.toLocaleString('he-IL')} ₪ · שטח שעליו חושב: ${v.areaSqm} מ"ר (${v.areaSource})`,
+      );
+      lines.push(v.explanation);
+      if (v.wideSpread) lines.push(v.wideSpread);
+      for (const c of v.comparables.slice(0, 12)) {
+        lines.push(
+          `    ${heDate(c.date)} | ${c.address ?? '—'} | ${c.parcelLabel ?? '—'} | ${c.price ? c.price.toLocaleString('he-IL') + ' ₪' : '—'} | ${c.areaSqm ?? '—'} מ"ר | ${c.pricePerSqm ? c.pricePerSqm.toLocaleString('he-IL') + ' ₪ למ"ר' : '—'} | ${c.proximityLabel}`,
+        );
+      }
+    }
+    lines.push('');
+  }
 
   for (const c of report.categories) {
     const facts = c.facts.filter((f) => tierAllows(report.tier, f.tier));

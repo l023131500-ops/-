@@ -8,6 +8,8 @@ import { MARKER_LABELS } from '@/lib/googlemaps';
 import { distanceText, tierMayUseImagery, walkText } from '@/lib/report';
 import type { ReportTier } from '@/lib/report';
 import { apiUrl } from '@/lib/basepath';
+import PanoramaPanel from './PanoramaPanel';
+import StreetWalkPanel from './StreetWalkPanel';
 
 /**
  * הנכס והסביבה: מפה אינטראקטיבית (כל הרמות) · צילום הבניין ומפה אזורית (VIP).
@@ -35,19 +37,29 @@ const InteractiveMap = dynamic(() => import('./InteractiveMap'), {
 export default function PropertyImagery({
   report,
   tier,
+  permalink,
 }: {
   report: PropertyReport;
   tier: ReportTier;
+  permalink?: string | null;
 }) {
   const { lat, lng } = report.location;
   const [photoFailed, setPhotoFailed] = useState(false);
   const [aerialFailed, setAerialFailed] = useState(false);
   const [mapFailed, setMapFailed] = useState(false);
 
-  /** הסימונים והמקרא נגזרים מאותה רשימה — כדי שאות על המפה תמיד תתאים לשורה. */
+  /** הסימונים והמקרא נגזרים מאותה רשימה — כדי שאות על המפה תמיד תתאים לשורה.
+   * כולל `religion` (בתי כנסת) — עד כה הופיעו רק כטקסט חופשי ב"בית הכנסת
+   * הקרוב ביותר" ולא סומנו על המפה האינטראקטיבית/האזורית, למרות שזו קטגוריה
+   * מרכזית לחלק גדול מהקהל. */
   const pool = useMemo<Place[]>(
     () =>
-      [...report.places.education, ...report.places.transport, ...report.places.daily]
+      [
+        ...report.places.education,
+        ...report.places.transport,
+        ...report.places.daily,
+        ...report.places.religion,
+      ]
         .slice()
         .sort((a, b) => a.straightMeters - b.straightMeters),
     [report.places],
@@ -146,7 +158,11 @@ export default function PropertyImagery({
                     loading="eager"
                     onError={() => setAerialFailed(true)}
                   />
-                  <p className="px-4 py-2.5 text-[11px] text-muted">הסימון הירוק הוא הנכס.</p>
+                  <p className="px-4 py-2.5 text-[11px] text-muted">
+                    הסימון הירוק הוא הנכס. מקור: Google Maps (תצלום לוויין/היברידי) — גוגל אינו
+                    חושף תאריך צילום דרך שירות זה, ולכן אין תאריך מדויק להצגה. זהו תצלום ביניים;
+                    אורתופוטו עדכני מ-govmap.gov.il (בדרך כלל חדש יותר) עדיין אינו מחובר.
+                  </p>
                 </>
               ) : (
                 <p className="px-4 py-6 text-[14px] leading-relaxed text-muted">
@@ -155,6 +171,17 @@ export default function PropertyImagery({
               )}
             </figure>
           </div>
+
+          {/* פנורמה אינטראקטיבית 360° — בנפרד מהצילום המכוון הקבוע למעלה:
+              כאן המשתמש מסתובב בעצמו, ולכן מוצגת גם כשהצילום המכוון אינו
+              `precise` (למשל מרחק פנורמה גדול שמקשה על חישוב כיוון אמין). */}
+          <PanoramaPanel report={report} />
+
+          {/* "סיור רחוב" — ראה buildreport.ts על streetWalk. פריט 2 של P2
+              FEATURE (וידאו MP4): הקידוד קורה בדפדפן הצופה (אין ffmpeg
+              בסביבת השרת/הבנייה) ומטמון-קליפ-לנכס נשמר בשרת — ראה
+              StreetWalkPanel.tsx + lib/store.ts. */}
+          <StreetWalkPanel report={report} permalink={permalink} />
 
           {/* מפה אזורית מתויגת — נכנסת גם ל-PDF ולמצגת, שם אין מפה אינטראקטיבית. */}
           <figure className="mt-4 overflow-hidden rounded-2xl border border-line bg-surface shadow-card">

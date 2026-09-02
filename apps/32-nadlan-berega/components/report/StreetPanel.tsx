@@ -1,7 +1,8 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import type { PropertyReport, SoldDeal } from '@/lib/buildreport';
+import type { PropertyReport } from '@/lib/buildreport';
+import { computeStreetStats } from '@/lib/streetstats';
 import { CertaintyBadge } from './Bits';
 
 /**
@@ -21,133 +22,15 @@ import { CertaintyBadge } from './Bits';
  * הטעות שתוקנה ב-§2.
  */
 
-/**
- * השוואת שמות רחוב סלחנית ל-ה' הידיעה, לגרשיים ולרווחים כפולים.
- *
- * ⚠️ הסוגריים נחתכים לפני הכול. `title.streetDisplay` הוא תווית תצוגה ולא שם —
- * "הבעשט (מוכר גם כרחוב הבעל שם טוב)" — ומי שמשווה אותה מול שם הרחוב שבעסקה
- * לא מוצא כלום. זה בדיוק מה שקרה: הבעש״ט 9 ברחובות הראה "לא נרשמה אף עסקה
- * ברחוב", בזמן שבבניין עצמו היו שש. משווים מול `streetOfficial` והכינויים.
- */
-function normStreet(s: string | null | undefined): string {
-  if (!s) return '';
-  return s
-    .replace(/\(.*?\)/g, '')
-    .replace(/["'`״׳]/g, '')
-    .replace(/\s+/g, ' ')
-    .replace(/^ה/, '')
-    .trim();
-}
-
-function quantile(sorted: number[], p: number): number {
-  if (sorted.length === 1) return sorted[0];
-  const i = (sorted.length - 1) * p;
-  const lo = Math.floor(i);
-  const hi = Math.ceil(i);
-  return Math.round(sorted[lo] + (sorted[hi] - sorted[lo]) * (i - lo));
-}
-
-function median(nums: number[]): number | null {
-  if (nums.length === 0) return null;
-  return quantile([...nums].sort((a, b) => a - b), 0.5);
-}
-
 const ils = (n: number) => new Intl.NumberFormat('he-IL').format(Math.round(n));
-
-interface HouseRow {
-  houseNum: number;
-  deals: number;
-  homeSales: number;
-  lastDate: string | null;
-  medianPerSqm: number | null;
-  isSubject: boolean;
-}
 
 export default function StreetPanel({ report }: { report: PropertyReport }) {
   const [expanded, setExpanded] = useState(false);
 
-  // התצוגה מקבלת את התווית המלאה; ההשוואה מקבלת את השם הרשמי והכינויים.
-  const street = report.title.streetDisplay || report.title.streetOfficial || null;
-  const official = report.title.streetOfficial || report.title.streetDisplay || null;
-  const aliases = report.title.streetAliases ?? [];
-  const subjectNum =
-    report.title.houseNumber != null ? Number(report.title.houseNumber) : null;
-
-  const stats = useMemo(() => {
-    if (!street) return null;
-    const alias = new Set(
-      [official, street, ...aliases].map(normStreet).filter(Boolean),
-    );
-
-    const onStreet = (report.soldDeals ?? []).filter((d: SoldDeal) =>
-      alias.has(normStreet(d.streetName)),
-    );
-    if (onStreet.length === 0)
-      return { onStreet, rows: [] as HouseRow[], perSqm: null, span: null, homeSales: 0, suspect: 0 };
-
-    /**
-     * ⚠️ רשומות חריגות נפסלות מכל חישוב מחיר.
-     * נמדד בשמואל הנביא: הטווח הגולמי ברחוב היה 1,063–898,000 ₪ למ״ר. שני
-     * הקצוות הם רישום שגוי במקור — והצגתם כ"טווח המחירים ברחוב" הופכת מספר
-     * נכון (החציון) לשורה שאי אפשר להאמין לה.
-     */
-    const clean = onStreet.filter((d) => !d.suspect);
-    const perSqmValues = clean
-      .filter((d) => d.isHomeSale && d.pricePerSqm && d.pricePerSqm > 0)
-      .map((d) => d.pricePerSqm as number)
-      .sort((a, b) => a - b);
-
-    const dates = onStreet.map((d) => d.date).filter(Boolean).sort();
-
-    // קיבוץ לפי מספר בית — זה מה שהופך רשימה של עסקאות ל"תמונה של רחוב".
-    const byNum = new Map<number, SoldDeal[]>();
-    for (const d of clean) {
-      if (d.houseNum == null) continue;
-      const list = byNum.get(d.houseNum) ?? [];
-      list.push(d);
-      byNum.set(d.houseNum, list);
-    }
-
-    const rows: HouseRow[] = [...byNum.entries()]
-      .map(([houseNum, deals]) => ({
-        houseNum,
-        deals: deals.length,
-        homeSales: deals.filter((d) => d.isHomeSale).length,
-        lastDate:
-          deals
-            .map((d) => d.date)
-            .filter(Boolean)
-            .sort()
-            .slice(-1)[0] ?? null,
-        medianPerSqm: median(
-          deals.filter((d) => d.isHomeSale && d.pricePerSqm).map((d) => d.pricePerSqm as number),
-        ),
-        isSubject: subjectNum != null && houseNum === subjectNum,
-      }))
-      // הקרוב למספר הנכס קודם — אותה היררכיה שמנחה את §2.
-      .sort((a, b) => {
-        if (subjectNum == null) return a.houseNum - b.houseNum;
-        const da = Math.abs(a.houseNum - subjectNum);
-        const db = Math.abs(b.houseNum - subjectNum);
-        return da - db || a.houseNum - b.houseNum;
-      });
-
-    return {
-      onStreet,
-      rows,
-      perSqm: perSqmValues.length
-        ? {
-            median: quantile(perSqmValues, 0.5),
-            p25: quantile(perSqmValues, 0.25),
-            p75: quantile(perSqmValues, 0.75),
-            count: perSqmValues.length,
-          }
-        : null,
-      span: dates.length ? { from: dates[0], to: dates[dates.length - 1] } : null,
-      homeSales: onStreet.filter((d) => d.isHomeSale).length,
-      suspect: onStreet.length - clean.length,
-    };
-  }, [report.soldDeals, street, official, aliases, subjectNum]);
+  const stats = useMemo(() => computeStreetStats(report), [report]);
+  const street = stats?.street ?? null;
+  const subjectNum = stats?.subjectNum ?? null;
+  const aliases = stats?.aliases ?? [];
 
   // אין שם רחוב כלל — חיפוש לפי גוש וחלקה, או כתובת שלא נפתרה לרחוב.
   if (!street) {

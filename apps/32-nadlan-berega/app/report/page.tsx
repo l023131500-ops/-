@@ -31,6 +31,8 @@ export default function ReportPage({
     apartment?: string;
     /** §1 · אילו שכבות מידע נבחרו בעמוד התדמית. חסר → הכול. */
     include?: string;
+    /** §8 · המלצה 5 — עוקף את מטמון הפקה-חוזרת-קצרת-טווח, ראה `/api/report`. */
+    refresh?: string;
   };
 }) {
   const q = (searchParams.q ?? '').trim();
@@ -39,6 +41,7 @@ export default function ReportPage({
     : 'basic') as ReportTier;
   const assetType = isAssetType(searchParams.type) ? searchParams.type : 'residential';
   const layers = parseLayers(searchParams.include);
+  const refresh = searchParams.refresh === '1';
   const input = {
     entrance: searchParams.entrance?.trim() || '',
     floor: searchParams.floor?.trim() || '',
@@ -66,7 +69,7 @@ export default function ReportPage({
             שורות כפתורים זהות באותו מסך רק היו מבלבלות. */}
         <SearchBar initial={q} initialType={assetType} showTypes={false} />
       </div>
-      <ReportView q={q} tier={tier} assetType={assetType} input={input} layers={layers} />
+      <ReportView q={q} tier={tier} assetType={assetType} input={input} layers={layers} refresh={refresh} />
     </>
   );
 }

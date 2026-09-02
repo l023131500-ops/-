@@ -69,11 +69,23 @@ const TIERS: {
   },
 ];
 
+/** תמונות המיתוג (הדמיה ווקטורית, לא צילום) — נוצרו והועלו פעם אחת דרך
+ *  ה-Edge Function nadlan-marketing-images (Recraft, מפתח שכבר מוגדר
+ *  ב-core.secrets), מאוחסנות ב-bucket ציבורי nadlan-marketing. */
+const MARKETING_IMG_BASE =
+  'https://uhnrgujbdxhhmoxcjria.supabase.co/storage/v1/object/public/nadlan-marketing/';
+
 export default function HomePage() {
   return (
     <div>
-      <section className="hero-gradient text-white">
-        <div className="mx-auto max-w-5xl px-5 py-20 text-center">
+      <section className="hero-gradient relative overflow-hidden text-white">
+        <img
+          src={`${MARKETING_IMG_BASE}hero-skyline.webp`}
+          alt=""
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-x-0 bottom-0 h-56 w-full object-cover object-top opacity-25 sm:h-72"
+        />
+        <div className="relative mx-auto max-w-5xl px-5 py-20 text-center">
           <div className="mx-auto mb-3 inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-1 text-xs font-bold tracking-widest text-goldL">
             תעודת זהות דיגיטלית לכל נכס בישראל
           </div>
@@ -81,8 +93,8 @@ export default function HomePage() {
             כל מה שצריך לדעת על נכס — <span className="text-goldL">ברגע</span>
           </h1>
           <p className="mx-auto mt-4 max-w-2xl text-lg opacity-90">
-            לפני שחותמים, כדאי לדעת מה באמת נמכר כאן, מה מותר לבנות, ומה עומד לקרות בסביבה.
-            הכול ממקורות רשמיים, כל נתון עם המקור שלו — ומה שאין, כתוב שאין.
+            לפני שחותמים, כדאי לדעת מה באמת נמכר כאן, מה מותר לבנות, ומה עומד לקרות
+            בסביבה — בלי הפתעות אחרי החתימה.
           </p>
 
           <div className="card-on-hero mx-auto mt-8 max-w-4xl rounded-3xl border border-white/15 bg-white/95 p-5 text-right shadow-2xl sm:p-7">
@@ -123,6 +135,49 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* ===== שלוש חוויות שרק אצלנו יש ===== */}
+      <section className="border-b border-line bg-surface">
+        <div className="mx-auto max-w-6xl px-5 py-14">
+          <h2 className="text-center text-2xl font-black text-navy">לא עוד דוח טקסט — נכס שרואים</h2>
+          <p className="mx-auto mt-2 max-w-2xl text-center text-[15px] leading-relaxed text-muted">
+            תעודת זהות דיגיטלית אמיתית: מסמך אחד שמזהה את הנכס בוודאות, סיור רחוב חי
+            סביבו, ודוח שכל שורה בו נשענת על מקור רשמי.
+          </p>
+          <div className="mt-8 grid gap-6 sm:grid-cols-3">
+            {[
+              {
+                img: 'document-identity',
+                title: 'תעודת זהות דיגיטלית',
+                text: 'גוש, חלקה ותת-חלקה מאומתים בשני הכיוונים — הנכס הנכון, בלי טעויות זיהוי.',
+              },
+              {
+                img: 'street-view-scan',
+                title: 'פנורמה 360° וסיור רחוב',
+                text: 'עומדים בדיוק על הכתובת, מסתכלים סביב, ומריצים סיור וידאו של הרחוב עצמו.',
+              },
+              {
+                img: 'trusted-report',
+                title: 'כל שורה עם מקור',
+                text: 'מרשם העסקאות, מרשם החלקות ומנהל התכנון — לא הערכה, לא ניחוש.',
+              },
+            ].map((f) => (
+              <div key={f.img} className="overflow-hidden rounded-2xl border border-line bg-surface shadow-card">
+                <img
+                  src={`${MARKETING_IMG_BASE}${f.img}.webp`}
+                  alt=""
+                  loading="lazy"
+                  className="h-40 w-full object-cover"
+                />
+                <div className="p-5">
+                  <div className="text-lg font-extrabold text-navy">{f.title}</div>
+                  <div className="mt-1 text-sm leading-relaxed text-muted">{f.text}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* ===== מודל האספקה: דוח מלא במייל ===== */}
       <section className="border-b border-line bg-bgsoft">
         <div className="mx-auto grid max-w-6xl gap-8 px-5 py-14 lg:grid-cols-[1fr_1.1fr] lg:items-center">
@@ -138,7 +193,7 @@ export default function HomePage() {
                 'הזנת כתובת או גוש וחלקה, ומייל שאליו יישלח הדוח',
                 'מוסיפים מספר כניסה, קומה ומספר חדרים — וזה מזהה את הדירה שלכם בתוך הבניין',
                 'אם הופק נסח טאבו לנכס, הניתוח שלו מצורף לדוח לפי הדירה או הכניסה',
-                'כל נתון בשורה נפרדת, עם המקור שלו ועם דרגת הוודאות שלו',
+                'כל נתון בשורה ברורה משלו — קל לקרוא, קל לשתף',
               ].map((l) => (
                 <li key={l} className="flex gap-2.5 text-[14px] leading-relaxed text-ink">
                   <span aria-hidden className="mt-[7px] h-1.5 w-1.5 shrink-0 rounded-full bg-teal" />
@@ -180,9 +235,8 @@ export default function HomePage() {
         <div className="mx-auto max-w-6xl px-5 py-14">
           <h2 className="text-center text-2xl font-black text-navy">שלוש רמות של דוח</h2>
           <p className="mx-auto mt-2 max-w-2xl text-center text-[15px] leading-relaxed text-muted">
-            אותה כתובת, שלושה עומקים. הדוח החינמי בנוי אך ורק ממקורות שאינם עולים לנו כסף —
-            מרשם העסקאות, מרשם החלקות, מינהל התכנון ומפה פתוחה — ולכן הוא באמת חינמי, וגם
-            מצומצם. מה שדורש משיכה בתשלום מופיע בפרימיום וב-VIP.
+            אותה כתובת, שלושה עומקים. הדוח החינמי נותן את התמונה הראשונית בלי עלות —
+            פרימיום ו-VIP פותחים את התמונה המלאה.
           </p>
 
           <div className="mt-9 grid gap-4 lg:grid-cols-3">
@@ -244,46 +298,20 @@ export default function HomePage() {
           ))}
         </div>
 
-        {/* ===== שמות רחוב כפולים ===== */}
-        <div className="mt-10 rounded-2xl border border-line bg-surface p-6 shadow-card">
-          <h3 className="text-lg font-black text-navy">לרחוב אחד יש לפעמים שני שמות</h3>
-          <p className="mt-2 text-[15px] leading-relaxed text-ink">
-            הרבה רחובות מוכרים בפי התושבים בשם אחד, ורשומים במרשם הרשמי בשם אחר — ומרשם
-            העסקאות רושם דווקא לפי הכינוי. מי שמחפש רק לפי השם הרשמי מפספס חלק מהעסקאות,
-            ולפעמים מגיע לגוש הלא נכון.
+        <div className="mt-10 rounded-2xl border border-line bg-navysurface p-8 text-center shadow-card">
+          <h3 className="text-xl font-black text-white">
+            "דרך מרדכי" או "רחוב אתרוג"? אצלנו זה תמיד אותו נכס
+          </h3>
+          <p className="mx-auto mt-2 max-w-2xl text-[15px] leading-relaxed text-[#cdd6ea]">
+            לא משנה איך מכירים את הרחוב או השכונה — בכינוי הישן, בשם הרשמי או בשם
+            שהתושבים משתמשים בו בפועל. החיפוש שלנו תמיד מגיע לנכס הנכון, ומציג את כל
+            העסקאות שרלוונטיות אליו — לא רק את מה שנרשם תחת שם אחד.
           </p>
-          <div className="mt-4 rounded-xl border border-line bg-bgsoft px-4 py-3 text-[15px]">
-            <span className="font-bold text-navy">דרך מרדכי</span>{' '}
-            <span className="text-muted">(מוכר גם כרחוב אתרוג)</span>
-            <span className="mx-2 text-line">|</span>
-            <span className="text-[13px] text-muted">חצור הגלילית</span>
-          </div>
-          <p className="mt-4 text-[15px] leading-relaxed text-ink">
-            אצלנו החיפוש מזהה את שני השמות ומגיע לאותו נכס, השוואת העסקאות נעשית מול{' '}
-            <b>כל</b> שמות הרחוב, וכותרת הדוח מציגה את שניהם — כדי שתדע שזה אותו מקום. אותו
-            דבר עובד גם על שמות שכונות ועל צמתים.
-          </p>
-        </div>
-
-        <div className="mt-8 rounded-2xl border border-line bg-surface p-6 shadow-card">
-          <h3 className="text-lg font-black text-navy">איך אנחנו מציגים נתונים</h3>
-          <p className="mt-2 text-[15px] leading-relaxed text-ink">
-            לכל נתון בדוח יש מקור, ולכל נתון יש רמת ודאות:{' '}
-            <b className="text-tealD">אמת</b> — נתון רשמי על הנכס עצמו;{' '}
-            <b className="text-[#8a6d24]">מקורב</b> — נתון אמיתי על הסביבה, לא על הנכס;{' '}
-            <b className="text-slate-600">הערכה</b> — חישוב שלנו.
-          </p>
-          <p className="mt-2 text-[15px] leading-relaxed text-ink">
-            כשאין נתון, אנחנו כותבים למה אין אותו. אנחנו לא ממציאים ולא משלימים בניחוש.
-          </p>
-        </div>
-
-        <div className="mt-8 text-center">
           <Link
-            href="/sources"
-            className="inline-block py-1.5 text-sm font-bold text-tealD hover:underline"
+            href="/order"
+            className="mt-5 inline-block rounded-xl bg-teal px-6 py-3 font-bold text-white hover:bg-tealD"
           >
-            מאיפה מגיעים הנתונים ←
+            בדקו את הנכס שלכם עכשיו ←
           </Link>
         </div>
       </section>

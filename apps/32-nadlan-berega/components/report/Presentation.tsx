@@ -6,6 +6,8 @@ import type { AssetType } from '@/lib/assettype';
 import { distanceText, walkText } from '@/lib/report';
 import { apiUrl } from '@/lib/basepath';
 import { MARKER_LABELS } from '@/lib/googlemaps';
+import { hasValuation } from '@/lib/valuation';
+import { computeStreetStats } from '@/lib/streetstats';
 
 /**
  * מצגת חיה להצגה מול לקוח — מסך מלא, ניווט בחצים.
@@ -77,7 +79,9 @@ export default function Presentation({
 
   if (print) {
     return (
-      <div data-deck-ready="1">
+      // ⚠️ `data-permalink` — אותו טעם בדיוק כמו ב-ReportView.tsx: /api/deck
+      // קורא אותו כדי לשייך את הורדת המצגת ל-report_exports.slug הנכון.
+      <div data-deck-ready="1" data-permalink={(data as unknown as { permalink?: string | null }).permalink ?? ''}>
         <style>{DECK_PRINT_CSS}</style>
         {slides.map((s, k) => (
           <section key={k} className="hero-gradient deck-slide text-white">
@@ -277,13 +281,57 @@ function buildSlides(d: PropertyReport): Slide[] {
     });
   }
 
+  // §7 "הרחוב" is one of the four layers the spec requires (property, building,
+  // street, neighborhood) and already stands on its own on-screen (StreetPanel.tsx)
+  // and in the emailed report (reporthtml.ts) — the deck never had a slide for it.
+  const streetStats = computeStreetStats(d);
+  if (streetStats && streetStats.onStreet.length > 0) {
+    s.push({
+      kicker: 'הרחוב',
+      title: `${streetStats.onStreet.length} עסקאות נרשמו ב${streetStats.street}`,
+      subtitle: streetStats.perSqm
+        ? `מחיר למ"ר חציוני ברחוב: ${ils(streetStats.perSqm.median)} · רוב העסקאות בין ${ils(streetStats.perSqm.p25)} ל-${ils(streetStats.perSqm.p75)}`
+        : undefined,
+      rows: streetStats.rows.slice(0, 4).map((r) => ({
+        label: `מספר ${r.houseNum}${r.isSubject ? ' (הנכס שלכם)' : ''}`,
+        value: r.medianPerSqm ? `${new Intl.NumberFormat('he-IL').format(r.medianPerSqm)} ₪ למ"ר` : '—',
+        note: `${r.homeSales} מכירות דירות`,
+      })),
+    });
+  }
+
+  // P2 ACCURACY SPEC §E (core.projects #33) requires the comparable-deals
+  // table on the client-facing deliverable — already true for the on-screen
+  // report and the PDF export (ValuationPanel.tsx), but the deck never had a
+  // slide for it at all.
+  if (hasValuation(d.valuation)) {
+    const v = d.valuation;
+    s.push({
+      kicker: 'הערכת שווי',
+      title: `טווח שווי מוערך: ${ils(v.low)} – ${ils(v.high)}`,
+      subtitle:
+        v.explanation +
+        (d.building.streetNameMismatch && d.building.registeredStreetName
+          ? ` העסקאות רשומות תחת השם "${d.building.registeredStreetName}" — הזיהוי מבוסס גוש/חלקה, לא שם רחוב, כך שההשוואה נשארת נכונה.`
+          : ''),
+      rows: v.comparables.slice(0, 4).map((c) => ({
+        label: `${c.address ?? ''} · ${c.date ? new Date(c.date).toLocaleDateString('he-IL') : ''}`,
+        value: ils(c.price),
+        note: c.pricePerSqm
+          ? `${new Intl.NumberFormat('he-IL').format(c.pricePerSqm)} ₪ למ"ר · ${c.proximityLabel}`
+          : c.proximityLabel,
+      })),
+    });
+  }
+
   const ed = d.places.education.slice(0, 2);
   const tr = d.places.transport.slice(0, 2);
-  if (ed.length || tr.length) {
+  const rel = d.places.religion.slice(0, 2);
+  if (ed.length || tr.length || rel.length) {
     s.push({
       kicker: 'מה יש מסביב',
-      title: 'מוסדות ותחבורה במרחק הליכה',
-      rows: [...ed, ...tr].map((p) => ({
+      title: 'מוסדות, תחבורה ובתי כנסת במרחק הליכה',
+      rows: [...ed, ...tr, ...rel].map((p) => ({
         label: `${p.kind} · ${p.name}`,
         value: distanceText(p.straightMeters) ?? '—',
         note: p.walkSeconds != null ? `${walkText(p.walkSeconds)} הליכה` : undefined,
@@ -292,7 +340,7 @@ function buildSlides(d: PropertyReport): Slide[] {
   }
 
   if (lat != null && lng != null) {
-    const markers = [...d.places.education, ...d.places.transport]
+    const markers = [...d.places.education, ...d.places.transport, ...d.places.religion]
       .sort((a, b) => a.straightMeters - b.straightMeters)
       .slice(0, MARKER_LABELS.length)
       .map((p, i) => `${p.lat},${p.lng},${MARKER_LABELS[i]}`)
@@ -308,6 +356,7 @@ function buildSlides(d: PropertyReport): Slide[] {
     s.push({
       kicker: 'מבט על',
       title: 'תצלום אוויר',
+      subtitle: 'מקור: Google Maps — תאריך צילום אינו נחשף על-ידי גוגל.',
       image: apiUrl(`/api/image?kind=satellite&lat=${lat}&lng=${lng}&zoom=18&w=1000&h=560`),
     });
   }

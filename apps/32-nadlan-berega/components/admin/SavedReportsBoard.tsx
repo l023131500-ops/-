@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { Fragment, useEffect, useState } from 'react';
 import { apiUrl } from '@/lib/basepath';
 import { TIER_LABEL } from '@/lib/report';
 import type { ReportTier } from '@/lib/report';
@@ -33,10 +33,106 @@ interface Row {
   updated_at: string;
 }
 
+interface HistoryVersion {
+  tier: string;
+  assetType: string;
+  createdAt: string;
+}
+
+interface HistoryExport {
+  reportType: string;
+  createdAt: string;
+}
+
+const EXPORT_LABEL: Record<string, string> = {
+  deck: 'הורדת מצגת',
+  pdf_basic: 'הורדת PDF (חינם)',
+  pdf_premium: 'הורדת PDF (פרימיום)',
+  pdf_vip: 'הורדת PDF (VIP)',
+};
+
+/**
+ * build_tasks id=7 · "every search and produced report fully visible — full
+ * detail... full audit trail". `generations`/`views` שלמעלה כבר מציגים
+ * *מונה מצטבר* — הפאנל הזה מציג את יומן-הביקורת המלא ברמת-אירוע: כל הפקה
+ * בפועל (`saved_report_versions`, נכתב כבר בכל `saveReport` אבל לא נקרא
+ * משום מקום עד היום) וכל הורדת PDF/מצגת (`report_exports`, ששויכה עכשיו
+ * ל-slug — ראה migration 0156). נטען בעצלנות, רק כשנפתח.
+ */
+function AuditTrail({ slug, token }: { slug: string; token: string }) {
+  const [state, setState] = useState<
+    { status: 'loading' } | { status: 'error' } | { status: 'ok'; versions: HistoryVersion[]; exports: HistoryExport[] }
+  >({ status: 'loading' });
+
+  useEffect(() => {
+    let cancelled = false;
+    setState({ status: 'loading' });
+    const url = apiUrl(
+      `/api/admin/saved/history?slug=${encodeURIComponent(slug)}${token ? `&key=${encodeURIComponent(token)}` : ''}`,
+    );
+    fetch(url)
+      .then((r) => r.json())
+      .then((d) => {
+        if (cancelled) return;
+        if (d?.error) setState({ status: 'error' });
+        else
+          setState({
+            status: 'ok',
+            versions: Array.isArray(d?.versions) ? d.versions : [],
+            exports: Array.isArray(d?.exports) ? d.exports : [],
+          });
+      })
+      .catch(() => !cancelled && setState({ status: 'error' }));
+    return () => {
+      cancelled = true;
+    };
+  }, [slug, token]);
+
+  if (state.status === 'loading') return <div className="px-4 py-3 text-[12px] text-muted">טוען יומן…</div>;
+  if (state.status === 'error')
+    return <div className="px-4 py-3 text-[12px] text-red-700">לא הצלחנו לטעון את יומן הביקורת.</div>;
+
+  const events = [
+    ...state.versions.map((v) => ({
+      at: v.createdAt,
+      label: `הפקת דוח · ${TIER_LABEL[v.tier as ReportTier] ?? v.tier}`,
+      detail: isAssetType(v.assetType) ? ASSET_LABEL[v.assetType] : v.assetType,
+    })),
+    ...state.exports.map((e) => ({
+      at: e.createdAt,
+      label: EXPORT_LABEL[e.reportType] ?? `הורדה · ${e.reportType}`,
+      detail: null as string | null,
+    })),
+  ].sort((a, b) => new Date(b.at).getTime() - new Date(a.at).getTime());
+
+  if (!events.length)
+    return <div className="px-4 py-3 text-[12px] text-muted">אין עדיין אירועים רשומים לנכס הזה.</div>;
+
+  return (
+    <div className="px-4 py-3">
+      <div className="mb-2 text-[11px] font-bold text-muted">
+        יומן ביקורת · {events.length} אירועים (הפקות + הורדות)
+      </div>
+      <ol className="space-y-1.5">
+        {events.map((ev, i) => (
+          <li key={i} className="flex items-baseline gap-2 text-[12px]">
+            <span className="shrink-0 text-muted">
+              {new Date(ev.at).toLocaleString('he-IL', { dateStyle: 'short', timeStyle: 'short' })}
+            </span>
+            <span className="font-bold text-navy">{ev.label}</span>
+            {ev.detail && <span className="text-muted">· {ev.detail}</span>}
+          </li>
+        ))}
+      </ol>
+    </div>
+  );
+}
+
 export default function SavedReportsBoard({ token }: { token: string }) {
   const [rows, setRows] = useState<Row[] | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [q, setQ] = useState('');
+  const [openSlug, setOpenSlug] = useState<string | null>(null);
 
   useEffect(() => {
     const url = apiUrl(`/api/admin/saved${token ? `?key=${encodeURIComponent(token)}` : ''}`);
@@ -102,6 +198,7 @@ export default function SavedReportsBoard({ token }: { token: string }) {
               <th className="px-4 py-3 font-semibold">הפקות</th>
               <th className="px-4 py-3 font-semibold">עודכן</th>
               <th className="px-4 py-3 font-semibold">קישור קבוע</th>
+              <th className="px-4 py-3 font-semibold">יומן ביקורת</th>
             </tr>
           </thead>
           <tbody>
@@ -115,8 +212,10 @@ export default function SavedReportsBoard({ token }: { token: string }) {
               ]
                 .filter(Boolean)
                 .join(' · ');
+              const isOpen = openSlug === r.slug;
               return (
-                <tr key={r.slug} className="border-b border-line/60 align-top last:border-0">
+                <Fragment key={r.slug}>
+                <tr className="border-b border-line/60 align-top last:border-0">
                   <td className="px-4 py-3">
                     <div className="font-bold text-navy">{r.headline ?? '—'}</div>
                     {unit && <div className="mt-0.5 text-[11.5px] text-muted">{unit}</div>}
@@ -156,7 +255,24 @@ export default function SavedReportsBoard({ token }: { token: string }) {
                       העתק
                     </button>
                   </td>
+                  <td className="px-4 py-3">
+                    <button
+                      type="button"
+                      onClick={() => setOpenSlug(isOpen ? null : r.slug)}
+                      className="text-[12px] font-bold text-tealD hover:underline"
+                    >
+                      {isOpen ? 'סגור' : 'הצג'} ←
+                    </button>
+                  </td>
                 </tr>
+                {isOpen && (
+                  <tr className="border-b border-line/60 bg-bgsoft last:border-0">
+                    <td colSpan={7} className="p-0">
+                      <AuditTrail slug={r.slug} token={token} />
+                    </td>
+                  </tr>
+                )}
+                </Fragment>
               );
             })}
           </tbody>

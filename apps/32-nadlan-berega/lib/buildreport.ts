@@ -11,12 +11,15 @@ import {
   addWalkingTimes,
   streetViewMeta,
   aimQuality,
+  destinationPoint,
+  bearingDeg,
   mergePlaces,
   primaryNearest,
   isPreschoolName,
   nearestHospitals,
 } from './googlemaps';
 import type { Place, StreetView, PlaceGroupKey } from './googlemaps';
+import { mapillaryConfigured, mapillaryNearest } from './mapillary';
 import { mikvaotNear, type Mikve } from './mikve';
 import { parcelAtPoint, parcelByGushHelka, parcelValidity } from './cadastre';
 import { stopsWithLinesDetailed, type StopWithLines } from './gtfs';
@@ -38,6 +41,7 @@ import {
   isLandDeal,
   parcelLabel,
   nadlanAddressRef,
+  normStreetName,
 } from './nadlan';
 import { buildingAge, type BuildingAge } from './buildingage';
 import { fetchHousingIndex, fetchRentIndex } from './cbs';
@@ -130,6 +134,13 @@ function localityWikiName(fromDeals: string | null, official?: string | null): s
 export interface PropertyReport {
   query: string;
   tier: ReportTier;
+  /**
+   * §8 · המלצה 5 ("מטמון לדוח") — נוכח רק כש-`/api/report` הגיש עותק שמור
+   * טרי במקום להריץ הפקה חדשה (ראה `lib/savedreports.ts:readFreshByParcelKey`).
+   * לעולם לא נכתב ע"י `buildReport` עצמו.
+   */
+  cached?: boolean;
+  cachedAt?: string;
   /** מגורים / שכירות / מסחרי / קרקע — קובע אילו סעיפים נבנים ומה נמשך מהלוחות. */
   assetType: AssetType;
   /**
@@ -160,6 +171,28 @@ export interface PropertyReport {
   categories: ReportCategory[];
   location: { lat: number | null; lng: number | null; itmX: number | null; itmY: number | null };
   streetView: (StreetView & { precise: boolean; aimReason: string | null }) | null;
+  /**
+   * §2 · פנורמה אינטראקטיבית 360° — גוגל כשיש כיסוי בנקודה, Mapillary
+   * כנפילה חזרה כשאין. בשונה מ-`streetView` (תמונה סטטית מכוונת אל הבניין),
+   * זו אינה תלויה ב-`precise`: המשתמש מסתובב בעצמו בתוך התצוגה החיה.
+   */
+  panorama:
+    | {
+        source: 'google' | 'mapillary';
+        date: string | null;
+        lat: number;
+        lng: number;
+        mapillaryImageUrl?: string;
+      }
+    | null;
+  /**
+   * §2 · "סיור רחוב" — רצף תמונות Street View אמיתיות ומתוארכות לאורך הרחוב
+   * (VIP בלבד, כמו `streetView`/`panorama`). כל נקודה מוצגת דרך
+   * `/api/image?kind=street` בדיוק כמו צילום הבניין הבודד — לא וידאו מקודד.
+   * `null` כשאין עוגן אמין לרחוב (בלי `streetView.precise`) או פחות משלוש
+   * נקודות עם כיסוי אמיתי.
+   */
+  streetWalk: { points: { lat: number; lng: number; heading: number }[]; date: string | null } | null;
   /** דירה בבניין או בית שהנכס הוא כולו — משנה את מה שהדוח מתאר. */
   propertyKind: PropertyKindResult;
   /** איך הבניין זוהה, ומה נמצא בו. שקיפות מלאה — כולל אי-התאמות. */
@@ -247,6 +280,14 @@ export interface BuildingIdentity {
   registeredHelka: string | null;
   /** הקדסטר והעסקאות חולקים על מספר החלקה — נאמר ללקוח במפורש. */
   parcelMismatch: boolean;
+  /** שם הרחוב כפי שהוא רשום **בעסקאות** של הבניין — יכול להיות שונה מהמבוקש. */
+  registeredStreetName: string | null;
+  /**
+   * הזיהוי הצליח (לפי מזהה-בניין או גוש/חלקה), אבל שם הרחוב הרשום בעסקאות
+   * אינו תואם לשום שם ידוע של הרחוב המבוקש (רשמי/כינוי מאומת) — סימן לרחוב
+   * ששינה שם, כתיב שונה במרשם, או חלוקה מחדש. ראה `note`.
+   */
+  streetNameMismatch: boolean;
   /** מספרי תת-החלקה שנמכרו בבניין — מגיעים חינם עם כל עסקה. */
   subParcels: string[];
   dealsInBuilding: number;
@@ -585,6 +626,27 @@ function median(nums: number[]): number | null {
   const mid = Math.floor(s.length / 2);
   if (s.length % 2 === 1) return s[mid];
   return Math.round((s[mid - 1] + s[mid]) / 2);
+}
+
+/**
+ * מסנן מחירי-בקשה למ"ר (מודעות יד2/מדלן) שהיחס שלהם מול העסקאות הרשומות
+ * באזור בלתי-סביר בעליל — טעות הקלדה או מודעה שגויה, לא מחיר אמיתי.
+ *
+ * ⚠️ לפי הנחיית הבעלים (P2 ACCURACY SPEC v2, סעיף 1): אין לפסול מספרים
+ * עגולים (מותר לגמרי שמחיר מבוקש יהיה עגול) — רק **יחס** קיצוני מול המחיר
+ * האמיתי הרשום בעסקאות, כמו "1 ₪" או מחיר למ"ר רחוק פי כמה מהעסקאות
+ * שנסגרו בפועל באותו רחוב/אזור. בלי חציון עסקאות אמיתי (marketMedianPerSqm
+ * null) אין קרקע להשוואה — לא ממציאים סף, ולא פוסלים כלום.
+ */
+function plausibleAgainstMarket(
+  values: number[],
+  marketMedianPerSqm: number | null,
+): { plausible: number[]; excluded: number } {
+  if (marketMedianPerSqm == null || marketMedianPerSqm <= 0) return { plausible: values, excluded: 0 };
+  const low = marketMedianPerSqm * 0.2;
+  const high = marketMedianPerSqm * 5;
+  const plausible = values.filter((v) => v >= low && v <= high);
+  return { plausible, excluded: values.length - plausible.length };
 }
 
 /** מזהה עסקה לצורך הצלבה בין חישוב לתצוגה. */
@@ -1055,6 +1117,83 @@ export async function buildReport(
           aimReason: svAim?.ok ? null : svAim?.reason ?? null,
         }
       : null;
+  /**
+   * §2 · הפנורמה האינטראקטיבית משתמשת ב-`streetViewMetaRes` שכבר נמשך למעלה
+   * (בלי קריאה כפולה) — Mapillary נשאל רק כשגוגל אין לו כיסוי בנקודה, וגם אז
+   * רק אם MAPILLARY_ACCESS_TOKEN מוגדר, כדי לא לבזבז ניסיון רשת מיותר.
+   */
+  let panorama: PropertyReport['panorama'] = null;
+  if (lat != null && lng != null && tierMayUseImagery(tier)) {
+    if (streetViewMetaRes?.available) {
+      panorama = { source: 'google', date: streetViewMetaRes.date, lat, lng };
+    } else if (mapillaryConfigured()) {
+      const shot = await mapillaryNearest(lat, lng);
+      if (shot) panorama = { source: 'mapillary', date: shot.date, lat, lng, mapillaryImageUrl: shot.imageUrl };
+    }
+  }
+
+  /**
+   * §2 · "סיור רחוב" — P2 FEATURE (core.projects #33, 25/08/2026) פריט 2 ביקש
+   * וידאו MP4 מקודד-ffmpeg מדגימת פריימים לאורך הרחוב; ffmpeg (וגם
+   * node_modules בכלל) אינו זמין בסביבת הפיתוח הנוכחית בשום סבב עד כה (ראה
+   * CLAUDE.md). זו גרסת-ביניים כנה במקום לא לספק כלום: רצף תמונות Street
+   * View אמיתיות ומתוארכות לאורך הרחוב — לא וידאו מקודד, ומתויג ככזה ב-UI.
+   * פריט ה-MP4 עצמו נשאר פתוח.
+   *
+   * העוגן הוא מיקום הפנורמה הקרובה ביותר לנכס (`streetViewMetaRes` — נמצאת
+   * בפועל **על** הכביש, בשונה מקואורדינטת הנכס עצמה שיכולה להיות מוסטת
+   * פנימה מהרחוב), והכיוון הוא ניצב לאזימוט "מהפנורמה אל הבניין" שכבר חושב
+   * ב-`svAim.heading` — כלומר לאורך הרחוב, לא לרוחבו. `svAim.ok` (לא רק
+   * `streetViewMetaRes.available`) נבחר בכוונה: אם המרחק/הכיוון לא מהימנים
+   * מספיק לצילום הבודד (`aimQuality`), הם גם לא עוגן אמין להליכה על הרחוב.
+   *
+   * כל נקודת-מועמד נבדקת בנפרד מול `streetViewMeta` (חינמי — ראה
+   * `lib/costs.ts`) כדי לא להציג נקודה בלי כיסוי אמיתי, ונקודות עוקבות
+   * שנופלות על **אותה** פנורמה בדיוק (כיסוי דליל בקטע הזה של הרחוב) מכווצות
+   * לאחת — בלי מסגרות כפולות זהות ב"סיור".
+   */
+  let streetWalk: PropertyReport['streetWalk'] = null;
+  if (
+    lat != null &&
+    lng != null &&
+    tierMayUseImagery(tier) &&
+    svAim?.ok &&
+    svAim.heading != null &&
+    streetViewMetaRes?.lat != null &&
+    streetViewMetaRes?.lng != null
+  ) {
+    const anchorLat = streetViewMetaRes.lat;
+    const anchorLng = streetViewMetaRes.lng;
+    const alongStreet = (svAim.heading + 90) % 360;
+    const offsetsM = [-40, -20, 0, 20, 40];
+    const candidates = offsetsM.map((o) => destinationPoint(anchorLat, anchorLng, alongStreet, o));
+    const metas = await Promise.all(
+      candidates.map((c) => streetViewMeta(c.lat, c.lng).catch(() => null)),
+    );
+    const points: { lat: number; lng: number; heading: number }[] = [];
+    let lastPanoKey: string | null = null;
+    for (let i = 0; i < candidates.length; i++) {
+      const m = metas[i];
+      if (!m?.available || m.lat == null || m.lng == null) continue;
+      const panoKey = `${m.lat.toFixed(6)},${m.lng.toFixed(6)}`;
+      if (panoKey === lastPanoKey) continue;
+      lastPanoKey = panoKey;
+      // Heading is recomputed PER POINT, not reused from `svAim.heading` (the
+      // anchor-only azimuth) — see the CLAUDE.md entry on why a constant
+      // heading aims wrong at every point except the anchor itself. Each walk
+      // point sits at a different position along the street while the
+      // building stays fixed, so the true bearing to the building changes
+      // with the walk distance; using `candidates[i]` (the point itself, on
+      // the road, same approximation `aimQuality` already relies on for the
+      // matched pano's own position) keeps every frame aimed at the real
+      // building.
+      points.push({ ...candidates[i], heading: bearingDeg(candidates[i].lat, candidates[i].lng, lat, lng) });
+    }
+    if (points.length >= 3) {
+      streetWalk = { points, date: streetViewMetaRes.date };
+    }
+  }
+
   const plans: PlanRecord[] = plansRes.status === 'fulfilled' ? plansRes.value : [];
   const rentIndex = rentRes.status === 'fulfilled' ? rentRes.value : null;
   const ramiPolicy = ramiRes.status === 'fulfilled' ? ramiRes.value : null;
@@ -1185,6 +1324,25 @@ export async function buildReport(
   const parcelMismatch =
     !!registeredHelka && !!helka && String(registeredHelka) !== String(helka);
 
+  /**
+   * ⚠️ P2 ACCURACY SPEC v2 §3 — "match by gush/helka + coordinates, not by
+   * street name alone; note when a street was renamed so comparables stay
+   * correct." הזיהוי עצמו כבר לא תלוי בשם הרחוב כשההתאמה היא `polygon`/
+   * `parcel` (ראה השרשרת למעלה) — הפער שנשאר הוא **לספר ללקוח** כשזה קרה,
+   * כדי שהוא לא יתפלא שהרחוב בטבלת ההשוואה שונה מזה שחיפש. `knownStreetNames`
+   * הוא כל שם ידוע ומאומת של הרחוב המבוקש (רשמי + מה שהוקלד + כינויים
+   * מאומתים, אותה קבוצה ש-`filterToAddress` בדק מולה למעלה) — אם העסקה
+   * שממנה זוהה הבניין רשומה תחת שם שאינו באף אחד מהם, זה רחוב ששינה שם או
+   * שהמרשם כותב אותו אחרת ממה שהמאגר המאומת יודע.
+   */
+  const registeredStreetName = buildingTxns.find((t) => t.streetName)?.streetName ?? null;
+  const knownStreetNames = new Set(streetNames.map(normStreetName).filter(Boolean));
+  const streetNameMismatch =
+    (matchedBy === 'polygon' || matchedBy === 'parcel') &&
+    !!registeredStreetName &&
+    knownStreetNames.size > 0 &&
+    !knownStreetNames.has(normStreetName(registeredStreetName));
+
   // --- גיל הבניין ---
   const ageInfo = buildingAge(buildingTxns);
 
@@ -1222,17 +1380,22 @@ export async function buildReport(
     registeredGush,
     registeredHelka,
     parcelMismatch,
+    registeredStreetName,
+    streetNameMismatch,
     subParcels,
     dealsInBuilding: currentBuildingTxns.length,
     homeSalesInBuilding: buildingHomeSales.length,
     note:
-      matchedBy === 'polygon'
+      (matchedBy === 'polygon'
         ? 'הבניין זוהה לפי מזהה הבניין של מרשם העסקאות הממשלתי — כלומר בדיוק אותו קיבוץ שהמרשם עצמו עושה לעסקאות של הבניין הזה.'
         : matchedBy === 'parcel'
           ? 'הבניין זוהה לפי הגוש והחלקה שמרשם החלקות מחזיר לנקודת הכתובת.'
           : matchedBy === 'address'
             ? 'הבניין זוהה לפי התאמת רחוב ומספר בית מדויקת בעסקאות עצמן.'
-            : 'לא נמצאו עסקאות שניתן לשייך לבניין הזה.',
+            : 'לא נמצאו עסקאות שניתן לשייך לבניין הזה.') +
+      (streetNameMismatch
+        ? ` שים לב: העסקאות רשומות תחת השם "${registeredStreetName}", שאינו תואם לשם הרחוב המבוקש או לכינוי מאומת שלו — ייתכן שהרחוב שינה שם או שהמרשם כותב אותו אחרת. הזיהוי לא הסתמך על שם הרחוב, אלא על גוש/חלקה${buildingPolygonId ? ' ומזהה הבניין' : ''} של הנכס עצמו, כך שעסקאות ההשוואה נשארות נכונות.`
+        : ''),
   };
 
   // --- ההמרה בשני הכיוונים, עם אימות בלתי תלוי ---
@@ -1374,11 +1537,24 @@ export async function buildReport(
 
   // הסימון "בבניין הזה" נגזר ממזהה הבניין — לא רק מגוש/חלקה, שיכולים לחלוק
   // על העסקאות (ראה BuildingIdentity).
+  //
+  // ⚠️ P2 ACCURACY SPEC v2 §3 — "comparables stay correct" כשרחוב שינה שם.
+  // `streetNameMismatch` (למעלה) כבר מזהה שהעסקאות של **הבניין הזה עצמו**
+  // רשומות תחת שם שאינו באף כינוי ידוע — אבל בלי לספר על כך ל-`sortByProximity`,
+  // כל עסקה **אחרת** באותו רחוב (לא רק בבניין) שרשומה תחת אותו שם-רשום ממשיך
+  // ליפול ל"בסביבה" (rank 1000) במקום "באותו רחוב" (rank 500/10+), כי
+  // `matchesStreet` שם בודק רק מול `streetNames` המקורי. `registeredStreetName`
+  // אומת כבר כשם האמיתי שהרשומה הממשלתית משתמשת בו לבניין הזה בדיוק — לכן
+  // בטוח להוסיף אותו לרשימת השמות הידועים לצורך המיון, לא רק לאזהרה בטקסט.
+  const streetNamesForProximity =
+    streetNameMismatch && registeredStreetName
+      ? [...streetNames, registeredStreetName]
+      : streetNames;
   const soldDeals = sortByProximity(
     allTxns,
     gush,
     helka,
-    streetNames,
+    streetNamesForProximity,
     parsed.houseNum ?? null,
     buildingPolygonId,
     ageInfo?.redevelopmentYear ?? null,
@@ -1841,6 +2017,37 @@ export async function buildReport(
             : 'כדי לזהות את הדירה המסוימת צריך להזין מספר קומה ו/או מספר חדרים בטופס.',
       },
     ),
+    // תת-חלקה היא מזהה הדירה הספציפית (ראה ההערה למעלה) — אם אותה תת-חלקה
+    // נמכרה יותר מפעם אחת, זו ההיסטוריה של הדירה הזו עצמה, לא של הבניין.
+    // בכוונה לא נבנה מ-`currentBuildingTxns` (כולל עסקאות שאינן מכירת דירה)
+    // אלא מ-`buildingRealSales`, אותו סינון "עסקה אמיתית" שכל שאר הדוח סומך
+    // עליו. פחות משתי מכירות = אין סיפור היסטוריה לספר; המכירה היחידה כבר
+    // מוצגת למעלה כ"מחיר אחרון שנסגר בבניין".
+    fact(
+      `היסטוריית מכירות של ${unitNoun} שלך`,
+      (() => {
+        if (!matchedUnit?.tatHelka || matchedUnit.tatHelka === '0') return null;
+        const sameUnit = buildingRealSales
+          .filter((t) => t.tatHelka === matchedUnit.tatHelka)
+          .slice()
+          .reverse(); // buildingRealSales ממוין מהחדש לישן; ההיסטוריה מסופרת מהישן לחדש
+        if (sameUnit.length < 2) return null;
+        return sameUnit
+          .map(
+            (t) =>
+              `${new Date(t.dealDate).toLocaleDateString('he-IL')} · ${t.price != null ? `${t.price.toLocaleString('he-IL')} ₪` : 'מחיר לא דווח'}`,
+          )
+          .join(' ← ');
+      })(),
+      {
+        certainty: 'approx',
+        sourceKey: 'carmen',
+        sourceNote: `כל המכירות שנרשמו במרשם עבור תת-חלקה ${matchedUnit?.tatHelka ?? ''} בבניין הזה — כלומר אותה דירה ממש, ולא הבניין כולו — ממוינות לפי תאריך.`,
+        missingReason: !matchedUnit
+          ? 'לא זוהתה הדירה הספציפית שלך (הזינו קומה ו/או מספר חדרים בטופס), ולכן אין ממה לבנות היסטוריה לדירה עצמה.'
+          : 'נמצאה רק מכירה אחת של הדירה הזו במרשם מאז 1998 — ראו "מחיר אחרון שנסגר בבניין" למעלה.',
+      },
+    ),
     fact('שטח החלקה כולה', parcelAreaSqm, {
       certainty: 'verified',
       unit: 'מ"ר',
@@ -2188,7 +2395,9 @@ export async function buildReport(
       ),
     );
   } else {
-    const prices = listingsResult.listings.map((l) => l.pricePerSqm).filter((v): v is number => !!v);
+    const rawPrices = listingsResult.listings.map((l) => l.pricePerSqm).filter((v): v is number => !!v);
+    const marketRefPpsqm = buildingBand.median ?? streetBand.median ?? areaBand.median;
+    const { plausible: prices, excluded: excludedAskPrices } = plausibleAgainstMarket(rawPrices, marketRefPpsqm);
     const askMedian = median(prices);
     const days = listingsResult.listings.map((l) => l.daysListed).filter((v): v is number => v != null);
     facts.listings.push(
@@ -2205,7 +2414,10 @@ export async function buildReport(
         tier: 'premium',
         sourceKey: 'apify_madlan',
         sourceNote:
-          'זה מה שמוכרים מבקשים, לא מה שנסגר בפועל. בדרך כלל מחיר הסגירה נמוך יותר.',
+          'זה מה שמוכרים מבקשים, לא מה שנסגר בפועל. בדרך כלל מחיר הסגירה נמוך יותר.' +
+          (excludedAskPrices
+            ? ` ${excludedAskPrices} ${excludedAskPrices === 1 ? 'מודעה הוצאה' : 'מודעות הוצאו'} מהחישוב — מחיר למ"ר רחוק באופן קיצוני מהעסקאות שנסגרו בפועל באזור, כנראה טעות הקלדה במודעה ולא מחיר אמיתי.`
+            : ''),
         missingReason: 'אין מספיק מודעות עם מחיר ושטח.',
       }),
       fact('זמן ממוצע של מודעה באוויר', days.length ? Math.round(days.reduce((a, b) => a + b, 0) / days.length) : null, {
@@ -2805,9 +3017,7 @@ export async function buildReport(
       .map((l) => (l.price && l.areaSqm ? l.price / l.areaSqm : null))
       .filter((v): v is number => v !== null && Number.isFinite(v) && v > 0)
       .sort((a, b) => a - b);
-    const medRentPerSqm = rentPerSqm.length
-      ? rentPerSqm[Math.floor(rentPerSqm.length / 2)]
-      : null;
+    const medRentPerSqm = median(rentPerSqm);
     const estMonthly = medRentPerSqm && unitArea ? Math.round((medRentPerSqm * unitArea) / 50) * 50 : null;
     // תשואה ברוטו: שכ"ד שנתי חלקי מחיר הנכס. שני האגפים חייבים לבוא מאותו
     // אזור, ולכן המכנה הוא חציון המחיר למ"ר של האזור כפול אותו שטח.
@@ -2894,9 +3104,7 @@ export async function buildReport(
       .map((t) => pricePerSqm(t.price, t.areaSqm))
       .filter((v): v is number => v !== null)
       .sort((a, b) => a - b);
-    const medCommercial = commercialPpsqm.length
-      ? Math.round(commercialPpsqm[Math.floor(commercialPpsqm.length / 2)])
-      : null;
+    const medCommercial = median(commercialPpsqm);
     const lastCommercial = commercialTxns[0] ?? null;
     const commerceRights = permitPlans
       .filter((p) => p.quantities.deltaCommerceSqm || p.quantities.deltaEmploymentSqm)
@@ -3011,7 +3219,7 @@ export async function buildReport(
       .map((t) => pricePerSqm(t.price, t.areaSqm))
       .filter((v): v is number => v !== null)
       .sort((a, b) => a - b);
-    const medLand = landPpsqm.length ? Math.round(landPpsqm[Math.floor(landPpsqm.length / 2)]) : null;
+    const medLand = median(landPpsqm);
     const lastLand = landTxns[0] ?? null;
     /** תוכניות בהליך שהן העדות היחידה לשינוי ייעוד אפשרי — צפי, לא מצב. */
     const rezoning = (permits?.inProcess ?? []).slice(0, 8);
@@ -3245,6 +3453,8 @@ export async function buildReport(
     categories,
     location: { lat, lng, itmX, itmY },
     streetView,
+    panorama,
+    streetWalk,
     propertyKind,
     building,
     parcelIdentity,

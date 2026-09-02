@@ -46,6 +46,12 @@ export async function GET(req: NextRequest) {
     await page.goto(target.toString(), { waitUntil: 'networkidle0', timeout: 240_000 });
     await page.waitForSelector('[data-deck-ready]', { timeout: 240_000 });
 
+    // ה-slug של הדוח שרונדר בפועל — כדי ש-report_exports ישויך לנכס הנכון
+    // (ראה `data-permalink` ב-Presentation.tsx). best-effort בלבד.
+    const slug = await page
+      .$eval('[data-deck-ready]', (el) => el.getAttribute('data-permalink') || null)
+      .catch(() => null);
+
     // תמונות המפה והצילום נטענות דרך `/api/image`. עמוד שהודפס לפני שהן
     // הגיעו מפיק שקופיות ריקות — ולכן ממתינים להשלמת כל אחת מהן.
     await page.evaluate(async () => {
@@ -74,7 +80,7 @@ export async function GET(req: NextRequest) {
     });
 
     // לוג ההורדה — כדי ש-report_exports ישקף שימוש אמיתי בפיצ'ר, לא רק שהוא קיים.
-    await logExport(q, 'deck', []);
+    await logExport(slug, 'deck', []);
 
     return new NextResponse(Buffer.from(pdf), {
       headers: {

@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { buildReport } from '@/lib/buildreport';
 import { logReportSources } from '@/lib/sourcelog';
 import { adminGate } from '@/lib/adminauth';
-import { saveReport } from '@/lib/savedreports';
+import { saveReport, fastParcelKey, readFreshByParcelKey } from '@/lib/savedreports';
 import type { ReportTier } from '@/lib/report';
 
 export const dynamic = 'force-dynamic';
@@ -12,6 +12,11 @@ export const runtime = 'nodejs';
 export const maxDuration = 300;
 
 const TIERS: ReportTier[] = ['basic', 'premium', 'vip'];
+
+// QA/nadlan.md §המלצות #5: "כל רינדור בונה מחדש כולל הקריאות בתשלום". חלון
+// קצר שבו הפקה חוזרת לאותו גוש/חלקה ולאותה רמה בדיוק מוגשת מהאחסון במקום
+// לשלם שוב על אותם מקורות — ראה `fastParcelKey`/`readFreshByParcelKey`.
+const PARCEL_CACHE_MAX_AGE_MS = 6 * 60 * 60 * 1000;
 
 export async function GET(req: NextRequest) {
   const q = req.nextUrl.searchParams.get('q')?.trim();
@@ -36,6 +41,26 @@ export async function GET(req: NextRequest) {
     // מגורים / שכירות / מסחרי / קרקע. ערך לא מוכר נופל למגורים במנוע עצמו.
     assetType: sp.get('type')?.trim() || null,
   };
+
+  // §8 · המלצה 5 — רק על מסלול גוש/חלקה (הזהות הזמינה בלי גיאוקוד), רק
+  // כשהתאמת רמה מדויקת, ורק כשלא התבקש רענון מפורש. `sources=1` (מרכז
+  // השליטה) גם מדלג על המטמון — הוא צריך את לוג המקורות של הפקה אמיתית,
+  // לא עותק שמור בלי לוג. כל כשל כאן (DB לא מוגדר, שגיאת רשת) נבלע ונופל
+  // למסלול הרגיל — זו רק קיצור-דרך, לא תלות.
+  if (sp.get('refresh') !== '1' && sp.get('sources') !== '1') {
+    const parcelKey = fastParcelKey(q, input.assetType, input);
+    if (parcelKey) {
+      const cached = await readFreshByParcelKey(parcelKey, tier, PARCEL_CACHE_MAX_AGE_MS).catch(() => null);
+      if (cached) {
+        return NextResponse.json({
+          ...cached.report,
+          permalink: cached.slug,
+          cached: true,
+          cachedAt: cached.updatedAt,
+        });
+      }
+    }
+  }
 
   try {
     const report = await buildReport(q, tier, input);

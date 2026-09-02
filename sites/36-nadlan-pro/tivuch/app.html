@@ -76,6 +76,8 @@ input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px soli
 select option{background:var(--royal-2);color:var(--ink)}
 .form-grid{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}
 .form-grid .span2{grid-column:1/-1}
+.video-embed{display:block;width:100%;aspect-ratio:16/9;border:0;border-radius:5px;
+  margin:0 0 18px;background:var(--royal)}
 .controls{display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end;margin-bottom:20px}
 .controls .f{min-width:170px}
 .spacer{flex:1}
@@ -208,8 +210,12 @@ td.num{font-variant-numeric:tabular-nums;white-space:nowrap}
       <button class="tab" data-view="board">צינור עסקאות</button>
       <button class="tab" data-view="contacts">אנשי קשר</button>
       <button class="tab" data-view="properties">נכסים</button>
+      <button class="tab" data-view="rentals">שכירויות</button>
       <button class="tab" data-view="documents">מסמכים</button>
       <button class="tab" data-view="tasks">משימות</button>
+      <button class="tab" data-view="team">צוות</button>
+      <button class="tab" data-view="forum">פורום</button>
+      <button class="tab" data-view="settings">הגדרות</button>
     </div>
     <select class="office-pick" id="officePick" hidden aria-label="בחירת משרד"></select>
   </div>
@@ -302,10 +308,32 @@ td.num{font-variant-numeric:tabular-nums;white-space:nowrap}
             <option value="under_offer">בהצעה</option><option value="sold">נמכר</option>
             <option value="frozen">הוקפא</option>
           </select></label>
+        <label class="f">מטרה
+          <select id="pPurpose">
+            <option value="">הכל</option><option value="sale">מכירה</option>
+            <option value="rent">השכרה</option>
+          </select></label>
         <span class="spacer"></span>
         <button class="btn" id="newProperty">+ נכס</button>
       </div>
       <div id="propertiesBody"></div>
+    </div>
+  </section>
+
+  <section class="panel" id="viewRentals" hidden>
+    <div class="wrap">
+      <h1 class="page display">שכירויות</h1>
+      <p class="sub">חוזי שכירות לנכסים מושכרים — שוכר, משכיר, שכר דירה, לוח תשלומים ותזכורת חידוש.</p>
+      <div class="controls">
+        <label class="f">סטטוס
+          <select id="lStatus">
+            <option value="">הכל</option><option value="active">פעיל</option>
+            <option value="ended">הסתיים</option><option value="cancelled">בוטל</option>
+          </select></label>
+        <span class="spacer"></span>
+        <button class="btn" id="newLease">+ חוזה שכירות</button>
+      </div>
+      <div id="rentalsBody"></div>
     </div>
   </section>
 
@@ -338,6 +366,47 @@ td.num{font-variant-numeric:tabular-nums;white-space:nowrap}
         <button class="btn" id="newTask">+ משימה</button>
       </div>
       <div id="tasksBody"></div>
+    </div>
+  </section>
+
+  <section class="panel" id="viewTeam" hidden>
+    <div class="wrap">
+      <h1 class="page display">צוות</h1>
+      <p class="sub">חברי הצוות במשרד, והזמנות ממתינות. קישור הזמנה בתוקף ל-14 יום ומיועד לשימוש חד-פעמי.</p>
+      <div id="teamBody"></div>
+    </div>
+  </section>
+
+  <section class="panel" id="viewForum" hidden>
+    <div class="wrap">
+      <h1 class="page display">פורום</h1>
+      <p class="sub">
+        רשת בין-משרדית: "יש לי קונה" / "יש לי נכס" / שאלה מקצועית — גלוי לכל
+        מתווך פעיל בכל משרד ברשת, לא רק במשרד שלכם.
+      </p>
+      <div class="controls">
+        <label class="f">סוג
+          <select id="fKind">
+            <option value="">הכל</option><option value="has_buyer">יש לי קונה</option>
+            <option value="has_property">יש לי נכס</option><option value="question">שאלה</option>
+          </select></label>
+        <label class="f">סטטוס
+          <select id="fStatus">
+            <option value="open">פתוחות בלבד</option><option value="">הכל</option>
+          </select></label>
+        <label class="f">חיפוש<input type="search" id="fQ" placeholder="כותרת, עיר או טקסט" /></label>
+        <span class="spacer"></span>
+        <button class="btn" id="newForumPost">+ פוסט חדש</button>
+      </div>
+      <div id="forumBody"></div>
+    </div>
+  </section>
+
+  <section class="panel" id="viewSettings" hidden>
+    <div class="wrap" style="max-width:680px">
+      <h1 class="page display">הגדרות</h1>
+      <p class="sub">פרטי המשרד, ואתר משרד ציבורי — עמוד ללא כניסה שמציג את הנכסים שכבר שותפו בקישור צפייה.</p>
+      <div id="settingsBody"></div>
     </div>
   </section>
 
@@ -379,6 +448,35 @@ const money = (x) => (x === null || x === undefined || x === '' ? NA : cur.forma
 const dt = (x) => (x ? new Date(x).toLocaleDateString('he-IL') : NA);
 const dtm = (x) => (x ? new Date(x).toLocaleString('he-IL', { dateStyle: 'short', timeStyle: 'short' }) : NA);
 
+// Embeds a property's video link. YouTube/Vimeo get an iframe player; a
+// direct file URL (the office's own host) gets a plain <video> tag; anything
+// else — a Google Drive share link, a WhatsApp-forwarded link, whatever an
+// office actually pastes — falls back to an "open" link rather than a broken
+// frame. Kept identical to listing.html's copy — same rules, same markup.
+function videoEmbedHtml(url) {
+  if (!url) return '';
+  let u;
+  try { u = new URL(url); } catch (e) {
+    return '<p><a class="btn btn-sm" href="' + esc(url) + '" target="_blank" rel="noopener noreferrer">צפייה בסרטון הנכס</a></p>';
+  }
+  if (/(^|\.)youtube\.com$/.test(u.hostname) || u.hostname === 'youtu.be') {
+    let id = u.searchParams.get('v');
+    if (!id && u.hostname === 'youtu.be') id = u.pathname.slice(1);
+    if (!id && /\/shorts\//.test(u.pathname)) id = u.pathname.split('/shorts/')[1];
+    if (id) return '<div class="video-embed"><iframe src="https://www.youtube.com/embed/' + esc(id) +
+      '" title="סרטון הנכס" loading="lazy" allow="fullscreen" allowfullscreen></iframe></div>';
+  }
+  if (/(^|\.)vimeo\.com$/.test(u.hostname)) {
+    const id = u.pathname.split('/').filter(Boolean).pop();
+    if (id) return '<div class="video-embed"><iframe src="https://player.vimeo.com/video/' + esc(id) +
+      '" title="סרטון הנכס" loading="lazy" allow="fullscreen" allowfullscreen></iframe></div>';
+  }
+  if (/\.(mp4|webm|mov|m4v)$/i.test(u.pathname)) {
+    return '<video class="video-embed" controls preload="metadata" src="' + esc(url) + '"></video>';
+  }
+  return '<p><a class="btn btn-sm" href="' + esc(url) + '" target="_blank" rel="noopener noreferrer">צפייה בסרטון הנכס</a></p>';
+}
+
 const STAGES = [
   { key: 'lead',      label: 'ליד' },
   { key: 'contacted', label: 'יצירת קשר' },
@@ -391,9 +489,11 @@ const STAGES = [
 const KIND_HE = { buyer: 'קונה', seller: 'מוכר', renter: 'שוכר', landlord: 'משכיר', other: 'אחר' };
 const SOURCE_HE = {
   website_form: 'טופס באתר', consumer_report: 'דוח נכס', manual: 'ידני',
-  import: 'ייבוא', referral: 'הפניה', portal: 'פורטל', other: 'אחר',
+  import: 'ייבוא', referral: 'הפניה', portal: 'פורטל',
+  whatsapp: 'וואטסאפ', facebook: 'פייסבוק', other: 'אחר',
 };
 const PSTATUS_HE = { active: 'פעיל', under_offer: 'בהצעה', sold: 'נמכר', frozen: 'הוקפא' };
+const PURPOSE_HE = { sale: 'מכירה', rent: 'השכרה' };
 const ASSET_HE = {
   apartment: 'דירה', house: 'בית', penthouse: 'פנטהאוז', garden_apartment: 'דירת גן',
   duplex: 'דופלקס', land: 'קרקע', commercial: 'מסחרי', office: 'משרד', other: 'אחר',
@@ -402,6 +502,21 @@ const AKIND_HE = {
   note: 'הערה', call: 'שיחה', meeting: 'פגישה', showing: 'הצגה',
   email: 'דוא״ל', task: 'משימה', system: 'מערכת',
 };
+const PDOCCAT_HE = {
+  tabu: 'נסח טאבו', permit: 'היתר בנייה', plan: 'תשריט/תכנית',
+  appraisal: 'חוות דעת שמאי', poa: 'ייפוי כוח', id_copy: 'צילום ת.ז.',
+  contract_draft: 'טיוטת חוזה', other: 'אחר',
+};
+const ROLE_HE = { owner: 'בעלים', manager: 'מנהל', agent: 'מתווך' };
+const LSTATUS_HE = { active: 'פעיל', ended: 'הסתיים', cancelled: 'בוטל' };
+const RSTATUS_HE = { due: 'ממתין', paid: 'שולם', waived: 'ויתור' };
+const PULL_STATUS_HE = { success: 'הופק בהצלחה', error: 'נכשל' };
+const FKIND_HE = { has_buyer: 'יש לי קונה', has_property: 'יש לי נכס', question: 'שאלה' };
+const COMM_PAYER_HE = { buyer: 'קונה', seller: 'מוכר', both: 'שני הצדדים' };
+const COMM_STATUS_HE = { pending: 'ממתין', invoiced: 'הופקה חשבונית', collected: 'נגבתה', written_off: 'נמחקה כאבודה' };
+const TABU_STATUS_HE = { pending: 'ממתין להזמנה', sent: 'הוזמן מרשם המקרקעין', fulfilled: 'הושלם' };
+const TABU_GRADE_HE = { normal: 'רגילה', urgent: 'דחופה' };
+const TIKMEIDA_STATUS_HE = { pending: 'ממתין להגשה', sent: 'הוגשה לוועדה המקומית', fulfilled: 'הושלם' };
 
 let ME = null;        // np_me()
 let OFFICE = null;    // the selected office row
@@ -430,7 +545,8 @@ function fail(msg) {
 
 function show(id) {
   for (const s of ['booting', 'viewSetup', 'viewDash', 'viewBoard', 'viewContacts',
-                   'viewProperties', 'viewDocuments', 'viewTasks', 'viewError']) {
+                   'viewProperties', 'viewRentals', 'viewDocuments', 'viewTasks', 'viewTeam',
+                   'viewForum', 'viewSettings', 'viewError']) {
     $(s).hidden = s !== id;
   }
 }
@@ -443,7 +559,8 @@ function setView(name) {
   }
   history.replaceState(null, '', '?v=' + name);
   const map = { dash: renderDash, board: renderBoard, contacts: renderContacts,
-                properties: renderProperties, documents: renderDocuments, tasks: renderTasks };
+                properties: renderProperties, rentals: renderRentals, documents: renderDocuments,
+                tasks: renderTasks, team: renderTeam, forum: renderForum, settings: renderSettings };
   show('view' + name[0].toUpperCase() + name.slice(1));
   map[name]();
 }
@@ -481,7 +598,7 @@ function drawer(title, subtitle, bodyHtml, onMount) {
 async function renderDash() {
   const body = $('dashBody');
   $('dashSub').textContent = OFFICE
-    ? OFFICE.name + ' · ' + ({ owner: 'בעלים', manager: 'מנהל', agent: 'מתווך' }[OFFICE.role] || OFFICE.role)
+    ? OFFICE.name + ' · ' + (ROLE_HE[OFFICE.role] || OFFICE.role)
     : '';
   body.innerHTML = '<p class="loading"><span class="spinner"></span>טוען…</p>';
 
@@ -800,19 +917,21 @@ async function renderProperties() {
       p_q: $('pQ').value.trim() || null,
       p_status: $('pStatus').value || null,
       p_limit: 300,
+      p_purpose: $('pPurpose').value || null,
     });
   } catch (e) { body.innerHTML = '<div class="err">' + esc(e.message) + '</div>'; return; }
 
   rows = rows || [];
   if (!rows.length) {
     body.innerHTML = '<div class="empty"><b>אין נכסים להצגה</b>' +
-      ($('pQ').value || $('pStatus').value ? 'נסה לנקות את המסננים.' : 'הוסף נכס ראשון למלאי.') + '</div>';
+      ($('pQ').value || $('pStatus').value || $('pPurpose').value
+        ? 'נסה לנקות את המסננים.' : 'הוסף נכס ראשון למלאי.') + '</div>';
     return;
   }
 
   const today = new Date().toISOString().slice(0, 10);
   body.innerHTML = '<div class="table-scroll"><table><thead><tr>' +
-    '<th>נכס</th><th>עיר</th><th>חדרים</th><th>מ״ר</th><th>מחיר</th>' +
+    '<th>נכס</th><th>עיר</th><th>חדרים</th><th>מ״ר</th><th>מטרה</th><th>מחיר</th>' +
     '<th>סטטוס</th><th>בלעדיות</th><th>דוח אמת</th></tr></thead><tbody>' +
     rows.map((p) => {
       // An exclusivity that has run out is not an exclusivity. Showing the flag
@@ -824,10 +943,15 @@ async function renderProperties() {
           ? '<span class="pill off">פגה ' + dt(p.exclusivity_until) + '</span>'
           : '<span class="pill on">עד ' + (p.exclusivity_until ? dt(p.exclusivity_until) : 'ללא תאריך') + '</span>';
       }
+      // Sale and rent prices must never read the same — a monthly rent figure
+      // sitting in the same column as a purchase price is exactly the mixing
+      // the P2 accuracy spec forbids.
+      const isRent = p.listing_purpose === 'rent';
       return '<tr class="row" data-id="' + p.id + '">' +
         '<td>' + v(p.title || p.address) + '</td><td>' + v(p.city) + '</td>' +
         '<td class="num">' + v(p.rooms) + '</td><td class="num">' + v(p.area_sqm) + '</td>' +
-        '<td class="num">' + money(p.price) + '</td>' +
+        '<td><span class="pill' + (isRent ? ' on' : '') + '">' + esc(PURPOSE_HE[p.listing_purpose] || 'מכירה') + '</span></td>' +
+        '<td class="num">' + money(p.price) + (isRent && p.price != null ? ' לחודש' : '') + '</td>' +
         '<td><span class="pill">' + esc(PSTATUS_HE[p.status] || p.status) + '</span></td>' +
         '<td>' + excl + '</td>' +
         '<td>' + (p.has_truth_report ? '<span class="pill on">נטען</span>' : '<span class="pill off">טרם</span>') + '</td>' +
@@ -853,7 +977,9 @@ async function openProperty(id) {
       '<div><p class="k">חדרים</p><p class="v">' + v(p.rooms) + '</p></div>' +
       '<div><p class="k">שטח</p><p class="v">' + (p.area_sqm ? p.area_sqm + ' מ״ר' : NA) + '</p></div>' +
       '<div><p class="k">קומה</p><p class="v">' + v(p.floor) + '</p></div>' +
-      '<div><p class="k">מחיר</p><p class="v">' + money(p.price) + '</p></div>' +
+      '<div><p class="k">מטרה</p><p class="v">' + esc(PURPOSE_HE[p.listing_purpose] || 'מכירה') + '</p></div>' +
+      '<div><p class="k">' + (p.listing_purpose === 'rent' ? 'דמי שכירות חודשיים' : 'מחיר מכירה מבוקש') + '</p><p class="v">' +
+        money(p.price) + (p.listing_purpose === 'rent' && p.price != null ? ' לחודש' : '') + '</p></div>' +
       '<div><p class="k">גוש/חלקה</p><p class="v">' +
         (p.gush && p.helka ? esc(p.gush) + '/' + esc(p.helka) : NA) + '</p></div>' +
     '</div>' +
@@ -861,7 +987,26 @@ async function openProperty(id) {
     '<button class="btn btn-sm" id="pTruth">משוך דוח אמת</button></p>' +
     (p.description ? '<p>' + esc(p.description) + '</p>' : '');
 
+  if ((p.images || []).length) {
+    html += '<div style="display:flex;gap:8px;flex-wrap:wrap;margin:0 0 18px">' +
+      p.images.map((src) => '<img src="' + esc(src) + '" alt="תמונת הנכס ב' + esc(p.address || p.title || '') +
+        '" style="width:96px;height:96px;object-fit:cover;border-radius:4px;border:1px solid var(--line-2)" />')
+        .join('') + '</div>';
+  }
+
+  if (p.video_url) {
+    html += '<h2 class="sec">סרטון הנכס</h2>' + videoEmbedHtml(p.video_url);
+  }
+
+  html += '<h2 class="sec">פנורמה אינטראקטיבית 360°</h2><div id="panoBox">' + panoLoadingHtml() + '</div>';
+
+  html += '<h2 class="sec">סיור רחוב</h2><div id="walkBox">' + streetWalkHtml() + '</div>';
+
   html += '<h2 class="sec">דוח האמת — נדל״ן ברגע</h2><div id="truthBox">' + truthHtml(p) + '</div>';
+
+  html += '<h2 class="sec">מעקב אזור — התראה על עסקה חדשה</h2><div id="watchBox">' + watchHtml(p) + '</div>';
+
+  html += '<h2 class="sec">קישור צפייה ללקוח (בלי כניסה)</h2><div id="shareBox">' + shareHtml(p) + '</div>';
 
   html += '<h2 class="sec">עסקאות על הנכס</h2>';
   html += (d.deals || []).length
@@ -870,16 +1015,672 @@ async function openProperty(id) {
         esc((STAGES.find((s) => s.key === x.stage) || {}).label || x.stage) + '</li>').join('') + '</ul>'
     : '<p class="na">אין עסקאות משויכות.</p>';
 
+  html += '<h2 class="sec">מאגר מסמכים לנכס</h2><div id="propDocsBox">' +
+    propDocsHtml(d.documents || []) + '</div>';
+
+  if (p.gush && p.helka) {
+    html += '<h2 class="sec">בקשות נסח טאבו</h2><div id="tabuBox">' +
+      tabuHtml(p, d.tabu_requests || [], d.documents || []) + '</div>';
+
+    html += '<h2 class="sec">בקשות מידע להיתר (תיק מידע)</h2><div id="tikMeidaBox">' +
+      tikMeidaHtml(p, d.tik_meida_requests || [], d.documents || []) + '</div>';
+  }
+
+  html += '<h2 class="sec">ניתוח כדאיות והשקעה</h2><div id="feasBox">' + feasibilityHtml(p) + '</div>';
+
   drawer(p.title || p.address || 'נכס',
          esc(p.address || '') + (p.city ? ' · ' + esc(p.city) : ''), html, (close) => {
     $('pEdit').addEventListener('click', () => { close(); propertyForm(p); });
     $('pTruth').addEventListener('click', () => fetchTruth(p, $('pTruth')));
+    loadPanorama(p);
+    wireStreetWalk(p);
+    wireWatch(p);
+    wireShareBox(p);
+    wirePropDocs(p, d.documents || []);
+    if (p.gush && p.helka) {
+      wireTabu(p, d.tabu_requests || [], d.documents || []);
+      wireTikMeida(p, d.tik_meida_requests || [], d.documents || []);
+    }
+    wireFeasibility(p);
   });
+}
+
+// ── investment feasibility (NADLAN_PRO_מחקר_ואפיון.md module 7,
+// "ניתוח כדאיות והשקעה") ──────────────────────────────────────────────────
+// Pure arithmetic on the property's own listed price plus figures the agent
+// types in — no external source, no RPC, nothing to fetch. Same formulas as
+// 32-nadlan-berega's VIP report (components/report/VipPanel.tsx +
+// lib/purchasetax.ts), ported here because a broker analysing their own
+// listing for a buyer needs exactly the same numbers nadlan-berega already
+// verified: rental yield, a Spitzer-formula mortgage estimate, net monthly
+// cash flow, and purchase tax by the Tax Authority's official brackets.
+// Recomputes live on every input change; nothing is persisted.
+
+// מדרגות מס רכישה — מקור: lib/purchasetax.ts באפליקציה 32-nadlan-berega,
+// שם אומתו מול הוראת ביצוע מיסוי מקרקעין 1/2026 (gov.il) ומול דוגמת חישוב
+// רשמית (דירה יחידה 2,400,000 ₪ -> 15,538 ₪). מוקפאות 15.1.2026–15.1.2028.
+const PURCHASE_TAX_BRACKETS = {
+  single: [
+    { from: 0, to: 1978745, rate: 0 },
+    { from: 1978745, to: 2347040, rate: 3.5 },
+    { from: 2347040, to: 6055070, rate: 5 },
+    { from: 6055070, to: 20183565, rate: 8 },
+    { from: 20183565, to: null, rate: 10 },
+  ],
+  additional: [
+    { from: 0, to: 6055070, rate: 8 },
+    { from: 6055070, to: null, rate: 10 },
+  ],
+};
+
+function calcPurchaseTaxJs(price, buyerType) {
+  if (!Number.isFinite(price) || price <= 0) return null;
+  const brackets = PURCHASE_TAX_BRACKETS[buyerType] || PURCHASE_TAX_BRACKETS.single;
+  let total = 0;
+  const lines = [];
+  for (const b of brackets) {
+    if (price <= b.from) break;
+    const upper = b.to == null ? price : Math.min(price, b.to);
+    const taxable = Math.max(0, upper - b.from);
+    if (taxable <= 0) continue;
+    const tax = (taxable * b.rate) / 100;
+    total += tax;
+    lines.push({ from: b.from, to: b.to, rate: b.rate, tax: Math.round(tax) });
+  }
+  return { total: Math.round(total), effectivePct: Math.round((total / price) * 1000) / 10, lines };
+}
+
+// נוסחת "שפיצר" (תשלום חודשי קבוע) — זהה ל-VipPanel.tsx.
+function calcMortgageJs(price, down, ratePct, years) {
+  if (!price || !ratePct || !years || down < 0 || down >= price) return null;
+  const loan = price - down;
+  const r = ratePct / 100 / 12;
+  const n = years * 12;
+  const monthly = r === 0 ? loan / n : (loan * r) / (1 - Math.pow(1 + r, -n));
+  return {
+    loan,
+    monthly: Math.round(monthly),
+    totalInterest: Math.round(monthly * n - loan),
+    ltv: Math.round((loan / price) * 1000) / 10,
+  };
+}
+
+function feasibilityHtml(p) {
+  // This panel's math (yield vs. a monthly rent estimate, mortgage LTV,
+  // purchase tax) is only meaningful when p.price is a purchase price. For a
+  // rent-purpose listing p.price IS the monthly rent already — running it
+  // through calcPurchaseTaxJs/calcMortgageJs would be exactly the sale/rent
+  // price mixing the P2 accuracy spec forbids, not an estimate error.
+  if (p.listing_purpose === 'rent') {
+    return '<p class="na">ניתוח כדאיות רכישה זמין לנכסים המיועדים למכירה בלבד. ' +
+      'נכס זה מיועד להשכרה — דמי השכירות המבוקשים: ' +
+      (p.price != null ? money(p.price) + ' לחודש' : NA) + '.</p>';
+  }
+  if (!p.price) {
+    return '<p class="na">נדרש מחיר לנכס כדי לחשב תשואה/משכנתא/מס — הוסף מחיר בעריכת הנכס.</p>';
+  }
+  return (
+    '<div class="controls">' +
+      '<label class="f">שכר דירה חודשי משוער (₪)<input id="fs_rent" type="number" min="0" step="100" /></label>' +
+      '<label class="f">הון עצמי (₪)<input id="fs_down" type="number" min="0" step="10000" /></label>' +
+      '<label class="f">ריבית שנתית (%)<input id="fs_rate" type="number" min="0" max="20" step="0.1" /></label>' +
+      '<label class="f">תקופת החזר (שנים)<input id="fs_years" type="number" min="1" max="35" step="1" /></label>' +
+      '<label class="f">הוצאות קבועות חודשיות (₪)<input id="fs_exp" type="number" min="0" step="50" /></label>' +
+      '<label class="f">סוג רכישה<select id="fs_buyer">' +
+        '<option value="single">דירה יחידה</option>' +
+        '<option value="additional">דירה נוספת / משקיע</option>' +
+      '</select></label>' +
+    '</div>' +
+    '<div id="feasOut"></div>' +
+    '<p class="note">אומדן אריתמטי בלבד — לא ייעוץ מס/משכנתא. מס רכישה לפי מדרגות רשמיות ' +
+    'מוקפאות עד 15.1.2028, בלי הנחות אישיות (עולה חדש/נכה/משפחה מרובת ילדים). יש לאמת מול ' +
+    'הסימולטור הרשמי (misim.gov.il) והבנק לפני החלטה.</p>'
+  );
+}
+
+function recomputeFeasibility(p) {
+  const out = $('feasOut');
+  if (!out) return;
+  const price = p.price;
+  const rent = Number($('fs_rent').value) || 0;
+  const down = Number($('fs_down').value) || 0;
+  const rate = Number($('fs_rate').value) || 0;
+  const years = Number($('fs_years').value) || 0;
+  const exp = Number($('fs_exp').value) || 0;
+  const buyer = $('fs_buyer').value;
+
+  const yieldPct = rent > 0 ? Math.round(((rent * 12) / price) * 1000) / 10 : null;
+  const mortgage = calcMortgageJs(price, down, rate, years);
+  const cashFlow = rent > 0 && mortgage ? Math.round(rent - mortgage.monthly - exp) : null;
+  const tax = calcPurchaseTaxJs(price, buyer);
+
+  const tile = (k, val, cls) =>
+    '<div class="kpi"><p class="k">' + k + '</p><p class="v ' + (cls || '') + '">' + val + '</p></div>';
+
+  let html = '<div class="kpis">' +
+    tile('תשואה שנתית ברוטו', yieldPct != null ? yieldPct + '%' : NA) +
+    tile('החזר חודשי משוער', mortgage ? money(mortgage.monthly) : NA) +
+    tile('אחוז מימון (LTV)', mortgage ? mortgage.ltv + '%' : NA, mortgage && mortgage.ltv > 75 ? 'warn' : '') +
+    tile('תזרים חודשי נקי', cashFlow != null ? money(cashFlow) : NA,
+         cashFlow == null ? '' : cashFlow >= 0 ? 'good' : 'warn') +
+    tile('מס רכישה משוער', tax ? money(tax.total) : NA) +
+  '</div>';
+
+  if (mortgage && mortgage.ltv > 75) {
+    html += '<p class="note">אחוז מימון מעל 75% חורג מהתקרה המקובלת לדירה יחידה (הנחיית בנק ' +
+      'ישראל) — ייתכן שהבנק ידרוש הון עצמי גבוה יותר.</p>';
+  }
+
+  out.innerHTML = html;
+}
+
+function wireFeasibility(p) {
+  if (!p.price || p.listing_purpose === 'rent') return;
+  const ids = ['fs_rent', 'fs_down', 'fs_rate', 'fs_years', 'fs_exp', 'fs_buyer'];
+  for (const id of ids) {
+    const el = $(id);
+    if (el) el.addEventListener('input', () => recomputeFeasibility(p));
+  }
+  recomputeFeasibility(p);
+}
+
+// Documents that belong to the property itself (tabu, permit, appraisal…),
+// distinct from `renderDocuments()` below which lists contracts/invoices per
+// deal. Two sources per row: a pasted external link (`url`, the original
+// paste-a-link flow) or a file uploaded to the private `nadlan-pro-docs`
+// bucket (`storage_path`) — private because a tabu extract or an id copy
+// must not sit on a public URL like the listing photos do; opening one mints
+// a short-lived signed URL, which Storage only grants to members of the
+// property's office.
+function propDocsHtml(docs) {
+  const list = docs.length
+    ? '<ul class="timeline">' + docs.map((doc) =>
+        '<li><b>' + esc(doc.name) + '</b> · <span class="pill">' + esc(PDOCCAT_HE[doc.category] || doc.category) + '</span> · ' +
+        (doc.storage_path
+          ? '<button class="btn btn-quiet btn-sm" data-opendoc="' + doc.id + '">פתיחה</button>'
+          : '<a href="' + esc(doc.url) + '" target="_blank" rel="noopener noreferrer">פתיחה</a>') +
+        (doc.notes ? '<br/><span class="na" style="font-size:12px">' + esc(doc.notes) + '</span>' : '') +
+        ' <button class="btn btn-danger btn-sm" data-deldoc="' + doc.id + '" style="margin-inline-start:8px">מחיקה</button>' +
+        '<span class="w"> · ' + dtm(doc.created_at) + '</span></li>').join('') + '</ul>'
+    : '<p class="na">אין עדיין מסמכים על הנכס הזה.</p>';
+
+  const catOpts = Object.entries(PDOCCAT_HE)
+    .map(([k, l]) => '<option value="' + k + '">' + l + '</option>').join('');
+
+  return list +
+    '<div class="controls" style="margin-top:14px">' +
+      '<label class="f">שם המסמך<input id="pd_name" placeholder="למשל: נסח טאבו" /></label>' +
+      '<label class="f">סוג<select id="pd_category">' + catOpts + '</select></label>' +
+      '<label class="f" style="min-width:240px">קישור<input id="pd_url" placeholder="https://..." /></label>' +
+      '<label class="f">או קובץ מהמחשב (PDF / תמונה)' +
+        '<input type="file" id="pd_file" accept="application/pdf,image/jpeg,image/png,image/webp" />' +
+      '</label>' +
+      '<button class="btn btn-sm" id="pdAdd">הוספה</button>' +
+    '</div>';
+}
+
+function wirePropDocs(p, docs) {
+  const box = $('propDocsBox');
+  if (!box) return;
+
+  for (const b of box.querySelectorAll('[data-opendoc]')) {
+    b.addEventListener('click', async () => {
+      const doc = docs.find((d) => d.id === b.dataset.opendoc);
+      if (!doc || !doc.storage_path) return;
+      // The tab must be opened synchronously inside the click, or popup
+      // blockers eat it; the signed URL is set on it once minted.
+      const w = window.open('', '_blank');
+      b.disabled = true;
+      try {
+        const { data, error } = await sb.storage.from('nadlan-pro-docs')
+          .createSignedUrl(doc.storage_path, 3600);
+        if (error) throw error;
+        if (w) w.location = data.signedUrl;
+        else window.open(data.signedUrl, '_blank');
+      } catch (e) {
+        if (w) w.close();
+        toast('פתיחת הקובץ נכשלה: ' + e.message, true);
+      } finally { b.disabled = false; }
+    });
+  }
+
+  for (const b of box.querySelectorAll('[data-deldoc]')) {
+    b.addEventListener('click', async () => {
+      if (!confirm('למחוק את המסמך?')) return;
+      b.disabled = true;
+      try {
+        const doc = docs.find((d) => d.id === b.dataset.deldoc);
+        await rpc('np_property_document_delete', { p_id: b.dataset.deldoc });
+        // The row is the source of truth; the object removal is best-effort
+        // cleanup (an orphaned file is unreachable — no row points at it, and
+        // the bucket is private).
+        if (doc && doc.storage_path) {
+          try { await sb.storage.from('nadlan-pro-docs').remove([doc.storage_path]); } catch (_) {}
+        }
+        const next = docs.filter((doc2) => doc2.id !== b.dataset.deldoc);
+        box.innerHTML = propDocsHtml(next);
+        wirePropDocs(p, next);
+        toast('המסמך נמחק');
+      } catch (e) { toast('המחיקה נכשלה: ' + e.message, true); b.disabled = false; }
+    });
+  }
+
+  const add = $('pdAdd');
+  if (add) add.addEventListener('click', async () => {
+    const file = ($('pd_file') && $('pd_file').files[0]) || null;
+    // A file carries its own name — typing one is optional there, and the
+    // extension is dropped from the default because the shelf shows a title,
+    // not a filename.
+    const name = $('pd_name').value.trim() || (file ? file.name.replace(/\.[^.]+$/, '') : '');
+    const url = $('pd_url').value.trim();
+    if (!name) return toast('צריך שם למסמך', true);
+    if (!url && !file) return toast('צריך קישור או קובץ', true);
+    if (url && file) return toast('או קישור או קובץ — לא שניהם יחד', true);
+    add.disabled = true;
+    try {
+      let storagePath = null;
+      if (file) {
+        const clean = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
+        storagePath = OFFICE.id + '/' + p.id + '/' + Date.now() + '-' + clean;
+        const { error } = await sb.storage.from('nadlan-pro-docs').upload(storagePath, file, {
+          cacheControl: '3600', upsert: false, contentType: file.type || undefined,
+        });
+        if (error) throw error;
+      }
+      const id = await rpc('np_property_document_add', {
+        p: { property_id: p.id, category: $('pd_category').value, name,
+             url: url || null, storage_path: storagePath },
+      });
+      const next = [{ id, category: $('pd_category').value, name, url: url || null,
+                      storage_path: storagePath, notes: null,
+                      created_at: new Date().toISOString() }, ...docs];
+      box.innerHTML = propDocsHtml(next);
+      wirePropDocs(p, next);
+      toast('המסמך נוסף');
+    } catch (e) { toast('ההוספה נכשלה: ' + e.message, true); add.disabled = false; }
+  });
+}
+
+// TABU workflow (core.build_tasks id=11): checkbox+grade -> mgmt task
+// (office owner/manager, not a central platform team -- system 36 has no
+// /admin surface at all, unlike system 32) -> upload nesach + AI research
+// -> view/download + plain-language rights explanation -> attach to client.
+// A TABU extract IS a property document (category='tabu', propDocsHtml above
+// already renders/opens it) -- this only adds the request/status/AI layer on
+// top of the same storage+document row, not a parallel upload path.
+function tabuAnalysisHtml(a) {
+  const items = (arr, render) => arr && arr.length
+    ? '<ul style="margin:4px 0 0;padding-inline-start:18px">' + arr.map(render).join('') + '</ul>' : '';
+  return '<div style="margin-top:8px;padding:10px;border-radius:8px;background:var(--bg-2,#f6f7f9)">' +
+    (a.summary ? '<p style="margin:0 0 6px">' + esc(a.summary) + '</p>' : '') +
+    (a.owners && a.owners.length ? '<p class="k" style="margin:6px 0 0">בעלים</p>' +
+      items(a.owners, (o) => '<li>' + esc(o.name) + (o.share ? ' — ' + esc(o.share) : '') + '</li>') : '') +
+    (a.mortgages && a.mortgages.length ? '<p class="k" style="margin:6px 0 0">משכנתאות</p>' +
+      items(a.mortgages, (m) => '<li>' + esc(m.holder) + (m.amount ? ' — ' + esc(m.amount) : '') + '</li>') : '') +
+    (a.cautionNotes && a.cautionNotes.length ? '<p class="k" style="margin:6px 0 0">הערות אזהרה</p>' +
+      items(a.cautionNotes, (c) => '<li>' + esc(c.kind) + (c.inFavourOf ? ' לטובת ' + esc(c.inFavourOf) : '') + '</li>') : '') +
+    (a.perFloorRights && a.perFloorRights.length ? '<p class="k" style="margin:6px 0 0">פירוט לפי קומה/תת-חלקה</p>' +
+      items(a.perFloorRights, (f) => '<li>' + (f.floor ? 'קומה ' + esc(f.floor) + ' — ' : '') + esc(f.summary) + '</li>') : '') +
+    (a.unreadable && a.unreadable.length ? '<p class="na" style="margin:6px 0 0">לא זוהו בנסח: ' + esc(a.unreadable.join(', ')) + '</p>' : '') +
+    '</div>';
+}
+
+function tabuHtml(p, requests, docs) {
+  const canManage = OFFICE.role === 'owner' || OFFICE.role === 'manager';
+  const docById = (id) => docs.find((d) => d.id === id);
+  const rows = (requests || []).map((r) => {
+    const doc = r.document_id ? docById(r.document_id) : null;
+    const badge = '<span class="pill">' + esc(TABU_STATUS_HE[r.status] || r.status) + '</span>' +
+      (r.grade === 'urgent' ? ' <span class="pill" style="color:#b42318">דחוף</span>' : '');
+    let actions = '';
+    if (r.status === 'pending' && canManage) {
+      actions = '<button class="btn btn-quiet btn-sm" data-tabusent="' + r.id + '">סומן כהוזמן — נשלח לרשם המקרקעין</button>';
+    } else if (r.status === 'sent' && canManage) {
+      actions =
+        '<label class="f">קובץ הנסח (PDF/תמונה)<input type="file" data-tabufile="' + r.id +
+          '" accept="application/pdf,image/jpeg,image/png,image/webp" /></label>' +
+        '<button class="btn btn-sm" data-tabuupload="' + r.id + '" style="margin-inline-start:8px">העלאה + ניתוח AI</button>';
+    } else if (r.status === 'fulfilled' && doc) {
+      actions =
+        '<button class="btn btn-quiet btn-sm" data-tabuopen="' + doc.id + '">פתיחת הנסח</button>' +
+        ' <button class="btn btn-quiet btn-sm" data-tabushare="' + doc.id + '" style="margin-inline-start:6px">🔗 העתקת קישור ללקוח</button>';
+    }
+    const analysisHtml = doc && doc.analysis ? tabuAnalysisHtml(doc.analysis)
+      : doc && doc.analysis_error ? '<p class="na" style="margin-top:8px">ניתוח ה-AI נכשל: ' + esc(doc.analysis_error) + '</p>'
+      : doc ? '<p class="na" style="margin-top:8px">הנסח הועלה, טרם נותח.</p>' : '';
+    return '<li>' + badge + ' · עדיפות ' + esc(TABU_GRADE_HE[r.grade] || r.grade) +
+      (r.notes ? '<br/><span class="na" style="font-size:12px">' + esc(r.notes) + '</span>' : '') +
+      '<span class="w"> · ' + dtm(r.created_at) + '</span>' +
+      (actions ? '<div class="controls" style="margin-top:8px">' + actions + '</div>' : '') +
+      analysisHtml + '</li>';
+  }).join('');
+
+  return (rows ? '<ul class="timeline">' + rows + '</ul>' : '<p class="na">אין עדיין בקשות נסח לנכס הזה.</p>') +
+    '<p style="margin-top:10px"><button class="btn btn-quiet btn-sm" id="tabuAddBtn">+ בקשת נסח טאבו</button></p>' +
+    '<div id="tabuAddBox"></div>';
+}
+
+function wireTabu(p, requests, docs) {
+  const box = $('tabuBox');
+  if (!box) return;
+
+  for (const b of box.querySelectorAll('[data-tabusent]')) {
+    b.addEventListener('click', async () => {
+      b.disabled = true;
+      try {
+        await rpc('np_tabu_request_mark_sent', { p_id: b.dataset.tabusent });
+        toast('סומן כהוזמן — אפשר להעלות את הנסח כשהוא מגיע');
+        openProperty(p.id);
+      } catch (e) { toast('העדכון נכשל: ' + e.message, true); b.disabled = false; }
+    });
+  }
+
+  for (const b of box.querySelectorAll('[data-tabuupload]')) {
+    b.addEventListener('click', async () => {
+      const reqId = b.dataset.tabuupload;
+      const fileInput = box.querySelector('[data-tabufile="' + reqId + '"]');
+      const file = fileInput && fileInput.files[0];
+      if (!file) return toast('יש לבחור קובץ נסח', true);
+      b.disabled = true;
+      try {
+        const clean = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
+        const storagePath = OFFICE.id + '/' + p.id + '/tabu/' + reqId + '/' + Date.now() + '-' + clean;
+        const { error } = await sb.storage.from('nadlan-pro-docs').upload(storagePath, file, {
+          cacheControl: '3600', upsert: false, contentType: file.type || undefined,
+        });
+        if (error) throw error;
+        const docId = await rpc('np_tabu_document_upload', { p: {
+          request_id: reqId, storage_path: storagePath, mime_type: file.type || null,
+          name: 'נסח טאבו — גוש ' + (p.gush || '') + ' חלקה ' + (p.helka || ''),
+        } });
+        toast('הנסח הועלה — מריץ ניתוח AI…');
+        // AI analysis runs through an Edge Function, never straight from the
+        // browser: the Anthropic key lives in core.secrets and the storage
+        // bucket is private. Same call shape as np-send-signature above.
+        const { data: sess } = await sb.auth.getSession();
+        const res = await fetch(SUPABASE_URL + '/functions/v1/np-tabu-document-analyze', {
+          method: 'POST',
+          headers: {
+            apikey: SUPABASE_ANON,
+            Authorization: 'Bearer ' + sess.session.access_token,
+            'content-type': 'application/json',
+          },
+          body: JSON.stringify({ document_id: docId }),
+        });
+        const out = await res.json();
+        if (!res.ok || out.ok === false) toast('הניתוח לא הושלם: ' + (out.error || 'שגיאה'), true);
+        else toast('הניתוח הושלם');
+        openProperty(p.id);
+      } catch (e) { toast('ההעלאה נכשלה: ' + e.message, true); b.disabled = false; }
+    });
+  }
+
+  for (const b of box.querySelectorAll('[data-tabuopen]')) {
+    b.addEventListener('click', async () => {
+      const doc = docs.find((d) => d.id === b.dataset.tabuopen);
+      if (!doc || !doc.storage_path) return;
+      const w = window.open('', '_blank');
+      b.disabled = true;
+      try {
+        const { data, error } = await sb.storage.from('nadlan-pro-docs').createSignedUrl(doc.storage_path, 3600);
+        if (error) throw error;
+        if (w) w.location = data.signedUrl; else window.open(data.signedUrl, '_blank');
+      } catch (e) {
+        if (w) w.close();
+        toast('פתיחת הקובץ נכשלה: ' + e.message, true);
+      } finally { b.disabled = false; }
+    });
+  }
+
+  for (const b of box.querySelectorAll('[data-tabushare]')) {
+    b.addEventListener('click', async () => {
+      const doc = docs.find((d) => d.id === b.dataset.tabushare);
+      if (!doc || !doc.storage_path) return;
+      b.disabled = true;
+      try {
+        // Same "copy a link" pattern already used for team-invite join links —
+        // this app has no email-sending infrastructure anywhere (team invites
+        // are copy-a-link only too), so "attach to client" means a link the
+        // broker sends themselves, not an automated send.
+        const { data, error } = await sb.storage.from('nadlan-pro-docs').createSignedUrl(doc.storage_path, 3600 * 24 * 3);
+        if (error) throw error;
+        await navigator.clipboard.writeText(data.signedUrl);
+        toast('הקישור הועתק — תקף ל-72 שעות, אפשר לשלוח ללקוח');
+      } catch (e) { toast('יצירת הקישור נכשלה: ' + e.message, true); } finally { b.disabled = false; }
+    });
+  }
+
+  const addBtn = $('tabuAddBtn');
+  if (addBtn) addBtn.addEventListener('click', () => {
+    addBtn.style.display = 'none';
+    $('tabuAddBox').innerHTML =
+      '<div id="tabuErr"></div><div class="controls">' +
+        '<label class="f">עדיפות<select id="tabu_grade">' +
+          Object.entries(TABU_GRADE_HE).map(([k, l]) => '<option value="' + k + '">' + l + '</option>').join('') +
+        '</select></label>' +
+        '<label class="f" style="min-width:220px">הערה<input id="tabu_notes" /></label>' +
+        '<button class="btn btn-sm" id="tabuSave">שליחת בקשה</button>' +
+      '</div>';
+    $('tabuSave').addEventListener('click', async () => {
+      $('tabuSave').disabled = true;
+      try {
+        await rpc('np_tabu_request_create', { p: {
+          property_id: p.id, grade: $('tabu_grade').value, notes: $('tabu_notes').value.trim(),
+        } });
+        toast('הבקשה נשלחה');
+        openProperty(p.id);
+      } catch (e) {
+        $('tabuErr').innerHTML = '<div class="err">' + esc(e.message) + '</div>';
+        $('tabuSave').disabled = false;
+      }
+    });
+  });
+}
+
+// tik-meida-le-heter workflow (core.build_tasks id=12, part 2): request ->
+// mgmt (office owner/manager, same "mgmt" as the TABU workflow above) ->
+// issue (upload) -> view/download + attach to client. No AI-analysis step
+// here, unlike TABU: system 32's own tik-meida workflow (0152) has none
+// either, because a tik meida is an official committee document, not a raw
+// extract needing parsing -- upload IS the final "issue" step, so a request
+// auto-fulfils the moment the file lands (np_tikmeida_document_upload,
+// migration 0155). The issued file is a property document, category='permit'
+// (0105 already reserves this exact category for planning-info files).
+function tikMeidaHtml(p, requests, docs) {
+  const canManage = OFFICE.role === 'owner' || OFFICE.role === 'manager';
+  const docById = (id) => docs.find((d) => d.id === id);
+  const rows = (requests || []).map((r) => {
+    const doc = r.document_id ? docById(r.document_id) : null;
+    const badge = '<span class="pill">' + esc(TIKMEIDA_STATUS_HE[r.status] || r.status) + '</span>' +
+      (r.grade === 'urgent' ? ' <span class="pill" style="color:#b42318">דחוף</span>' : '');
+    let actions = '';
+    if (r.status === 'pending' && canManage) {
+      actions = '<button class="btn btn-quiet btn-sm" data-tikmeidasent="' + r.id + '">סומן כהוגש — הוגש לוועדה המקומית</button>';
+    } else if (r.status === 'sent' && canManage) {
+      actions =
+        '<label class="f">קובץ תיק המידע (PDF/תמונה)<input type="file" data-tikmeidafile="' + r.id +
+          '" accept="application/pdf,image/jpeg,image/png,image/webp" /></label>' +
+        '<button class="btn btn-sm" data-tikmeidaupload="' + r.id + '" style="margin-inline-start:8px">העלאה</button>';
+    } else if (r.status === 'fulfilled' && doc) {
+      actions =
+        '<button class="btn btn-quiet btn-sm" data-tikmeidaopen="' + doc.id + '">פתיחת תיק המידע</button>' +
+        ' <button class="btn btn-quiet btn-sm" data-tikmeidashare="' + doc.id + '" style="margin-inline-start:6px">🔗 העתקת קישור ללקוח</button>';
+    }
+    return '<li>' + badge + ' · עדיפות ' + esc(TABU_GRADE_HE[r.grade] || r.grade) +
+      (r.notes ? '<br/><span class="na" style="font-size:12px">' + esc(r.notes) + '</span>' : '') +
+      '<span class="w"> · ' + dtm(r.created_at) + '</span>' +
+      (actions ? '<div class="controls" style="margin-top:8px">' + actions + '</div>' : '') + '</li>';
+  }).join('');
+
+  return (rows ? '<ul class="timeline">' + rows + '</ul>' : '<p class="na">אין עדיין בקשות מידע להיתר לנכס הזה.</p>') +
+    '<p style="margin-top:10px"><button class="btn btn-quiet btn-sm" id="tikMeidaAddBtn">+ בקשת מידע להיתר (תיק מידע)</button></p>' +
+    '<div id="tikMeidaAddBox"></div>';
+}
+
+function wireTikMeida(p, requests, docs) {
+  const box = $('tikMeidaBox');
+  if (!box) return;
+
+  for (const b of box.querySelectorAll('[data-tikmeidasent]')) {
+    b.addEventListener('click', async () => {
+      b.disabled = true;
+      try {
+        await rpc('np_tikmeida_request_mark_sent', { p_id: b.dataset.tikmeidasent });
+        toast('סומן כהוגש — אפשר להעלות את תיק המידע כשהוא יתקבל');
+        openProperty(p.id);
+      } catch (e) { toast('העדכון נכשל: ' + e.message, true); b.disabled = false; }
+    });
+  }
+
+  for (const b of box.querySelectorAll('[data-tikmeidaupload]')) {
+    b.addEventListener('click', async () => {
+      const reqId = b.dataset.tikmeidaupload;
+      const fileInput = box.querySelector('[data-tikmeidafile="' + reqId + '"]');
+      const file = fileInput && fileInput.files[0];
+      if (!file) return toast('יש לבחור קובץ תיק מידע', true);
+      b.disabled = true;
+      try {
+        const clean = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
+        const storagePath = OFFICE.id + '/' + p.id + '/tikmeida/' + reqId + '/' + Date.now() + '-' + clean;
+        const { error } = await sb.storage.from('nadlan-pro-docs').upload(storagePath, file, {
+          cacheControl: '3600', upsert: false, contentType: file.type || undefined,
+        });
+        if (error) throw error;
+        await rpc('np_tikmeida_document_upload', { p: {
+          request_id: reqId, storage_path: storagePath, mime_type: file.type || null,
+          name: 'תיק מידע להיתר — גוש ' + (p.gush || '') + ' חלקה ' + (p.helka || ''),
+        } });
+        toast('תיק המידע הועלה');
+        openProperty(p.id);
+      } catch (e) { toast('ההעלאה נכשלה: ' + e.message, true); b.disabled = false; }
+    });
+  }
+
+  for (const b of box.querySelectorAll('[data-tikmeidaopen]')) {
+    b.addEventListener('click', async () => {
+      const doc = docs.find((d) => d.id === b.dataset.tikmeidaopen);
+      if (!doc || !doc.storage_path) return;
+      const w = window.open('', '_blank');
+      b.disabled = true;
+      try {
+        const { data, error } = await sb.storage.from('nadlan-pro-docs').createSignedUrl(doc.storage_path, 3600);
+        if (error) throw error;
+        if (w) w.location = data.signedUrl; else window.open(data.signedUrl, '_blank');
+      } catch (e) {
+        if (w) w.close();
+        toast('פתיחת הקובץ נכשלה: ' + e.message, true);
+      } finally { b.disabled = false; }
+    });
+  }
+
+  for (const b of box.querySelectorAll('[data-tikmeidashare]')) {
+    b.addEventListener('click', async () => {
+      const doc = docs.find((d) => d.id === b.dataset.tikmeidashare);
+      if (!doc || !doc.storage_path) return;
+      b.disabled = true;
+      try {
+        const { data, error } = await sb.storage.from('nadlan-pro-docs').createSignedUrl(doc.storage_path, 3600 * 24 * 3);
+        if (error) throw error;
+        await navigator.clipboard.writeText(data.signedUrl);
+        toast('הקישור הועתק — תקף ל-72 שעות, אפשר לשלוח ללקוח');
+      } catch (e) { toast('יצירת הקישור נכשלה: ' + e.message, true); } finally { b.disabled = false; }
+    });
+  }
+
+  const addBtn = $('tikMeidaAddBtn');
+  if (addBtn) addBtn.addEventListener('click', () => {
+    addBtn.style.display = 'none';
+    $('tikMeidaAddBox').innerHTML =
+      '<div id="tikMeidaErr"></div><div class="controls">' +
+        '<label class="f">עדיפות<select id="tikmeida_grade">' +
+          Object.entries(TABU_GRADE_HE).map(([k, l]) => '<option value="' + k + '">' + l + '</option>').join('') +
+        '</select></label>' +
+        '<label class="f" style="min-width:220px">הערה<input id="tikmeida_notes" /></label>' +
+        '<button class="btn btn-sm" id="tikMeidaSave">שליחת בקשה</button>' +
+      '</div>';
+    $('tikMeidaSave').addEventListener('click', async () => {
+      $('tikMeidaSave').disabled = true;
+      try {
+        await rpc('np_tikmeida_request_create', { p: {
+          property_id: p.id, grade: $('tikmeida_grade').value, notes: $('tikmeida_notes').value.trim(),
+        } });
+        toast('הבקשה נשלחה');
+        openProperty(p.id);
+      } catch (e) {
+        $('tikMeidaErr').innerHTML = '<div class="err">' + esc(e.message) + '</div>';
+        $('tikMeidaSave').disabled = false;
+      }
+    });
+  });
+}
+
+// The office's client-facing counterpart of the signing link: a random token
+// gating a SECURITY DEFINER function (`np_property_public`), same shape as
+// `np_sign_fetch`, but for viewing a listing instead of signing a document.
+// `share_enabled` is the one switch — off by default on every property, and
+// the toggle here is the only thing in the app that flips it.
+function shareHtml(p) {
+  // Hardcoded origin, matching the existing signing-link pattern above
+  // (contract "link" at data-mail wiring) rather than location.origin — the
+  // link is meant to be copied to a client, and must be the real public
+  // domain even if the office happens to be testing from a preview URL.
+  const url = 'https://more30.com/tivuch/listing.html?t=' + encodeURIComponent(p.share_token || '');
+  if (p.share_enabled) {
+    return '<p class="sub" style="margin:0 0 10px">הקישור פעיל — כל מי שמחזיק בו יכול לצפות בפרטי הנכס בלי כניסה למערכת.</p>' +
+      '<div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">' +
+        '<input readonly value="' + esc(url) + '" data-copy="' + esc(url) + '" style="flex:1;min-width:220px" />' +
+        '<button class="btn btn-sm" data-copybtn="' + esc(url) + '">העתק קישור</button>' +
+        '<button class="btn btn-quiet btn-sm" id="shareToggle" data-next="false">בטל שיתוף</button>' +
+      '</div>';
+  }
+  return '<p class="sub" style="margin:0 0 10px">הקישור כבוי כרגע — הלקוח לא יכול לצפות בנכס הזה בלי כניסה.</p>' +
+    '<button class="btn btn-sm" id="shareToggle" data-next="true">הפעל קישור צפייה</button>';
+}
+
+function wireShareBox(p) {
+  const box = $('shareBox');
+  for (const b of box.querySelectorAll('[data-copybtn]')) {
+    b.addEventListener('click', async () => {
+      try { await navigator.clipboard.writeText(b.dataset.copybtn); toast('הקישור הועתק'); }
+      catch (e) {
+        const inp = box.querySelector('[data-copy="' + b.dataset.copybtn + '"]');
+        if (inp) { inp.select(); toast('בחר והעתק ידנית (Ctrl+C)'); }
+      }
+    });
+  }
+  const t = $('shareToggle');
+  if (t) {
+    t.addEventListener('click', async () => {
+      const next = t.dataset.next === 'true';
+      t.disabled = true;
+      try {
+        const r = await rpc('np_property_share_set', { p_id: p.id, p_enabled: next });
+        p.share_enabled = r.share_enabled;
+        p.share_token = r.share_token;
+        box.innerHTML = shareHtml(p);
+        wireShareBox(p);
+        toast(next ? 'הקישור הופעל' : 'הקישור בוטל');
+        if (VIEW === 'properties') renderProperties();
+      } catch (e) {
+        toast('הפעולה נכשלה: ' + e.message, true);
+        t.disabled = false;
+      }
+    });
+  }
 }
 
 // The truth engine is system 32 and stays system 32. This never recomputes a
 // valuation — it calls /nadlan/api/report (same origin under more30.com, so no
 // proxy and no key) and stores the answer with the time it was given.
+//
+// ⚠️ Fixed 25/08/2026: every row here used to read fields that do not exist on
+// system 32's actual PropertyReport (`r.title.address`, `r.key.gush/helka`,
+// `r.parcelTransactions`, `r.priceBand`, `r.opportunityScore` — none of these
+// are real keys, see apps/32-nadlan-berega/lib/buildreport.ts's PropertyReport
+// interface). v() silently rendered "לא זמין" for all of them, so this panel
+// has shown almost nothing since module 0 shipped. Real field names: title.
+// {headline,gush,helka}, soldDeals[], and — the actual §2 "smart valuation"
+// module the spec calls for — the `valuation` object from lib/valuation.ts.
 function truthHtml(p) {
   if (p.truth_report_error) {
     return '<div class="note"><b>הדוח לא נטען.</b> ' + esc(p.truth_report_error) +
@@ -891,18 +1692,579 @@ function truthHtml(p) {
       '<p class="why">המערכת הזו לא מחשבת שווי בעצמה — היא שואלת את מנוע האמת ושומרת את התשובה עם השעה.</p></div>';
   }
   const r = p.truth_report;
+  const address = (r.title && r.title.headline) ||
+    (r.title && [r.title.streetDisplay, r.title.houseNumber, r.title.city].filter(Boolean).join(' ')) || null;
+  const gush = r.title && r.title.gush;
+  const helka = r.title && r.title.helka;
+  const dealsCount = Array.isArray(r.soldDeals) ? r.soldDeals.length : null;
   const rows = [
-    ['כתובת מזוהה', r.title && r.title.address],
-    ['גוש/חלקה', r.key && r.key.gush ? r.key.gush + '/' + (r.key.helka || '') : null],
-    ['עסקאות בחלקה', r.parcelTransactions && r.parcelTransactions.length],
-    ['טווח מחירים', r.priceBand && r.priceBand.label],
-    ['ציון הזדמנות', r.opportunityScore],
+    ['כתובת מזוהה', address],
+    ['גוש/חלקה', gush ? gush + '/' + (helka || '') : null],
+    ['עסקאות שנמצאו באזור', dealsCount],
   ];
+  // P2 ACCURACY SPEC v2 §3 (core.projects #33): system 32 flags when the
+  // building was matched by gush/helka rather than by street name, and the
+  // street registered on its deals doesn't match any known name/alias of the
+  // street the broker searched (renamed/misspelled street). That flag
+  // (r.building.streetNameMismatch) already reaches this tier=basic response
+  // (buildreport.ts computes it unconditionally) but nothing here ever
+  // rendered it — a broker had no way to know the comparables below might be
+  // on a differently-named street.
+  const mismatchHtml = (r.building && r.building.streetNameMismatch)
+    ? '<div class="note"><b>שים לב:</b> ' + esc(r.building.note) + '</div>'
+    : '';
   return '<div class="table-scroll"><table><tbody>' +
     rows.map(([k, val]) => '<tr><th>' + k + '</th><td>' + v(val) + '</td></tr>').join('') +
     '</tbody></table></div>' +
+    mismatchHtml +
+    // val.mid is a SALE-value estimate — diffing it against a monthly rent
+    // figure (listing_purpose='rent') would silently mix the two prices the
+    // P2 spec forbids, and would look like a huge, wrong under-pricing flag.
+    valuationHtml(r.valuation, p.listing_purpose === 'rent' ? null : p.price) +
+    potentialHtml(r.categories) +
     '<p class="sub" style="font-size:12px;margin-top:8px">נמשך: ' + dtm(p.truth_report_at) +
     ' · מקור: מערכת 32, "נדל״ן ברגע".</p>';
+}
+
+// NADLAN_PRO_מחקר_ואפיון.md module 2, "הערכת שווי חכמה (מול יד2)": range +
+// certainty + source for every number, positioned against calculators that
+// give a single figure with no explanation. System 32 already computes
+// exactly this (lib/valuation.ts) — this only renders the object the truth
+// report already carries; no valuation math happens in this file.
+function valuationHtml(val, askPrice) {
+  if (!val) return '';
+  const tile = (k, value, cls) =>
+    '<div class="kpi"><p class="k">' + k + '</p><p class="v ' + (cls || '') + '">' + value + '</p></div>';
+
+  if (val.notEnoughData) {
+    let html = '<h3 class="sec" style="font-size:14px;margin-top:18px">הערכת שווי (מודול 2)</h3>' +
+      '<p class="na">' + esc(val.notEnoughData) + '</p>';
+    if (val.regional) {
+      html += '<div class="kpis">' +
+        tile('מחיר למ״ר אזורי עדכני', money(val.regional.medianPerSqm)) +
+        tile('מבוסס על', val.regional.count + ' עסקאות') +
+      '</div>' +
+      '<p class="sub" style="font-size:12px;margin-top:6px">' + esc(val.regional.windowLabel) +
+        (val.regional.latestDate ? ' · עסקה אחרונה: ' + esc(val.regional.latestDate) : '') + '</p>';
+    }
+    return html;
+  }
+
+  const diffPct = askPrice && val.mid
+    ? Math.round(((askPrice - val.mid) / val.mid) * 1000) / 10
+    : null;
+  // P2 ACCURACY SPEC v2 §1 (core.projects #33): "implausible-ratio warning
+  // (e.g. 1 NIS)" — same 0.2x–5x band as lib/buildreport.ts's
+  // plausibleAgainstMarket (32), applied here to the office's own entered
+  // price vs the registered-deals estimate. A typo (missing digits, stray
+  // "1") produces a diffPct so extreme that the old code below colored it
+  // "good" (looks like a bargain) instead of flagging a likely data-entry
+  // error — a ratio this far off is never a real negotiation outcome.
+  const implausible = !!(askPrice && val.mid && (askPrice < val.mid * 0.2 || askPrice > val.mid * 5));
+  return '<h3 class="sec" style="font-size:14px;margin-top:18px">הערכת שווי (מודול 2) ' +
+      '<span class="pill' + (val.certainty === 'verified' ? ' on' : '') + '">' +
+      (val.certainty === 'verified' ? 'מאומת — עסקה על הנכס עצמו' : 'הערכה — ' + esc(val.basis.label)) +
+      '</span></h3>' +
+    '<div class="kpis">' +
+      tile('טווח שווי', money(val.low) + ' – ' + money(val.high)) +
+      tile('אומדן מרכזי', money(val.mid)) +
+      tile('מחיר למ״ר', money(val.medianPerSqm)) +
+      (diffPct != null ? tile('מבוקש מול האומדן', (diffPct > 0 ? '+' : '') + diffPct + '%',
+          implausible ? 'warn' : diffPct > 10 ? 'warn' : diffPct < -10 ? 'good' : '') : '') +
+    '</div>' +
+    '<p class="sub" style="font-size:12px;margin-top:8px">' + esc(val.explanation) + '</p>' +
+    (implausible ? '<p class="note"><b>שים לב:</b> המחיר שהוזן לנכס (' + money(askPrice) +
+        ') רחוק באופן קיצוני מהאומדן — יחס כזה כמעט תמיד מעיד על טעות הקלדה (למשל ספרה חסרה) ' +
+        'ולא על מחיר עסקה אמיתי. כדאי לבדוק את השדה "מחיר" בכרטיס הנכס.</p>' : '') +
+    (val.wideSpread ? '<p class="note">' + esc(val.wideSpread) + '</p>' : '') +
+    comparablesHtml(val.comparables) +
+    comparablesTrendHtml(val.comparables);
+}
+
+// P2 ACCURACY SPEC §E (core.projects #33): "a comparable-deals table
+// (comparison of transactions) with adjustments" — required on system 36 too
+// ("real-estate 32 + 36"), same as the consumer report's ValuationPanel.tsx.
+// val.comparables already reaches this tier=basic response unfiltered
+// (lib/valuation.ts's valuate() runs unconditionally in buildReport, and the
+// API route spreads the whole report) — this only renders what a broker's
+// own drawer already receives on every "משוך דוח אמת" click, no new call.
+function comparablesHtml(comparables) {
+  if (!Array.isArray(comparables) || !comparables.length) return '';
+  return '<h4 class="sec" style="font-size:13px;margin-top:14px">' +
+      comparables.length + ' העסקאות שההערכה נשענת עליהן</h4>' +
+    '<div class="table-scroll"><table><thead><tr>' +
+      '<th>תאריך</th><th>כתובת</th><th>גוש/חלקה</th><th>קומה</th>' +
+      '<th>שטח</th><th>חדרים</th><th>קרבה לנכס</th><th>מחיר</th><th>₪ למ״ר</th>' +
+    '</tr></thead><tbody>' +
+    comparables.map((d) =>
+      '<tr><td>' + dt(d.date) + '</td>' +
+      '<td>' + v(d.address) + '</td>' +
+      '<td>' + v(d.parcelLabel) + '</td>' +
+      '<td>' + v(d.floor) + '</td>' +
+      '<td>' + v(d.areaSqm) + '</td>' +
+      '<td>' + v(d.rooms) + '</td>' +
+      '<td>' + v(d.proximityLabel) + '</td>' +
+      '<td>' + money(d.price) + '</td>' +
+      '<td>' + money(d.pricePerSqm) + '</td></tr>'
+    ).join('') +
+    '</tbody></table></div>';
+}
+
+// P2 ACCURACY SPEC §E (core.projects #33): "...a price-trend chart for the
+// street/neighborhood" — the chart half of the same sentence the table above
+// covers. Built purely from the same val.comparables array (no new fetch, no
+// new source: the exact deals valuate() already picked, in its own priority
+// order property→building→street→area). This file has no charting library,
+// so a minimal inline SVG polyline stands in — same data-or-nothing rule as
+// everywhere else here: fewer than 3 dated, priced points renders nothing.
+function comparablesTrendHtml(comparables) {
+  const points = (Array.isArray(comparables) ? comparables : [])
+    .filter((d) => d.date && d.pricePerSqm != null)
+    .map((d) => ({ t: new Date(d.date).getTime(), v: d.pricePerSqm }))
+    .filter((p) => Number.isFinite(p.t))
+    .sort((a, b) => a.t - b.t);
+  if (points.length < 3) return '';
+
+  const W = 640, H = 140, PAD = 28;
+  const minT = points[0].t, maxT = points[points.length - 1].t;
+  const minV = Math.min.apply(null, points.map((p) => p.v));
+  const maxV = Math.max.apply(null, points.map((p) => p.v));
+  const spanT = Math.max(1, maxT - minT);
+  const spanV = Math.max(1, maxV - minV);
+  const x = (t) => PAD + ((t - minT) / spanT) * (W - 2 * PAD);
+  const y = (val) => H - PAD - ((val - minV) / spanV) * (H - 2 * PAD);
+  const poly = points.map((p) => x(p.t) + ',' + y(p.v)).join(' ');
+  const dots = points.map((p) =>
+    '<circle cx="' + x(p.t) + '" cy="' + y(p.v) + '" r="3" fill="#14B88A" />'
+  ).join('');
+
+  const first = points[0].v, last = points[points.length - 1].v;
+  const changePct = first ? Math.round(((last - first) / first) * 1000) / 10 : null;
+  const changeHtml = changePct != null
+    ? ' <span style="font-size:12px;color:var(--muted)">שינוי בין העסקה המוקדמת לעדכנית: <b style="color:' +
+      (changePct >= 0 ? '#14B88A' : '#E0574E') + '">' + (changePct > 0 ? '+' : '') + changePct + '%</b></span>'
+    : '';
+
+  return '<h4 class="sec" style="font-size:13px;margin-top:14px">מגמת מחיר למ״ר בעסקאות ההשוואה' + changeHtml + '</h4>' +
+    '<svg viewBox="0 0 ' + W + ' ' + H + '" style="width:100%;max-width:640px;height:140px" dir="ltr">' +
+      '<polyline points="' + poly + '" fill="none" stroke="#14B88A" stroke-width="2" />' +
+      dots +
+    '</svg>' +
+    '<p class="sub" style="font-size:11px;margin-top:2px">' + points.length + ' עסקאות בעלות תאריך ומחיר למ״ר · ' +
+      money(minV) + ' – ' + money(maxV) + ' ₪ למ״ר · ' + dt(points[0].t) + ' – ' + dt(points[points.length - 1].t) +
+    '</p>';
+}
+
+// NADLAN_PRO_מחקר_ואפיון.md module 7, "ניתוח כדאיות והשקעה" promises
+// "פוטנציאל השבחה (תב״ע/הפשרה)" alongside yield/mortgage — feasibilityHtml()
+// above only covers yield/mortgage/tax, never zoning or urban-renewal upside.
+// System 32's report already computes exactly this, unconditionally, in its
+// 'potential' category (lib/buildreport.ts: checkRenewal + queryPlanningAtPoint
+// run regardless of tier — they're free government sources, not paid ones — so
+// this data is already sitting in every r.categories the tier=basic call above
+// receives; it was just never rendered here). Skips facts with no value, same
+// as comparablesHtml/comparablesTrendHtml above skip empty input.
+function potentialHtml(categories) {
+  const cat = Array.isArray(categories) ? categories.find((c) => c.key === 'potential') : null;
+  const facts = (cat && Array.isArray(cat.facts) ? cat.facts : [])
+    .filter((f) => f.value !== null && f.value !== undefined && f.value !== '');
+  if (!facts.length) return '';
+  return '<h3 class="sec" style="font-size:14px;margin-top:18px">פוטנציאל השבחה (תב״ע / התחדשות עירונית)</h3>' +
+    '<div class="table-scroll"><table><tbody>' +
+    facts.map((f) =>
+      '<tr><th>' + esc(f.label) + '</th><td>' + v(f.value) + (f.unit ? ' ' + esc(f.unit) : '') + '</td></tr>'
+    ).join('') +
+    '</tbody></table></div>' +
+    '<p class="sub" style="font-size:12px;margin-top:6px">מקור: מרשם התכניות (XPLAN) ומפת ההתחדשות העירונית של ' +
+    'משרד הבינוי — אותם מקורות שדוח האמת המלא של מערכת 32 משתמש בהם.</p>';
+}
+
+// P2 FEATURE (core.projects #33, owner 25/08/2026): interactive 360° street
+// panorama on every property page, for systems 32 AND 36. System 32 already
+// shipped panel §1 on its own consumer report (PanoramaPanel.tsx), gated to
+// its own VIP tier since there it rides inside a full paid report. A broker's
+// own inventory here has no such tier — but calling system 32's full
+// /nadlan/api/report at tier=vip just to unlock the panorama would trigger
+// every paid source on that report (Apify listings, Places, Distance Matrix)
+// on every drawer open, which violates the owner's explicit "no cost beyond
+// existing key" for this exact feature. So system 32 grew a second, narrow
+// endpoint (/api/panorama-lookup, lib/panoramalookup.ts) that resolves only
+// a point + Street View coverage using the same free sources the free tier
+// already uses (GovMap/Nominatim/cadastre + free Street View metadata check,
+// Mapillary fallback) — no tier, no paid call. This just renders that.
+function panoLoadingHtml() {
+  return '<p class="loading"><span class="spinner"></span>מאתר פנורמה…</p>';
+}
+
+function panoHtml(out) {
+  if (!out || !out.available) {
+    return '<p class="na">אין כיסוי פנורמה בנקודה המדויקת הזו (לא ב-Google Street View ולא ב-Mapillary).</p>';
+  }
+  if (out.source === 'google') {
+    return '<iframe src="/nadlan/api/panorama-embed?lat=' + encodeURIComponent(out.lat) +
+        '&lng=' + encodeURIComponent(out.lng) + '" title="פנורמת רחוב אינטראקטיבית" loading="lazy" allowfullscreen ' +
+        'referrerpolicy="no-referrer-when-downgrade" ' +
+        'style="width:100%;height:360px;border:0;border-radius:8px;display:block"></iframe>' +
+      '<p class="sub" style="font-size:12px;margin-top:6px">' + (out.date ? 'צולם ' + esc(out.date) + '. ' : '') +
+      'תצוגה חיה מ-Google Street View — ניתן לגרור כדי להסתובב ולהתקרב.</p>';
+  }
+  return '<img src="' + esc(out.mapillaryImageUrl) + '" alt="תצלום רחוב" loading="lazy" ' +
+      'style="width:100%;max-height:360px;object-fit:cover;border-radius:8px;display:block" />' +
+    '<p class="sub" style="font-size:12px;margin-top:6px">' + (out.date ? 'צולם ' + esc(out.date) + '. ' : '') +
+    'תצלום רחוב סטטי מ-Mapillary — אין כיסוי Google Street View בנקודה זו.</p>';
+}
+
+async function loadPanorama(p) {
+  const box = $('panoBox');
+  if (!box) return;
+  const q = [p.address, p.city].filter(Boolean).join(' ') ||
+            (p.gush && p.helka ? 'גוש ' + p.gush + ' חלקה ' + p.helka : '');
+  if (!q) {
+    box.innerHTML = '<p class="na">אין כתובת או גוש/חלקה לאיתור פנורמה.</p>';
+    return;
+  }
+  try {
+    // Same origin as /nadlan/api/report above, so a plain fetch with no key.
+    const res = await fetch('/nadlan/api/panorama-lookup?q=' + encodeURIComponent(q));
+    const out = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error(out.error || ('שגיאה ' + res.status));
+    box.innerHTML = panoHtml(out);
+  } catch (e) {
+    box.innerHTML = '<p class="na">הפנורמה לא נטענה: ' + esc(e.message || String(e)) + '</p>';
+  }
+}
+
+// P2 FEATURE item 2 (core.projects #33, 25/08/2026) asked for an auto-generated
+// street video; ffmpeg/node_modules are still unavailable to build that here
+// (see apps/32-nadlan-berega/CLAUDE.md). System 32 already shipped the same
+// honest interim on its own consumer report — streetWalk in buildreport.ts +
+// StreetWalkPanel.tsx: a carousel of real, dated Street View frames along the
+// street, labeled as a sequence, not a video. This mirrors it here via the
+// same free "lookup" pattern as the panorama panel above
+// (/api/streetwalk-lookup, lib/panoramalookup.ts lookupStreetWalk finds the
+// points using only free Street View metadata checks). Unlike the panorama
+// embed (unbilled), each displayed frame is an actual Static Street View
+// image fetched through the existing /api/image proxy, which IS billed per
+// call — so this stays behind a manual "הצג סיור רחוב" button (same
+// cost-conscious pattern as "משוך דוח אמת") instead of auto-loading like the
+// free panorama panel does.
+function streetWalkHtml() {
+  return '<p style="margin:0"><button class="btn btn-sm" id="walkLoad">הצג סיור רחוב</button></p>';
+}
+
+// build_tasks id=9 (core.projects #33, system 36 priority 20 — the "port to
+// 36" half of id=2, which shipped the recording+cache on system 32 first;
+// see 32's CLAUDE.md "מטמון סיור רחוב"). system 32's /api/street-video is a
+// public, unauthenticated cache keyed by its own saved-report `slug` — the
+// exact same public origin already used above for report/streetwalk-lookup/
+// image, so this needs no new server route, schema, or bucket: it reuses
+// 32's cache as-is. `permalink` (the slug) only exists after "משוך דוח אמת"
+// has actually saved a report for this property (see fetchTruth mutating
+// `p.truth_report` in place) — without it the record button stays hidden,
+// same gate as StreetWalkPanel.tsx.
+const WALK_CAN_GENERATE = typeof MediaRecorder !== 'undefined' && !!MediaRecorder.isTypeSupported &&
+  typeof HTMLCanvasElement !== 'undefined' && 'captureStream' in HTMLCanvasElement.prototype;
+
+function pickWalkRecorderMimeType() {
+  if (!WALK_CAN_GENERATE) return null;
+  const candidates = ['video/mp4;codecs=avc1', 'video/mp4', 'video/webm;codecs=vp9', 'video/webm'];
+  return candidates.find((t) => MediaRecorder.isTypeSupported(t)) || null;
+}
+
+function loadWalkImage(src) {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onload = () => resolve(img);
+    img.onerror = () => reject(new Error('load-failed'));
+    img.src = src;
+  });
+}
+
+const walkSleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+function walkVideoHtml(state) {
+  return '<video id="walkVideo" src="' + esc(state.video.url) + '" controls muted loop playsinline ' +
+      'style="width:100%;display:block;background:#000;border-radius:8px"></video>' +
+    '<p class="sub" style="font-size:11px;margin-top:6px">' + (state.date ? 'צולם ' + esc(state.date) + '. ' : '') +
+      'סרטון קצר מדגימת תמונות Street View אמיתיות לאורך הרחוב.</p>';
+}
+
+function walkGenButtonHtml(state) {
+  if (!WALK_CAN_GENERATE || !state.permalink) return '';
+  return '<div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px;' +
+      'border-top:1px solid var(--line-2);padding:8px 0 0;margin-top:8px">' +
+    '<button type="button" class="btn btn-sm" id="walkGen"' + (state.generating ? ' disabled' : '') + '>' +
+      (state.generating ? 'מקליט סרטון…' : '🎬 צור סרטון רחוב (מהדפדפן)') + '</button>' +
+    (state.genError ? '<span style="font-size:11px;color:#dc2626">' + esc(state.genError) + '</span>' : '') +
+    '</div>';
+}
+
+/** מקליטה אמיתית מהדפדפן (canvas.captureStream+MediaRecorder) על אותן מסגרות
+ *  בדיוק כמו הקרוסלה, ומעלה למטמון של 32 — ראה StreetWalkPanel.tsx (32). */
+async function generateWalkVideo(box) {
+  if (!walkState || walkState.generating || !walkState.permalink || walkState.points.length < 2) return;
+  walkState.genError = null;
+  walkState.generating = true;
+  renderWalk(box);
+  try {
+    const mimeType = pickWalkRecorderMimeType();
+    if (!mimeType) throw new Error('הדפדפן הזה אינו תומך בהקלטת סרטון.');
+    const w = 900, h = 500;
+    const canvas = document.createElement('canvas');
+    canvas.width = w;
+    canvas.height = h;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) throw new Error('שגיאה פנימית בציור המסגרות.');
+    const stream = canvas.captureStream(8);
+    const chunks = [];
+    const recorder = new MediaRecorder(stream, { mimeType });
+    recorder.ondataavailable = (e) => { if (e.data.size > 0) chunks.push(e.data); };
+    const stopped = new Promise((resolve) => { recorder.onstop = () => resolve(); });
+    recorder.start();
+
+    let drawn = 0;
+    for (const p of walkState.points) {
+      try {
+        const img = await loadWalkImage('/nadlan/api/image?kind=street&lat=' + encodeURIComponent(p.lat) +
+          '&lng=' + encodeURIComponent(p.lng) + '&heading=' + encodeURIComponent(p.heading) + '&w=' + w + '&h=' + h);
+        ctx.drawImage(img, 0, 0, w, h);
+        drawn += 1;
+        await walkSleep(900);
+      } catch (_) {
+        // מסגרת שנכשלה נדלגת — אותו עיקרון בדיוק כמו הקרוסלה למעלה.
+      }
+    }
+    recorder.stop();
+    await stopped;
+
+    if (drawn < 2) throw new Error('אין מספיק מסגרות זמינות ליצירת סרטון.');
+
+    const blob = new Blob(chunks, { type: mimeType });
+    const fd = new FormData();
+    fd.append('slug', walkState.permalink);
+    fd.append('frameCount', String(drawn));
+    fd.append('file', blob, 'street.' + (mimeType.includes('mp4') ? 'mp4' : 'webm'));
+
+    const res = await fetch('/nadlan/api/street-video', { method: 'POST', body: fd });
+    const json = await res.json().catch(() => null);
+    if (!res.ok || !json || !json.url) throw new Error((json && json.error) || 'שמירת הסרטון נכשלה.');
+    walkState.video = { url: json.url, mimeType: json.mimeType || mimeType };
+    walkState.videoFailed = false;
+  } catch (e) {
+    walkState.genError = e.message || String(e);
+  } finally {
+    walkState.generating = false;
+    if (box.isConnected) renderWalk(box);
+  }
+}
+
+/** בדיקת-מטמון best-effort — קליפ שכבר הועלה ע"י צופה קודם לאותו נכס. */
+async function checkWalkVideoCache(box, permalink) {
+  try {
+    const res = await fetch('/nadlan/api/street-video?slug=' + encodeURIComponent(permalink));
+    const out = await res.json().catch(() => ({}));
+    if (!walkState || walkState.permalink !== permalink || !box.isConnected) return;
+    if (out && out.available && out.url) {
+      walkState.video = { url: out.url, mimeType: out.mimeType };
+      renderWalk(box);
+    }
+  } catch (_) {
+    // אופציונלי — הקרוסלה כבר מוצגת בינתיים.
+  }
+}
+
+let walkState = null;
+let walkTimer = null;
+
+function stopWalkTimer() {
+  if (walkTimer) { clearInterval(walkTimer); walkTimer = null; }
+}
+
+function nextAvailableWalkIdx(state, from, dir) {
+  const n = state.points.length;
+  let next = (from + dir + n) % n;
+  let guard = 0;
+  while (state.failed.has(next) && guard < n) {
+    next = (next + dir + n) % n;
+    guard += 1;
+  }
+  return next;
+}
+
+function walkFrameHtml(state) {
+  if (state.failed.size >= state.points.length) {
+    return '<p class="na">אין כיסוי לאורך הרחוב.</p>';
+  }
+  const c = state.points[state.idx];
+  // `heading` is required here, not optional: without it `/api/image` falls
+  // back to aiming itself at (lat,lng) as if that were the building, but every
+  // walk point already sits on the road -- its own nearest pano is then almost
+  // always within aimQuality's <4m "too close" rejection, silently failing the
+  // frame. Passing the real building heading (from lookupStreetWalk) keeps
+  // every frame aimed at the actual property. See lib/panoramalookup.ts.
+  // `c.heading` is per-point (recomputed for each walk point's own position),
+  // NOT a single constant for the whole walk -- a fixed anchor-only heading
+  // aims correctly only at the anchor frame itself and drifts further off the
+  // building at every other point as the walk distance grows relative to how
+  // close the street runs to the building.
+  return '<div style="position:relative">' +
+      '<img id="walkImg" src="/nadlan/api/image?kind=street&lat=' + encodeURIComponent(c.lat) +
+        '&lng=' + encodeURIComponent(c.lng) + '&heading=' + encodeURIComponent(c.heading) + '&w=900&h=500" ' +
+        'alt="סיור רחוב — מסגרת ' + (state.idx + 1) + ' מתוך ' + state.points.length + '" ' +
+        'style="width:100%;border-radius:8px;display:block" loading="eager" />' +
+      '<div style="position:absolute;inset-inline:0;bottom:0;display:flex;align-items:center;justify-content:space-between;' +
+        'gap:8px;background:linear-gradient(to top,rgba(0,0,0,.6),transparent);padding:8px 12px">' +
+        '<button type="button" class="btn btn-sm" id="walkPrev">‹</button>' +
+        '<span style="color:#fff;font-size:12px;font-weight:700">' + (state.idx + 1) + ' / ' + state.points.length + '</span>' +
+        '<div style="display:flex;gap:6px">' +
+          '<button type="button" class="btn btn-sm" id="walkPlay">' + (state.playing ? 'עצור' : 'נגן') + '</button>' +
+          '<button type="button" class="btn btn-sm" id="walkNext">›</button>' +
+        '</div>' +
+      '</div>' +
+    '</div>' +
+    '<p class="sub" style="font-size:11px;margin-top:6px">' + (state.date ? 'צולם ' + esc(state.date) + '. ' : '') +
+      'רצף תמונות Street View אמיתיות לאורך הרחוב — לא וידאו.</p>';
+}
+
+function renderWalk(box) {
+  if (walkState.video && !walkState.videoFailed) {
+    stopWalkTimer();
+    box.innerHTML = walkVideoHtml(walkState);
+    const vid = $('walkVideo');
+    if (vid) vid.addEventListener('error', () => { walkState.videoFailed = true; renderWalk(box); });
+    return;
+  }
+  const allFailed = walkState.failed.size >= walkState.points.length;
+  box.innerHTML = walkFrameHtml(walkState) + (allFailed ? '' : walkGenButtonHtml(walkState));
+  const img = $('walkImg');
+  if (img) {
+    img.addEventListener('error', () => {
+      walkState.failed.add(walkState.idx);
+      if (walkState.failed.size < walkState.points.length) {
+        walkState.idx = nextAvailableWalkIdx(walkState, walkState.idx, 1);
+      }
+      renderWalk(box);
+    });
+  }
+  const prev = $('walkPrev'), next = $('walkNext'), play = $('walkPlay'), gen = $('walkGen');
+  if (prev) prev.addEventListener('click', () => {
+    walkState.playing = false;
+    stopWalkTimer();
+    walkState.idx = nextAvailableWalkIdx(walkState, walkState.idx, -1);
+    renderWalk(box);
+  });
+  if (next) next.addEventListener('click', () => {
+    walkState.playing = false;
+    stopWalkTimer();
+    walkState.idx = nextAvailableWalkIdx(walkState, walkState.idx, 1);
+    renderWalk(box);
+  });
+  if (play) play.addEventListener('click', () => {
+    walkState.playing = !walkState.playing;
+    if (walkState.playing) startWalkTimer(box); else stopWalkTimer();
+    renderWalk(box);
+  });
+  if (gen) gen.addEventListener('click', () => generateWalkVideo(box));
+}
+
+function startWalkTimer(box) {
+  stopWalkTimer();
+  if (walkState.points.length - walkState.failed.size < 2) return;
+  walkTimer = setInterval(() => {
+    // The drawer can be closed (host.innerHTML replaced) without ever
+    // clicking "עצור" — guard against ticking on a detached node forever.
+    if (!box.isConnected) { stopWalkTimer(); return; }
+    walkState.idx = nextAvailableWalkIdx(walkState, walkState.idx, 1);
+    renderWalk(box);
+  }, 1400);
+}
+
+function wireStreetWalk(p) {
+  const btn = $('walkLoad');
+  if (!btn) return;
+  btn.addEventListener('click', async () => {
+    const q = [p.address, p.city].filter(Boolean).join(' ') ||
+              (p.gush && p.helka ? 'גוש ' + p.gush + ' חלקה ' + p.helka : '');
+    const box = $('walkBox');
+    if (!q) { box.innerHTML = '<p class="na">אין כתובת או גוש/חלקה לסיור רחוב.</p>'; return; }
+    // `btn` is itself a child of `box` (see streetWalkHtml()), so the
+    // innerHTML write right below replaces the button along with everything
+    // else — no separate disable/re-enable of `btn` needed either way.
+    box.innerHTML = '<p class="loading"><span class="spinner"></span>מאתר נקודות לאורך הרחוב…</p>';
+    try {
+      // Same origin as /nadlan/api/report above, so a plain fetch with no key.
+      const res = await fetch('/nadlan/api/streetwalk-lookup?q=' + encodeURIComponent(q));
+      const out = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(out.error || ('שגיאה ' + res.status));
+      if (!out.available || !(out.points || []).length) {
+        box.innerHTML = '<p class="na">אין כיסוי לאורך הרחוב בנקודה הזו.</p>';
+        return;
+      }
+      const permalink = (p.truth_report && p.truth_report.permalink) || null;
+      walkState = { points: out.points, date: out.date || null, idx: 0, failed: new Set(), playing: true,
+                    permalink, video: null, videoFailed: false, generating: false, genError: null };
+      renderWalk(box);
+      startWalkTimer(box);
+      if (permalink) checkWalkVideoCache(box, permalink);
+    } catch (e) {
+      box.innerHTML = '<p class="na">סיור הרחוב לא נטען: ' + esc(e.message || String(e)) + '</p>';
+    }
+  });
+}
+
+// NADLAN_PRO_מחקר_ואפיון.md module 3, "מעקב נדל״ן בזמן אמת + התראות": the
+// broker watches a gush/helka or address and is emailed when a new deal
+// lands there. System 32 already built and runs exactly this engine
+// (area_alerts table + lib/areaalerts.ts + the Vercel cron that emails
+// matches, app/api/area-alert/route.ts) for its own consumer-facing signup
+// form — this calls the same live, already-tested public endpoint rather
+// than duplicating the detection/email logic here. Nothing is computed or
+// stored in nadlan_pro; the subscription itself lives entirely in system
+// 32's own area_alerts table, same as every truth-report call already
+// treats system 32 as the source of truth.
+function watchHtml(p) {
+  const criteria = p.gush && p.helka ? (p.gush + '/' + p.helka)
+    : [p.address, p.city].filter(Boolean).join(', ');
+  if (!criteria) {
+    return '<p class="na">הוסיפו לנכס גוש/חלקה או כתובת כדי לעקוב אחר האזור שלו.</p>';
+  }
+  return '<p class="sub" style="font-size:13px;margin:0 0 10px">קבלו התראה במייל כשעסקה חדשה נרשמת או תוכנית בנייה/תב״ע חדשה מתפרסמת ב־' +
+      esc(criteria) + ' — אותו מנוע ששולח את התראות האזור בנדל״ן ברגע.</p>' +
+    '<div class="form-grid"><label class="f span2">דוא״ל להתראות' +
+      '<input id="watchEmail" type="email" value="' + esc((ME && ME.email) || '') + '" /></label></div>' +
+    '<p style="margin:10px 0 0"><button class="btn btn-sm" id="watchSub">עקוב אחר האזור</button></p>';
+}
+
+function wireWatch(p) {
+  const btn = $('watchSub');
+  if (!btn) return;
+  btn.addEventListener('click', async () => {
+    const email = ($('watchEmail').value || '').trim();
+    if (!email) return toast('נדרש דוא״ל תקין', true);
+    btn.disabled = true;
+    btn.textContent = 'נרשם…';
+    try {
+      // Same origin as /nadlan/api/report above, so a plain fetch with no
+      // key and no server hop — system 32's own public signup form posts to
+      // this exact route.
+      const res = await fetch('/nadlan/api/area-alert', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({
+          email, address: p.address || null, city: p.city || null,
+          gush: p.gush || null, helka: p.helka || null,
+        }),
+      });
+      const out = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(out.error || ('שגיאה ' + res.status));
+      $('watchBox').innerHTML = '<p class="na">✓ ' + esc(email) + ' יקבל התראה כשעסקה חדשה או תוכנית בנייה חדשה תופיע באזור.</p>';
+      toast('נרשם למעקב אזור');
+    } catch (e) {
+      toast('ההרשמה נכשלה: ' + (e.message || e), true);
+      btn.disabled = false;
+      btn.textContent = 'עקוב אחר האזור';
+    }
+  });
 }
 
 async function fetchTruth(p, btn) {
@@ -923,7 +2285,13 @@ async function fetchTruth(p, btn) {
     if (!res.ok) throw new Error('מנוע האמת החזיר ' + res.status);
     const report = await res.json();
     await rpc('np_property_truth_set', { p_id: p.id, p_report: report, p_error: null });
-    box.innerHTML = truthHtml({ ...p, truth_report: report, truth_report_at: new Date().toISOString() });
+    // Mutated in place (not just the local display copy below): `p` is the
+    // same object reference `wireStreetWalk(p)` closed over when the drawer
+    // opened, and the street-video cache check needs `p.truth_report.permalink`
+    // (system 32's saved-report slug) to exist without re-fetching a paid report.
+    p.truth_report = report;
+    p.truth_report_at = new Date().toISOString();
+    box.innerHTML = truthHtml(p);
     toast('הדוח נשמר על הנכס');
   } catch (e) {
     // The failure is recorded, not swallowed: the card must be able to say why
@@ -957,26 +2325,90 @@ function propertyForm(existing) {
       '<label class="f">שטח (מ״ר)<input id="g_area_sqm" type="number" value="' + esc(p.area_sqm || '') + '" /></label>' +
       '<label class="f">קומה<input id="g_floor" type="number" value="' + esc(p.floor || '') + '" /></label>' +
       '<label class="f">סה״כ קומות<input id="g_total_floors" type="number" value="' + esc(p.total_floors || '') + '" /></label>' +
-      '<label class="f">מחיר<input id="g_price" type="number" value="' + esc(p.price || '') + '" /></label>' +
+      '<label class="f">מטרה<select id="g_listing_purpose">' + opt(PURPOSE_HE, p.listing_purpose || 'sale') + '</select></label>' +
+      '<label class="f"><span id="g_price_label">' +
+        (p.listing_purpose === 'rent' ? 'דמי שכירות חודשיים מבוקשים' : 'מחיר מכירה מבוקש') +
+        '</span><input id="g_price" type="number" value="' + esc(p.price || '') + '" /></label>' +
       '<label class="f">סטטוס<select id="g_status">' + opt(PSTATUS_HE, p.status || 'active') + '</select></label>' +
       '<label class="f">בלעדיות עד<input id="g_exclusivity_until" type="date" value="' + esc(p.exclusivity_until || '') + '" /></label>' +
       '<label class="f span2" style="flex-direction:row;align-items:center;gap:9px">' +
         '<input type="checkbox" id="g_is_exclusive" style="width:17px;height:17px;accent-color:var(--gold)"' +
         (p.is_exclusive ? ' checked' : '') + ' /> נכס בבלעדיות</label>' +
       '<label class="f span2">תיאור<textarea id="g_description">' + esc(p.description || '') + '</textarea></label>' +
+      '<label class="f span2">תמונות — קישור אחד בכל שורה' +
+        '<textarea id="g_images" placeholder="https://...">' + esc((p.images || []).join('\n')) + '</textarea>' +
+      '</label>' +
+      '<label class="f span2">העלאת תמונות מהמחשב (נוספות אוטומטית לרשימה שמעליי)' +
+        '<input type="file" id="g_images_file" accept="image/*" multiple />' +
+        '<span id="g_images_status" class="na" style="margin-top:4px;display:inline-block"></span>' +
+      '</label>' +
+      '<label class="f span2">קישור לסרטון הנכס (יוטיוב / וימאו / קובץ וידאו ישיר)' +
+        '<input id="g_video_url" value="' + esc(p.video_url || '') + '" placeholder="https://..." />' +
+      '</label>' +
     '</div>' +
     '<p style="margin-top:20px"><button class="btn" id="pfSave">שמירה</button></p>';
 
   drawer(p.id ? 'עריכת נכס' : 'נכס חדש', '', html, (close) => {
+    // Storage path is `{office_id}/{folder}/...` — the RLS policy only checks
+    // the office segment, so the folder itself just needs to be a stable uuid
+    // for this drawer session (the property's own id once it has one, else a
+    // fresh one) so every photo uploaded in one edit lands in one place.
+    $('g_listing_purpose').addEventListener('change', (e) => {
+      $('g_price_label').textContent =
+        e.target.value === 'rent' ? 'דמי שכירות חודשיים מבוקשים' : 'מחיר מכירה מבוקש';
+    });
+
+    const mediaFolder = p.id || crypto.randomUUID();
+    const fileInput = $('g_images_file');
+    if (fileInput) {
+      fileInput.addEventListener('change', async () => {
+        const files = Array.from(fileInput.files || []);
+        if (!files.length) return;
+        const status = $('g_images_status');
+        status.textContent = 'מעלה ' + files.length + ' תמונות…';
+        fileInput.disabled = true;
+        const urls = [];
+        for (const file of files) {
+          const clean = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
+          const path = OFFICE.id + '/' + mediaFolder + '/' + Date.now() + '-' + clean;
+          try {
+            const { error } = await sb.storage.from('nadlan-pro-media').upload(path, file, {
+              cacheControl: '3600', upsert: false, contentType: file.type || undefined,
+            });
+            if (error) throw error;
+            const { data } = sb.storage.from('nadlan-pro-media').getPublicUrl(path);
+            urls.push(data.publicUrl);
+          } catch (e) {
+            toast('העלאת "' + file.name + '" נכשלה: ' + e.message, true);
+          }
+        }
+        if (urls.length) {
+          const ta = $('g_images');
+          const existing = ta.value.split('\n').map((s) => s.trim()).filter(Boolean);
+          ta.value = existing.concat(urls).join('\n');
+          status.textContent = 'הועלו ' + urls.length + ' תמונות.';
+          toast(urls.length + ' תמונות הועלו');
+        } else {
+          status.textContent = '';
+        }
+        fileInput.value = '';
+        fileInput.disabled = false;
+      });
+    }
+
     $('pfSave').addEventListener('click', async () => {
       const body = { office_id: OFFICE.id };
       if (p.id) body.id = p.id;
       for (const k of ['title', 'address', 'city', 'gush', 'helka', 'tat_helka', 'asset_type',
-                       'rooms', 'area_sqm', 'floor', 'total_floors', 'price', 'status',
-                       'exclusivity_until', 'description']) {
+                       'rooms', 'area_sqm', 'floor', 'total_floors', 'price', 'listing_purpose', 'status',
+                       'exclusivity_until', 'description', 'video_url']) {
         body[k] = $('g_' + k).value.trim();
       }
       body.is_exclusive = $('g_is_exclusive').checked ? 'true' : 'false';
+      // One URL per line; blank lines dropped. Lines come either from a paste
+      // or from the upload handler above appending a Storage public URL —
+      // both end up in the same textarea, so save does not need to know which.
+      body.images = $('g_images').value.split('\n').map((s) => s.trim()).filter(Boolean);
       if (!body.address && !body.title) {
         $('pfErr').innerHTML = '<div class="err">צריך לפחות כתובת או כותרת.</div>';
         return;
@@ -994,14 +2426,314 @@ function propertyForm(existing) {
   });
 }
 
+// מדד שכר דירה (הלמ״ס) — NADLAN_PRO_מחקר_ואפיון.md מודול 6 מבטיח "אינדקס
+// שכירות (הלמ״ס)" בניהול השכירות. אותה סדרה (120460, "שכר דירה פרטי, ציבורי
+// ושכירות ארוכת טווח בפיקוח ממשלתי") ש-lib/cbs.ts באפליקציה 32-nadlan-berega
+// כבר משתמש בה לדוח השכירות — ⚠️ לא 40010 (מדד מחירי דירות מעסקאות, מדד שונה
+// לגמרי) ולא 120450 ("דיור", כולל זקיפת דיור לבעלי דירות — לא שכ״ד בפועל).
+// ה-API רשמי, פתוח, ללא מפתח, עם CORS פתוח (נבדק: Access-Control-Allow-Origin: *)
+// — נקרא ישירות מהדפדפן, בלי שרת ביניים, בדיוק כמו שאר קריאות ה-fetch בקובץ הזה.
+const CBS_RENT_INDEX_ID = 120460;
+
+function cbsPeriod(dateStr) {
+  const d = new Date(dateStr);
+  return String(d.getMonth() + 1).padStart(2, '0') + '-' + d.getFullYear();
+}
+
+async function fetchCbsRentIndexRow(params) {
+  const url = 'https://api.cbs.gov.il/index/data/price?id=' + CBS_RENT_INDEX_ID +
+    '&format=json&download=false&' + params;
+  const res = await fetch(url, { headers: { accept: 'application/json' } });
+  if (!res.ok) throw new Error('הלמ״ס החזירה ' + res.status);
+  const json = await res.json();
+  const row = json && json.month && json.month[0] && json.month[0].date && json.month[0].date[0];
+  if (!row) return null;
+  const value = Number(row.currBase && row.currBase.value);
+  if (!Number.isFinite(value)) return null;
+  return { value, baseDesc: (row.currBase && row.currBase.baseDesc) || null,
+           label: (row.monthDesc || '') + ' ' + row.year };
+}
+
+// שכ״ד צמוד למדד — לא חוזה הצמדה אמיתי, רק אומדן: כמה היה שכר הדירה עולה
+// אילו הוצמד למדד הלמ״ס מתחילת החוזה ועד היום. תואם את עקרון הברזל של
+// המערכת: "אין נתוני דמה. מקור שלא נטען → לא זמין" — כשלון משיכה מוצג
+// כ"לא זמין", לא מוחלף בשקט באפס או בערך ישן.
+async function loadLeaseIndexPanel(l) {
+  const box = $('liBox');
+  if (!box) return;
+  try {
+    const [start, latest] = await Promise.all([
+      fetchCbsRentIndexRow('startPeriod=' + cbsPeriod(l.start_date) + '&endPeriod=' + cbsPeriod(l.start_date)),
+      fetchCbsRentIndexRow('last=1'),
+    ]);
+    if (!start || !latest) {
+      box.innerHTML = '<p class="na">אין עדיין פרסום של הלמ״ס לחודש תחילת החוזה או למדד העדכני.</p>';
+      return;
+    }
+    if (start.baseDesc !== latest.baseDesc) {
+      // לא אמור לקרות באותה סדרה, אבל lib/cbs.ts אוסר במפורש להשוות ערכים
+      // בין בסיסי מדידה שונים בלי ריבייס — עדיף "לא זמין" מהשוואה שגויה.
+      box.innerHTML = '<p class="na">בסיס המדד השתנה בין התאריכים — לא ניתן להשוות ישירות.</p>';
+      return;
+    }
+    const pct = Math.round(((latest.value / start.value) - 1) * 1000) / 10;
+    const linked = l.monthly_rent ? Math.round(l.monthly_rent * (latest.value / start.value)) : null;
+    box.innerHTML =
+      '<div class="kpis">' +
+        '<div class="kpi"><p class="k">מדד בתחילת החוזה (' + esc(start.label) + ')</p><p class="v">' + start.value + '</p></div>' +
+        '<div class="kpi"><p class="k">מדד עדכני (' + esc(latest.label) + ')</p><p class="v">' + latest.value + '</p></div>' +
+        '<div class="kpi"><p class="k">שינוי במדד</p><p class="v ' + (pct >= 0 ? 'warn' : 'good') + '">' +
+          (pct >= 0 ? '+' : '') + pct + '%</p></div>' +
+        '<div class="kpi"><p class="k">שכ״ד צמוד למדד (משוער)</p><p class="v">' + money(linked) + '</p></div>' +
+      '</div>' +
+      '<p class="note">לפי מדד שכר דירה של הלמ״ס (סדרה ' + CBS_RENT_INDEX_ID + ', בסיס ' +
+      esc(start.baseDesc || '') + ') — אומדן אריתמטי בלבד, לא הצמדה חוזית בפועל. יש לבדוק את סעיף ' +
+      'ההצמדה הספציפי בחוזה לפני עדכון שכ״ד בפועל.</p>';
+  } catch (e) {
+    box.innerHTML = '<p class="na">משיכת מדד הלמ״ס נכשלה: ' + esc(e.message || String(e)) + '</p>';
+  }
+}
+
+/* ── rentals: leases + rent payment schedule ────────────────────────────── */
+async function renderRentals() {
+  const body = $('rentalsBody');
+  body.innerHTML = '<p class="loading"><span class="spinner"></span>טוען…</p>';
+
+  let rows;
+  try {
+    rows = await rpc('np_leases', { p_office: OFFICE.id, p_status: $('lStatus').value || null, p_limit: 300 });
+  } catch (e) { body.innerHTML = '<div class="err">' + esc(e.message) + '</div>'; return; }
+
+  rows = rows || [];
+  if (!rows.length) {
+    body.innerHTML = '<div class="empty"><b>אין עדיין חוזי שכירות</b>לחצו על "+ חוזה שכירות" כדי להתחיל.</div>';
+    return;
+  }
+
+  body.innerHTML = '<div class="table-scroll"><table><thead><tr>' +
+    '<th>נכס</th><th>שוכר</th><th>משכיר</th><th>שכ״ד חודשי</th><th>תקופה</th><th>סטטוס</th><th>תשלום הבא</th>' +
+    '</tr></thead><tbody>' +
+    rows.map((l) => {
+      const statusPill = l.is_overdue
+        ? '<span class="pill hot">חלף תוקף</span>'
+        : l.is_ending_soon
+          ? '<span class="pill hot">מתקרב לסיום</span>'
+          : '<span class="pill' + (l.status === 'active' ? ' on' : '') + '">' + esc(LSTATUS_HE[l.status] || l.status) + '</span>';
+      return '<tr data-id="' + l.id + '"><td>' + v(l.property_address || l.property_title) + '</td>' +
+        '<td>' + v(l.tenant_name) + '</td><td>' + v(l.landlord_name) + '</td>' +
+        '<td>' + money(l.monthly_rent) + '</td>' +
+        '<td>' + dt(l.start_date) + ' — ' + dt(l.end_date) + '</td>' +
+        '<td>' + statusPill + '</td>' +
+        '<td>' + (l.next_due_date ? dt(l.next_due_date) : NA) + '</td></tr>';
+    }).join('') + '</tbody></table></div>';
+
+  for (const tr of body.querySelectorAll('tr[data-id]')) {
+    tr.addEventListener('click', () => openLease(tr.dataset.id));
+  }
+}
+
+async function openLease(id) {
+  let d;
+  try { d = await rpc('np_lease_get', { p_id: id }); }
+  catch (e) { return toast('טעינה נכשלה: ' + e.message, true); }
+  if (!d || !d.lease) return toast('החוזה לא נמצא', true);
+
+  const l = d.lease;
+  let html = '<div class="table-scroll"><table><tbody>' +
+    '<tr><th>נכס</th><td>' + (d.property ? esc(d.property.address || d.property.title || '—') : NA) + '</td></tr>' +
+    '<tr><th>שוכר</th><td>' + (d.tenant ? esc(d.tenant.full_name) : NA) + '</td></tr>' +
+    '<tr><th>משכיר</th><td>' + (d.landlord ? esc(d.landlord.full_name) : NA) + '</td></tr>' +
+    '<tr><th>שכ״ד חודשי</th><td>' + money(l.monthly_rent) + '</td></tr>' +
+    '<tr><th>פיקדון</th><td>' + money(l.deposit_amount) + '</td></tr>' +
+    '<tr><th>תקופה</th><td>' + dt(l.start_date) + ' — ' + dt(l.end_date) + '</td></tr>' +
+    '<tr><th>התראת חידוש</th><td>' + esc(l.renewal_notice_days) + ' יום לפני הסיום</td></tr>' +
+    '<tr><th>סטטוס</th><td><span class="pill' + (l.status === 'active' ? ' on' : '') + '">' +
+      esc(LSTATUS_HE[l.status] || l.status) + '</span></td></tr>' +
+    (l.notes ? '<tr><th>הערות</th><td>' + esc(l.notes) + '</td></tr>' : '') +
+    '</tbody></table></div>';
+
+  html += '<h2 class="sec">לוח תשלומים</h2>';
+  const payments = d.payments || [];
+  if (!payments.length) {
+    html += '<p class="na">עדיין לא הופק לוח תשלומים.</p>' +
+      '<p><button class="btn" id="lGenSchedule">הפקת לוח תשלומים חודשי</button></p>';
+  } else {
+    html += '<div class="table-scroll"><table><thead><tr><th>תאריך יעד</th><th>סכום</th><th>סטטוס</th><th>הערה</th><th></th></tr></thead><tbody>' +
+      payments.map((p) => {
+        const overdue = p.status === 'due' && new Date(p.due_date).getTime() < Date.now();
+        return '<tr><td>' + dt(p.due_date) + '</td><td>' + money(p.amount) + '</td>' +
+          '<td>' + (overdue
+            ? '<span class="pill hot">איחור</span>'
+            : '<span class="pill' + (p.status === 'paid' ? ' on' : '') + '">' + esc(RSTATUS_HE[p.status] || p.status) + '</span>') + '</td>' +
+          '<td>' + (p.note ? esc(p.note) : NA) + '</td>' +
+          '<td>' + (p.status === 'due'
+            ? '<button class="btn btn-sm" data-pay="' + p.id + '">סימון כשולם</button> ' +
+              '<button class="btn btn-quiet btn-sm" data-edit-pay="' + p.id + '">עריכה</button> ' +
+              '<button class="btn btn-quiet btn-sm" data-waive="' + p.id + '">ויתור</button>'
+            : '') + '</td></tr>';
+      }).join('') + '</tbody></table></div>';
+  }
+  html += '<p style="margin-top:10px"><button class="btn btn-quiet btn-sm" id="payAdd">+ תשלום ידני</button></p>' +
+    '<div id="payAddBox"></div>';
+
+  html += '<h2 class="sec">מדד שכר דירה (הלמ״ס)</h2>' +
+    '<div id="liBox"><p class="loading"><span class="spinner"></span>טוען מדד…</p></div>';
+
+  html += '<p style="margin-top:18px"><button class="btn" id="lEdit">עריכה</button> ' +
+    '<button class="btn" id="lRemind">+ תזכורת חידוש</button></p>';
+
+  drawer(l.notes || (d.property ? (d.property.address || d.property.title) : 'חוזה שכירות'),
+         'חוזה שכירות · נפתח ' + dt(l.created_at), html, (close) => {
+    loadLeaseIndexPanel(l);
+    const gen = $('lGenSchedule');
+    if (gen) gen.addEventListener('click', async () => {
+      gen.disabled = true;
+      try {
+        const created = await rpc('np_lease_generate_schedule', { p_lease: l.id });
+        toast('נוצרו ' + created + ' תשלומים');
+        close(); openLease(l.id);
+      } catch (e) { toast('הפקת הלוח נכשלה: ' + e.message, true); gen.disabled = false; }
+    });
+    for (const btn of document.querySelectorAll('[data-pay]')) {
+      btn.addEventListener('click', async () => {
+        btn.disabled = true;
+        try {
+          await rpc('np_rent_payment_mark_paid', { p_id: btn.dataset.pay });
+          toast('סומן כשולם');
+          close(); openLease(l.id);
+          if (VIEW === 'rentals') renderRentals();
+        } catch (e) { toast('העדכון נכשל: ' + e.message, true); btn.disabled = false; }
+      });
+    }
+    for (const btn of document.querySelectorAll('[data-waive]')) {
+      btn.addEventListener('click', async () => {
+        if (!confirm('לוותר על התשלום הזה? הוא יסומן כ״ויתור״ ולא ייספר כחוב פתוח.')) return;
+        btn.disabled = true;
+        try {
+          await rpc('np_rent_payment_waive', { p_id: btn.dataset.waive });
+          toast('סומן כוויתור');
+          close(); openLease(l.id);
+          if (VIEW === 'rentals') renderRentals();
+        } catch (e) { toast('העדכון נכשל: ' + e.message, true); btn.disabled = false; }
+      });
+    }
+    function showPayForm(existing) {
+      const box = $('payAddBox');
+      const p = existing || {};
+      box.innerHTML =
+        '<div id="pfErr"></div><div class="controls">' +
+          '<label class="f">תאריך יעד<input id="pf_due_date" type="date" value="' + esc(p.due_date || '') + '" /></label>' +
+          '<label class="f">סכום<input id="pf_amount" type="number" value="' + esc(p.amount || '') + '" /></label>' +
+          '<label class="f">הערה<input id="pf_note" type="text" value="' + esc(p.note || '') + '" /></label>' +
+          '<span class="spacer"></span><button class="btn btn-sm" id="pfSave">שמירה</button>' +
+        '</div>';
+      $('pfSave').addEventListener('click', async () => {
+        $('pfSave').disabled = true;
+        try {
+          const body = { lease_id: l.id, due_date: $('pf_due_date').value.trim(), amount: $('pf_amount').value.trim(), note: $('pf_note').value.trim() };
+          if (p.id) body.id = p.id;
+          await rpc('np_rent_payment_save', { p: body });
+          close(); toast('התשלום נשמר'); openLease(l.id);
+          if (VIEW === 'rentals') renderRentals();
+        } catch (e) {
+          $('pfErr').innerHTML = '<div class="err">' + esc(e.message) + '</div>';
+          $('pfSave').disabled = false;
+        }
+      });
+    }
+    const payAddBtn = $('payAdd');
+    if (payAddBtn) payAddBtn.addEventListener('click', () => showPayForm());
+    for (const btn of document.querySelectorAll('[data-edit-pay]')) {
+      btn.addEventListener('click', () => showPayForm(payments.find((p) => p.id === btn.dataset.editPay)));
+    }
+    $('lEdit').addEventListener('click', () => { close(); leaseForm(l); });
+    $('lRemind').addEventListener('click', () => {
+      close();
+      const due = new Date(l.end_date);
+      due.setDate(due.getDate() - l.renewal_notice_days);
+      taskForm({
+        property_id: l.property_id,
+        title: 'תזכורת חידוש שכירות — ' + (d.property ? (d.property.address || d.property.title || '') : ''),
+        due_at: due.toISOString().slice(0, 16),
+      });
+    });
+  });
+}
+
+async function leaseForm(existing) {
+  const l = existing || {};
+  let contacts = [], props = [];
+  try {
+    [contacts, props] = await Promise.all([
+      rpc('np_contacts', { p_office: OFFICE.id, p_limit: 400 }),
+      rpc('np_properties', { p_office: OFFICE.id, p_limit: 400 }),
+    ]);
+  } catch (e) { return toast('טעינת הרשימות נכשלה: ' + e.message, true); }
+
+  const cOpts = (sel) => '<option value="">—</option>' +
+    (contacts || []).map((c) => '<option value="' + c.id + '"' + (sel === c.id ? ' selected' : '') + '>' +
+      esc(c.full_name) + ' (' + esc(KIND_HE[c.kind] || c.kind) + ')</option>').join('');
+  const pOpts = '<option value="">—</option>' +
+    (props || []).map((p) => '<option value="' + p.id + '"' + (l.property_id === p.id ? ' selected' : '') + '>' +
+      esc(p.title || p.address || 'נכס') + '</option>').join('');
+  const sOpts = Object.entries(LSTATUS_HE).map(([k, lbl]) =>
+    '<option value="' + k + '"' + ((l.status || 'active') === k ? ' selected' : '') + '>' + lbl + '</option>').join('');
+
+  const html =
+    '<div id="lfErr"></div><div class="form-grid">' +
+      '<label class="f span2">נכס *<select id="l_property_id">' + pOpts + '</select></label>' +
+      '<label class="f">שוכר<select id="l_tenant_contact_id">' + cOpts(l.tenant_contact_id) + '</select></label>' +
+      '<label class="f">משכיר<select id="l_landlord_contact_id">' + cOpts(l.landlord_contact_id) + '</select></label>' +
+      '<label class="f">שכ״ד חודשי<input id="l_monthly_rent" type="number" value="' + esc(l.monthly_rent || '') + '" /></label>' +
+      '<label class="f">פיקדון<input id="l_deposit_amount" type="number" value="' + esc(l.deposit_amount || '') + '" /></label>' +
+      '<label class="f">תחילת תקופה *<input id="l_start_date" type="date" value="' + esc(l.start_date || '') + '" /></label>' +
+      '<label class="f">סיום תקופה *<input id="l_end_date" type="date" value="' + esc(l.end_date || '') + '" /></label>' +
+      '<label class="f">התראת חידוש (ימים)<input id="l_renewal_notice_days" type="number" value="' + esc(l.renewal_notice_days || 60) + '" /></label>' +
+      '<label class="f">סטטוס<select id="l_status">' + sOpts + '</select></label>' +
+      '<label class="f span2">הערות<textarea id="l_notes">' + esc(l.notes || '') + '</textarea></label>' +
+    '</div>' +
+    '<p style="margin-top:16px"><button class="btn" id="lfSave">שמירה</button></p>';
+
+  drawer(l.id ? 'עריכת חוזה שכירות' : 'חוזה שכירות חדש', '', html, (close) => {
+    $('lfSave').addEventListener('click', async () => {
+      const p = { office_id: OFFICE.id };
+      if (l.id) p.id = l.id;
+      for (const k of ['property_id', 'tenant_contact_id', 'landlord_contact_id', 'monthly_rent',
+                       'deposit_amount', 'start_date', 'end_date', 'renewal_notice_days', 'status', 'notes']) {
+        p[k] = $('l_' + k).value.trim();
+      }
+      if (!p.property_id || !p.start_date || !p.end_date) {
+        $('lfErr').innerHTML = '<div class="err">נכס, תחילת תקופה וסיום תקופה הם שדות חובה.</div>';
+        return;
+      }
+      $('lfSave').disabled = true;
+      try {
+        await rpc('np_lease_save', { p });
+        close(); toast('נשמר');
+        if (VIEW === 'rentals') renderRentals();
+      } catch (e) {
+        $('lfErr').innerHTML = '<div class="err">' + esc(e.message) + '</div>';
+        $('lfSave').disabled = false;
+      }
+    });
+  });
+}
+
 /* ── deals ───────────────────────────────────────────────────────────────── */
 async function openDeal(id) {
-  let d;
-  try { d = await rpc('np_deal_get', { p_id: id }); }
-  catch (e) { return toast('טעינה נכשלה: ' + e.message, true); }
+  let d, members;
+  try {
+    [d, members] = await Promise.all([
+      rpc('np_deal_get', { p_id: id }),
+      rpc('np_office_members', { p_office: OFFICE.id }).catch(() => []),
+    ]);
+  } catch (e) { return toast('טעינה נכשלה: ' + e.message, true); }
   if (!d || !d.deal) return toast('העסקה לא נמצאה', true);
 
   const dl = d.deal;
+  const canManageComm = OFFICE.role === 'owner' || OFFICE.role === 'manager';
+  members = (members || []).filter((m) => m.is_active);
+  const commAgentName = (uid) => { const m = members.find((x) => x.user_id === uid); return m ? m.full_name : null; };
   const stageOpts = STAGES.map((s) =>
     '<option value="' + s.key + '"' + (dl.stage === s.key ? ' selected' : '') + '>' + s.label + '</option>').join('');
 
@@ -1044,6 +2776,29 @@ async function openDeal(id) {
       '<b>' + esc((STAGES.find((s) => s.key === e.to) || {}).label || e.to) + '</b>' +
       '<span class="w"> · ' + dtm(e.at) + '</span></li>').join('') + '</ul>';
 
+  const commissions = d.commissions || [];
+  html += '<h2 class="sec">עמלות — חלוקה בין סוכנים</h2>';
+  html += commissions.length
+    ? '<div class="table-scroll"><table><thead><tr>' +
+        '<th>סוכן</th><th>צד משלם</th><th>אחוז</th><th>סכום</th><th>סטטוס</th><th>נגבתה</th></tr></thead><tbody>' +
+        commissions.map((cm) =>
+          '<tr>' +
+            '<td>' + v(commAgentName(cm.member_id)) + '</td>' +
+            '<td>' + esc(COMM_PAYER_HE[cm.payer] || cm.payer) + '</td>' +
+            '<td class="num">' + (cm.pct != null ? cm.pct + '%' : NA) + '</td>' +
+            '<td class="num">' + money(cm.amount) + '</td>' +
+            '<td><select class="comm-status" data-id="' + cm.id + '">' +
+              Object.entries(COMM_STATUS_HE).map(([k, l]) =>
+                '<option value="' + k + '"' + (cm.status === k ? ' selected' : '') + '>' + l + '</option>').join('') +
+              '</select></td>' +
+            '<td>' + (cm.collected_at ? dt(cm.collected_at) : NA) + '</td>' +
+          '</tr>').join('') +
+        '</tbody></table></div>'
+    : '<p class="na">עדיין לא שויכה עמלה לסוכן. הסכום שהוגדר בעסקה (' + money(dl.commission_amount) +
+      ') לא ייספר בדשבורד תחת ״עמלה שנגבתה/בהמתנה״ עד שישויך לסוכן כאן.</p>';
+  html += '<p style="margin-top:10px"><button class="btn btn-quiet btn-sm" id="commAdd">+ שיוך עמלה לסוכן</button></p>' +
+    '<div id="commAddBox"></div>';
+
   html += '<h2 class="sec">חשבונית ועמלה</h2><div id="invBox"></div>';
 
   html += '<h2 class="sec">תיעוד</h2>';
@@ -1078,6 +2833,53 @@ async function openDeal(id) {
     }
     $('dEdit').addEventListener('click', () => { close(); dealForm(dl); });
     $('dTask').addEventListener('click', () => { close(); taskForm({ deal_id: dl.id }); });
+    for (const sel of document.querySelectorAll('.comm-status')) {
+      const prev = sel.value;
+      sel.addEventListener('change', async () => {
+        sel.disabled = true;
+        try {
+          await rpc('np_commission_save', { p: { id: sel.dataset.id, status: sel.value } });
+          toast('סטטוס העמלה עודכן');
+        } catch (err) {
+          sel.value = prev;
+          toast('עדכון נכשל: ' + err.message, true);
+        } finally { sel.disabled = false; }
+      });
+    }
+    const commAddBtn = $('commAdd');
+    if (commAddBtn) commAddBtn.addEventListener('click', () => {
+      commAddBtn.style.display = 'none';
+      const agentOpts = canManageComm
+        ? members.map((m) => '<option value="' + m.user_id + '"' + (m.user_id === ME.user_id ? ' selected' : '') + '>' +
+            esc(m.full_name) + '</option>').join('')
+        : '<option value="' + ME.user_id + '" selected>' + esc(commAgentName(ME.user_id) || 'אני') + '</option>';
+      $('commAddBox').innerHTML =
+        '<div id="cmErr"></div><div class="controls">' +
+          '<label class="f">סוכן<select id="cm_member">' + agentOpts + '</select></label>' +
+          '<label class="f">צד משלם<select id="cm_payer">' +
+            Object.entries(COMM_PAYER_HE).map(([k, l]) => '<option value="' + k + '">' + l + '</option>').join('') +
+          '</select></label>' +
+          '<label class="f">אחוז<input id="cm_pct" type="number" step="0.1" /></label>' +
+          '<label class="f">סכום<input id="cm_amount" type="number" /></label>' +
+          '<span class="spacer"></span><button class="btn btn-sm" id="cmSave">שמירה</button>' +
+        '</div>';
+      $('cmSave').addEventListener('click', async () => {
+        $('cmSave').disabled = true;
+        try {
+          await rpc('np_commission_save', { p: {
+            office_id: OFFICE.id, deal_id: dl.id,
+            member_id: $('cm_member').value,
+            payer: $('cm_payer').value,
+            pct: $('cm_pct').value.trim(),
+            amount: $('cm_amount').value.trim(),
+          } });
+          close(); toast('העמלה נשמרה'); openDeal(dl.id);
+        } catch (err) {
+          $('cmErr').innerHTML = '<div class="err">' + esc(err.message) + '</div>';
+          $('cmSave').disabled = false;
+        }
+      });
+    });
     invoicePanel(dl.id, 'invBox');
   });
 }
@@ -1440,7 +3242,20 @@ async function contractForm() {
         client_name: sel ? sel.dataset.name : ctx.buyer_name,
         client_id: ctx.buyer_id,
         property_address: [ctx.property_address, ctx.property_city].filter(Boolean).join(', '),
-        property_details: ctx.property_rooms ? ' · ' + ctx.property_rooms + ' חדרים' : '',
+        // Room count + area + the cadastral parcel — same identifying fields the
+        // property drawer/area-watch/panorama lookup already show elsewhere in
+        // this file (search "גוש" for the other call sites of this exact shape).
+        // A street address alone can be ambiguous for one unit in a subdivided
+        // building; the parcel (and sub-parcel, when recorded) is what a
+        // brokerage agreement or memorandum actually needs to identify the asset.
+        property_details: [
+          ctx.property_rooms ? ctx.property_rooms + ' חדרים' : '',
+          ctx.property_area ? ctx.property_area + ' מ״ר' : '',
+          ctx.property_gush && ctx.property_helka
+            ? 'גוש ' + ctx.property_gush + ' חלקה ' + ctx.property_helka +
+              (ctx.property_tat_helka ? '/' + ctx.property_tat_helka : '')
+            : '',
+        ].filter(Boolean).map((s) => ' · ' + s).join(''),
         commission_pct: ctx.commission_pct,
         price: ctx.price ? nf.format(ctx.price) : null,
         duration_months: 6, days_to_contract: 30,
@@ -1596,8 +3411,8 @@ function taskForm(ctx) {
   const html =
     '<div id="tfErr"></div><div class="form-grid">' +
       '<label class="f">סוג<select id="t_kind">' + opts + '</select></label>' +
-      '<label class="f">תאריך יעד<input id="t_due_at" type="datetime-local" /></label>' +
-      '<label class="f span2">נושא *<input id="t_title" /></label>' +
+      '<label class="f">תאריך יעד<input id="t_due_at" type="datetime-local" value="' + esc(c.due_at || '') + '" /></label>' +
+      '<label class="f span2">נושא *<input id="t_title" value="' + esc(c.title || '') + '" /></label>' +
       '<label class="f span2">פירוט<textarea id="t_body"></textarea></label>' +
     '</div><p style="margin-top:18px"><button class="btn" id="tfSave">שמירה</button></p>';
 
@@ -1618,6 +3433,631 @@ function taskForm(ctx) {
       } catch (e) {
         $('tfErr').innerHTML = '<div class="err">' + esc(e.message) + '</div>';
         $('tfSave').disabled = false;
+      }
+    });
+  });
+}
+
+/* ── team ────────────────────────────────────────────────────────────────── */
+// Hardcoded origin, same reasoning as shareHtml()'s public listing link: a
+// join link is meant to be forwarded to someone outside the app (WhatsApp,
+// SMS), and must be the real public domain even when this page is loaded
+// from a preview/staging URL.
+function joinLinkFor(code) { return 'https://more30.com/tivuch/app?join=' + encodeURIComponent(code); }
+
+async function renderTeam() {
+  const body = $('teamBody');
+  body.innerHTML = '<p class="loading"><span class="spinner"></span>טוען…</p>';
+
+  const canManage = OFFICE.role === 'owner' || OFFICE.role === 'manager';
+  let members, invites;
+  try {
+    [members, invites] = await Promise.all([
+      rpc('np_office_members', { p_office: OFFICE.id }),
+      canManage ? rpc('np_member_invites_list', { p_office: OFFICE.id }) : Promise.resolve([]),
+    ]);
+  } catch (e) { body.innerHTML = '<div class="err">' + esc(e.message) + '</div>'; return; }
+
+  members = (members || []).filter((m) => m.is_active);
+  const ownerCount = members.filter((m) => m.role === 'owner').length;
+  const roleOpts = (selected, offerOwner) => Object.entries(ROLE_HE)
+    .filter(([k]) => offerOwner || k !== 'owner')
+    .map(([k, l]) => '<option value="' + k + '"' + (selected === k ? ' selected' : '') + '>' + l + '</option>').join('');
+
+  let html = '<div class="table-scroll"><table><thead><tr>' +
+    '<th>שם</th><th>רישיון</th><th>טלפון</th><th>דוא״ל</th><th>תפקיד</th>' + (canManage ? '<th></th>' : '') +
+    '</tr></thead><tbody>' +
+    members.map((m) => {
+      const self = m.user_id === ME.user_id;
+      // The last active owner can't be demoted or removed here — the RPCs
+      // enforce this too (would_strand_office), but disabling it in the UI
+      // turns a server error into a self-explanatory disabled control.
+      const lastOwner = m.role === 'owner' && ownerCount <= 1;
+      const roleCell = canManage
+        ? '<select data-role="' + m.user_id + '"' + (lastOwner ? ' disabled title="לא ניתן לשנות — הבעלים היחיד של המשרד"' : '') +
+          '>' + roleOpts(m.role, OFFICE.role === 'owner' || m.role === 'owner') + '</select>'
+        : '<span class="pill">' + esc(ROLE_HE[m.role] || m.role) + '</span>';
+      const removeCell = canManage
+        ? '<td>' + (self || lastOwner ? '' :
+            '<button class="btn btn-danger btn-sm" data-remove="' + m.user_id + '">הסרה</button>') + '</td>'
+        : '';
+      return '<tr><td>' + v(m.full_name) + (self ? ' <span class="pill">אני</span>' : '') + '</td>' +
+        '<td>' + v(m.license_number) + '</td><td>' + v(m.phone) + '</td><td>' + v(m.email) + '</td>' +
+        '<td>' + roleCell + '</td>' + removeCell + '</tr>';
+    }).join('') + '</tbody></table></div>';
+
+  if (canManage) {
+    const pending = (invites || []).filter((i) => !i.used_at && !i.revoked_at && new Date(i.expires_at) > new Date());
+    html += '<h2 class="sec">הזמנות ממתינות</h2>' + (pending.length
+      ? '<ul class="timeline">' + pending.map((i) =>
+          '<li><b>' + esc(i.code) + '</b> · <span class="pill">' + esc(ROLE_HE[i.role] || i.role) + '</span>' +
+          (i.full_name ? ' · ' + esc(i.full_name) : '') + ' · בתוקף עד ' + dt(i.expires_at) +
+          ' <button class="btn btn-sm" data-copyjoin="' + esc(i.code) + '">העתקת קישור</button>' +
+          ' <button class="btn btn-danger btn-sm" data-revoke="' + i.id + '">ביטול</button></li>').join('') + '</ul>'
+      : '<p class="na">אין הזמנות ממתינות.</p>');
+
+    html += '<h2 class="sec">הזמנת חבר צוות</h2><div id="ivErr"></div><div class="controls">' +
+      '<label class="f">שם (לא חובה)<input id="iv_name" /></label>' +
+      '<label class="f">תפקיד<select id="iv_role">' + roleOpts('agent', OFFICE.role === 'owner') + '</select></label>' +
+      '<label class="f">טלפון<input id="iv_phone" /></label>' +
+      '<label class="f">דוא״ל<input id="iv_email" type="email" /></label>' +
+      '<span class="spacer"></span><button class="btn" id="ivCreate">יצירת קישור הזמנה</button></div>';
+  }
+
+  body.innerHTML = html;
+  wireTeamBody(canManage);
+}
+
+function wireTeamBody(canManage) {
+  const body = $('teamBody');
+  if (!canManage) return;
+
+  for (const sel of body.querySelectorAll('[data-role]')) {
+    const prev = sel.value;
+    sel.addEventListener('change', async () => {
+      sel.disabled = true;
+      try {
+        await rpc('np_member_role_set', { p_office: OFFICE.id, p_user_id: sel.dataset.role, p_role: sel.value });
+        toast('התפקיד עודכן');
+        renderTeam();
+      } catch (e) { sel.value = prev; sel.disabled = false; toast('העדכון נכשל: ' + e.message, true); }
+    });
+  }
+
+  for (const btn of body.querySelectorAll('[data-remove]')) {
+    btn.addEventListener('click', async () => {
+      if (!confirm('להסיר את חבר הצוות מהמשרד? הוא יאבד גישה מיידית.')) return;
+      btn.disabled = true;
+      try {
+        await rpc('np_member_remove', { p_office: OFFICE.id, p_user_id: btn.dataset.remove });
+        toast('חבר הצוות הוסר');
+        renderTeam();
+      } catch (e) { btn.disabled = false; toast('ההסרה נכשלה: ' + e.message, true); }
+    });
+  }
+
+  for (const btn of body.querySelectorAll('[data-copyjoin]')) {
+    btn.addEventListener('click', async () => {
+      const url = joinLinkFor(btn.dataset.copyjoin);
+      try { await navigator.clipboard.writeText(url); toast('קישור ההזמנה הועתק'); }
+      catch (e) { window.prompt('העתיקו את קישור ההזמנה:', url); }
+    });
+  }
+
+  for (const btn of body.querySelectorAll('[data-revoke]')) {
+    btn.addEventListener('click', async () => {
+      if (!confirm('לבטל את ההזמנה? הקישור יפסיק לעבוד מיד.')) return;
+      btn.disabled = true;
+      try {
+        await rpc('np_member_invite_revoke', { p_id: btn.dataset.revoke });
+        toast('ההזמנה בוטלה');
+        renderTeam();
+      } catch (e) { btn.disabled = false; toast('הביטול נכשל: ' + e.message, true); }
+    });
+  }
+
+  const create = $('ivCreate');
+  if (create) create.addEventListener('click', async () => {
+    create.disabled = true;
+    try {
+      const code = await rpc('np_member_invite_create', {
+        p_office: OFFICE.id, p_role: $('iv_role').value,
+        p_full_name: $('iv_name').value.trim() || null,
+        p_phone: $('iv_phone').value.trim() || null,
+        p_email: $('iv_email').value.trim() || null,
+      });
+      const url = joinLinkFor(code);
+      try { await navigator.clipboard.writeText(url); toast('נוצרה הזמנה — הקישור הועתק, שלחו אותו למוזמן'); }
+      catch (e) { window.prompt('נוצרה הזמנה. העתיקו את הקישור ושלחו למוזמן:', url); }
+      renderTeam();
+    } catch (e) {
+      $('ivErr').innerHTML = '<div class="err">' + esc(e.message) + '</div>';
+      create.disabled = false;
+    }
+  });
+}
+
+/* ── settings / public office site (Module 9 — אתר אישי למתווך) ────────────── */
+// Hardcoded origin, same reasoning as shareHtml()'s listing link and
+// joinLinkFor()'s invite link — this is copied out to strangers, so it must
+// be the real public domain even from a preview/staging URL.
+function officeLinkFor(token) { return 'https://more30.com/tivuch/office.html?t=' + encodeURIComponent(token); }
+
+async function renderSettings() {
+  const body = $('settingsBody');
+  body.innerHTML = '<p class="loading"><span class="spinner"></span>טוען…</p>';
+
+  const canManage = OFFICE.role === 'owner' || OFFICE.role === 'manager';
+  let s;
+  try { s = await rpc('np_office_settings_get', { p_office: OFFICE.id }); }
+  catch (e) { body.innerHTML = '<div class="err">' + esc(e.message) + '</div>'; return; }
+
+  const field = (id, label, val, type) =>
+    '<label class="f">' + label + '<input id="' + id + '" type="' + (type || 'text') + '"' +
+    (canManage ? '' : ' disabled') + ' value="' + esc(val || '') + '" /></label>';
+
+  let html = '<h2 class="sec">פרטי המשרד</h2><div class="controls">' +
+    field('st_name', 'שם המשרד', s.name) +
+    field('st_license', 'מספר רישיון', s.license_number) +
+    field('st_phone', 'טלפון', s.phone) +
+    field('st_email', 'דוא״ל', s.email, 'email') +
+    field('st_city', 'עיר', s.city) +
+    field('st_address', 'כתובת', s.address) +
+    field('st_logo', 'קישור ללוגו (URL)', s.logo_url, 'url') +
+    '</div><label class="f" style="margin-top:8px">אודות המשרד' +
+    '<textarea id="st_about" rows="3"' + (canManage ? '' : ' disabled') + '>' + esc(s.about || '') + '</textarea></label>' +
+    (canManage ? '<p style="margin:14px 0 0"><button class="btn" id="stSave">שמירת פרטים</button></p>' : '');
+
+  html += '<h2 class="sec">אתר משרד ציבורי</h2>' +
+    '<p class="sub" style="margin:0 0 10px">עמוד ללא כניסה, מותאם למובייל, שמציג את פרטי המשרד ואת ' +
+    'הנכסים שכבר הופעל עבורם קישור צפייה בטאב "נכסים" — לא נכסים נוספים.</p>' +
+    '<div id="stPublishBox"></div>';
+
+  html += '<h2 class="sec">לידים חיצוניים (וואטסאפ / פייסבוק / כל טופס)</h2>' +
+    '<p class="sub" style="margin:0 0 10px">חבר כל מקור חיצוני — Zapier/Make על טופס לידים בפייסבוק, ' +
+    'שירות העברת הודעות וואטסאפ, או טופס משלך — כדי שכל פנייה תיכנס אוטומטית ל"אנשי קשר" בלי הזנה ידנית. ' +
+    'ליד חדש מופיע ללא בעלים, כך שכל חברי הצוות רואים ויכולים לקחת אותו.</p>' +
+    '<div id="stLeadIntakeBox"></div>';
+
+  // Every office was stuck with the three fixed system templates verbatim —
+  // contract_templates.office_id + RLS (np_tpl_write) already supported an
+  // office's own copy, np_template_save/delete (0146) finally give it a write
+  // path. "Copy to office" pre-fills the editor from a system template so
+  // editing never touches the shared original.
+  html += '<h2 class="sec">תבניות מסמכים</h2>' +
+    '<p class="sub" style="margin:0 0 10px">שלוש התבניות המערכתיות (הסכם תיווך / זיכרון דברים / אישור הצגת ' +
+    'נכס) זמינות לכל המשרדים. ניתן לשכפל כל אחת מהן לנוסח משרדי משלכם ולערוך אותו בלי לפגוע במקור — ' +
+    'הנוסח המשרדי יופיע לצד המערכתי ברשימת התבניות בעת יצירת מסמך חדש.</p>' +
+    '<div id="stTemplatesBox"></div>' +
+    (canManage ? '<p style="margin-top:10px"><button class="btn btn-quiet btn-sm" id="stTplNew">+ תבנית משרדית חדשה</button></p>' : '');
+
+  // Owner-only danger zone: np_office_delete (migration 0130) has existed live
+  // since 25/08 with a strict owner-only + cascading-delete guard, but no UI
+  // ever called it — a departing/dissolving office had no way to remove itself
+  // from the product. Gated to OFFICE.role==='owner' client-side, mirroring the
+  // exact server-side check inside the RPC itself (not a new permission).
+  if (OFFICE.role === 'owner') {
+    html += '<h2 class="sec">אזור מסוכן</h2>' +
+      '<p class="sub" style="margin:0 0 10px">מחיקת המשרד היא סופית ובלתי הפיכה — כל הנכסים, העסקאות, ' +
+      'אנשי הקשר, החוזים/שכירויות, המשימות והמסמכים של המשרד הזה יימחקו לצמיתות. חברי הצוות יאבדו גישה מיידית. ' +
+      'הקלד/י את שם המשרד המדויק לאישור.</p>' +
+      '<div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">' +
+        '<input id="stDeleteConfirm" placeholder="' + esc(s.name || '') + '" style="flex:1;min-width:220px" />' +
+        '<button class="btn btn-danger btn-sm" id="stDeleteOffice">מחיקת המשרד לצמיתות</button>' +
+      '</div>';
+  }
+
+  // build_tasks id=14: "every search and produced report fully visible —
+  // who produced, when, status; full audit trail." np_property_truth_set
+  // (fetchTruth's save-back call) already overwrote truth_report on every
+  // pull with no history and no requester — np_report_pulls (0157) now logs
+  // every pull. RLS on the underlying table (not a client-side filter) does
+  // the role split: owner/manager get the whole office's log here, a plain
+  // agent gets only their own pulls — same shape as the section below.
+  html += '<h2 class="sec">יומן דוחות אמת</h2>' +
+    '<p class="sub" style="margin:0 0 10px">' +
+    (canManage ? 'כל פעם שמישהו במשרד לחץ על "משוך דוח אמת" בכרטיס נכס — מי, מתי, ועל איזה נכס.'
+                : 'הדוחות שאת/ה עצמך משכת — מי, מתי, ועל איזה נכס.') +
+    '</p><div id="stReportPullsBox"></div>';
+
+  body.innerHTML = html;
+  renderPublishBox(s, canManage);
+  renderLeadIntakeBox(s, canManage);
+  renderTemplatesBox(canManage);
+  renderReportPullsBox();
+  wireSettingsBody(canManage, s);
+}
+
+async function renderReportPullsBox() {
+  const box = $('stReportPullsBox');
+  if (!box) return;
+  box.innerHTML = '<p class="loading"><span class="spinner"></span>טוען…</p>';
+  let rows;
+  try { rows = await rpc('np_report_pulls', { p_office: OFFICE.id, p_limit: 200 }); }
+  catch (e) { box.innerHTML = '<div class="err">' + esc(e.message) + '</div>'; return; }
+
+  rows = rows || [];
+  if (!rows.length) { box.innerHTML = '<p class="sub">עדיין לא נמשך אף דוח אמת.</p>'; return; }
+
+  box.innerHTML = '<div class="table-scroll"><table><thead><tr>' +
+    '<th>נכס</th><th>מי משך</th><th>מתי</th><th>סטטוס</th><th>פרטים</th>' +
+    '</tr></thead><tbody>' +
+    rows.map((r) => '<tr>' +
+      '<td>' + esc(r.property_title || r.property_address || 'ללא כותרת') + '</td>' +
+      '<td>' + esc(r.requested_by_name || '—') + '</td>' +
+      '<td>' + dtm(r.requested_at) + '</td>' +
+      '<td>' + (r.status === 'success'
+        ? '<span class="pill on">' + esc(PULL_STATUS_HE.success) + '</span>'
+        : '<span class="pill off">' + esc(PULL_STATUS_HE.error) + '</span>') + '</td>' +
+      '<td>' + esc(r.error_text || '') + '</td>' +
+      '</tr>').join('') +
+    '</tbody></table></div>';
+}
+
+async function renderTemplatesBox(canManage) {
+  const box = $('stTemplatesBox');
+  if (!box) return;
+  box.innerHTML = '<p class="loading"><span class="spinner"></span>טוען…</p>';
+  let tpls;
+  try { tpls = await rpc('np_templates', { p_office: OFFICE.id }); }
+  catch (e) { box.innerHTML = '<div class="err">' + esc(e.message) + '</div>'; return; }
+
+  tpls = tpls || [];
+  const sys = tpls.filter((t) => t.is_system);
+  const own = tpls.filter((t) => !t.is_system);
+  const row = (t, isOwn) =>
+    '<li>' + '<b>' + esc(t.name) + '</b>' + (isOwn ? '' : ' <span class="pill">מערכתי</span>') +
+    (canManage
+      ? (isOwn
+          ? ' <button class="btn btn-quiet btn-sm" data-tpl-edit="' + t.id + '">עריכה</button>' +
+            ' <button class="btn btn-quiet btn-sm" data-tpl-del="' + t.id + '">מחיקה</button>'
+          : ' <button class="btn btn-quiet btn-sm" data-tpl-copy="' + t.id + '">שכפול לנוסח משרדי</button>')
+      : '') +
+    '</li>';
+  box.innerHTML = '<ul class="timeline">' + sys.map((t) => row(t, false)).join('') +
+    own.map((t) => row(t, true)).join('') + '</ul>';
+  if (!canManage) return;
+
+  box.querySelectorAll('[data-tpl-edit]').forEach((b) => b.addEventListener('click', () =>
+    openTemplateEditor(own.find((t) => t.id === b.dataset.tplEdit), canManage)));
+  box.querySelectorAll('[data-tpl-copy]').forEach((b) => b.addEventListener('click', () => {
+    const src = sys.find((t) => t.id === b.dataset.tplCopy);
+    openTemplateEditor({ name: src.name + ' (נוסח משרדי)', body_md: src.body_md, fields: src.fields }, canManage);
+  }));
+  box.querySelectorAll('[data-tpl-del]').forEach((b) => b.addEventListener('click', async () => {
+    if (!confirm('למחוק את התבנית הזו לצמיתות?')) return;
+    try { await rpc('np_template_delete', { p_id: b.dataset.tplDel }); toast('התבנית נמחקה'); renderTemplatesBox(canManage); }
+    catch (e) { toast('המחיקה נכשלה: ' + e.message, true); }
+  }));
+}
+
+function openTemplateEditor(tpl, canManage) {
+  tpl = tpl || {};
+  const html =
+    '<div id="tplErr"></div>' +
+    '<label class="f">שם התבנית<input id="tpl_name" value="' + esc(tpl.name || '') + '" /></label>' +
+    '<label class="f" style="margin-top:8px">תוכן (Markdown, עם {{שדות}})' +
+    '<textarea id="tpl_body" rows="14">' + esc(tpl.body_md || '') + '</textarea></label>' +
+    '<p style="margin-top:14px"><button class="btn" id="tplSave">שמירה</button></p>';
+  drawer(tpl.id ? 'עריכת תבנית' : 'תבנית משרדית חדשה',
+    'שדות בסוגריים כפולים כמו {{client_name}} ימולאו אוטומטית בעת יצירת מסמך',
+    html, (close) => {
+      $('tplSave').addEventListener('click', async () => {
+        const name = $('tpl_name').value.trim();
+        const body_md = $('tpl_body').value;
+        if (!name || !body_md.trim()) {
+          $('tplErr').innerHTML = '<div class="err">יש למלא שם ותוכן.</div>';
+          return;
+        }
+        $('tplSave').disabled = true;
+        try {
+          await rpc('np_template_save', { p: {
+            office_id: OFFICE.id, id: tpl.id || '', name, body_md, fields: tpl.fields || [],
+          } });
+          close(); toast('התבנית נשמרה'); renderTemplatesBox(canManage);
+        } catch (e) {
+          $('tplErr').innerHTML = '<div class="err">' + esc(e.message) + '</div>';
+          $('tplSave').disabled = false;
+        }
+      });
+    });
+}
+
+function leadIntakeEndpoint() { return SUPABASE_URL + '/rest/v1/rpc/np_lead_intake'; }
+
+function renderLeadIntakeBox(s, canManage) {
+  const box = $('stLeadIntakeBox');
+  if (s.lead_intake_enabled) {
+    const sample = '{\n  "p_token": "' + s.lead_intake_token + '",\n  "p_full_name": "ישראל ישראלי",\n' +
+      '  "p_phone": "0501234567",\n  "p_source": "whatsapp"\n}';
+    box.innerHTML = '<p class="sub" style="margin:0 0 10px">קליטה פעילה. הפנה כל אינטגרציה חיצונית ל-' +
+      'כתובת ולטוקן הבאים (POST, JSON):</p>' +
+      '<div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:8px">' +
+        '<input readonly value="' + esc(leadIntakeEndpoint()) + '" data-copy="' + esc(leadIntakeEndpoint()) + '" style="flex:1;min-width:220px" />' +
+        '<button class="btn btn-sm" data-copybtn="' + esc(leadIntakeEndpoint()) + '">העתק כתובת</button>' +
+      '</div>' +
+      '<div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">' +
+        '<input readonly value="' + esc(s.lead_intake_token) + '" data-copy="' + esc(s.lead_intake_token) + '" style="flex:1;min-width:220px" />' +
+        '<button class="btn btn-sm" data-copybtn="' + esc(s.lead_intake_token) + '">העתק טוקן</button>' +
+        (canManage ? '<button class="btn btn-quiet btn-sm" id="stLeadIntakeToggle" data-next="false">בטל קליטה</button>' +
+          '<button class="btn btn-quiet btn-sm" id="stLeadIntakeRegen">טוקן חדש (מבטל את הישן)</button>' : '') +
+      '</div>' +
+      '<pre style="margin-top:10px;padding:10px;background:var(--panel-2,#0002);border-radius:8px;overflow:auto;font-size:12px">' +
+      esc(sample) + '</pre>';
+  } else {
+    box.innerHTML = '<p class="sub" style="margin:0 0 10px">קליטת לידים חיצוניים כבויה כרגע.</p>' +
+      (canManage ? '<button class="btn btn-sm" id="stLeadIntakeToggle" data-next="true">הפעלת קליטת לידים</button>' : '');
+  }
+}
+
+function renderPublishBox(s, canManage) {
+  const box = $('stPublishBox');
+  if (s.public_enabled) {
+    const url = officeLinkFor(s.public_token);
+    box.innerHTML = '<p class="sub" style="margin:0 0 10px">האתר פעיל — כל מי שמחזיק בקישור יכול לצפות בו בלי כניסה למערכת.</p>' +
+      '<div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">' +
+        '<input readonly value="' + esc(url) + '" data-copy="' + esc(url) + '" style="flex:1;min-width:220px" />' +
+        '<button class="btn btn-sm" data-copybtn="' + esc(url) + '">העתק קישור</button>' +
+        (canManage ? '<button class="btn btn-quiet btn-sm" id="stPublishToggle" data-next="false">בטל פרסום</button>' +
+          '<button class="btn btn-quiet btn-sm" id="stRegen">קישור חדש (מבטל את הישן)</button>' : '') +
+      '</div>';
+  } else {
+    box.innerHTML = '<p class="sub" style="margin:0 0 10px">האתר כבוי כרגע.</p>' +
+      (canManage ? '<button class="btn btn-sm" id="stPublishToggle" data-next="true">הפעלת אתר משרד ציבורי</button>' : '');
+  }
+}
+
+function wireSettingsBody(canManage, s) {
+  const body = $('settingsBody');
+  for (const b of body.querySelectorAll('[data-copybtn]')) {
+    b.addEventListener('click', async () => {
+      try { await navigator.clipboard.writeText(b.dataset.copybtn); toast('הקישור הועתק'); }
+      catch (e) {
+        const inp = body.querySelector('[data-copy="' + b.dataset.copybtn + '"]');
+        if (inp) { inp.select(); toast('בחר והעתק ידנית (Ctrl+C)'); }
+      }
+    });
+  }
+  if (!canManage) return;
+
+  const save = $('stSave');
+  if (save) save.addEventListener('click', async () => {
+    save.disabled = true;
+    try {
+      await rpc('np_office_settings_save', { p: {
+        office_id: OFFICE.id,
+        name: $('st_name').value.trim(),
+        license_number: $('st_license').value.trim(),
+        phone: $('st_phone').value.trim(),
+        email: $('st_email').value.trim(),
+        city: $('st_city').value.trim(),
+        address: $('st_address').value.trim(),
+        logo_url: $('st_logo').value.trim(),
+        about: $('st_about').value.trim(),
+      } });
+      toast('הפרטים נשמרו');
+    } catch (e) { toast('השמירה נכשלה: ' + e.message, true); }
+    save.disabled = false;
+  });
+
+  const toggle = $('stPublishToggle');
+  if (toggle) toggle.addEventListener('click', async () => {
+    const next = toggle.dataset.next === 'true';
+    toggle.disabled = true;
+    try {
+      const r = await rpc('np_office_settings_save', { p: { office_id: OFFICE.id, public_enabled: next } });
+      toast(next ? 'האתר הופעל' : 'הפרסום בוטל');
+      renderPublishBox(r, canManage);
+      wireSettingsBody(canManage, s);
+    } catch (e) { toast('הפעולה נכשלה: ' + e.message, true); toggle.disabled = false; }
+  });
+
+  const regen = $('stRegen');
+  if (regen) regen.addEventListener('click', async () => {
+    if (!confirm('הקישור הישן יפסיק לעבוד מיד. להמשיך?')) return;
+    regen.disabled = true;
+    try {
+      const r = await rpc('np_office_public_token_regenerate', { p_office: OFFICE.id });
+      toast('נוצר קישור חדש');
+      renderPublishBox({ public_enabled: true, public_token: r.public_token }, canManage);
+      wireSettingsBody(canManage, s);
+    } catch (e) { toast('הפעולה נכשלה: ' + e.message, true); regen.disabled = false; }
+  });
+
+  const liToggle = $('stLeadIntakeToggle');
+  if (liToggle) liToggle.addEventListener('click', async () => {
+    const next = liToggle.dataset.next === 'true';
+    liToggle.disabled = true;
+    try {
+      const r = await rpc('np_office_settings_save', { p: { office_id: OFFICE.id, lead_intake_enabled: next } });
+      toast(next ? 'קליטת הלידים הופעלה' : 'קליטת הלידים בוטלה');
+      renderLeadIntakeBox(r, canManage);
+      wireSettingsBody(canManage, s);
+    } catch (e) { toast('הפעולה נכשלה: ' + e.message, true); liToggle.disabled = false; }
+  });
+
+  const liRegen = $('stLeadIntakeRegen');
+  if (liRegen) liRegen.addEventListener('click', async () => {
+    if (!confirm('הטוקן הישן יפסיק לעבוד מיד — כל אינטגרציה חיצונית תצטרך עדכון. להמשיך?')) return;
+    liRegen.disabled = true;
+    try {
+      const r = await rpc('np_lead_intake_token_regenerate', { p_office: OFFICE.id });
+      toast('נוצר טוקן חדש');
+      renderLeadIntakeBox({ lead_intake_enabled: true, lead_intake_token: r.lead_intake_token }, canManage);
+      wireSettingsBody(canManage, s);
+    } catch (e) { toast('הפעולה נכשלה: ' + e.message, true); liRegen.disabled = false; }
+  });
+
+  const tplNew = $('stTplNew');
+  if (tplNew) tplNew.addEventListener('click', () => openTemplateEditor(null, canManage));
+
+  const delBtn = $('stDeleteOffice');
+  if (delBtn) delBtn.addEventListener('click', async () => {
+    const typed = ($('stDeleteConfirm').value || '').trim();
+    if (!s || typed !== (s.name || '')) { toast('שם המשרד שהוקלד אינו תואם', true); return; }
+    if (!confirm('פעולה זו תמחק את המשרד "' + s.name + '" וכל תוכנו לצמיתות. אין דרך לשחזר. להמשיך?')) return;
+    delBtn.disabled = true;
+    try {
+      await rpc('np_office_delete', { p_office: OFFICE.id });
+      toast('המשרד נמחק');
+      try { localStorage.removeItem('np-office'); } catch (e) {}
+      location.reload();
+    } catch (e) { toast('המחיקה נכשלה: ' + e.message, true); delBtn.disabled = false; }
+  });
+}
+
+/* ── forum (Module 8 — cross-office network, not scoped to OFFICE.id) ──────── */
+async function renderForum() {
+  const body = $('forumBody');
+  body.innerHTML = '<p class="loading"><span class="spinner"></span>טוען…</p>';
+
+  let rows;
+  try {
+    rows = await rpc('np_forum_posts', {
+      p_kind: $('fKind').value || null,
+      p_status: $('fStatus').value || null,
+      p_search: $('fQ').value.trim() || null,
+      p_limit: 200,
+    });
+  } catch (e) { body.innerHTML = '<div class="err">' + esc(e.message) + '</div>'; return; }
+
+  rows = rows || [];
+  if (!rows.length) {
+    body.innerHTML = '<div class="empty"><b>אין עדיין פוסטים</b>לחצו על "+ פוסט חדש" כדי לפרסם לרשת כולה.</div>';
+    return;
+  }
+
+  body.innerHTML = '<ul class="timeline">' + rows.map((p) =>
+    '<li data-id="' + p.id + '">' +
+      '<span class="pill' + (p.kind === 'has_buyer' || p.kind === 'has_property' ? ' on' : '') + '">' +
+        esc(FKIND_HE[p.kind] || p.kind) + '</span> ' +
+      (p.status === 'closed' ? '<span class="pill">נסגר</span> ' : '') +
+      '<b>' + esc(p.title) + '</b>' + (p.city ? ' · ' + esc(p.city) : '') +
+      '<br><span class="dsub">' + esc(p.office_name) + ' · ' + esc(p.author_name) + ' · ' + dt(p.created_at) +
+      ' · ' + p.comment_count + ' תגובות</span>' +
+    '</li>').join('') + '</ul>';
+
+  for (const li of body.querySelectorAll('li[data-id]')) {
+    li.addEventListener('click', () => openForumPost(li.dataset.id));
+  }
+}
+
+async function openForumPost(id) {
+  let d;
+  try { d = await rpc('np_forum_post_get', { p_id: id }); }
+  catch (e) { return toast('טעינה נכשלה: ' + e.message, true); }
+  if (!d || !d.post) return toast('הפוסט לא נמצא', true);
+
+  const p = d.post;
+  const comments = d.comments || [];
+  let html =
+    '<p><span class="pill' + (p.kind === 'has_buyer' || p.kind === 'has_property' ? ' on' : '') + '">' +
+      esc(FKIND_HE[p.kind] || p.kind) + '</span> ' +
+      (p.status === 'closed' ? '<span class="pill">נסגר</span>' : '') + '</p>' +
+    (p.body ? '<p>' + esc(p.body).replace(/\n/g, '<br>') + '</p>' : '') +
+    '<p class="dsub">' + esc(p.office_name) + ' · ' + esc(p.author_name) +
+      (p.city ? ' · ' + esc(p.city) : '') + ' · ' + dt(p.created_at) + '</p>';
+
+  html += '<h2 class="sec">תגובות</h2>';
+  html += comments.length
+    ? '<ul class="timeline">' + comments.map((c) =>
+        '<li><b>' + esc(c.author_name) + '</b> · <span class="dsub">' + dt(c.created_at) + '</span>' +
+        (c.is_mine ? ' <button class="btn btn-danger btn-sm" data-delcomment="' + c.id + '">מחיקה</button>' : '') +
+        '<br>' + esc(c.body).replace(/\n/g, '<br>') + '</li>').join('') + '</ul>'
+    : '<p class="na">אין עדיין תגובות.</p>';
+
+  html += '<div class="form-grid"><label class="f span2">תגובה חדשה<textarea id="fcBody"></textarea></label></div>' +
+    '<p><button class="btn" id="fcAdd">פרסום תגובה</button></p>';
+
+  if (p.is_mine) {
+    html += '<p style="margin-top:10px">' +
+      '<button class="btn" id="fEdit">עריכה</button> ' +
+      '<button class="btn" id="fToggle">' + (p.status === 'closed' ? 'פתיחה מחדש' : 'סימון כנסגר') + '</button> ' +
+      '<button class="btn btn-danger" id="fDelete">מחיקה</button></p>';
+  }
+
+  drawer(p.title, p.office_name + ' · ' + p.author_name, html, (close) => {
+    for (const btn of document.querySelectorAll('[data-delcomment]')) {
+      btn.addEventListener('click', async () => {
+        if (!confirm('למחוק את התגובה?')) return;
+        btn.disabled = true;
+        try {
+          await rpc('np_forum_comment_delete', { p_id: btn.dataset.delcomment });
+          close(); openForumPost(id);
+        } catch (e) { btn.disabled = false; toast('המחיקה נכשלה: ' + e.message, true); }
+      });
+    }
+    $('fcAdd').addEventListener('click', async () => {
+      const text = $('fcBody').value.trim();
+      if (!text) return;
+      $('fcAdd').disabled = true;
+      try {
+        await rpc('np_forum_comment_add', { p_post: id, p_body: text });
+        close(); openForumPost(id);
+        if (VIEW === 'forum') renderForum();
+      } catch (e) { $('fcAdd').disabled = false; toast('פרסום התגובה נכשל: ' + e.message, true); }
+    });
+    const editBtn = $('fEdit');
+    if (editBtn) editBtn.addEventListener('click', () => { close(); forumPostForm(p); });
+    const toggleBtn = $('fToggle');
+    if (toggleBtn) toggleBtn.addEventListener('click', async () => {
+      toggleBtn.disabled = true;
+      try {
+        await rpc('np_forum_post_save', { p: { id: p.id, status: p.status === 'closed' ? 'open' : 'closed' } });
+        close(); openForumPost(id);
+        if (VIEW === 'forum') renderForum();
+      } catch (e) { toggleBtn.disabled = false; toast('העדכון נכשל: ' + e.message, true); }
+    });
+    const delBtn = $('fDelete');
+    if (delBtn) delBtn.addEventListener('click', async () => {
+      if (!confirm('למחוק את הפוסט? הפעולה בלתי הפיכה.')) return;
+      delBtn.disabled = true;
+      try {
+        await rpc('np_forum_post_delete', { p_id: p.id });
+        toast('הפוסט נמחק');
+        close();
+        if (VIEW === 'forum') renderForum();
+      } catch (e) { delBtn.disabled = false; toast('המחיקה נכשלה: ' + e.message, true); }
+    });
+  });
+}
+
+function forumPostForm(existing) {
+  const p = existing || {};
+  const kOpts = Object.entries(FKIND_HE).map(([k, lbl]) =>
+    '<option value="' + k + '"' + ((p.kind || 'has_buyer') === k ? ' selected' : '') + '>' + lbl + '</option>').join('');
+
+  const html =
+    '<div id="fpErr"></div><div class="form-grid">' +
+      '<label class="f">סוג<select id="fp_kind">' + kOpts + '</select></label>' +
+      '<label class="f">עיר<input id="fp_city" value="' + esc(p.city || '') + '" /></label>' +
+      '<label class="f span2">כותרת *<input id="fp_title" value="' + esc(p.title || '') + '" /></label>' +
+      '<label class="f span2">פירוט<textarea id="fp_body">' + esc(p.body || '') + '</textarea></label>' +
+    '</div>' +
+    '<p style="margin-top:16px"><button class="btn" id="fpSave">' + (p.id ? 'שמירה' : 'פרסום') + '</button></p>';
+
+  drawer(p.id ? 'עריכת פוסט' : 'פוסט חדש לפורום', 'גלוי לכל מתווך פעיל ברשת', html, (close) => {
+    $('fpSave').addEventListener('click', async () => {
+      const payload = {
+        kind: $('fp_kind').value,
+        city: $('fp_city').value.trim(),
+        title: $('fp_title').value.trim(),
+        body: $('fp_body').value.trim(),
+      };
+      if (!payload.title) {
+        $('fpErr').innerHTML = '<div class="err">כותרת היא שדה חובה.</div>';
+        return;
+      }
+      if (p.id) payload.id = p.id; else payload.office_id = OFFICE.id;
+      $('fpSave').disabled = true;
+      try {
+        await rpc('np_forum_post_save', { p: payload });
+        toast(p.id ? 'הפוסט עודכן' : 'הפוסט פורסם');
+        close();
+        if (VIEW === 'forum') renderForum();
+      } catch (e) {
+        $('fpErr').innerHTML = '<div class="err">' + esc(e.message) + '</div>';
+        $('fpSave').disabled = false;
       }
     });
   });
@@ -1648,6 +4088,26 @@ async function boot() {
   try { ME = await rpc('np_me'); }
   catch (e) { return fail('טעינת החשבון נכשלה: ' + e.message); }
 
+  // A team-invite join link (created by the "הזמנת חבר צוות" form in
+  // renderTeam() below) lands here as ?join=CODE — before the "no offices
+  // yet" branch below, since the whole
+  // point is to let a brand-new agent (zero offices) skip viewSetup and land
+  // straight in the office they were invited to, the same as an existing
+  // agent joining a second one. One-time by construction: np_member_invite_redeem
+  // marks the code used_at on first success, so reloading this URL after
+  // redemption just re-shows the same "invalid or already used" error a
+  // stale/reused link would.
+  const joinCode = new URLSearchParams(location.search).get('join');
+  if (joinCode) {
+    history.replaceState(null, '', location.pathname); // never re-submit the code on reload
+    try {
+      const joined = await rpc('np_member_invite_redeem', { p_code: joinCode });
+      ME = await rpc('np_me');
+      try { localStorage.setItem('np-office', joined.office_id); } catch (e) {}
+      toast('הצטרפת למשרד ' + joined.office_name);
+    } catch (e) { toast(e.message, true); }
+  }
+
   if (!ME.offices || !ME.offices.length) { show('viewSetup'); return; }
 
   const sel = $('officePick');
@@ -1661,7 +4121,7 @@ async function boot() {
   pickOffice(saved && ME.offices.some((o) => o.id === saved) ? saved : ME.offices[0].id);
 
   const want = new URLSearchParams(location.search).get('v');
-  setView(['dash', 'board', 'contacts', 'properties', 'documents', 'tasks'].includes(want) ? want : 'dash');
+  setView(['dash', 'board', 'contacts', 'properties', 'rentals', 'documents', 'tasks', 'team', 'forum'].includes(want) ? want : 'dash');
 }
 
 $('officePick').addEventListener('change', (e) => { pickOffice(e.target.value); setView(VIEW); });
@@ -1694,7 +4154,13 @@ $('cQ').addEventListener('input', () => { clearTimeout(cTimer); cTimer = setTime
 for (const id of ['cKind', 'cSource']) $(id).addEventListener('change', renderContacts);
 $('pQ').addEventListener('input', () => { clearTimeout(cTimer); cTimer = setTimeout(renderProperties, 250); });
 $('pStatus').addEventListener('change', renderProperties);
+$('pPurpose').addEventListener('change', renderProperties);
+$('newLease').addEventListener('click', () => leaseForm(null));
+$('lStatus').addEventListener('change', renderRentals);
 $('tFilter').addEventListener('change', renderTasks);
+$('newForumPost').addEventListener('click', () => forumPostForm(null));
+$('fQ').addEventListener('input', () => { clearTimeout(cTimer); cTimer = setTimeout(renderForum, 250); });
+for (const id of ['fKind', 'fStatus']) $(id).addEventListener('change', renderForum);
 
 boot();
 </script>

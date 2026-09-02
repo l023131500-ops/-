@@ -105,7 +105,7 @@ export function pickBestPolygon(
  * מפתח זהות לעסקה — לאיחוד תוצאות מכמה פוליגונים.
  * אותה עסקה מוחזרת יותר מפעם אחת כשפוליגונים גובלים חופפים.
  */
-function dealKey(t: Transaction): string {
+export function dealKey(t: Transaction): string {
   return [t.gush, t.helka, t.tatHelka, t.dealDate, t.price, t.areaSqm, t.address]
     .map((v) => v ?? '')
     .join('|');
@@ -260,9 +260,28 @@ export function filterToBuilding(txns: Transaction[], polygonId?: string | null)
   return txns.filter((t) => t.polygonId === String(polygonId));
 }
 
-/** נרמול כתובת להשוואה: "הבעש\"ט 9" ו-"הבעשט 9" הם אותה כתובת. */
-function normAddr(s: string | null | undefined): string {
-  return norm(s);
+/** מילות-סוג רחוב שמקורות שונים מוסיפים/משמיטים בחוסר-עקביות. */
+const STREET_TYPE_WORDS = new Set([
+  'רחוב', 'רח', 'שדרות', 'שדרה', 'שד', 'דרך', 'סמטה', 'סמטת', 'שביל', 'ככר', 'כיכר', 'מבוא',
+]);
+
+/**
+ * נרמול שם רחוב להשוואה: "הבעש\"ט 9" ו-"הבעשט 9" הם אותה כתובת, וגם
+ * "אלנבי" ו-"שדרות אלנבי" הן אותו רחוב (מילת-סוג מובילה מוסרת כטוקן שלם,
+ * לפני איחוד הרווחים — לא בהכלת-תת-מחרוזת).
+ *
+ * ⚠️ בכוונה **לא** משתמש ב-`includes()` על המחרוזת המאוחדת: "אלנבי" מוכל
+ * תת-מחרוזתית ב"שדרותאלנבי" (שדרות אלנבי) וגם "ביאליק" מוכל ב"ביאליקהחדש"
+ * (ביאליק החדש) — שני רחובות שונים לגמרי. הכלה גורפת כזו זיהתה בעבר "רחוב
+ * אחר" כאותו רחוב רק כי מספר הבית תאם במקרה. ההשוואה חייבת להיות שוויון
+ * מדויק אחרי הסרת מילת-הסוג, לא הכלה — אותו עיקרון בדיוק כמו `verifyCity`
+ * ב-`lib/geocode.ts`.
+ */
+export function normStreetName(s: string | null | undefined): string {
+  const cleaned = (s ?? '').replace(/["'`״׳]/g, '').replace(/[-–—־]/g, ' ');
+  let tokens = cleaned.split(/\s+/).filter(Boolean);
+  if (tokens.length > 1 && STREET_TYPE_WORDS.has(tokens[0])) tokens = tokens.slice(1);
+  return tokens.join('');
 }
 
 /**
@@ -275,14 +294,14 @@ export function filterToAddress(
   houseNum: number | null,
 ): Transaction[] {
   if (houseNum == null) return [];
-  const wanted = streetNames.map(normAddr).filter(Boolean);
-  if (!wanted.length) return [];
+  const wanted = new Set(streetNames.map(normStreetName).filter(Boolean));
+  if (!wanted.size) return [];
   return txns.filter((t) => {
     // ⚠️ השוואה מול השדות המקוריים של הרשומה, לא מול פענוח של המחרוזת
     // המחורזת. הפענוח נכשל על "הבעש\"ט 9" ועל כתובות ללא מספר.
     if (t.houseNum == null || t.houseNum !== houseNum) return false;
-    const st = normAddr(t.streetName);
-    return !!st && wanted.some((w) => st === w || st.includes(w) || w.includes(st));
+    const st = normStreetName(t.streetName);
+    return !!st && wanted.has(st);
   });
 }
 

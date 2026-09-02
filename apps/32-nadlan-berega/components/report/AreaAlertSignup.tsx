@@ -48,16 +48,18 @@ export default function AreaAlertSignup({
     return (
       <div className="mt-8 rounded-2xl border border-line bg-surface p-5 text-center shadow-card">
         <div className="text-lg font-black text-[#1a9e6a]">נרשמת בהצלחה ✓</div>
-        <p className="mt-1 text-[13px] text-muted">נעדכן אותך במייל כשתתפרסם עסקה חדשה ב{areaLabel}.</p>
+        <p className="mt-1 text-[13px] text-muted">
+          נעדכן אותך במייל כשתתפרסם עסקה חדשה או תוכנית בנייה/תב"ע חדשה ב{areaLabel}.
+        </p>
       </div>
     );
   }
 
   return (
     <div className="mt-8 rounded-2xl border border-line bg-surface p-5 shadow-card">
-      <h3 className="text-lg font-black text-navy">התראה על עסקאות חדשות</h3>
+      <h3 className="text-lg font-black text-navy">התראה על עסקאות ותוכניות בנייה</h3>
       <p className="mt-1 text-[13px] leading-relaxed text-muted">
-        השאירו אימייל ונעדכן אתכם כשתתפרסם עסקה חדשה ב{areaLabel}.
+        השאירו אימייל ונעדכן אתכם כשתתפרסם עסקה חדשה או תוכנית בנייה/תב"ע חדשה ב{areaLabel}.
       </p>
       <form onSubmit={submit} className="mt-3 flex flex-wrap gap-2">
         <input

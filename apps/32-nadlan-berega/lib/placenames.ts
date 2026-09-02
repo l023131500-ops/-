@@ -197,8 +197,8 @@ function searchTerm(s: string): string {
 // מטמון קודי יישוב — נשאלים בכל דוח ואינם משתנים.
 const cityCodeCache = new Map<string, number | null>();
 
-/** קוד היישוב במרשם הרחובות. */
-async function findCityCode(cityName: string): Promise<number | null> {
+/** קוד היישוב במרשם הרחובות (סמל יישוב רשמי — משמש גם מחוץ למרשם הרחובות עצמו, למשל להצלבה מול מאגרי משטרה/למ״ס). */
+export async function findCityCode(cityName: string): Promise<number | null> {
   const key = norm(cityName);
   if (!key) return null;
   if (cityCodeCache.has(key)) return cityCodeCache.get(key)!;

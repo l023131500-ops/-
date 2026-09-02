@@ -29,7 +29,11 @@ export function estimateRental(
     return { medianMonthly: null, low: null, high: null, perSqm: null, yieldPct: null, sampleSize: 0, matched: false };
   }
   const sorted = [...perSqmVals].sort((a, b) => a - b);
-  const medPerSqm = sorted[Math.floor(sorted.length / 2)];
+  // ⚠️ במספר זוגי של פריטים יש לממוצע את שני האיברים באמצע, לא לקחת את
+  // העליון מביניהם — אותה תקלה שכבר נמצאה ותוקנה ב-buildreport.ts (median()).
+  const mid = Math.floor(sorted.length / 2);
+  const medPerSqm =
+    sorted.length % 2 === 1 ? sorted[mid] : (sorted[mid - 1] + sorted[mid]) / 2;
   const lowPerSqm = sorted[Math.floor(sorted.length * 0.25)];
   const highPerSqm = sorted[Math.floor(sorted.length * 0.75)];
 

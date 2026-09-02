@@ -1,1 +1,4 @@
-{ "framework": "nextjs" }
+{
+  "framework": "nextjs",
+  "crons": [{ "path": "/nadlan/api/cron/area-alerts", "schedule": "0 5 * * *" }]
+}

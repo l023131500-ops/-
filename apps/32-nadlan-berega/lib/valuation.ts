@@ -30,6 +30,15 @@ export interface ComparableDeal {
   proximityRank: number;
   proximityLabel: string;
   suspect?: boolean;
+  /**
+   * קומה וגוש/חלקה — לא נצרכים בשום חישוב כאן, רק מועברים דרך כדי שטבלת
+   * ההשוואה תוכל להציג "התאמות" ברמת שמאי (P2 ACCURACY SPEC §E): קומה
+   * וזיהוי חלקה לכל עסקת השוואה, לצד הקרבה שכבר קיימת ב-`proximityLabel`.
+   * אופציונליים כי `ComparableDeal` הוא הטיפוס המינימלי שההערכה דורשת —
+   * קריאה קיימת כלשהי ל-`valuate()` בלי השדות האלה ממשיכה לעבוד ללא שינוי.
+   */
+  floor?: string | null;
+  parcelLabel?: string | null;
 }
 
 export interface ValuationBasis {

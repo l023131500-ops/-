@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>אתר משרד · נדל״ן פרו</title>
+<!-- Unlike listing.html/sign.html (one-off links handed to a single client),
+     this page is the office's own public marketing presence — meant to be
+     shared and found, so it stays indexable. -->
+<meta name="theme-color" content="#0B0D2E" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Suez+One&family=Secular+One&family=Heebo:wght@300;400;500;700&display=swap"
+      rel="stylesheet" media="print" onload="this.media='all'" />
+<noscript><link href="https://fonts.googleapis.com/css2?family=Suez+One&family=Secular+One&family=Heebo:wght@300;400;500;700&display=swap" rel="stylesheet" /></noscript>
+<!-- Deliberately NOT loading auth-button.js, same reasoning as listing.html:
+     a visitor here is a prospective client, not a more30 user. -->
+<style>
+:root{
+  color-scheme: dark;
+  --royal:#0B0D2E; --royal-2:#12153F;
+  --gold:#C9A227; --gold-soft:#E3C765; --emerald:#14B88A; --rose:#E0574E;
+  --ink:#ECE9F5; --ink-2:#B9B6D6; --muted:#8E8BB2;
+  --line:rgba(201,162,39,.20); --line-2:rgba(236,233,245,.10);
+  --ease:cubic-bezier(.22,.61,.36,1);
+}
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;background:var(--royal);color:var(--ink);
+  font-family:'Heebo',system-ui,-apple-system,'Segoe UI',sans-serif;font-weight:300;line-height:1.7;
+  -webkit-font-smoothing:antialiased}
+a{color:inherit}
+.wrap{max-width:960px;margin:0 auto;padding:28px 20px 80px}
+[hidden]{display:none !important}
+
+.brand{display:flex;align-items:center;gap:10px;padding:14px 0 22px;
+  border-bottom:1px solid var(--line-2);margin-bottom:24px}
+.brand .m{font-family:'Secular One',sans-serif;font-size:16px}
+.brand .m span{color:var(--gold)}
+
+.hero{display:flex;gap:20px;align-items:flex-start;flex-wrap:wrap;margin:0 0 22px}
+.hero img{width:76px;height:76px;border-radius:8px;object-fit:cover;border:1px solid var(--line-2);background:var(--royal-2)}
+h1{font-family:'Suez One',serif;font-weight:400;font-size:28px;margin:0 0 4px}
+.sub{color:var(--muted);font-size:15px;margin:0 0 24px}
+.about{font-size:15px;line-height:1.85;margin:0 0 26px;white-space:pre-wrap;max-width:680px}
+
+.facts{display:flex;flex-wrap:wrap;gap:20px;padding:16px 18px;margin:0 0 30px;
+  border:1px solid var(--line);border-radius:5px;background:rgba(201,162,39,.04)}
+.facts div{min-width:120px}
+.facts .k{font-size:11px;letter-spacing:.08em;color:var(--muted);margin:0 0 4px}
+.facts .v{font-size:15px;color:var(--ink);margin:0}
+
+h2.sec{font-family:'Secular One',sans-serif;font-weight:400;font-size:18px;margin:0 0 16px}
+
+.grid{display:grid;gap:14px;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));margin:0 0 26px}
+.card{display:block;border:1px solid var(--line-2);border-radius:6px;overflow:hidden;
+  background:var(--royal-2);text-decoration:none;transition:border-color .2s var(--ease)}
+.card:hover{border-color:var(--gold)}
+.card img{width:100%;aspect-ratio:4/3;object-fit:cover;background:var(--royal)}
+.card .cbody{padding:12px 14px}
+.card .ct{font-size:15px;color:var(--ink);margin:0 0 3px}
+.card .cs{font-size:13px;color:var(--muted);margin:0 0 8px}
+.card .cp{font-family:'Suez One',serif;font-size:17px;color:var(--gold-soft);margin:0;font-variant-numeric:tabular-nums}
+.empty{border:1px solid var(--line-2);border-radius:5px;padding:26px;text-align:center;color:var(--muted);font-size:14px}
+
+.state{border-radius:5px;padding:26px 28px;text-align:center;margin:30px 0}
+.state.bad{border:1px solid rgba(224,87,78,.5);background:rgba(224,87,78,.08)}
+.state h2{font-family:'Secular One',sans-serif;font-weight:400;font-size:20px;margin:0 0 8px}
+.state p{margin:0;color:var(--ink-2);font-size:14px}
+.loading{color:var(--muted);font-size:15px;text-align:center;padding:60px 0}
+.spinner{display:inline-block;width:14px;height:14px;border:2px solid var(--line-2);
+  border-top-color:var(--gold);border-radius:50%;animation:spin .7s linear infinite;
+  vertical-align:-2px;margin-inline-end:8px}
+@keyframes spin{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){.spinner{animation-duration:2s}}
+.foot{text-align:center;color:var(--muted);font-size:12px;margin-top:40px;
+  padding-top:20px;border-top:1px solid var(--line-2)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="brand"><span class="m">נדל״ן<span> פרו</span></span></div>
+
+  <div id="loading" class="loading"><span class="spinner"></span>טוען את המשרד…</div>
+
+  <main id="main" hidden>
+    <div class="hero">
+      <img id="logo" hidden alt="" />
+      <div>
+        <h1 id="name"></h1>
+        <p class="sub" id="sub"></p>
+      </div>
+    </div>
+    <p class="about" id="about" hidden></p>
+    <div class="facts" id="facts"></div>
+
+    <h2 class="sec">נכסים למכירה</h2>
+    <div id="listings"></div>
+  </main>
+
+  <div id="fatal" hidden></div>
+
+  <p class="foot">
+    נשלח דרך נדל״ן פרו · <a href="https://more30.com" style="color:var(--muted)">more30.com</a>
+  </p>
+</div>
+
+<script type="module">
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+
+const SUPABASE_URL = 'https://uhnrgujbdxhhmoxcjria.supabase.co';
+const SUPABASE_ANON =
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVobnJndWpiZHhoaG1veGNqcmlhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODMzNjE3MjgsImV4cCI6MjA5ODkzNzcyOH0.nHuOhw-WQEU17lNa7XOlORnBhVAYbJBHudKafWkSHBw';
+
+// persistSession false, same reasoning as listing.html/sign.html: a visitor
+// here is a prospective client, not a more30 user, and gets no session left behind.
+const sb = createClient(SUPABASE_URL, SUPABASE_ANON, {
+  auth: { persistSession: false, autoRefreshToken: false },
+});
+
+const $ = (id) => document.getElementById(id);
+const esc = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, (c) =>
+  ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const token = new URLSearchParams(location.search).get('t');
+
+// Kept identical to app.html's ASSET_HE — same enum, same labels.
+const ASSET_HE = {
+  apartment: 'דירה', house: 'בית', penthouse: 'פנטהאוז', garden_apartment: 'דירת גן',
+  duplex: 'דופלקס', land: 'קרקע', commercial: 'מסחרי', office: 'משרד', other: 'אחר',
+};
+const money = (n) => n == null ? null : new Intl.NumberFormat('he-IL',
+  { style: 'currency', currency: 'ILS', maximumFractionDigits: 0 }).format(n);
+
+function fatal(title, msg) {
+  $('loading').hidden = true;
+  $('main').hidden = true;
+  $('fatal').hidden = false;
+  $('fatal').innerHTML = '<div class="state bad"><h2>' + esc(title) + '</h2><p>' + esc(msg) + '</p></div>';
+}
+
+function listingCard(l) {
+  const img = (l.images || [])[0];
+  const sub = [l.address, l.city].filter(Boolean).join(' · ') || '—';
+  const facts = [ASSET_HE[l.asset_type] || l.asset_type, l.rooms ? l.rooms + ' חד׳' : null,
+                  l.area_sqm ? l.area_sqm + ' מ״ר' : null].filter(Boolean).join(' · ');
+  return '<a class="card" href="listing.html?t=' + encodeURIComponent(l.share_token) + '">' +
+    (img ? '<img src="' + esc(img) + '" alt="" loading="lazy" />' : '') +
+    '<div class="cbody"><p class="ct">' + esc(l.title || sub) + '</p>' +
+    '<p class="cs">' + esc(sub) + (facts ? ' · ' + esc(facts) : '') + '</p>' +
+    // Never render a monthly rent figure looking like a sale price (P2
+    // accuracy spec, core.projects #33) — flag it inline on the card.
+    (l.price != null ? '<p class="cp">' + esc(money(l.price)) +
+      (l.listing_purpose === 'rent' ? ' לחודש' : '') + '</p>' : '') +
+    '</div></a>';
+}
+
+async function boot() {
+  if (!token) return fatal('קישור חסר', 'הכתובת אינה כוללת מזהה משרד. פתח את הקישור שקיבלת במלואו.');
+
+  let d;
+  try {
+    const { data, error } = await sb.rpc('np_office_public', { p_token: token });
+    if (error) throw new Error(error.message);
+    d = data;
+  } catch (e) {
+    return fatal('טעינת המשרד נכשלה', e.message);
+  }
+  if (!d || !d.ok) return fatal('הקישור אינו זמין', (d && d.error) || 'ייתכן שהמשרד הסיר את הפרסום.');
+
+  $('loading').hidden = true;
+  $('main').hidden = false;
+  document.title = (d.name || 'משרד') + ' · נדל״ן פרו';
+  $('name').textContent = d.name || 'משרד תיווך';
+  $('sub').textContent = [d.city, d.license_number ? 'רישיון מס׳ ' + d.license_number : null]
+    .filter(Boolean).join(' · ') || '—';
+
+  if (d.logo_url) { $('logo').hidden = false; $('logo').src = d.logo_url; }
+  if (d.about) { $('about').hidden = false; $('about').textContent = d.about; }
+
+  const facts = [
+    ['טלפון', d.phone], ['דוא״ל', d.email], ['כתובת', d.address],
+  ].filter(([, v]) => v);
+  $('facts').innerHTML = facts.map(([k, v]) =>
+    '<div><p class="k">' + esc(k) + '</p><p class="v">' + esc(v) + '</p></div>').join('');
+
+  const listings = d.listings || [];
+  $('listings').innerHTML = listings.length
+    ? '<div class="grid">' + listings.map(listingCard).join('') + '</div>'
+    : '<div class="empty">אין כרגע נכסים מפורסמים באתר זה.</div>';
+}
+
+boot();
+</script>
+</body>
+</html>
