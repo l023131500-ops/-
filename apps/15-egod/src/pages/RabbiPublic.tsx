@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { motion } from "framer-motion";
-import { BookOpen, MapPin, Clock, Phone, Mail, Send, Building2, Globe } from "lucide-react";
+import { BookOpen, MapPin, Clock, Phone, Mail, Send, Building2, Globe, FileText, Download, PlayCircle, Music } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -16,6 +16,7 @@ const RabbiPublic = () => {
   const [synagogues, setSynagogues] = useState<any[]>([]);
   const [prayerTimes, setPrayerTimes] = useState<any[]>([]);
   const [photos, setPhotos] = useState<any[]>([]);
+  const [materials, setMaterials] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [contactForm, setContactForm] = useState({ sender_name: "", sender_phone: "", sender_email: "", message: "" });
   const [sending, setSending] = useState(false);
@@ -45,6 +46,11 @@ const RabbiPublic = () => {
 
     const { data: photosData } = await supabase.from("portal_photos").select("*").eq("teacher_id", profile.id);
     setPhotos(photosData || []);
+
+    const { data: materialsData } = await supabase.from("materials").select("*")
+      .eq("uploader_id", profile.id).eq("status", "approved").eq("display_in_public_profile", true)
+      .order("created_at", { ascending: false });
+    setMaterials(materialsData || []);
 
     setLoading(false);
   };
@@ -167,6 +173,39 @@ const RabbiPublic = () => {
             <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
               {photos.map(p => (
                 <img key={p.id} src={p.image_url} alt={p.caption || ""} className="rounded-xl w-full h-40 object-cover" />
+              ))}
+            </div>
+          </motion.section>
+        )}
+
+        {/* Materials */}
+        {materials.length > 0 && (
+          <motion.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }}>
+            <h2 className="font-heading text-xl font-bold text-foreground mb-4 flex items-center gap-2">
+              <FileText className="w-5 h-5 text-secondary" />חומרי עזר ותכנים
+            </h2>
+            <div className="grid gap-3 md:grid-cols-2">
+              {materials.map(m => (
+                <div key={m.id} className="bg-card rounded-xl border border-border p-4 space-y-2">
+                  <div className="flex items-center gap-2">
+                    {m.media_kind === "video" ? <PlayCircle className="w-4 h-4 text-secondary shrink-0" />
+                      : m.media_kind === "audio" ? <Music className="w-4 h-4 text-secondary shrink-0" />
+                      : <FileText className="w-4 h-4 text-secondary shrink-0" />}
+                    <h3 className="font-bold text-foreground">{m.title}</h3>
+                  </div>
+                  {m.description && <p className="text-sm text-muted-foreground">{m.description}</p>}
+                  {m.media_kind === "video" ? (
+                    <video controls src={m.file_url} className="w-full rounded-lg max-h-64" />
+                  ) : m.media_kind === "audio" ? (
+                    <audio controls src={m.file_url} className="w-full" />
+                  ) : m.media_kind === "image" ? (
+                    <img src={m.file_url} alt={m.title} className="w-full rounded-lg max-h-64 object-cover" />
+                  ) : (
+                    <a href={m.file_url} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 text-secondary text-sm font-medium">
+                      <Download className="w-3 h-3" />הורדה / צפייה
+                    </a>
+                  )}
+                </div>
               ))}
             </div>
           </motion.section>
