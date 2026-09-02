@@ -69,6 +69,7 @@ const TeacherForm = ({ data, onChange }: TeacherFormProps) => {
         data.notes ? `הערות: ${data.notes}` : "",
       ].filter(Boolean).join(" | "),
       status: "new",
+      kind: "teacher_offer",
     });
     if (!error) toast.success("הטופס נשלח בהצלחה! נחזור אליכם בהקדם.");
     else toast.error("שגיאה בשליחה");
