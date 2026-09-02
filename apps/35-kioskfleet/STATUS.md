@@ -3606,3 +3606,63 @@ round's work.
   guard was built to replace, not extend. Flagging for the owner rather
   than silently dropping it.
 
+- **2026-09-02 — Reconciled orphaned business-hours schedule offline-persist
+  branch (§9 "תזמון").** Same orphaned-branch pattern as every entry above:
+  `feat/kiosk-schedule-offline-persist-0825` (commit `b2ba75c`) built real,
+  isolated work that never reached the deployed tip. The server had stored
+  `schedule_enabled`/`schedule_open_time`/`schedule_close_time` on devices
+  since an earlier round and enforced them via `index.js`'s 60s sweep for
+  *connected* devices, but `pushConfigUpdate`/`enroll`/`heartbeat` never
+  sent those fields to the device itself (confirmed by grep before
+  touching anything — `maintenanceEnabled` and `paymentMode` were both
+  threaded through all three call sites, schedule was not). A kiosk that
+  rebooted or lost network mid-window had no way to work out its own
+  current on/off state until the next sweep tick noticed it — the same
+  "must survive a reboot with no network" gap `maintenanceEnabled` closed
+  earlier.
+
+  `git cherry-pick -n b2ba75c` onto the current tip hit two small
+  conflicts (`policy.js`, `routes/agent.js` — both files had grown a
+  `paymentMode` field on the same lines since this branch was cut);
+  resolved by keeping both fields side by side. Android side persists the
+  schedule to `Prefs` on every config push and re-applies it in
+  `onCreate()`/`onConfigUpdated()` via a new `applyScheduleState()`,
+  mirroring the existing `applyMaintenanceState()` pattern exactly.
+
+  Verified **live**: booted the real server against a scratch SQLite DB,
+  logged in as the seeded admin, created a real enrollment, enrolled a
+  device (confirmed `scheduleEnabled`/`scheduleOpenTime`/
+  `scheduleCloseTime` present in the enroll response), `PATCH
+  /devices/:id` a real 09:00–21:00 schedule onto it as admin, confirmed
+  both the resulting `update_config` push command and a subsequent
+  `POST /agent/heartbeat` response carry the three schedule fields. Full
+  suite **215/215** (unchanged — this commit has no new test file,
+  matching the upstream branch). `node --check` clean on both touched
+  server files; Kotlin brace/paren balance clean on all 3 touched Android
+  files (no Android SDK in this sandbox to compile).
+
+  Committed+pushed to `l023131500-ops/zol` branch
+  `feat/kiosk-schedule-offline-persist-reconcile-0902` (`8d1817b`) — **not
+  merged**, cut from the same furthest-forward tip as every entry above (so
+  it also carries launcher/payment-modes/Routes-C-D/Route-A/shared-write-
+  guard). **Not deployed** — same Railway-promote blocker as every prior
+  zol-targeted entry.
+
+  Checked for further orphaned-branch candidates this round: `feat/kiosk-
+  app-ota-update-0825`, `feat/kiosk-exit-gesture-config-0825` and `feat/
+  kiosk-install-checklist-wizard-0825` are large cumulative 0825 snapshots
+  (up to 46 files / 3485 lines) that already carry payment/qrprovision/
+  launcher/accesscode/usbpackage/windowspackage — all now reconciled onto
+  the tip via other branches — **but each also introduces real modules
+  still absent from the tip today**: `appupdate.js` (OTA app updates),
+  `orientation.js` (orientation lock), `gesturesettings.js` (exit-gesture
+  config) and `installsteps.js` (install checklist wizard) all confirmed
+  missing from `kiosk/server/src/` on the current tip by direct file
+  listing. `feat/kiosk-exit-gesture-config-0825` looks like the single
+  furthest-forward snapshot of the three (it alone has all four new
+  modules). This is real, unreconciled, non-trivial scope — too large for
+  a single iteration's "one complete improvement" bar — flagged as the
+  next candidate rather than attempted partially this round. `fix/kiosk-
+  landing-illustrations-0831`, `fix/kiosk-landing-page-full-feature-copy-
+  0831`, `feat/kiosk-install-wizard-0831` remain unchecked.
+
