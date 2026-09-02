@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { motion } from "framer-motion";
-import { BookOpen, MapPin, Clock, Phone, Mail, Send, Building2, Globe, FileText, Download, PlayCircle, Music } from "lucide-react";
+import { BookOpen, MapPin, Clock, Phone, Mail, Send, Building2, MessageCircle, Printer, FileText, Download, PlayCircle, Music } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -229,20 +229,34 @@ const RabbiPublic = () => {
         </motion.section>
 
         {/* Contact Info */}
-        {(profile.phone || profile.email || profile.contact_whatsapp) && (
+        {(profile.phone || profile.email || profile.contact_whatsapp || profile.contact_fax || profile.contact_mailing_address) && (
           <div className="flex flex-wrap gap-4 justify-center text-sm text-muted-foreground">
             {profile.phone && <span className="flex items-center gap-1"><Phone className="w-4 h-4" />{profile.phone}</span>}
             {profile.email && <span className="flex items-center gap-1"><Mail className="w-4 h-4" />{profile.email}</span>}
-            {profile.contact_whatsapp && <span className="flex items-center gap-1"><Globe className="w-4 h-4" />WhatsApp: {profile.contact_whatsapp}</span>}
+            {profile.contact_whatsapp && (
+              <a href={`https://wa.me/${profile.contact_whatsapp.replace(/\D/g, "")}`} target="_blank" rel="noopener noreferrer"
+                className="flex items-center gap-1 hover:text-secondary transition-colors">
+                <MessageCircle className="w-4 h-4" />WhatsApp: {profile.contact_whatsapp}
+              </a>
+            )}
+            {profile.contact_fax && <span className="flex items-center gap-1"><Printer className="w-4 h-4" />פקס: {profile.contact_fax}</span>}
+            {profile.contact_mailing_address && <span className="flex items-center gap-1"><MapPin className="w-4 h-4" />{profile.contact_mailing_address}</span>}
           </div>
         )}
 
-        {/* Donation Link */}
-        {profile.donation_link && (
-          <div className="text-center">
-            <a href={profile.donation_link} target="_blank" rel="noopener noreferrer">
-              <Button variant="outline" className="border-secondary text-secondary">🎁 תרומה</Button>
-            </a>
+        {/* Donation + Lesson Downloads */}
+        {(profile.donation_link || profile.lesson_download_url) && (
+          <div className="flex flex-wrap gap-3 justify-center">
+            {profile.donation_link && (
+              <a href={profile.donation_link} target="_blank" rel="noopener noreferrer">
+                <Button variant="outline" className="border-secondary text-secondary">🎁 תרומה</Button>
+              </a>
+            )}
+            {profile.lesson_download_url && (
+              <a href={profile.lesson_download_url} target="_blank" rel="noopener noreferrer">
+                <Button variant="outline" className="border-secondary text-secondary"><Download className="w-4 h-4 ml-1" />הורדת שיעורים</Button>
+              </a>
+            )}
           </div>
         )}
 
