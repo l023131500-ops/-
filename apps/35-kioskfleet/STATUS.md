@@ -3547,3 +3547,62 @@ round's work.
   code sitting on one unmerged branch; no further orphaned-branch
   candidates are known in this system as of this round.
 
+- **Shared write-body input guard (HARD STEERING's one allowed middleware) —
+  fifth reconciliation, landed (2026-09-02)** — same orphaned-branch pattern
+  as the four entries above. `fix/kiosk-shared-write-guard-0902` (`23e8868`)
+  built the single shared `guardWriteBody` middleware the owner's HARD
+  STEERING explicitly permitted even though the write-path/input-validation
+  bug class is otherwise banned on this system ("If a shared fix is still
+  wanted, add ONE shared input-validation middleware across ALL write paths
+  in a single iteration and then STOP touching 35"): `src/inputguard.js`
+  rejects any non-scalar or malformed-row-id field in a write body before
+  any route handler runs, mounted globally right after `express.json()` so
+  it covers the JWT-authenticated console API and the device-token-
+  authenticated `/api/agent/*` routes alike, with `payload`
+  (`POST /devices/:id/command`) and `deviceIds`
+  (`POST /templates/:id/apply`) exempted as the only two legitimately
+  non-scalar fields — `deviceIds`' own elements are still validated
+  per-element in `routes/templates.js`. That branch was cut from an older
+  tip (`0f3947d`), before this session's launcher/payment-mode/Route-C-D/
+  Route-A reconciliation work landed, so it sat orphaned like the other
+  four.
+
+  `git cherry-pick -n 23e8868` onto the current tip applied with **zero
+  conflicts**.
+
+  Verified **live**: booted the real server against a scratch SQLite DB,
+  logged in as the seeded admin, created a real enrollment and device.
+  `PATCH /devices/:id {"name":{"evil":true}}` and `{"linkId":true}` now
+  return a clean `400` instead of the raw better-sqlite3 `500` with a
+  leaked stack trace (the exact live crash the commit documents); a
+  legitimate `PATCH` (plain-string name) still succeeds (`200`);
+  `POST /devices/:id/command` with an object `payload` still succeeds
+  (`200`); `POST /agent/enroll` with real flat fields
+  (`model`/`androidVersion`/`appVersion`) still succeeds. Full suite
+  **215/215** (was 202/202 — +13 `inputguard.test.mjs`). `node --check`
+  clean on every touched/added file. Zero regression — purely additive
+  except the global middleware mount and the `deviceIds` per-element
+  validation in `templates.js`, neither of which changes behavior for any
+  existing well-formed request.
+
+  Committed+pushed to `l023131500-ops/zol` branch
+  `feat/kiosk-shared-write-guard-reconcile-0902` (`473d85f`) — **not
+  merged**, same convention as every prior zol push in this history.
+
+  **Not deployed** — same blocker as every zol-targeted entry above. This
+  branch was cut from `feat/kiosk-route-a-qr-provisioning-reconcile-0902`'s
+  tip, so it now carries every reconciled feature (launcher, payment
+  modes, Routes C/D, Route A, and this shared write guard) on one unmerged
+  branch — the single furthest-forward branch and the candidate for
+  promoting the deployed tip. The remaining unmerged `fix/kiosk-*-0825`
+  branches (checked: admin-fullname, device-name, name-length-cap,
+  template-name, and siblings) are single-field crash-type-rejection
+  patches this shared guard now covers in one place — **except** the
+  length-*capping* portion some of them also add (e.g. `name-length-cap`
+  truncates an over-long but otherwise valid string; `guardWriteBody` only
+  rejects non-scalars/malformed ids, it does not cap length), which is
+  still open and, per HARD STEERING, intentionally not being reopened this
+  round — that is exactly the "one more field-at-a-time patch" the shared
+  guard was built to replace, not extend. Flagging for the owner rather
+  than silently dropping it.
+
