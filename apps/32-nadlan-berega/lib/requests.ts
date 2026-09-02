@@ -468,6 +468,8 @@ export interface TabuRequestRow {
   sent_by: string | null;
   fulfilled_at: string | null;
   tabu_document_id: number | null;
+  /** לא בטבלה — מולא ע"י `attachFulfilledTabuDocumentNames` להצגה בלבד. */
+  fulfilled_document_name?: string | null;
 }
 
 const TABU_REQUEST_FIELDS =
@@ -542,6 +544,29 @@ export async function listTabuRequests(
   const { data, error } = await q;
   if (error) throw new Error(error.message);
   return (data ?? []) as TabuRequestRow[];
+}
+
+/**
+ * מצרפת את שם-הקובץ של הנסח שהשלים כל בקשה `fulfilled` (`tabu_document_id`
+ * כבר נכתב ע"י `fulfillMatchingTabuRequests`, אבל שום קורא לא הציג אותו —
+ * לוח הבקשות הראה "הושלם" בלי לגלות איזה מסמך זה היה או מתי).
+ * best-effort טהור: כשלון-שליפה משאיר `fulfilled_document_name` כ-`null`,
+ * לא זורק — הלוח עצמו כבר מציג `fulfilled_at`/הסטטוס בלי תלות בזה.
+ */
+export async function attachFulfilledTabuDocumentNames(
+  rows: TabuRequestRow[],
+): Promise<TabuRequestRow[]> {
+  const ids = Array.from(
+    new Set(rows.map((r) => r.tabu_document_id).filter((id): id is number => id != null)),
+  );
+  if (ids.length === 0) return rows;
+  const db = serviceStore();
+  if (!db) return rows;
+  const { data } = await db.from('tabu_documents').select('id,file_name').in('id', ids);
+  const names = new Map<number, string | null>((data ?? []).map((d: any) => [d.id, d.file_name ?? null]));
+  return rows.map((r) =>
+    r.tabu_document_id != null ? { ...r, fulfilled_document_name: names.get(r.tabu_document_id) ?? null } : r,
+  );
 }
 
 /** ספירת בקשות ממתינות — ההתראה בניהול, אותו דפוס כמו `pendingCount`. */
@@ -695,6 +720,8 @@ export interface TikMeidaRequestRow {
   sent_by: string | null;
   fulfilled_at: string | null;
   tik_meida_document_id: number | null;
+  /** לא בטבלה — מולא ע"י `attachFulfilledTikMeidaDocumentNames` להצגה בלבד. */
+  fulfilled_document_name?: string | null;
 }
 
 const TIK_MEIDA_REQUEST_FIELDS =
@@ -761,6 +788,25 @@ export async function listTikMeidaRequests(
   const { data, error } = await q;
   if (error) throw new Error(error.message);
   return (data ?? []) as TikMeidaRequestRow[];
+}
+
+/** אותו רעיון בדיוק כמו `attachFulfilledTabuDocumentNames`, לתיק מידע. */
+export async function attachFulfilledTikMeidaDocumentNames(
+  rows: TikMeidaRequestRow[],
+): Promise<TikMeidaRequestRow[]> {
+  const ids = Array.from(
+    new Set(rows.map((r) => r.tik_meida_document_id).filter((id): id is number => id != null)),
+  );
+  if (ids.length === 0) return rows;
+  const db = serviceStore();
+  if (!db) return rows;
+  const { data } = await db.from('tik_meida_documents').select('id,file_name').in('id', ids);
+  const names = new Map<number, string | null>((data ?? []).map((d: any) => [d.id, d.file_name ?? null]));
+  return rows.map((r) =>
+    r.tik_meida_document_id != null
+      ? { ...r, fulfilled_document_name: names.get(r.tik_meida_document_id) ?? null }
+      : r,
+  );
 }
 
 /** ספירת בקשות ממתינות — ההתראה בניהול, אותו דפוס כמו `pendingTabuRequestCount`. */

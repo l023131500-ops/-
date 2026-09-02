@@ -4,6 +4,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { adminGate } from '@/lib/adminauth';
 import {
+  attachFulfilledTikMeidaDocumentNames,
   listTikMeidaRequests,
   markTikMeidaRequestSent,
   pendingTikMeidaRequestCount,
@@ -25,10 +26,11 @@ export async function GET(req: NextRequest) {
     : undefined;
 
   try {
-    const [requests, pending] = await Promise.all([
+    const [rows, pending] = await Promise.all([
       listTikMeidaRequests({ status, limit: 200 }),
       pendingTikMeidaRequestCount(),
     ]);
+    const requests = await attachFulfilledTikMeidaDocumentNames(rows);
     return NextResponse.json({ requests, pending });
   } catch (e: any) {
     return NextResponse.json({ error: e?.message ?? 'שגיאה בקריאת בקשות תיק המידע' }, { status: 500 });

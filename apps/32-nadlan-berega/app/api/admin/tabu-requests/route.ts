@@ -2,7 +2,13 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { adminGate } from '@/lib/adminauth';
-import { listTabuRequests, markTabuRequestSent, pendingTabuRequestCount, type TabuRequestStatus } from '@/lib/requests';
+import {
+  attachFulfilledTabuDocumentNames,
+  listTabuRequests,
+  markTabuRequestSent,
+  pendingTabuRequestCount,
+  type TabuRequestStatus,
+} from '@/lib/requests';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
@@ -19,10 +25,11 @@ export async function GET(req: NextRequest) {
     : undefined;
 
   try {
-    const [requests, pending] = await Promise.all([
+    const [rows, pending] = await Promise.all([
       listTabuRequests({ status, limit: 200 }),
       pendingTabuRequestCount(),
     ]);
+    const requests = await attachFulfilledTabuDocumentNames(rows);
     return NextResponse.json({ requests, pending });
   } catch (e: any) {
     return NextResponse.json({ error: e?.message ?? 'שגיאה בקריאת בקשות הנסח' }, { status: 500 });

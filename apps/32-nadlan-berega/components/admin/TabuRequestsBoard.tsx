@@ -135,6 +135,12 @@ export default function TabuRequestsBoard({ token }: { token: string }) {
                     .join(' · ')}
                 </div>
                 {r.notes && <div className="mt-1 text-[12px] text-ink">הערה: {r.notes}</div>}
+                {r.status === 'fulfilled' && (
+                  <div className="mt-1.5 rounded-lg bg-teal/10 px-2.5 py-1.5 text-[12px] text-tealD">
+                    הנסח שסופק{r.fulfilled_document_name ? ` (${r.fulfilled_document_name})` : ''}
+                    {r.fulfilled_at ? ` — ${new Date(r.fulfilled_at).toLocaleString('he-IL')}` : ''}
+                  </div>
+                )}
                 {r.admin_email_sent === false && r.admin_email_error && (
                   <div className="mt-1.5 rounded-lg bg-red-50 px-2.5 py-1.5 text-[12px] leading-relaxed text-red-700">
                     התראת המייל לא נשלחה: {r.admin_email_error}
