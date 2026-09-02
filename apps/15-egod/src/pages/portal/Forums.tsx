@@ -14,6 +14,7 @@ import { toast } from "sonner";
 const Forums = () => {
   const { user } = useAuth();
   const { locked, checked } = useFeatureGate("forums_view");
+  const { locked: postLocked } = useFeatureGate("forums_post");
   const [categories, setCategories] = useState<any[]>([]);
   const [selectedCat, setSelectedCat] = useState<any>(null);
   const [posts, setPosts] = useState<any[]>([]);
@@ -48,8 +49,8 @@ const Forums = () => {
   // Admin-configured per-teacher grants (public.teacher_forum_access, set via TeacherFeaturesDialog);
   // a category with no row is open by default, matching the seed_teacher_defaults() trigger.
   const canView = (catId: string) => access[catId]?.can_view !== false;
-  const canPost = (catId: string) => access[catId]?.can_post !== false;
-  const canComment = (catId: string) => access[catId]?.can_comment !== false;
+  const canPost = (catId: string) => !postLocked && access[catId]?.can_post !== false;
+  const canComment = (catId: string) => !postLocked && access[catId]?.can_comment !== false;
   const visibleCategories = categories.filter((c) => canView(c.id));
 
   const fetchCategories = async () => {
