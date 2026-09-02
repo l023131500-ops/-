@@ -3493,19 +3493,40 @@ function taskForm(ctx) {
   const html =
     '<div id="tfErr"></div><div class="form-grid">' +
       '<label class="f">סוג<select id="t_kind">' + opts + '</select></label>' +
-      '<label class="f">תאריך יעד<input id="t_due_at" type="datetime-local" value="' + esc(c.due_at || '') + '" /></label>' +
+      '<label class="f" id="t_due_at_label">תאריך יעד<input id="t_due_at" type="datetime-local" value="' + esc(c.due_at || '') + '" /></label>' +
+      '<label class="f span2" style="flex-direction:row;align-items:center;gap:9px">' +
+        '<input type="checkbox" id="t_already_done" style="width:17px;height:17px;accent-color:var(--gold)" />' +
+        ' כבר בוצע — לתעד כפעולה שהושלמה (לא יופיע במשימות פתוחות/ביומן)</label>' +
       '<label class="f span2">נושא *<input id="t_title" value="' + esc(c.title || '') + '" /></label>' +
       '<label class="f span2">פירוט<textarea id="t_body"></textarea></label>' +
     '</div><p style="margin-top:18px"><button class="btn" id="tfSave">שמירה</button></p>';
 
   drawer('משימה חדשה', '', html, (close) => {
+    // A logged call/meeting/showing that already happened isn't "due" — it's
+    // already done. Reusing the same date field for both would send a false
+    // due date on a closed item, so the label (and what gets sent) switches
+    // with the checkbox instead of adding a second date input.
+    const dueLabel = $('t_due_at_label').firstChild;
+    const syncDoneMode = () => {
+      dueLabel.textContent = $('t_already_done').checked ? 'מתי זה קרה (אופציונלי)' : 'תאריך יעד';
+    };
+    $('t_already_done').addEventListener('change', syncDoneMode);
+    syncDoneMode();
+
     $('tfSave').addEventListener('click', async () => {
+      const alreadyDone = $('t_already_done').checked;
       const p = {
         office_id: OFFICE.id,
         contact_id: c.contact_id || '', deal_id: c.deal_id || '', property_id: c.property_id || '',
         kind: $('t_kind').value, title: $('t_title').value.trim(),
-        body: $('t_body').value.trim(), due_at: $('t_due_at').value || '',
+        body: $('t_body').value.trim(),
       };
+      if (alreadyDone) {
+        p.is_done = 'true';
+        p.done_at = $('t_due_at').value || '';
+      } else {
+        p.due_at = $('t_due_at').value || '';
+      }
       if (!p.title) { $('tfErr').innerHTML = '<div class="err">נושא הוא שדה חובה.</div>'; return; }
       $('tfSave').disabled = true;
       try {
