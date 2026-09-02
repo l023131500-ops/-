@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import AdminLayout from "@/components/admin/AdminLayout";
-import { FileText, Download, CheckCircle2, XCircle, Clock, Trash2 } from "lucide-react";
+import { FileText, Download, CheckCircle2, XCircle, Clock, Trash2, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -34,6 +34,12 @@ const AdminContent = () => {
   const updateStatus = async (id: string, status: string, notes?: string) => {
     await supabase.from("materials").update({ status, admin_notes: notes || null }).eq("id", id);
     toast.success(status === "approved" ? "הקובץ אושר" : status === "rejected" ? "הקובץ נדחה" : "עודכן");
+    load();
+  };
+
+  const toggleFeatured = async (id: string, featured: boolean) => {
+    await supabase.from("materials").update({ featured_on_homepage: featured }).eq("id", id);
+    toast.success(featured ? "הקובץ יוצג בעמוד הבית" : "הקובץ הוסר מעמוד הבית");
     load();
   };
 
@@ -113,6 +119,9 @@ const AdminContent = () => {
                       <p className="font-bold text-foreground">{m.title}</p>
                       <Badge variant="outline" className="text-xs">{m.category}{m.subcategory ? ` / ${m.subcategory}` : ""}</Badge>
                       <span className={`text-xs flex items-center gap-1 ${color}`}><Icon className="w-3 h-3" />{m.status === "approved" ? "מאושר" : m.status === "rejected" ? "נדחה" : "ממתין"}</span>
+                      {m.featured_on_homepage && (
+                        <span className="text-xs flex items-center gap-1 text-secondary"><Star className="w-3 h-3 fill-secondary" />מוצג בעמוד הבית</span>
+                      )}
                     </div>
                     <p className="text-xs text-muted-foreground">העלה: {profilesMap[m.uploader_id] || "—"} · {new Date(m.created_at).toLocaleString("he-IL")}</p>
                     {m.description && <p className="text-sm text-muted-foreground mt-2">{m.description}</p>}
@@ -135,6 +144,12 @@ const AdminContent = () => {
                       updateStatus(m.id, "rejected", note);
                     }} className="gap-1">
                       <XCircle className="w-3 h-3" />דחה
+                    </Button>
+                  )}
+                  {m.status === "approved" && (
+                    <Button size="sm" variant="outline" onClick={() => toggleFeatured(m.id, !m.featured_on_homepage)} className="gap-1">
+                      <Star className={`w-3 h-3 ${m.featured_on_homepage ? "fill-secondary text-secondary" : ""}`} />
+                      {m.featured_on_homepage ? "הסר מעמוד הבית" : "הצג בעמוד הבית"}
                     </Button>
                   )}
                   <Button size="sm" variant="ghost" onClick={() => remove(m.id)} className="gap-1 mr-auto">
