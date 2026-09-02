@@ -3321,3 +3321,59 @@ to that constraint: they import only dependency-free modules (`hosts.js`,
   stale for §8/§9 and should not be trusted without re-checking `/home/m30/
   zol-work` (or a fresh worktree of `origin/claude/what-do-you-see-gxo5tc`).
 
+- **Route C (Windows) and Route D (USB offline) were already built and sitting
+  orphaned, unreachable from the deployed tip** — read the real tree
+  (`origin/claude/what-do-you-see-gxo5tc`) per the note above instead of this
+  stale checkout, and per §3 the four routes are meant to ship in parallel;
+  Route B (Device Owner/ADB) is what the deployed tip actually has. Cross-
+  checking `git log --all` on the real `l023131500-ops/zol` repo found two
+  fully-built, fully-tested commits — `46f0fb5` (`windowspackage.js`, Route C:
+  generates a PowerShell Assigned-Access/Edge-kiosk script) and `4330c64`
+  (`usbpackage.js`, Route D: generates the fully offline USB install bundle,
+  stacked directly on top of the Windows commit) — on
+  `feat/usb-offline-kiosk-package-0824`, diverged from the deployed tip at
+  their shared ancestor `06fec9f` and never merged forward through the six
+  commits (five feature, one crash-fix) the tip gained since. So both routes
+  existed in the repo's history the whole time, just not reachable from
+  what Railway serves — the same "built on an orphaned branch, core.build_tasks
+  says done, but the deployable tip never got it" pattern already found and
+  fixed for systems 32/36 and 01 in this platform's other repos.
+
+  Reconciled rather than rebuilt: created `feat/kiosk-routes-cd-integration-0902`
+  off `origin/claude/what-do-you-see-gxo5tc`, merged in
+  `origin/feat/usb-offline-kiosk-package-0824` (`git merge`, not cherry-pick,
+  to keep both commits' authorship and messages intact). One file
+  (`routes/devices.js`) touched by both lines auto-merged clean — zero conflict
+  markers, verified by grep after the merge — because the six tip-only commits
+  never touched `windowspackage.js`/`usbpackage.js` and the two package commits
+  never touched the validation logic the tip-only commits added.
+
+  Verified against the merged tree, not just diffed: `npm test` (`node --test
+  test/`) — 168/168 green, including all 30 new Windows/USB package unit tests
+  (`buildWindowsKioskScript` covers URL validation, allow-list generation,
+  PowerShell-literal quoting via `psQuote`, CR/LF stripping, idle-timeout
+  clamping; `buildUsbOfflineScript` covers serial pinning, the device-mismatch
+  guard, the offline-enroll payload shape, and hostile-filename sanitization).
+  `routes/devices.js` confirmed to import both `buildWindowsKioskScript` and
+  `buildUsbOfflineScript`/`sanitizeSerial` post-merge. Booted the merged server
+  for real (`node src/index.js` against a throwaway SQLite file) — clean start,
+  no console.html/API 404s, seed-admin created, then torn down; no artifact
+  left in the working tree (git status clean after).
+
+  Committed on the fresh branch off the real deployed tip (not this checkout,
+  and not merged into the tip — same convention as every prior zol push in
+  this history): `l023131500-ops/zol` branch
+  `feat/kiosk-routes-cd-integration-0902` (`2a501c0`). This is a git
+  reconciliation only, not new feature code — the Windows/USB generators
+  themselves were already written and already tested by whichever earlier
+  round produced `46f0fb5`/`4330c64`; this round's contribution is making
+  them reachable from one branch together with everything the tip has since
+  gained, so a future merge-to-tip is one clean fast-forward-able branch
+  instead of a manual reconciliation across two more-diverged histories.
+
+  **Not deployed** — reaching Railway needs this branch (or the tip after
+  merging it) promoted, same blocker as every other zol-targeted entry. Route
+  A (QR/zero-touch GMS provisioning, §3/§10-A) has the same orphaned-branch
+  shape (`feat/kiosk-route-a-qr-provisioning-0825`/`-0831`, unmerged) and is
+  the next reconciliation candidate on this system.
+
