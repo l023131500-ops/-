@@ -1,5 +1,25 @@
 # CLAUDE.md — נדל"ן ברגע (קרא אותי בתחילת כל סשן)
 
+## עדכון — 02/09/2026, session 2 (Loop A — אותו פער בדיוק ב-36 nadlan-pro, `sites/36-nadlan-pro/tivuch/app.html`)
+המשך ישיר לרשומה שמתחת (32): הפער בין `fulfilled_at`/שם-מסמך שקיימים ב-DB
+לבין מה שמוצג ללוח היה קיים גם ב-36 — יישום עצמאי לגמרי (`app.html` בלבד,
+לא Next.js). `np_property_get` כבר מחזיר `sent_at`/`fulfilled_at` לכל שורת
+`tabu_requests`/`tik_meida_requests` וגם `documents[].name`, אבל
+`tabuHtml()`/`tikMeidaHtml()` (בערך שורות 1341/1505) רינדרו רק
+`r.created_at` — `grep -n "fulfilled_at" app.html` החזיר אפס תוצאות לפני
+התיקון. אותה מחלקת-פער בדיוק, קוד-תצוגה נפרד לגמרי מ-32 כי 36 אין לו Next.js.
+
+נוסף בשני המקומות: שורה ירוקה "הושלם &lt;תאריך&gt; · &lt;שם-קובץ&gt;" כשה-
+בקשה `fulfilled` וקיים `fulfilled_at`; חסר-מסמך/חסר-תאריך מדלג על השורה
+בלי קריסה. אומת ע"י חילוץ `tabuHtml`/`tikMeidaHtml` + התלויות (`esc`/`dt`/
+`dtm`/`TABU_STATUS_HE`/וכו') לקובץ עצמאי והרצה ב-Node מול 4 תרחישים
+(pending, fulfilled+מסמך, fulfilled-tikmeida+מסמך, fulfilled-בלי-מסמך) —
+כולם רינדרו נכון, התרחיש-קצה לא קרס. `node --check` נקי על שני בלוקי
+ה-`<script>` המחולצים מהקובץ. בדיקת איזון-סוגריים על הקובץ המלא עברה
+(931/931/3298/3298/251/251). אפס רגרסיה — תוספת טהורה, 9 שורות. נדחף לענף
+`fix/36-nadlan-pro-tabu-tikmeida-fulfillment-visibility-0902` (919e56fe) —
+לא מוזג. System 35 KioskFleet לא נגע, לפי ה-HARD STEERING.
+
 ## עדכון — 02/09/2026 (Loop A — לוחות בקשות נסח/תיק-מידע לא הציגו הושלמה-מתי/איזה-מסמך)
 בעקבות OWNER ORDER 2026-09-02b (core.projects #33, "DEPLOY MANDATE"): כל
 build_tasks של 35/32/36/01/15 מאומת `todo=0`, ודוחות deploy-readiness מ-
