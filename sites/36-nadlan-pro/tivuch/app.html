@@ -2075,6 +2075,7 @@ async function generateWalkVideo(box) {
 async function checkWalkVideoCache(box, permalink) {
   try {
     const res = await fetch('/nadlan/api/street-video?slug=' + encodeURIComponent(permalink));
+    if (!res.ok) throw new Error('cache-check-failed');
     const out = await res.json().catch(() => ({}));
     if (!walkState || walkState.permalink !== permalink || !box.isConnected) return;
     if (out && out.available && out.url) {
@@ -2082,7 +2083,12 @@ async function checkWalkVideoCache(box, permalink) {
       renderWalk(box);
     }
   } catch (_) {
-    // אופציונלי — הקרוסלה כבר מוצגת בינתיים.
+    // כישלון-בדיקה (רשת/שרת) שונה מ"אין קליפ שמור" — הקרוסלה כבר מוצגת
+    // בינתיים, אבל נסמן זאת כדי לא להעלים בשקט אפשרות שקליפ קיים ולא נבדק.
+    if (walkState && walkState.permalink === permalink && box.isConnected) {
+      walkState.cacheCheckFailed = true;
+      renderWalk(box);
+    }
   }
 }
 
@@ -2136,7 +2142,10 @@ function walkFrameHtml(state) {
       '</div>' +
     '</div>' +
     '<p class="sub" style="font-size:11px;margin-top:6px">' + (state.date ? 'צולם ' + esc(state.date) + '. ' : '') +
-      'רצף תמונות Street View אמיתיות לאורך הרחוב — לא וידאו.</p>';
+      'רצף תמונות Street View אמיתיות לאורך הרחוב — לא וידאו.</p>' +
+    (state.cacheCheckFailed
+      ? '<p style="font-size:11px;margin-top:4px;color:#92400e">לא ניתן היה לבדוק אם קיים סרטון שמור לנכס זה כרגע — מוצג רצף התמונות במקום.</p>'
+      : '');
 }
 
 function renderWalk(box) {
@@ -2215,7 +2224,8 @@ function wireStreetWalk(p) {
       }
       const permalink = (p.truth_report && p.truth_report.permalink) || null;
       walkState = { points: out.points, date: out.date || null, idx: 0, failed: new Set(), playing: true,
-                    permalink, video: null, videoFailed: false, generating: false, genError: null };
+                    permalink, video: null, videoFailed: false, generating: false, genError: null,
+                    cacheCheckFailed: false };
       renderWalk(box);
       startWalkTimer(box);
       if (permalink) checkWalkVideoCache(box, permalink);

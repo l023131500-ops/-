@@ -52,6 +52,7 @@ export default function StreetWalkPanel({
   const [videoFailed, setVideoFailed] = useState(false);
   const [generating, setGenerating] = useState(false);
   const [genError, setGenError] = useState<string | null>(null);
+  const [cacheCheckFailed, setCacheCheckFailed] = useState(false);
 
   // בדיקת-תמיכה + בדיקת-מטמון רק בדפדפן, אחרי שהדוח כבר מוצג — אף אחת
   // מהשתיים לא חוסמת/מאיטה את רינדור הקרוסלה הקיימת.
@@ -66,12 +67,21 @@ export default function StreetWalkPanel({
   useEffect(() => {
     if (!permalink || points.length === 0) return;
     let cancelled = false;
+    setCacheCheckFailed(false);
     fetch(apiUrl(`/api/street-video?slug=${encodeURIComponent(permalink)}`))
-      .then((r) => r.json())
-      .then((j) => {
-        if (!cancelled && j?.available && j?.url) setVideo({ url: j.url, mimeType: j.mimeType });
+      .then((r) => {
+        if (!r.ok) throw new Error('cache-check-failed');
+        return r.json();
       })
-      .catch(() => {});
+      .then((j) => {
+        if (cancelled) return;
+        if (j?.available && j?.url) setVideo({ url: j.url, mimeType: j.mimeType });
+      })
+      .catch(() => {
+        // כישלון-בדיקה (רשת/שרת) שונה מ"אין קליפ שמור" — לא נתקע בלי הסבר, אבל
+        // גם לא חוסם את הקרוסלה: אותו עיקרון "מקור שלא נטען → לא זמין" בראש הקובץ הזה.
+        if (!cancelled) setCacheCheckFailed(true);
+      });
     return () => {
       cancelled = true;
     };
@@ -267,6 +277,12 @@ export default function StreetWalkPanel({
             {streetWalk.date ? `צולם ${streetWalk.date}. ` : ''}
             רצף תמונות Street View אמיתיות לאורך הרחוב — לא וידאו, ולא אינטרפולציה.
           </p>
+          {cacheCheckFailed && (
+            <p className="px-4 pb-2.5 text-[11px] text-amber-700">
+              לא ניתן היה לבדוק אם קיים סרטון שמור לנכס זה כרגע — מוצג רצף התמונות
+              במקום.
+            </p>
+          )}
           {canGenerate && permalink && (
             <div className="flex flex-wrap items-center justify-between gap-2 border-t border-line px-4 py-2.5">
               <button
