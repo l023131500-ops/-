@@ -3763,3 +3763,100 @@ round's work.
   — still unreconciled, still too large for one iteration) is now on the
   integration line. That snapshot remains the next candidate.
 
+- **2026-09-02, session 4 — Reconciled the app-OTA-update slice of the
+  `feat/kiosk-exit-gesture-config-0825` snapshot the previous entry flagged
+  as "too large for one iteration."** Re-verified with a fresh grep before
+  touching anything, per this round's own instructions: `appupdate.js`,
+  `orientation.js`, `gesturesettings.js` and `installsteps.js` were all
+  still absent from `kiosk/server/src/` on the current tip, confirming the
+  prior entry's finding still holds. Rather than attempt the whole
+  four-module snapshot again in one pass, this round isolated just the
+  §8 app-OTA-update piece — the one this file's own "next candidate" note
+  named first — as its own single, self-contained, still-missing feature,
+  leaving orientation-lock (§5), exit-gesture config (§4) and the
+  install-checklist wizard (§2★ב — note: a *different*, simpler
+  install-checklist implementation was already reconciled two sessions ago
+  via `feat/kiosk-install-wizard-0831`/`06ab6dc`; that is not this
+  snapshot's `installsteps.js`, which remains unported) for a future round.
+
+  The real commit is `feat/kiosk-app-ota-update-0825` (`9516920`, branched
+  from `feat/kiosk-route-a-qr-provisioning-0825`) — every other commit
+  under that branch name in this checkout's own history
+  (`57a621b7`/`cd9b86fd`/etc.) is a log-only entry ("Real source lives in
+  l023131500-ops/zol … this repo only tracks STATUS.md/app.json") that
+  never carried actual code into this tree; `9516920` is the real one,
+  living only in the separate `l023131500-ops/zol` checkout. `9516920`
+  itself builds `appupdate.js` (`isUpdateAvailable()`/`buildUpdateAppPayload()`,
+  reusing `qrprovision.js`'s `KIOSK_AGENT_APK_URL`/`_SIGNATURE_CHECKSUM`
+  validators rather than adding a second pair of env vars, plus one new
+  `KIOSK_AGENT_LATEST_VERSION` value), a new `update_app` entry in
+  `commands.js`, wiring in `routes/devices.js`'s existing generic
+  `POST /devices/:id/command` route (payload always built server-side from
+  config, never trusted from the request body — the same choice the
+  qr-package route already made), `GET /devices`/`GET /devices/:id` now
+  also returning `latestAppVersion`, a console "⬆️ עדכן אפליקציה"
+  button+badge, and `AgentClient.kt`'s async `update_app` branch
+  (`downloadAndInstallUpdate()`: downloads the APK, verifies its
+  signing-certificate SHA-256 against the checksum, then silently installs
+  via `PackageInstaller` under Device Owner, acking immediately after
+  `commit()` since the process can be killed mid-install — the real
+  confirmation is the next heartbeat's `appVersion`).
+
+  `git cherry-pick -n 9516920` onto the current tip hit one conflict in
+  `app.js`'s `deviceCard()`: the incoming hunk bundled three pills together
+  (payment-mode, orientation-lock, app-update) because `9516920` sits on
+  top of this branch's own now-superseded orientation-lock/payment-mode
+  commits in the zol history, and those two pills reference
+  `PAYMENT_MODE_INFO`/`ORIENTATION_LABELS`/`d.displayOrientation` — none of
+  which exist on the real tip (payment mode is already surfaced here via
+  the existing `PAYMENT_MODE_OPTIONS` meta line; orientation-lock was never
+  reconciled). Resolved by keeping only the app-update pill/badge line and
+  dropping the other two, rather than dragging in dead references or
+  duplicating the payment-mode display — confirmed with a follow-up grep
+  that neither `PAYMENT_MODE_INFO` nor `ORIENTATION_LABELS` nor
+  `displayOrientation` appear anywhere in `app.js` after the resolution.
+  Every other touched file (`appupdate.js`, `commands.js`, `config.js`,
+  `.env.example`, `routes/devices.js`, `AgentClient.kt`,
+  `appupdate.test.mjs`) applied with **zero conflicts**.
+
+  Verified **live**: booted the real server against a scratch SQLite DB,
+  logged in as the seeded admin, created a real enrollment, enrolled a
+  device reporting `appVersion 1.2.0`. With `KIOSK_AGENT_LATEST_VERSION`
+  unset, `POST /devices/:id/command {"type":"update_app"}` returned a clean
+  `501` naming the missing env var (not a broken payload). With
+  `KIOSK_AGENT_APK_URL`/`_SIGNATURE_CHECKSUM`/`_LATEST_VERSION` all set,
+  `GET /devices?all=1` returned `latestAppVersion: "1.3.0"`; the same
+  `update_app` command call returned `200` with the full server-built
+  `{apkUrl, checksum, version}` payload — confirmed a client-supplied
+  `apkUrl` in the request body is silently ignored in favor of the
+  server-config one; a real `POST /agent/heartbeat` (`x-device-token`
+  header) reporting `appVersion: "1.3.0"` delivered the queued commands and
+  brought the device in sync; a further `update_app` call then correctly
+  400'd `"המכשיר כבר בגרסה העדכנית"`, while `{"type":"update_app","payload":
+  {"force":true}}` bypassed that check and still returned `200`.
+  Unauthenticated request → `401`; nonexistent device id → `404`; a plain
+  `reload` command (pre-existing type) still returns `200` unchanged — zero
+  regression on the existing command dispatch. Full suite **220/220** (was
+  215/215 — +5 `appupdate.test.mjs`). `node --check` clean on every
+  touched/added JS file; `AgentClient.kt` brace/paren-balance clean
+  (106/106, 444/444 — no Android SDK in this sandbox to compile, same
+  limitation as every prior Kotlin-touching entry).
+
+  Committed to `l023131500-ops/zol` branch
+  `feat/kiosk-app-ota-update-reconcile-0902` (`f6b38e9`), pushed — **not
+  merged**, cut from the same furthest-forward tip as every entry above (so
+  it also carries launcher/payment-modes/Routes-C-D/Route-A/shared-write-
+  guard/schedule-offline-persist/install-wizard/landing-page). **Not
+  deployed** — same Railway-promote blocker as every prior zol-targeted
+  entry.
+
+  What remains unreconciled from the `feat/kiosk-exit-gesture-config-0825`
+  snapshot: `orientation.js` (§5 per-device orientation lock),
+  `gesturesettings.js` (§4 configurable exit-gesture), and `installsteps.js`
+  (a second, server-stored-progress install-checklist implementation,
+  distinct from the simpler `localStorage`-based wizard already
+  reconciled). Each is real, still-missing, self-contained scope for a
+  future round — recommend orientation-lock next, since it is the smallest
+  of the three and is also referenced by the app.js conflict this round
+  had to strip out.
+
