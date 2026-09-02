@@ -1361,11 +1361,14 @@ function tabuHtml(p, requests, docs) {
     const analysisHtml = doc && doc.analysis ? tabuAnalysisHtml(doc.analysis)
       : doc && doc.analysis_error ? '<p class="na" style="margin-top:8px">ניתוח ה-AI נכשל: ' + esc(doc.analysis_error) + '</p>'
       : doc ? '<p class="na" style="margin-top:8px">הנסח הועלה, טרם נותח.</p>' : '';
+    const fulfilledHtml = r.status === 'fulfilled' && r.fulfilled_at ?
+      '<p class="na" style="margin-top:6px;color:#067647">הושלם ' + dtm(r.fulfilled_at) +
+        (doc && doc.name ? ' · ' + esc(doc.name) : '') + '</p>' : '';
     return '<li>' + badge + ' · עדיפות ' + esc(TABU_GRADE_HE[r.grade] || r.grade) +
       (r.notes ? '<br/><span class="na" style="font-size:12px">' + esc(r.notes) + '</span>' : '') +
       '<span class="w"> · ' + dtm(r.created_at) + '</span>' +
       (actions ? '<div class="controls" style="margin-top:8px">' + actions + '</div>' : '') +
-      analysisHtml + '</li>';
+      fulfilledHtml + analysisHtml + '</li>';
   }).join('');
 
   return (rows ? '<ul class="timeline">' + rows + '</ul>' : '<p class="na">אין עדיין בקשות נסח לנכס הזה.</p>') +
@@ -1519,10 +1522,14 @@ function tikMeidaHtml(p, requests, docs) {
         '<button class="btn btn-quiet btn-sm" data-tikmeidaopen="' + doc.id + '">פתיחת תיק המידע</button>' +
         ' <button class="btn btn-quiet btn-sm" data-tikmeidashare="' + doc.id + '" style="margin-inline-start:6px">🔗 העתקת קישור ללקוח</button>';
     }
+    const fulfilledHtml = r.status === 'fulfilled' && r.fulfilled_at ?
+      '<p class="na" style="margin-top:6px;color:#067647">הושלם ' + dtm(r.fulfilled_at) +
+        (doc && doc.name ? ' · ' + esc(doc.name) : '') + '</p>' : '';
     return '<li>' + badge + ' · עדיפות ' + esc(TABU_GRADE_HE[r.grade] || r.grade) +
       (r.notes ? '<br/><span class="na" style="font-size:12px">' + esc(r.notes) + '</span>' : '') +
       '<span class="w"> · ' + dtm(r.created_at) + '</span>' +
-      (actions ? '<div class="controls" style="margin-top:8px">' + actions + '</div>' : '') + '</li>';
+      (actions ? '<div class="controls" style="margin-top:8px">' + actions + '</div>' : '') +
+      fulfilledHtml + '</li>';
   }).join('');
 
   return (rows ? '<ul class="timeline">' + rows + '</ul>' : '<p class="na">אין עדיין בקשות מידע להיתר לנכס הזה.</p>') +
