@@ -3860,3 +3860,82 @@ round's work.
   of the three and is also referenced by the app.js conflict this round
   had to strip out.
 
+- **2026-09-02, session 5 — Reconciled the §5 per-device orientation-lock
+  slice of the `feat/kiosk-exit-gesture-config-0825` snapshot the previous
+  entry recommended next.** The real commit is `1756cbb` (parented on the
+  already-reconciled §7 payment-mode commit): every device has been
+  hardcoded to landscape since `KioskActivity` existed
+  (`AndroidManifest.xml`'s static `android:screenOrientation="landscape"`),
+  with zoom (§5's other half) already server-controlled per device but
+  orientation never made configurable. Adds `displayOrientation`
+  (`'landscape'|'portrait'|'auto'`, default `'landscape'` — matches every
+  device's pre-existing behavior exactly) as a full per-device policy
+  field, wired through every layer `display_zoom_percent` already uses:
+  `src/orientation.js` (new validator + label map, dependency-free), `db.js`
+  (devices/templates/policy_snapshots columns), `policy.js`
+  (`applyDevicePolicy` validation + `pushConfigUpdate`'s `update_config`
+  payload — this one *does* change what the Android agent enforces, unlike
+  `payment_mode`/`access_code`), `devicepayload.js` (console allow-list),
+  `routes/devices.js` + `routes/templates.js` (REST), `routes/agent.js`
+  (enroll + heartbeat), `usbpackage.js` (offline USB Route D payload).
+  Android: `AgentClient.kt` parses `displayOrientation` on all three config
+  paths (initial connect, heartbeat, pushed `update_config`) into
+  `Prefs.DISPLAY_ORIENTATION`; `KioskActivity.applyOrientation()` maps it to
+  `requestedOrientation`, called on cold start and live on
+  `onConfigUpdated()` when it changes. Console: device-edit form gets an
+  orientation `<select>` next to the existing zoom slider, template builder
+  gets a matching select, device card shows a badge when orientation
+  deviates from the landscape default.
+
+  `git cherry-pick -n 1756cbb` onto the current tip hit conflicts in every
+  file this commit's own history straddles a since-superseded lineage of:
+  `payment_mode` was later refactored (a `changed`/`value`-returning
+  `validatePaymentMode`, replacing the older ok/value-only shape `1756cbb`
+  was written against) and `access_code` was added after `1756cbb`'s parent.
+  Resolved each conflict by keeping the current tip's actual
+  payment-mode/access-code implementation and only splicing in the new
+  orientation pieces — explicitly *not* reintroducing `1756cbb`'s own
+  now-superseded `PAYMENT_MODE_INFO` label map or its duplicate
+  `paymentMode` plumbing test (`devicepayload.test.mjs` and
+  `templatepolicy.test.mjs` already cover that path against the current
+  implementation). `app.js`'s `deviceCard()` conflict was the same shape the
+  app-OTA-update round already hit and resolved by dropping dead
+  `PAYMENT_MODE_INFO`/`ORIENTATION_LABELS` references — this round restores
+  an `ORIENTATION_LABELS`-driven badge now that orientation is real, while
+  leaving payment mode on its existing meta-line display rather than adding
+  back the superseded pill. `AgentClient.kt`'s `onConfigUpdated()` call
+  sites needed both `scheduleChanged` (already on the tip) and
+  `orientationChanged` (incoming) folded into the same changed-gate and
+  5-arg call, matching the interface/`KioskActivity` override signature
+  that had already auto-merged to 5 args cleanly.
+
+  Verified **live**: booted the real server against a scratch SQLite DB,
+  logged in as the seeded admin, created an enrollment, enrolled a device —
+  enroll response and first heartbeat both default `displayOrientation` to
+  `"landscape"`; `PATCH /devices/:id {"displayOrientation":"portrait"}`
+  persists and the next heartbeat's `update_config` payload reflects
+  `"portrait"`; an unsupported value 400s with the Hebrew "אוריינטציה לא
+  נתמכת" error; `POST /templates` with `displayOrientation:"portrait"`
+  creates a template carrying it. Full suite **231/231** (was 220/220 — +6
+  `orientation.test.mjs` + 5 new assertions across
+  devicepayload/snapshots/templatepolicy tests). `node --check` clean on
+  every touched/added JS file; `AgentClient.kt`/`KioskActivity.kt`
+  brace/paren-balance clean (109/109 & 452/452, 122/122 & 477/477 — no
+  Android SDK in this sandbox to compile, same limitation as every prior
+  Kotlin-touching entry).
+
+  Committed+pushed to `l023131500-ops/zol` branch
+  `feat/kiosk-orientation-lock-reconcile-0902` (`dd4544a`) — **not merged**,
+  cut from the same furthest-forward tip as every entry above (so it also
+  carries launcher/payment-modes/Routes-C-D/Route-A/shared-write-guard/
+  schedule-offline-persist/install-wizard/landing-page/app-OTA-update).
+  **Not deployed** — same Railway-promote blocker as every prior
+  zol-targeted entry.
+
+  What remains unreconciled from the `feat/kiosk-exit-gesture-config-0825`
+  snapshot: `gesturesettings.js` (§4 configurable exit-gesture) and
+  `installsteps.js` (a second, server-stored-progress install-checklist
+  implementation, distinct from the simpler `localStorage`-based wizard
+  already reconciled). Recommend `gesturesettings.js` next, since it is the
+  smaller of the two remaining pieces.
+
