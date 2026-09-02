@@ -1,13 +1,17 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { motion } from "framer-motion";
-import { BookOpen, MapPin, Clock, Phone, Mail, Send, Building2, MessageCircle, Printer, FileText, Download, PlayCircle, Music } from "lucide-react";
+import { BookOpen, MapPin, Clock, Phone, Mail, Send, Building2, MessageCircle, Printer, FileText, Download, PlayCircle, Music, Mic, Video } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { BACKGROUND_PRESETS } from "@/types/portalDesign";
+
+function isSafeHttpsUrl(url: string | null | undefined): url is string {
+  return !!url && /^https:\/\//i.test(url);
+}
 
 const RabbiPublic = () => {
   const { id } = useParams<{ id: string }>();
@@ -137,6 +141,30 @@ const RabbiPublic = () => {
                       {l.schedule_days.map((d: string) => (
                         <span key={d} className="bg-secondary/10 text-secondary text-xs px-2 py-1 rounded-full">{d}</span>
                       ))}
+                    </div>
+                  )}
+                  {(l.is_recorded || l.is_live_stream) && (
+                    <div className="flex flex-wrap items-center gap-2 mt-2">
+                      {l.is_recorded && (
+                        <span className="flex items-center gap-1 bg-secondary/10 text-secondary text-xs px-2 py-1 rounded-full">
+                          <Mic className="w-3 h-3" />מוקלט
+                        </span>
+                      )}
+                      {l.is_live_stream && (
+                        <span className="flex items-center gap-1 bg-secondary/10 text-secondary text-xs px-2 py-1 rounded-full">
+                          <Video className="w-3 h-3" />שידור חי
+                        </span>
+                      )}
+                      {l.recording_location && (
+                        isSafeHttpsUrl(l.recording_location) ? (
+                          <a href={l.recording_location} target="_blank" rel="noopener noreferrer"
+                            className="flex items-center gap-1 text-xs text-secondary underline hover:opacity-80">
+                            <PlayCircle className="w-3 h-3" />לצפייה/האזנה בהקלטה
+                          </a>
+                        ) : (
+                          <span className="text-xs text-muted-foreground">{l.recording_location}</span>
+                        )
+                      )}
                     </div>
                   )}
                 </div>
