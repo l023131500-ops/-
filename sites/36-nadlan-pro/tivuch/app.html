@@ -1364,11 +1364,13 @@ function tabuHtml(p, requests, docs) {
     const fulfilledHtml = r.status === 'fulfilled' && r.fulfilled_at ?
       '<p class="na" style="margin-top:6px;color:#067647">הושלם ' + dtm(r.fulfilled_at) +
         (doc && doc.name ? ' · ' + esc(doc.name) : '') + '</p>' : '';
+    const sentHtml = r.status === 'sent' && r.sent_at ?
+      '<p class="na" style="margin-top:6px">נשלח לרשם המקרקעין ' + dtm(r.sent_at) + '</p>' : '';
     return '<li>' + badge + ' · עדיפות ' + esc(TABU_GRADE_HE[r.grade] || r.grade) +
       (r.notes ? '<br/><span class="na" style="font-size:12px">' + esc(r.notes) + '</span>' : '') +
       '<span class="w"> · ' + dtm(r.created_at) + '</span>' +
       (actions ? '<div class="controls" style="margin-top:8px">' + actions + '</div>' : '') +
-      fulfilledHtml + analysisHtml + '</li>';
+      sentHtml + fulfilledHtml + analysisHtml + '</li>';
   }).join('');
 
   return (rows ? '<ul class="timeline">' + rows + '</ul>' : '<p class="na">אין עדיין בקשות נסח לנכס הזה.</p>') +
