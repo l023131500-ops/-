@@ -213,6 +213,7 @@ td.num{font-variant-numeric:tabular-nums;white-space:nowrap}
       <button class="tab" data-view="rentals">שכירויות</button>
       <button class="tab" data-view="documents">מסמכים</button>
       <button class="tab" data-view="tasks">משימות</button>
+      <button class="tab" data-view="agenda">יומן</button>
       <button class="tab" data-view="team">צוות</button>
       <button class="tab" data-view="forum">פורום</button>
       <button class="tab" data-view="settings">הגדרות</button>
@@ -366,6 +367,18 @@ td.num{font-variant-numeric:tabular-nums;white-space:nowrap}
         <button class="btn" id="newTask">+ משימה</button>
       </div>
       <div id="tasksBody"></div>
+    </div>
+  </section>
+
+  <section class="panel" id="viewAgenda" hidden>
+    <div class="wrap">
+      <h1 class="page display">יומן</h1>
+      <p class="sub">כל המשימות הפתוחות שלך על ציר זמן — מה שעבר זמנו, מה שנדרש היום, ומה שמחכה בהמשך.</p>
+      <div class="controls">
+        <span class="spacer"></span>
+        <button class="btn" id="newAgendaTask">+ משימה</button>
+      </div>
+      <div id="agendaBody"></div>
     </div>
   </section>
 
@@ -560,7 +573,7 @@ function setView(name) {
   history.replaceState(null, '', '?v=' + name);
   const map = { dash: renderDash, board: renderBoard, contacts: renderContacts,
                 properties: renderProperties, rentals: renderRentals, documents: renderDocuments,
-                tasks: renderTasks, team: renderTeam, forum: renderForum, settings: renderSettings };
+                tasks: renderTasks, agenda: renderAgenda, team: renderTeam, forum: renderForum, settings: renderSettings };
   show('view' + name[0].toUpperCase() + name.slice(1));
   map[name]();
 }
@@ -3404,6 +3417,75 @@ async function renderTasks() {
   }
 }
 
+/* ── agenda (calendar/diary view) ───────────────────────────────────────── */
+async function renderAgenda() {
+  const body = $('agendaBody');
+  body.innerHTML = '<p class="loading"><span class="spinner"></span>טוען…</p>';
+
+  let rows;
+  try {
+    rows = await rpc('np_activities', { p_office: OFFICE.id, p_only_open: true, p_limit: 500 });
+  } catch (e) { body.innerHTML = '<div class="err">' + esc(e.message) + '</div>'; return; }
+
+  rows = rows || [];
+  if (!rows.length) {
+    body.innerHTML = '<div class="empty"><b>היומן ריק</b>אין משימות פתוחות עם תאריך יעד.</div>';
+    return;
+  }
+
+  const dayStart = (d) => { const x = new Date(d); x.setHours(0, 0, 0, 0); return x.getTime(); };
+  const today0 = dayStart(new Date());
+  const tomorrow0 = today0 + 86400000;
+  const weekEnd0 = today0 + 7 * 86400000;
+
+  const buckets = [
+    { key: 'overdue', label: 'באיחור', rows: [] },
+    { key: 'today', label: 'היום', rows: [] },
+    { key: 'tomorrow', label: 'מחר', rows: [] },
+    { key: 'week', label: 'השבוע', rows: [] },
+    { key: 'later', label: 'בהמשך', rows: [] },
+    { key: 'none', label: 'ללא תאריך יעד', rows: [] },
+  ];
+  const byKey = Object.fromEntries(buckets.map((b) => [b.key, b]));
+  for (const a of rows) {
+    if (!a.due_at) { byKey.none.rows.push(a); continue; }
+    const t = new Date(a.due_at).getTime();
+    if (t < today0) byKey.overdue.rows.push(a);
+    else if (t < tomorrow0) byKey.today.rows.push(a);
+    else if (t < tomorrow0 + 86400000) byKey.tomorrow.rows.push(a);
+    else if (t < weekEnd0) byKey.week.rows.push(a);
+    else byKey.later.rows.push(a);
+  }
+  for (const b of buckets) b.rows.sort((x, y) => new Date(x.due_at || 0) - new Date(y.due_at || 0));
+
+  const rowHtml = (a) => {
+    const overdue = a.due_at && new Date(a.due_at).getTime() < Date.now();
+    return '<div class="card" style="cursor:default;display:flex;align-items:flex-start;gap:10px">' +
+      '<input type="checkbox" data-act="' + a.id + '"' +
+      ' style="width:17px;height:17px;accent-color:var(--gold);margin-top:2px;flex:none" aria-label="סמן כבוצע" />' +
+      '<div style="flex:1"><span class="pill">' + esc(AKIND_HE[a.kind] || a.kind) + '</span> ' +
+      '<b class="t">' + esc(a.title) + '</b>' + (a.contact_name ? ' — ' + v(a.contact_name) : '') +
+      (a.due_at ? (overdue ? ' <span class="pill hot">' + dtm(a.due_at) + '</span>' : ' <span class="na">' + dtm(a.due_at) + '</span>') : '') +
+      (a.body ? '<p class="m">' + esc(a.body) + '</p>' : '') + '</div></div>';
+  };
+
+  body.innerHTML = buckets.filter((b) => b.rows.length).map((b) =>
+    '<h2 class="page" style="font-size:18px;margin:22px 0 8px">' + b.label +
+    ' <span class="na" style="font-size:14px">(' + b.rows.length + ')</span></h2>' +
+    b.rows.map(rowHtml).join('')
+  ).join('');
+
+  for (const cb of body.querySelectorAll('input[data-act]')) {
+    cb.addEventListener('change', async () => {
+      try {
+        await rpc('np_activity_save', { p: { id: cb.dataset.act, is_done: cb.checked ? 'true' : 'false' } });
+        toast(cb.checked ? 'סומן כבוצע' : 'הוחזר לפתוח');
+        renderAgenda();
+      } catch (e) { cb.checked = !cb.checked; toast('עדכון נכשל: ' + e.message, true); }
+    });
+  }
+}
+
 function taskForm(ctx) {
   const c = ctx || {};
   const opts = Object.entries(AKIND_HE).filter(([k]) => k !== 'system')
@@ -3430,6 +3512,7 @@ function taskForm(ctx) {
         await rpc('np_activity_save', { p });
         close(); toast('נשמר');
         if (VIEW === 'tasks') renderTasks();
+        if (VIEW === 'agenda') renderAgenda();
       } catch (e) {
         $('tfErr').innerHTML = '<div class="err">' + esc(e.message) + '</div>';
         $('tfSave').disabled = false;
@@ -4121,7 +4204,7 @@ async function boot() {
   pickOffice(saved && ME.offices.some((o) => o.id === saved) ? saved : ME.offices[0].id);
 
   const want = new URLSearchParams(location.search).get('v');
-  setView(['dash', 'board', 'contacts', 'properties', 'rentals', 'documents', 'tasks', 'team', 'forum'].includes(want) ? want : 'dash');
+  setView(['dash', 'board', 'contacts', 'properties', 'rentals', 'documents', 'tasks', 'agenda', 'team', 'forum'].includes(want) ? want : 'dash');
 }
 
 $('officePick').addEventListener('change', (e) => { pickOffice(e.target.value); setView(VIEW); });
@@ -4149,6 +4232,7 @@ $('newContact').addEventListener('click', () => contactForm(null));
 $('newProperty').addEventListener('click', () => propertyForm(null));
 $('newDeal').addEventListener('click', () => dealForm(null));
 $('newTask').addEventListener('click', () => taskForm(null));
+$('newAgendaTask').addEventListener('click', () => taskForm(null));
 $('newContract').addEventListener('click', () => contractForm());
 $('cQ').addEventListener('input', () => { clearTimeout(cTimer); cTimer = setTimeout(renderContacts, 250); });
 for (const id of ['cKind', 'cSource']) $(id).addEventListener('change', renderContacts);
