@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
-import { MessageSquare, ChevronLeft, Send, ArrowRight, Pin } from "lucide-react";
+import { MessageSquare, ChevronLeft, Send, ArrowRight, Pin, MessageCircle } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import PortalLayout from "@/components/portal/PortalLayout";
@@ -21,7 +21,11 @@ const Forums = () => {
   const [profileName, setProfileName] = useState("");
   const [newMessage, setNewMessage] = useState("");
   const [sending, setSending] = useState(false);
-  const [access, setAccess] = useState<Record<string, { can_view: boolean; can_post: boolean }>>({});
+  const [access, setAccess] = useState<Record<string, { can_view: boolean; can_post: boolean; can_comment: boolean }>>({});
+  const [openThread, setOpenThread] = useState<string | null>(null);
+  const [comments, setComments] = useState<Record<string, any[]>>({});
+  const [newComment, setNewComment] = useState("");
+  const [sendingComment, setSendingComment] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -34,9 +38,9 @@ const Forums = () => {
     if (data) {
       setProfileId(data.id);
       setProfileName(data.full_name || "");
-      const { data: rows } = await supabase.from("teacher_forum_access").select("category_id, can_view, can_post").eq("teacher_id", data.id);
-      const amap: Record<string, { can_view: boolean; can_post: boolean }> = {};
-      (rows || []).forEach((r: any) => { amap[r.category_id] = { can_view: r.can_view, can_post: r.can_post }; });
+      const { data: rows } = await supabase.from("teacher_forum_access").select("category_id, can_view, can_post, can_comment").eq("teacher_id", data.id);
+      const amap: Record<string, { can_view: boolean; can_post: boolean; can_comment: boolean }> = {};
+      (rows || []).forEach((r: any) => { amap[r.category_id] = { can_view: r.can_view, can_post: r.can_post, can_comment: r.can_comment }; });
       setAccess(amap);
     }
   };
@@ -45,6 +49,7 @@ const Forums = () => {
   // a category with no row is open by default, matching the seed_teacher_defaults() trigger.
   const canView = (catId: string) => access[catId]?.can_view !== false;
   const canPost = (catId: string) => access[catId]?.can_post !== false;
+  const canComment = (catId: string) => access[catId]?.can_comment !== false;
   const visibleCategories = categories.filter((c) => canView(c.id));
 
   const fetchCategories = async () => {
@@ -83,6 +88,37 @@ const Forums = () => {
     fetchPosts(selectedCat.id);
   };
 
+  const fetchComments = async (postId: string) => {
+    const { data } = await supabase
+      .from("forum_comments")
+      .select("*, profiles:author_id(full_name)")
+      .eq("post_id", postId)
+      .eq("is_blocked", false)
+      .order("created_at", { ascending: true });
+    setComments(prev => ({ ...prev, [postId]: data || [] }));
+  };
+
+  const toggleThread = (postId: string) => {
+    if (openThread === postId) { setOpenThread(null); return; }
+    setOpenThread(postId);
+    setNewComment("");
+    if (!comments[postId]) fetchComments(postId);
+  };
+
+  const handleAddComment = async (postId: string) => {
+    if (!newComment.trim() || !profileId || !selectedCat || !canComment(selectedCat.id)) return;
+    setSendingComment(true);
+    const { error } = await supabase.from("forum_comments").insert({
+      post_id: postId,
+      author_id: profileId,
+      content: newComment.trim(),
+    });
+    setSendingComment(false);
+    if (error) { toast.error("שגיאה בשליחת התגובה"); return; }
+    setNewComment("");
+    fetchComments(postId);
+  };
+
   // Chat view
   if (selectedCat) {
     return (
@@ -107,16 +143,59 @@ const Forums = () => {
             {posts.map(post => {
               const isMe = post.author_id === profileId;
               const authorName = post.profiles?.full_name || "אנונימי";
+              const thread = comments[post.id];
+              const threadOpen = openThread === post.id;
               return (
-                <motion.div key={post.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
-                  className={`flex ${isMe ? "justify-start" : "justify-end"}`}>
-                  <div className={`max-w-[75%] rounded-2xl px-4 py-2.5 ${isMe ? "bg-secondary/10 text-foreground" : "bg-card border border-border text-foreground"}`}>
-                    {!isMe && <p className="text-xs font-bold text-secondary mb-1">{authorName}</p>}
-                    {post.is_pinned && <Pin className="w-3 h-3 text-secondary inline ml-1" />}
-                    <p className="text-sm whitespace-pre-wrap">{post.content}</p>
-                    <p className="text-[10px] text-muted-foreground mt-1">{new Date(post.created_at).toLocaleString("he-IL", { hour: "2-digit", minute: "2-digit", day: "2-digit", month: "2-digit" })}</p>
-                  </div>
-                </motion.div>
+                <div key={post.id} className={`flex flex-col ${isMe ? "items-start" : "items-end"}`}>
+                  <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
+                    className={`flex ${isMe ? "justify-start" : "justify-end"} w-full`}>
+                    <div className={`max-w-[75%] rounded-2xl px-4 py-2.5 ${isMe ? "bg-secondary/10 text-foreground" : "bg-card border border-border text-foreground"}`}>
+                      {!isMe && <p className="text-xs font-bold text-secondary mb-1">{authorName}</p>}
+                      {post.is_pinned && <Pin className="w-3 h-3 text-secondary inline ml-1" />}
+                      <p className="text-sm whitespace-pre-wrap">{post.content}</p>
+                      <p className="text-[10px] text-muted-foreground mt-1">{new Date(post.created_at).toLocaleString("he-IL", { hour: "2-digit", minute: "2-digit", day: "2-digit", month: "2-digit" })}</p>
+                    </div>
+                  </motion.div>
+
+                  <button
+                    onClick={() => toggleThread(post.id)}
+                    className="flex items-center gap-1 text-[11px] text-muted-foreground hover:text-secondary mt-1 px-1"
+                  >
+                    <MessageCircle className="w-3 h-3" />
+                    {threadOpen ? "הסתר תגובות" : thread?.length ? `${thread.length} תגובות` : "תגובות"}
+                  </button>
+
+                  {threadOpen && (
+                    <div className="max-w-[85%] w-full bg-muted/40 rounded-xl p-2.5 mt-1 space-y-2">
+                      {(thread || []).map((c: any) => (
+                        <div key={c.id} className="bg-background rounded-lg px-3 py-1.5 border border-border">
+                          <p className="text-[11px] font-bold text-secondary">{c.profiles?.full_name || "אנונימי"}</p>
+                          <p className="text-xs whitespace-pre-wrap">{c.content}</p>
+                        </div>
+                      ))}
+                      {(thread || []).length === 0 && (
+                        <p className="text-xs text-muted-foreground text-center py-1">אין תגובות עדיין</p>
+                      )}
+                      {canComment(selectedCat.id) ? (
+                        <div className="flex gap-2 pt-1">
+                          <Input
+                            value={newComment}
+                            onChange={e => setNewComment(e.target.value)}
+                            placeholder="הגב לפוסט..."
+                            onKeyDown={e => e.key === "Enter" && !e.shiftKey && handleAddComment(post.id)}
+                            className="flex-1 h-8 text-xs"
+                          />
+                          <Button size="icon" className="h-8 w-8 shrink-0 bg-secondary text-secondary-foreground"
+                            disabled={sendingComment || !newComment.trim()} onClick={() => handleAddComment(post.id)}>
+                            <Send className="w-3.5 h-3.5" />
+                          </Button>
+                        </div>
+                      ) : (
+                        <p className="text-[11px] text-muted-foreground text-center pt-1">אין לך הרשאה להגיב בפורום זה</p>
+                      )}
+                    </div>
+                  )}
+                </div>
               );
             })}
             <div ref={bottomRef} />
