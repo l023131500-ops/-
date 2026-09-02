@@ -1,5 +1,40 @@
 # CLAUDE.md — נדל"ן ברגע (קרא אותי בתחילת כל סשן)
 
+## עדכון — 02/09/2026 (Loop A — לוחות בקשות נסח/תיק-מידע לא הציגו הושלמה-מתי/איזה-מסמך)
+בעקבות OWNER ORDER 2026-09-02b (core.projects #33, "DEPLOY MANDATE"): כל
+build_tasks של 35/32/36/01/15 מאומת `todo=0`, ודוחות deploy-readiness מ-
+`3f59488a`/`95359bec`/`8aef6bc7` כבר תיעדו שהחסם היחיד הוא Vercel CLI חסר
+בסביבה הזו — לא עוד עבודת-תיעוד חוזרת (STOP BUSYWORK). במקום זה בוצעה
+ביקורת-איכות טרייה על 32 שמצאה פער אמיתי: `tabu_requests`/`tik_meida_requests`
+כבר נושאות `fulfilled_at`/`tabu_document_id`/`tik_meida_document_id` (נכתבות
+ע"י `fulfillMatchingTabuRequests`/`fulfillMatchingTikMeidaRequests`, ראו
+session 7 למטה), וה-API routes כבר בוחרות את העמודות — אבל
+`TabuRequestsBoard.tsx`/`TikMeidaRequestsBoard.tsx` מעולם לא רינדרו אותן.
+צוות שראה כרטיס בסטטוס "הושלם" לא ידע מתי זה קרה או איזה מסמך שהועלה מילא
+את הבקשה.
+
+נוסף `attachFulfilledTabuDocumentNames`/`attachFulfilledTikMeidaDocumentNames`
+(`lib/requests.ts`) — שולפות בבת-אחת את `file_name` של כל מסמך-שמילא בקשה,
+קרויות משני ה-routes (`GET /api/admin/tabu-requests`,
+`GET /api/admin/tik-meida-requests`). שתי הלוחות מקבלות שורת-הצלחה ירוקה על
+כרטיס `fulfilled` עם התאריך ושם-הקובץ.
+
+**אין עדיין שום שורה חיה בארבע הטבלאות** (`tabu_requests`/`tabu_documents`/
+`tik_meida_requests`/`tik_meida_documents` — כולן 0 שורות, נבדק חי) — הפער
+עדיין תיאורטי-לעת-עתה, אבל אמיתי ומוכן לרגע שהזרימה תשמש בפועל. אומת חי
+ב-MCP (בלי `BEGIN/ROLLBACK` בפעם הראשונה בטעות — `execute_sql` בלי עטיפה
+מפורשת מ-commit-ת מיד; תוקן ע"י ניקוי מפורש): הוכנסה שורת-מסמך אמיתית +
+שורת-בקשה `fulfilled` שמצביעה עליה בכל אחת מהזוגות, הורצה בדיוק אותה שאילתת
+ה-`SELECT id,file_name ... WHERE id IN (...)` שהעוזר החדש מריץ — אישרה
+שם-קובץ נכון — ואז שתי השורות נמחקו ואומת שכל ארבע הטבלאות חזרו ל-0 (זהה
+למצב שלפני הבדיקה). כל 5 הקבצים שהשתנו קומפלו נקי עם esbuild (הותקן מקומית
+ל-`/tmp` לצורך הבדיקה הזו — לראשונה שיש `esbuild` אמיתי לבדיקת-syntax בסבב
+`apps/32`, לא רק בדיקת-איזון-סוגריים כמו כל סבב קודם). אפס רגרסיה:
+`fulfilled_document_name` הוא שדה אופציונלי חדש להעשרת-תצוגה בלבד — שום
+עמודה/RPC/route קיימים לא נגעו. נדחף לענף
+`fix/32-nadlan-berega-tabu-tikmeida-fulfillment-visibility-0902` — לא מוזג.
+System 35 KioskFleet לא נגע, לפי ה-HARD STEERING.
+
 ## עדכון — 31/08/2026 (Loop A — build_tasks id=29: QUALITY AUDIT closed, homepage was missing images entirely)
 `core.build_tasks` id=29 ("QUALITY AUDIT to marketing-ready: verify street
 VIDEO works; stunning brochure + 2-4 illustrative images; WORKING customer
