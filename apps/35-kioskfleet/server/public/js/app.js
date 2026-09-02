@@ -395,6 +395,13 @@ function mapDevice(d) {
     // maps an empty submission to NULL), but reading it as falsy-or-null would
     // make "cleared" and "never set" indistinguishable from a socket frame.
     exitCode: d.exit_code ?? d.exitCode ?? null,
+    // §5 "סליידר זום" + §9 "תזמון": both fully enforced server-side/on-device
+    // already (display.js/schedule.js + index.js's open/close loop), but had
+    // no console field to read or write them from until now.
+    displayZoomPercent: d.display_zoom_percent ?? d.displayZoomPercent ?? 100,
+    scheduleEnabled: !!(d.schedule_enabled ?? d.scheduleEnabled),
+    scheduleOpenTime: d.schedule_open_time ?? d.scheduleOpenTime ?? '',
+    scheduleCloseTime: d.schedule_close_time ?? d.scheduleCloseTime ?? '',
     battery: d.battery, model: d.model, appVersion: d.app_version || d.appVersion, ip: d.ip };
 }
 
@@ -563,6 +570,17 @@ async function editDevice(d) {
       <div style="color:var(--muted);font-size:12px;margin-top:4px" id="disp-hint"></div></div>
     <div class="field"><label>דומיינים מותרים לפתיחה במכשיר</label><div id="hl"></div></div>
     <div class="field"><label>חזרה אוטומטית לקישור לאחר חוסר פעילות (שניות; 0 = כבוי)</label><input id="idle" type="number" min="0" value="${d.idleReturnSeconds || 0}" dir="ltr" /></div>
+    <div class="field"><label>הגדלת תצוגה (זום): <span id="zoom-val">${d.displayZoomPercent || 100}%</span></label>
+      <input id="zoom" type="range" min="50" max="300" step="5" value="${d.displayZoomPercent || 100}"
+        style="width:100%;padding:0;border:none;background:transparent;border-radius:0" />
+      <div style="color:var(--muted);font-size:12px;margin-top:4px">100% = ללא שינוי. הגדילו כשהאתר בנוי לפלאפון ונראה קטן על מסך הקיוסק.</div></div>
+    <div class="field"><label style="display:flex;align-items:center;gap:8px;cursor:pointer">
+        <input id="sched-on" type="checkbox" ${d.scheduleEnabled ? 'checked' : ''} style="width:18px;height:18px;padding:0;border-radius:4px;flex:none" />
+        תזמון שעות פעילות (הדלקה/כיבוי אוטומטיים)</label>
+      <div id="sched-times" style="display:${d.scheduleEnabled ? 'flex' : 'none'};gap:8px;margin-top:6px">
+        <div style="flex:1"><label style="font-size:12px">שעת פתיחה</label><input id="sched-open" type="time" value="${esc(d.scheduleOpenTime || '')}" dir="ltr" /></div>
+        <div style="flex:1"><label style="font-size:12px">שעת סגירה</label><input id="sched-close" type="time" value="${esc(d.scheduleCloseTime || '')}" dir="ltr" /></div>
+      </div></div>
     <div class="row"><button class="btn btn-primary" id="s">שמירה</button><button class="btn btn-light" id="c">ביטול</button></div>`);
 
   let homeHost = '';
@@ -586,13 +604,20 @@ async function editDevice(d) {
   // and the re-draw happens in the same click.
   $('#hl', m).addEventListener('click', () => setTimeout(refreshDispHint, 0));
 
+  const zoom = $('#zoom', m), zoomVal = $('#zoom-val', m);
+  zoom.addEventListener('input', () => { zoomVal.textContent = zoom.value + '%'; });
+  const schedOn = $('#sched-on', m), schedTimes = $('#sched-times', m);
+  schedOn.addEventListener('change', () => { schedTimes.style.display = schedOn.checked ? 'flex' : 'none'; });
+
   $('#s', m).onclick = async () => {
     // Adopt a domain that was typed but not added, rather than dropping it.
     if (!hl.commitPending()) return;
     // `displayUrl` is sent on every save, empty included: the server reads it by
     // presence, and an omitted key would make clearing the field impossible.
     const body = { name: $('#n', m).value, homeUrl: $('#h', m).value, displayUrl: disp.value.trim(),
-      allowedHost: hl.value(), idleReturnSeconds: Number($('#idle', m).value) };
+      allowedHost: hl.value(), idleReturnSeconds: Number($('#idle', m).value),
+      displayZoomPercent: Number(zoom.value),
+      scheduleEnabled: schedOn.checked, scheduleOpenTime: $('#sched-open', m).value, scheduleCloseTime: $('#sched-close', m).value };
     const lk = $('#lk', m); if (lk && lk.value) body.linkId = Number(lk.value);
     try { await api(`/devices/${d.id}`, { method: 'PATCH', body: JSON.stringify(body) });
       toast('נשמר. המכשיר יתעדכן מיד.'); m.remove(); loadDevices(); }

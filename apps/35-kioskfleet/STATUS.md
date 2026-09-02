@@ -3193,3 +3193,51 @@ to that constraint: they import only dependency-free modules (`hosts.js`,
      — this step touches `public/js/app.js` only. Open after it is a copy
      decision and not an accessibility one: `#e-list`'s אתר column is contained
      but not bounded, where the other two tables cap theirs at 230px and 220px.
+
+- **the zoom slider and the schedule (§5/§9) had a server, an enforcement loop,
+  and no button** — `display.js`/`schedule.js` and their columns
+  (`display_zoom_percent`, `schedule_enabled/open_time/close_time`) have existed
+  since earlier rounds; `routes/devices.js`'s `PATCH /devices/:id` already
+  validates and stores both, `pushConfigUpdate()` already pushes the zoom value
+  to the device in `update_config`, and `index.js`'s interval already reads
+  `schedule_enabled` devices and issues `screen_on`/`screen_off` on the open/
+  close boundary. None of the three was reachable from `public/`: grep for
+  `zoom`/`schedule` across the whole `server/public/` tree returned nothing.
+  §5's "חובה סליידר זום" and §9's business-hours screen were both live features
+  an owner could not turn on. Added to `editDevice()` in `public/js/app.js`:
+  - a `<input type="range" 50–300>` with a live `NN%` label, matching the exact
+    clamp `display.js` already enforces server-side (so a slider position never
+    disagrees with what gets stored).
+  - a checkbox that reveals two `<input type="time">` fields only while checked
+    — the pre-existing `PATCH` validation (`validateScheduleWindow`) already
+    rejects an enabled schedule with unparseable/equal times with a real error
+    message, surfaced through the dialog's existing `catch (e) => toast(...)`.
+  - both are always sent on save (matching how `idleReturnSeconds` already
+    behaves), and both read back from `mapDevice()`'s existing REST/socket
+    dual-shape handling (`d.display_zoom_percent ?? d.displayZoomPercent`, same
+    pattern `exitCode`/`displayUrl` already use) — so a device's stored value is
+    never overwritten with a stale default on open.
+  - the range and checkbox are given their own inline style reset:
+    `.field input` is a blanket rule (`width:100%; padding:12px 14px;
+    border-radius:11px`) written for text inputs, and would otherwise wrap a
+    checkbox in an oversized bordered box or box the slider track — the two
+    existing checkbox usages elsewhere in the console (`clientApprovals`/
+    `linkApprovals`) already avoid this the same way, with an explicit
+    `width/height/padding` override, because they sit outside `.field`.
+
+  Verified: `node --check` on `public/js/app.js`. No `node_modules`/browser in
+  this checkout, so the actual dialog was not clicked through — instead,
+  `display.js`'s `clampZoomPercent` and `schedule.js`'s `validateScheduleWindow`
+  (both dependency-free, importable here) were run directly against the exact
+  values the new fields produce: 150/100/400→clamped 300, a same-day window, an
+  overnight window, and the empty-fields case the checkbox can produce if
+  checked with nothing typed — all match what the server already does with
+  them. `node --test test/display.test.mjs test/schedule.test.mjs
+  test/hosts.test.mjs test/exitcode.test.mjs test/idletimeout.test.mjs` — 40/40.
+  Full suite `node --test test/**/*.test.mjs` — 70/71, the one failure being
+  `seedadmin.test.mjs`'s pre-existing `node:sqlite` dependency on a Node version
+  that does not ship it, unrelated to this change and unchanged by it.
+
+  **Not deployed.** Same as every entry above — the Railway service serves the
+  previous console until it is rebuilt from this checkout.
+
