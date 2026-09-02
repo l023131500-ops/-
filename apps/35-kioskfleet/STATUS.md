@@ -3377,3 +3377,63 @@ to that constraint: they import only dependency-free modules (`hosts.js`,
   shape (`feat/kiosk-route-a-qr-provisioning-0825`/`-0831`, unmerged) and is
   the next reconciliation candidate on this system.
 
+[02/09/2026 Loop A] Read the real deployed tree first this round, per this
+file's own standing warning above — `/home/m30/zol-work` checked out at
+`feat/kiosk-routes-cd-integration-0902` (3 commits ahead of the last-known
+merged tip, unpushed by the round that made them). Grepped it for
+`payment_mode`/`paymentMode`/`PAYMENT_MODES`: zero hits anywhere in
+`server/src` or `public/js` — §7 "תשלום ואמצעי קלט (3 אופציות, ללא שמירת מספר
+כרטיס)" was genuinely unbuilt on the real tree too, not just this stale
+checkout. This is the owner's own locked, re-affirmed-three-times spec item
+(three separate note edits narrowing it to the same 3 modes), so it is a real
+build_tasks-worthy gap, not busywork.
+
+Built `payment.js` (closed 4-value enum: `none`/`manual`/`reader_prefill`/
+`emv_terminal` — deliberately excludes the HID keyboard-emulating magstripe-
+reader shape the spec explicitly bans as unencrypted-PAN/full-PCI-scope) and
+wired it through every layer the existing `signage_enabled`/
+`maintenance_enabled` fields already reach, so it is not a half-built toggle:
+`devices`/`templates`/`policy_snapshots` columns (`db.js`, `ensureColumn`),
+validation + write + live console push (`policy.js`'s `applyDevicePolicy`/
+`pushConfigUpdate`), device-group template build/apply/summary
+(`templatepolicy.js`, `routes/templates.js`), backup/restore
+(`snapshots.js`), the console's live-status field allow-list
+(`devicepayload.js`), the device's own config on enrollment and heartbeat
+(`routes/agent.js`), and a payment-mode picker (spec's exact Hebrew wording
+per mode) in both the device edit dialog and the device-group template
+screen (`public/js/app.js`) — plus a `💳` summary line on the device card and
+in the template list, matching the existing `⏰`/`📺` indicators.
+
+Deliberately NOT built this round: the on-device Android payment UI/terminal
+integration. KIOSK_BUILD.md §14 already lists payment-provider + terminal-
+model selection as an open owner decision ("בחירת ספק סליקה
+(פיימי/נדרים/אחר) ומסופון מוסמך") — building real card-reader/EMV-terminal
+behavior ahead of that choice would need to be redone once it lands, the
+same "don't get stuck on an owner decision, note it and move on" rule this
+round's priority-note itself states. `paymentMode` already reaches the
+device's config payload (enroll + heartbeat + `update_config`) so the
+Android side has a value to read the moment that follow-up is unblocked;
+`AgentClient.kt` was left untouched.
+
+Verified: 38 new/updated test cases (`test/payment.test.mjs` new; 3 cases
+added to `templatepolicy.test.mjs`, 1 to `snapshots.test.mjs`, a fixture
+field added to `devicepayload.test.mjs`) plus every pre-existing case —
+`node --test test/*.test.mjs` on the real tree: **178/178**, zero failures.
+`node --check` clean on all 10 edited/2 new server files and `public/js/
+app.js`. Committed on a fresh branch off the real deployed tip (not this
+checkout, and not merged — same convention as every prior zol push in this
+history, including the still-unmerged Route C/D integration branch this
+round built on top of): `l023131500-ops/zol` branch
+`feat/kiosk-payment-input-modes-0902` (`d88b87a`).
+
+**Not deployed** — same blocker as every zol-targeted entry above; also
+carries the still-unmerged Route C/D reconciliation commits underneath it
+(branched from `feat/kiosk-routes-cd-integration-0902`), so promoting this
+branch would bring both forward together. This checkout
+(`apps/35-kioskfleet`) still is not the source of truth — the next round on
+this system should read `/home/m30/zol-work` (or a fresh worktree of the
+real tip) first, not this file's own "מה כבר בנוי" baseline, before claiming
+any further KIOSK_BUILD.md gap. Route A (QR/zero-touch GMS provisioning,
+§3/§10-A) remains the next reconciliation candidate, unrelated to this
+round's work.
+
