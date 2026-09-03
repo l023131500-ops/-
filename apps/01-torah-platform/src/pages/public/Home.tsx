@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { BookOpen, Users, Search, Plus, Sparkles, MapPin, ScrollText, Heart, ShoppingBag, GraduationCap, FileAudio, Image as ImageIcon, ExternalLink } from "lucide-react";
+import { BookOpen, Users, Search, Plus, Sparkles, MapPin, ScrollText, Heart, ShoppingBag, GraduationCap, FileAudio, Image as ImageIcon, ExternalLink, FileText, Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardTitle, CardDescription, CardHeader } from "@/components/ui/card";
 import { useTenant, useTenantFeature } from "@/hooks/useTenant";
@@ -47,6 +47,26 @@ export default function Home() {
         .limit(1)
         .maybeSingle();
       return data;
+    },
+  });
+
+  const { data: featuredMaterials } = useQuery({
+    queryKey: ["featured-materials", tenant?.id],
+    enabled: !!tenant?.id,
+    queryFn: async () => {
+      // materials.featured_on_homepage: moderator-only flag (column-protected
+      // by 20260831070000_materials_protect_moderation_fields.sql), set from
+      // admin/Content.tsx's "הצג בדף הבית" toggle — this is the only place
+      // that ever reads it back out.
+      const { data } = await supabase
+        .from("materials")
+        .select("id, title, description, category, file_url, media_kind")
+        .eq("tenant_id", tenant!.id)
+        .eq("status", "approved")
+        .eq("featured_on_homepage", true)
+        .order("created_at", { ascending: false })
+        .limit(6);
+      return data || [];
     },
   });
 
@@ -196,6 +216,35 @@ export default function Home() {
           )}
         </div>
       </section>
+
+      {/* Featured materials */}
+      {!!featuredMaterials?.length && (
+        <section className="container mx-auto px-4 py-12 border-t border-border/60">
+          <h2 className="font-heading text-3xl md:text-4xl text-center mb-10">חומרי לימוד מומלצים</h2>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {featuredMaterials.map(m => (
+              <Card key={m.id} className="h-full border-border/60">
+                <CardHeader>
+                  <div className="w-12 h-12 rounded-md bg-primary/10 text-primary flex items-center justify-center mb-3">
+                    <FileText className="h-6 w-6" />
+                  </div>
+                  <CardTitle className="text-xl">{m.title}</CardTitle>
+                  {m.description && <CardDescription>{m.description}</CardDescription>}
+                </CardHeader>
+                {m.file_url && (
+                  <CardContent>
+                    <Button asChild size="sm" variant="outline" className="gap-1">
+                      <a href={m.file_url} target="_blank" rel="noreferrer">
+                        <Download className="h-4 w-4" /> צפייה בקובץ
+                      </a>
+                    </Button>
+                  </CardContent>
+                )}
+              </Card>
+            ))}
+          </div>
+        </section>
+      )}
 
       {/* מערכות נוספות מבית איגוד השיעורים */}
       <section className="py-16 border-t border-border/60">
