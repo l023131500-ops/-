@@ -189,7 +189,7 @@ const RabbiPublic = () => {
                     <div className="flex flex-wrap gap-2 mt-3">
                       {synPrayers.map(pt => (
                         <span key={pt.id} className="bg-muted/50 text-foreground text-xs px-3 py-1.5 rounded-lg">
-                          {pt.prayer_type} {pt.time} {pt.day_of_week !== "יומי" && `(${pt.day_of_week})`}
+                          {pt.prayer_type === "אחר" && pt.custom_category ? pt.custom_category : pt.prayer_type} {pt.time} {pt.day_of_week !== "יומי" && `(${pt.day_of_week})`}
                         </span>
                       ))}
                     </div>

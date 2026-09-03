@@ -22,7 +22,7 @@ const PrayerTimes = () => {
   const [showAddSyn, setShowAddSyn] = useState(false);
   const [showAddPrayer, setShowAddPrayer] = useState<string | null>(null);
   const [synForm, setSynForm] = useState({ name: "", address: "", city: "", neighborhood: "", phone: "", notes: "" });
-  const [prayerForm, setPrayerForm] = useState({ prayer_type: "", day_of_week: "יומי", time: "", notes: "" });
+  const [prayerForm, setPrayerForm] = useState({ prayer_type: "", day_of_week: "יומי", time: "", notes: "", custom_category: "" });
 
   useEffect(() => { if (user) fetchData(); }, [user]);
 
@@ -62,7 +62,7 @@ const PrayerTimes = () => {
     if (error) { toast.error("שגיאה: " + error.message); return; }
     toast.success("זמן תפילה נוסף!");
     setShowAddPrayer(null);
-    setPrayerForm({ prayer_type: "", day_of_week: "יומי", time: "", notes: "" });
+    setPrayerForm({ prayer_type: "", day_of_week: "יומי", time: "", notes: "", custom_category: "" });
     fetchData();
   };
 
@@ -127,7 +127,7 @@ const PrayerTimes = () => {
                   {syn.phone && <p className="text-sm text-muted-foreground">📞 {syn.phone}</p>}
                 </div>
                 <div className="flex gap-2">
-                  <Button size="sm" variant="outline" onClick={() => { setShowAddPrayer(syn.id); setPrayerForm({ prayer_type: "", day_of_week: "יומי", time: "", notes: "" }); }}>
+                  <Button size="sm" variant="outline" onClick={() => { setShowAddPrayer(syn.id); setPrayerForm({ prayer_type: "", day_of_week: "יומי", time: "", notes: "", custom_category: "" }); }}>
                     <Plus className="w-4 h-4 ml-1" />זמן תפילה
                   </Button>
                   <Button size="sm" variant="ghost" onClick={() => handleDeleteSyn(syn.id)}>
@@ -141,7 +141,9 @@ const PrayerTimes = () => {
                   {synPrayers.map(pt => (
                     <div key={pt.id} className="flex items-center justify-between bg-muted/50 rounded-lg px-3 py-2 text-sm">
                       <div>
-                        <span className="font-medium text-foreground">{pt.prayer_type}</span>
+                        <span className="font-medium text-foreground">
+                          {pt.prayer_type === "אחר" && pt.custom_category ? pt.custom_category : pt.prayer_type}
+                        </span>
                         <span className="text-muted-foreground mr-2">{pt.time}</span>
                         {pt.day_of_week !== "יומי" && <span className="text-xs text-muted-foreground">({pt.day_of_week})</span>}
                       </div>
@@ -165,6 +167,9 @@ const PrayerTimes = () => {
                 <SelectTrigger><SelectValue placeholder="סוג תפילה *" /></SelectTrigger>
                 <SelectContent>{PRAYER_TYPES.map(t => <SelectItem key={t} value={t}>{t}</SelectItem>)}</SelectContent>
               </Select>
+              {prayerForm.prayer_type === "אחר" && (
+                <Input placeholder="פרט את סוג האירוע/תפילה" value={prayerForm.custom_category} onChange={e => setPrayerForm(p => ({ ...p, custom_category: e.target.value }))} />
+              )}
               <Select value={prayerForm.day_of_week} onValueChange={v => setPrayerForm(p => ({ ...p, day_of_week: v }))}>
                 <SelectTrigger><SelectValue placeholder="יום" /></SelectTrigger>
                 <SelectContent>{PRAYER_DAY_OPTIONS.map(d => <SelectItem key={d} value={d}>{d}</SelectItem>)}</SelectContent>
