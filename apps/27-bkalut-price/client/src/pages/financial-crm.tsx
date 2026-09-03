@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useRoute, useLocation } from "wouter";
-import type { FinClient, FinTask, FinMessage, FinDocument, FinReminder, FinReport, FinActivityLog } from "@shared/schema";
+import type { FinClient, FinTask, FinMessage, FinDocument, FinReminder, FinReport, FinActivityLog, FinGoal } from "@shared/schema";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -11,10 +11,10 @@ import { apiRequest, queryClient } from "@/lib/queryClient";
 import { safeUrl } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
 import {
-  Briefcase, CheckSquare, Mail, FileText, Bell, BarChart3, Clock, Plus, Send, Trash2, Users, ChevronLeft,
+  Briefcase, CheckSquare, Mail, FileText, Bell, BarChart3, Clock, Plus, Send, Trash2, Users, ChevronLeft, Target,
 } from "lucide-react";
 
-type Tab = "tasks" | "messages" | "documents" | "reminders" | "reports" | "activity";
+type Tab = "tasks" | "messages" | "documents" | "reminders" | "reports" | "goals" | "activity";
 
 export default function FinancialCrmPage() {
   const { toast } = useToast();
@@ -50,6 +50,10 @@ export default function FinancialCrmPage() {
     queryKey: [`/api/financial/clients/${selectedId}/reports`],
     enabled: Boolean(selectedId),
   });
+  const { data: goals } = useQuery<FinGoal[]>({
+    queryKey: [`/api/financial/clients/${selectedId}/goals`],
+    enabled: Boolean(selectedId),
+  });
   const { data: activity } = useQuery<FinActivityLog[]>({
     queryKey: [`/api/financial/clients/${selectedId}/activity`],
     enabled: Boolean(selectedId),
@@ -66,6 +70,7 @@ export default function FinancialCrmPage() {
   const [newDoc, setNewDoc] = useState({ title: "", docType: "consent", status: "pending", url: "", notes: "" });
   const [newReminder, setNewReminder] = useState({ title: "", body: "", dueAt: "", channel: "internal" });
   const [newReport, setNewReport] = useState({ title: "", periodMonth: new Date().toISOString().slice(0, 7), summary: "", status: "draft" });
+  const [newGoal, setNewGoal] = useState({ title: "", targetAmount: "", targetDate: "", monthlyContribution: "" });
 
   const createTask = useMutation({
     mutationFn: async () => {
@@ -189,12 +194,47 @@ export default function FinancialCrmPage() {
     onError: () => toast({ title: "שגיאה ביצירת הדוח", variant: "destructive" }),
   });
 
+  const createGoal = useMutation({
+    mutationFn: async () => {
+      const r = await apiRequest("POST", "/api/financial/goals", {
+        clientId: selectedId,
+        title: newGoal.title,
+        targetAmount: Number(newGoal.targetAmount) || 0,
+        targetDate: newGoal.targetDate || null,
+        monthlyContribution: newGoal.monthlyContribution ? Number(newGoal.monthlyContribution) : null,
+      });
+      return r.json();
+    },
+    onSuccess: () => {
+      refreshFor("goals");
+      setNewGoal({ title: "", targetAmount: "", targetDate: "", monthlyContribution: "" });
+      toast({ title: "המטרה נוספה" });
+    },
+    onError: () => toast({ title: "שגיאה ביצירת המטרה", variant: "destructive" }),
+  });
+
+  const updateGoalStatus = useMutation({
+    mutationFn: async ({ id, status }: { id: number; status: string }) => {
+      const r = await apiRequest("PATCH", `/api/financial/goals/${id}`, { status });
+      return r.json();
+    },
+    onSuccess: () => refreshFor("goals"),
+    onError: () => toast({ title: "שגיאה בעדכון סטטוס המטרה", variant: "destructive" }),
+  });
+
+  const deleteGoal = useMutation({
+    mutationFn: async (id: number) => apiRequest("DELETE", `/api/financial/goals/${id}`),
+    onSuccess: () => refreshFor("goals"),
+    onError: () => toast({ title: "שגיאה במחיקת המטרה", variant: "destructive" }),
+  });
+
   const TABS: Array<{ key: Tab; label: string; icon: React.ComponentType<{ className?: string }> }> = [
     { key: "tasks", label: "משימות", icon: CheckSquare },
     { key: "messages", label: "הודעות", icon: Mail },
     { key: "documents", label: "מסמכים", icon: FileText },
     { key: "reminders", label: "תזכורות", icon: Bell },
     { key: "reports", label: "דוחות חודשיים", icon: BarChart3 },
+    { key: "goals", label: "מטרות", icon: Target },
     { key: "activity", label: "פעילות", icon: Clock },
   ];
 
@@ -512,6 +552,52 @@ export default function FinancialCrmPage() {
                         <p className="font-semibold text-sm">{r.title}</p>
                         <p className="text-[11px] text-muted-foreground">{r.periodMonth} · {r.status}</p>
                         {r.summary && <p className="text-xs text-muted-foreground mt-1 whitespace-pre-wrap">{r.summary}</p>}
+                      </div>
+                    ))
+                  )}
+                </div>
+              </Card>
+            )}
+
+            {/* GOALS */}
+            {tab === "goals" && (
+              <Card className="p-4 border border-card-border bg-card space-y-3" data-testid="crm-goals-panel">
+                <h3 className="text-sm font-bold">מטרה חדשה</h3>
+                <div className="grid md:grid-cols-2 gap-2">
+                  <Input placeholder="כותרת" value={newGoal.title} onChange={(e) => setNewGoal({ ...newGoal, title: e.target.value })} data-testid="input-new-goal-title" />
+                  <Input type="number" placeholder="סכום יעד (₪)" value={newGoal.targetAmount} onChange={(e) => setNewGoal({ ...newGoal, targetAmount: e.target.value })} />
+                </div>
+                <div className="grid md:grid-cols-2 gap-2">
+                  <Input type="date" value={newGoal.targetDate} onChange={(e) => setNewGoal({ ...newGoal, targetDate: e.target.value })} />
+                  <Input type="number" placeholder="הפקדה חודשית (₪, אופציונלי)" value={newGoal.monthlyContribution} onChange={(e) => setNewGoal({ ...newGoal, monthlyContribution: e.target.value })} />
+                </div>
+                <Button onClick={() => createGoal.mutate()} disabled={!newGoal.title || !newGoal.targetAmount || createGoal.isPending} data-testid="button-create-goal">
+                  <Plus className="w-4 h-4 ml-1" />
+                  הוספת מטרה
+                </Button>
+
+                <div className="border-t pt-3 space-y-2">
+                  {(goals ?? []).length === 0 ? (
+                    <p className="text-xs text-muted-foreground">אין מטרות ללקוח זה.</p>
+                  ) : (
+                    (goals ?? []).map((g) => (
+                      <div key={g.id} className="rounded-md border p-3 flex items-start gap-3" data-testid={`goal-row-${g.id}`}>
+                        <div className="flex-1 min-w-0">
+                          <p className="font-semibold text-sm">{g.title}</p>
+                          <div className="text-[11px] text-muted-foreground mt-1 flex flex-wrap gap-2">
+                            <span>{g.savedAmount}₪ / {g.targetAmount}₪</span>
+                            {g.targetDate && <span>📅 {g.targetDate}</span>}
+                            {g.monthlyContribution != null && <span>הפקדה: {g.monthlyContribution}₪/חודש</span>}
+                          </div>
+                        </div>
+                        <div className="flex flex-col gap-1">
+                          <select value={g.status} onChange={(e) => updateGoalStatus.mutate({ id: g.id, status: e.target.value })} className="text-xs rounded-md border border-input bg-background px-2 py-1">
+                            <option value="active">פעילה</option>
+                            <option value="reached">הושגה</option>
+                            <option value="paused">מושהית</option>
+                          </select>
+                          <Button size="sm" variant="ghost" onClick={() => deleteGoal.mutate(g.id)}><Trash2 className="w-3.5 h-3.5" /></Button>
+                        </div>
                       </div>
                     ))
                   )}
