@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { Fragment, useState } from "react";
 import { useSuspenseQuery, useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { Plus, Loader2 } from "lucide-react";
@@ -101,21 +101,37 @@ export function ReferralsTab({ clientId }: { clientId: string }) {
           </TableHeader>
           <TableBody>
             {referrals.length === 0 && <TableRow><TableCell colSpan={6} className="text-center text-muted-foreground py-6">אין הפניות</TableCell></TableRow>}
-            {referrals.map((r) => (
-              <TableRow key={r.id}>
-                <TableCell className="font-medium">{r.partner?.company_name ?? "—"}</TableCell>
-                <TableCell>{r.partner ? (PARTNER_CATEGORY as Record<string, string>)[r.partner.category] ?? r.partner.category : "—"}</TableCell>
-                <TableCell>{formatDateHe(r.sent_at)}</TableCell>
-                <TableCell><ReferralStatusBadge status={r.status} /></TableCell>
-                <TableCell><StatusFlow status={r.status} /></TableCell>
-                <TableCell>
-                  <Select value={r.status} onValueChange={(v) => updateStatus.mutate({ id: r.id, status: v })}>
-                    <SelectTrigger className="w-32 h-8"><SelectValue /></SelectTrigger>
-                    <SelectContent>{Object.entries(REFERRAL_STATUS).map(([k, v]) => <SelectItem key={k} value={k}>{v}</SelectItem>)}</SelectContent>
-                  </Select>
-                </TableCell>
-              </TableRow>
-            ))}
+            {referrals.map((r) => {
+              const hasDetails = r.notes || r.partner_notes || r.rejection_reason;
+              return (
+                <Fragment key={r.id}>
+                  <TableRow>
+                    <TableCell className="font-medium">{r.partner?.company_name ?? "—"}</TableCell>
+                    <TableCell>{r.partner ? (PARTNER_CATEGORY as Record<string, string>)[r.partner.category] ?? r.partner.category : "—"}</TableCell>
+                    <TableCell>{formatDateHe(r.sent_at)}</TableCell>
+                    <TableCell><ReferralStatusBadge status={r.status} /></TableCell>
+                    <TableCell><StatusFlow status={r.status} /></TableCell>
+                    <TableCell>
+                      <Select value={r.status} onValueChange={(v) => updateStatus.mutate({ id: r.id, status: v })}>
+                        <SelectTrigger className="w-32 h-8"><SelectValue /></SelectTrigger>
+                        <SelectContent>{Object.entries(REFERRAL_STATUS).map(([k, v]) => <SelectItem key={k} value={k}>{v}</SelectItem>)}</SelectContent>
+                      </Select>
+                    </TableCell>
+                  </TableRow>
+                  {hasDetails && (
+                    <TableRow className="hover:bg-transparent">
+                      <TableCell colSpan={6} className="py-2 bg-muted/20">
+                        <div className="space-y-1.5 text-xs">
+                          {r.notes && <div><span className="text-muted-foreground">הערות פנימיות: </span><span className="whitespace-pre-wrap">{r.notes}</span></div>}
+                          {r.partner_notes && <div><span className="text-muted-foreground">הערות השותף: </span><span className="whitespace-pre-wrap">{r.partner_notes}</span></div>}
+                          {r.rejection_reason && <div className="text-red-700 dark:text-red-400"><span className="text-muted-foreground">סיבת דחייה: </span><span className="whitespace-pre-wrap">{r.rejection_reason}</span></div>}
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  )}
+                </Fragment>
+              );
+            })}
           </TableBody>
         </Table>
       </CardContent>
