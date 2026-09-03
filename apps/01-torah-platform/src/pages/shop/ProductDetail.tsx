@@ -57,7 +57,13 @@ export default function ProductDetail() {
         <div>
           <h1 className="font-heading text-3xl md:text-4xl mb-2">{product.name}</h1>
           {product.short_description && <p className="text-muted-foreground mb-4">{product.short_description}</p>}
-          <div className="text-3xl font-heading text-primary mb-4">{formatILS(product.price_ils)}</div>
+          {product.is_featured && <Badge className="mb-3">מומלץ</Badge>}
+          <div className="flex items-baseline gap-3 mb-4">
+            <span className="text-3xl font-heading text-primary">{formatILS(product.price_ils)}</span>
+            {product.compare_at_price_ils != null && product.compare_at_price_ils > product.price_ils && (
+              <span className="text-lg text-muted-foreground line-through">{formatILS(product.compare_at_price_ils)}</span>
+            )}
+          </div>
           {!inStock && <Badge variant="destructive" className="mb-3">אזל מהמלאי</Badge>}
           {product.description && <div className="prose max-w-none mb-6 text-foreground/85 whitespace-pre-wrap">{product.description}</div>}
 

@@ -29,7 +29,7 @@ export default function ShopCatalog() {
     queryKey: ["products", tenant?.id, q, category],
     enabled: !!tenant?.id,
     queryFn: async () => {
-      let qb = supabase.from("products").select("*").eq("tenant_id", tenant!.id).eq("is_active", true).order("created_at", { ascending: false });
+      let qb = supabase.from("products").select("*").eq("tenant_id", tenant!.id).eq("is_active", true).order("is_featured", { ascending: false }).order("created_at", { ascending: false });
       if (category !== "all") qb = qb.eq("category_id", category);
       // PostgREST treats , and ( ) in an .or() filter string as condition/group
       // separators; without escaping, a search term containing them could break
@@ -73,18 +73,26 @@ export default function ShopCatalog() {
             <Link key={p.id} to={`/shop/${p.slug || p.id}`}>
               <Card className="h-full hover:shadow-md transition-shadow overflow-hidden">
                 {/* products stores a gallery in `images`; there is no image_url. */}
-                {p.images?.[0] ? (
-                  <img src={p.images[0]} alt={p.name} className="w-full aspect-square object-cover bg-muted" />
-                ) : (
-                  <div className="w-full aspect-square bg-muted flex items-center justify-center">
-                    <ShoppingBag className="h-12 w-12 text-muted-foreground/30" />
-                  </div>
-                )}
+                <div className="relative">
+                  {p.images?.[0] ? (
+                    <img src={p.images[0]} alt={p.name} className="w-full aspect-square object-cover bg-muted" />
+                  ) : (
+                    <div className="w-full aspect-square bg-muted flex items-center justify-center">
+                      <ShoppingBag className="h-12 w-12 text-muted-foreground/30" />
+                    </div>
+                  )}
+                  {p.is_featured && <Badge className="absolute top-2 right-2">מומלץ</Badge>}
+                </div>
                 <CardContent className="p-4">
                   <div className="font-medium line-clamp-1">{p.name}</div>
                   <div className="text-sm text-muted-foreground line-clamp-2 mt-1">{p.short_description}</div>
                   <div className="flex items-center justify-between mt-3">
-                    <span className="font-heading text-lg text-primary">{formatILS(p.price_ils)}</span>
+                    <span className="flex items-baseline gap-2">
+                      <span className="font-heading text-lg text-primary">{formatILS(p.price_ils)}</span>
+                      {p.compare_at_price_ils > p.price_ils && (
+                        <span className="text-sm text-muted-foreground line-through">{formatILS(p.compare_at_price_ils)}</span>
+                      )}
+                    </span>
                     {p.stock !== null && p.stock <= 0 && <Badge variant="destructive">אזל</Badge>}
                   </div>
                 </CardContent>

@@ -274,3 +274,47 @@ registered live URLs. `git log`/`git status` unchanged this round — this was
 a read-only investigation (one throwaway `/tmp` clone, deleted after), no
 app source touched, no push made to any external repo. Systems 15/32/35/36
 untouched.
+
+## 2026-09-03, session (loop A) — shop `is_featured` and `compare_at_price_ils` were pure dead schema (no reader, no writer, anywhere)
+
+Deploy blocker re-confirmed unchanged (not re-litigated — see prior two
+entries above for full evidence). Ran a fresh "field exists but has zero
+UI" audit distinct from the three already-fixed gaps above (donation
+receipts, `display_in_public_profile`, `featured_on_homepage`). Found:
+`products.is_featured` and `products.compare_at_price_ils`
+(`supabase/migrations/20260519000003_commerce.sql`, columns present since
+the original commerce migration) had **zero** references anywhere in
+`src/` outside the generated `types.ts` — grepped to confirm. `ShopCatalog`
+(`/shop`) only ordered by `created_at` and never surfaced either column;
+`ProductDetail` (`/shop/:slug`) showed `price_ils` alone. There is also no
+admin product-management page in this app (products are presumably seeded/
+edited directly in Supabase), so any owner who set a sale price or featured
+flag straight in the DB got no visible effect on the storefront at all.
+
+Fixed additively in both shop pages:
+- `ShopCatalog.tsx`: query now orders `is_featured` desc before
+  `created_at` desc (featured items surface first); each card shows a
+  "מומלץ" badge over the image when featured, and a struck-through
+  `compare_at_price_ils` next to the price when it is set and greater than
+  `price_ils`.
+- `ProductDetail.tsx`: same featured badge + struck-through compare price
+  next to the main price.
+
+No existing field, route, or RLS policy touched — purely additive reads of
+two already-existing columns. Verified: `npx tsc --noEmit` before/after via
+`git stash` shows the exact same 4 pre-existing unrelated errors (2 in
+`Checkout.tsx`, 1 unrelated `images?.[0]` typing note in `ProductDetail.tsx`
+that predates this change) and zero new errors introduced. Live-verified
+via MCP in a single rolled-back `BEGIN…ROLLBACK` transaction against the
+real `bieebmnmkffwbqlsfozh` project: inserted one featured+sale-price row
+and one plain row for a real tenant (`mc-galil`), ran the exact
+`ShopCatalog` query shape (`is_active=true`, `order by is_featured desc,
+created_at desc`), confirmed the featured/sale row sorts first and both
+columns round-trip correctly, then confirmed zero residue after rollback
+(`count(*) = 0` for both test slugs). The live `products` table currently
+has 0 rows for any tenant, so this was schema-level verification, not a
+live click-through — same disclosed limitation as most non-egod DB-backed
+fixes this session. Committed to
+`fix/01-torah-platform-shop-featured-sale-price-0903` — not merged, not
+pushed to main. Systems 15/32/35/36 and all protected schemas/apps
+untouched this round; no charge/send attempted.
