@@ -3328,3 +3328,30 @@ Systems 32/36/01/15 untouched this round (all confirmed 0 todo, all-deploy,
 before starting); no protected system/schema/webhook touched; real data
 only, no charges/sends; zero regression (additive only — two new functions,
 no existing function/route/handler changed).
+
+[03/09/2026 Loop A, session 3] Followed up on session 2's own gap: it
+committed+pushed the USB/QR enrollment fix (b39f202) but deliberately left
+zol-work's checkout on `feat/kiosk-device-display-url-0903` (the branch's
+own pre-fix tip), same "orphaned sibling branch" pattern build_tasks
+#70/#83/#84/#85/#86 already reconciled repeatedly earlier — meaning the
+branch that actually represents the deployed-tip lineage still had the
+dead USB/QR buttons live; only a *different*, unmerged branch had the fix.
+Confirmed via `git merge-base`: `fix/kiosk-enrollment-usb-qr-package-
+buttons-0903` is exactly `feat/kiosk-device-display-url-0903` (e5d425a) +
+one commit (b39f202) — a pure fast-forward, zero conflict risk. Ran
+`git merge --ff-only` to advance `feat/kiosk-device-display-url-0903` to
+b39f202, re-verified `openUsbPackageForm`/`openQrPackageForm` are now
+defined on that branch (`grep` — previously absent there), `node --check`
+clean, full suite 250/250 on `node --test`, then pushed the fast-forward to
+`origin/feat/kiosk-device-display-url-0903` (e5d425a..b39f202) — still not
+main. The two branches now agree; there is no longer a lineage where the
+dead-button bug is live.
+
+Re-confirmed core.build_tasks for 35/32/36/01/15: still 0 non-deploy todo
+rows; the only open rows anywhere in the loop-A slice are the 4
+"merge to main + deploy to production" rows from the same owner-order round
+noted in session 2 — not acted on for the same standing never-push-to-main
+reason. Flagging again since it recurs every scan: this is a real,
+unresolved conflict between core.projects#33's DEPLOY MANDATE text and this
+session's own operating constraint, and needs the operator's explicit
+resolution rather than either side unilaterally overriding the other.
