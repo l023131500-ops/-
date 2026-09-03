@@ -874,15 +874,101 @@ export function reportEmailHtml(report: PropertyReport, opts: ReportEmailOptions
 </div>`;
 }
 
+const TABU_SCOPE_LABEL_TEXT: Record<string, string> = {
+  apartment: 'נסח של הדירה',
+  entrance: 'נסח של הכניסה',
+  building: 'נסח מרוכז של הבניין',
+};
+
+/**
+ * גרסת-טקסט של `tabuBlock` — אותם שדות בדיוק, בלי HTML. עד שנוספה הפונקציה
+ * הזו, נסח טאבו מנותח (§TABU workflow, core.projects #33) הגיע רק לגרסת
+ * ה-HTML של המייל: `reportEmailText` נקראה עם `report` בלבד ב-
+ * `app/api/admin/requests/route.ts`, אף על פי שה-route כבר שולף
+ * `tabuDocs`/`tikMeidaDocs` ומעביר אותם ל-`reportEmailHtml`. לקוח שקורא רק
+ * את חלק-הטקסט של המייל (חלק מכל מייל multipart, וזה שמוצג בתוכנות מייל
+ * שאינן מרנדרות HTML) לא ראה את הניתוח המשפטי שהוא שילם עבורו כלל.
+ */
+function tabuBlockText(docs: TabuDocRow[]): string {
+  const done = docs.filter((d) => d.analysis);
+  if (!done.length) return '';
+
+  const lines: string[] = ['== טאבו — מתוך הנסח שהופק =='];
+  lines.push('הנתונים הבאים חולצו מנסח טאבו רשמי שצורף לדוח הזה, ומשויכים לנכס לפי היקף הנסח.');
+  for (const d of done) {
+    const a = d.analysis as TabuAnalysis;
+    const scope =
+      TABU_SCOPE_LABEL_TEXT[d.scope] +
+      (d.tat_helka ? `, תת-חלקה ${d.tat_helka}` : '') +
+      (d.entrance ? `, כניסה ${d.entrance}` : '') +
+      (d.apartment ? `, דירה ${d.apartment}` : '');
+    lines.push(`  ${scope}`);
+    if (d.extractDate) lines.push(`    תאריך הנסח: ${d.extractDate}`);
+    if (a.owners?.length) {
+      lines.push(`    בעלות: ${a.owners.map((o) => o.name + (o.share ? ` (${o.share})` : '')).join(' · ')}`);
+    }
+    if (a.mortgages?.length) {
+      lines.push(`    משכנתאות ושעבודים: ${a.mortgages.map((m) => m.holder + (m.amount ? ` — ${m.amount}` : '')).join(' · ')}`);
+    } else if (!a.cautionNotes?.length) {
+      lines.push('    משכנתאות והערות אזהרה: לא נמצאו בנסח הזה.');
+    }
+    if (a.cautionNotes?.length) {
+      lines.push(`    הערות אזהרה: ${a.cautionNotes.map((c) => c.kind + (c.inFavourOf ? ` לטובת ${c.inFavourOf}` : '')).join(' · ')}`);
+    }
+    if (a.leases?.length) {
+      lines.push(`    חכירות: ${a.leases.map((l) => l.holder).join(' · ')}`);
+    }
+    if (a.otherEncumbrances?.length) {
+      lines.push(`    הגבלות נוספות: ${a.otherEncumbrances.join(' · ')}`);
+    }
+    if (a.perFloorRights?.length) {
+      lines.push(
+        `    פירוט לפי קומה/תת-חלקה: ${a.perFloorRights
+          .map((f) => (f.floor ? `קומה ${f.floor} — ` : '') + f.summary)
+          .join(' · ')}`,
+      );
+    }
+    const areaParts: string[] = [];
+    if (a.parcelArea) areaParts.push(`שטח החלקה ${a.parcelArea}`);
+    if (a.subParcelArea) areaParts.push(`שטח תת-החלקה ${a.subParcelArea}`);
+    if (a.sharedAreas) areaParts.push(`שטחים משותפים ${a.sharedAreas}`);
+    if (areaParts.length) lines.push(`    שטח רשום בנסח: ${areaParts.join(' · ')}`);
+    if (a.unreadable?.length) {
+      lines.push(`    לא ניתן לקרוא מהנסח: ${a.unreadable.join(' · ')} — נדרשת קריאה ידנית.`);
+    }
+    if (a.summary) lines.push(`    ${a.summary}`);
+  }
+  lines.push('');
+  return lines.join('\n');
+}
+
+/** גרסת-טקסט של `tikMeidaBlock` — ראו ההערה מעל `tabuBlockText` לרקע המלא. */
+function tikMeidaBlockText(docs: TikMeidaDocRow[]): string {
+  if (!docs.length) return '';
+  const lines: string[] = ['== תיק מידע להיתר =='];
+  lines.push('המסמך הרשמי שהתקבל מהוועדה המקומית לתכנון ולבנייה, לפי בקשתך.');
+  for (const d of docs) {
+    const when = new Date(d.uploaded_at).toLocaleDateString('he-IL');
+    lines.push(`  ${d.file_name} — התקבל מהוועדה המקומית · ${when}`);
+    if (d.note) lines.push(`    ${d.note}`);
+  }
+  lines.push('');
+  return lines.join('\n');
+}
+
 /**
  * גרסת טקסט — לתוכנות מייל שאינן מציגות HTML, ולסינון ספאם.
  *
  * ⚠️ הגרסה הזו הייתה חסרה שני דברים שקיימים ב-HTML, וזה הפך אותה למטעה ולא
  * רק לדלה: (א) הערת המקור של כל שדה — כך ש"שטח הדירה: 213 מ״ר" הופיע בלי
  * המשפט שאומר שהוא נלקח מדירה אחרת בסביבה; (ב) טבלת העסקאות כולה, בדוח
- * שהכריז "עסקאות בסביבה: 24".
+ * שהכריז "עסקאות בסביבה: 24". סבב 03/09/2026 הוסיף דבר שלישי מאותה מחלקה:
+ * נסח טאבו/תיק מידע מנותחים (`tabuDocs`/`tikMeidaDocs`) — ראו `tabuBlockText`.
  */
-export function reportEmailText(report: PropertyReport): string {
+export function reportEmailText(
+  report: PropertyReport,
+  docs?: { tabuDocs?: TabuDocRow[]; tikMeidaDocs?: TikMeidaDocRow[] },
+): string {
   const lines: string[] = [];
   const shownDeals = report.tier === 'basic' ? 8 : 40;
   lines.push(`נדל״ן ברגע — דוח ${TIER_LABEL[report.tier]}`);
@@ -1135,6 +1221,13 @@ export function reportEmailText(report: PropertyReport): string {
     }
     lines.push('');
   }
+
+  // ⚠️ אותם שני סעיפים ש-HTML כבר מציג (`tabuBlock`/`tikMeidaBlock`) — ראו
+  // ההערה מעל `tabuBlockText`/`tikMeidaBlockText` לרקע המלא על הפער שנסגר כאן.
+  const tabuText = tabuBlockText(docs?.tabuDocs ?? []);
+  if (tabuText) lines.push(tabuText);
+  const tikMeidaText = tikMeidaBlockText(docs?.tikMeidaDocs ?? []);
+  if (tikMeidaText) lines.push(tikMeidaText);
 
   // ⚠️ אותו סעיף "תוספות דוח VIP" ש-HTML כבר מציג — ראו `vipEstimatesBlock`.
   if (report.tier === 'vip') {

@@ -71,3 +71,68 @@ of leaving "not deployed" as an unquantified recurring note.
 Not merged, not deployed, no code changed this round (verification-only,
 zero new commits to app source). `core.build_tasks` for 32/36 confirmed
 still 0 `todo` — no regression, no new work invented to look busy.
+
+## 2026-09-03, session (loop A) — TABU/tik-meida analyzed docs never reached the plain-text email
+
+Per the standing instruction not to re-litigate the deploy blocker (already
+exhaustively documented above and in `NEEDS_USER.md`), this round went back
+to feature-completeness auditing against `core.projects` note #33's TOP
+BUILD DIRECTIVE, specifically the TABU workflow's "attach to client" step.
+The TABU/tik-meida workflows themselves (request → mgmt task+email → upload
+→ AI research pass → attach-to-client, `build_tasks` id=4/5) were already
+fully built across many earlier sessions today (see `CLAUDE.md` for the
+full history, including a same-day fix that added `perFloorRights` to
+`lib/tabudoc.ts`'s AI extraction to match system 36).
+
+Cross-checking that same-day `perFloorRights` fix against every surface
+that renders TABU analysis found a real, separate gap that predates today:
+`app/api/admin/requests/route.ts` (the route that actually sends the
+purchased report to the client) already fetches `tabuDocs`/`tikMeidaDocs`
+via `tabuForProperty()`/`tikMeidaForProperty()` and passes them into
+`reportEmailHtml(report, { tabuDocs, tikMeidaDocs, ... })` — but the same
+call site invoked `reportEmailText(report)` with **only** the report,
+never the docs. `reportEmailText` is the plain-text part of the multipart
+email (`sendEmail({ html, text })`) — read by text-only mail clients and
+used as the fallback/spam-filter body on every send. Every other report
+section (street stats, nearby plans, feasibility, valuation, listings,
+price trend, VIP estimates) already has a matching text-rendering path in
+`reportEmailText` — TABU and tik-meida were the only two sections that were
+HTML-only. A client whose report included a paid, analyzed nesach tabu or
+an issued tik-meida document — the actual product being sold in that
+workflow — never saw that content at all if they read the text part.
+
+**Fix:** added `tabuBlockText()`/`tikMeidaBlockText()` to
+`lib/reporthtml.ts`, mirroring `tabuBlock()`/`tikMeidaBlock()` field for
+field (owners, mortgages, cautionNotes, leases, otherEncumbrances,
+`perFloorRights`, registered parcel/sub-parcel/shared areas, unreadable
+fields, summary; tik-meida: file name, upload date, staff note) as plain
+text instead of HTML. `reportEmailText()` gained an optional second
+parameter `{ tabuDocs?, tikMeidaDocs? }` (defaults to `[]` via `docs?.X ??
+[]`, so any other/future caller invoking it with just `report` keeps the
+exact same behavior as before). The two new sections are inserted at the
+same relative position as the HTML version — after the price-trend
+section, right before the VIP-estimates section. Call site updated:
+`text: reportEmailText(report, { tabuDocs, tikMeidaDocs })`.
+
+Verified: `npx esbuild lib/reporthtml.ts --bundle` (network available this
+round) transpiled clean with no errors; bracket-balance check on both
+changed files (`lib/reporthtml.ts`: 710/710 parens, 644/644 braces, 72/72
+brackets; `route.ts`: 65/65, 58/58, 6/6). `tabuBlockText`/`tikMeidaBlockText`
+logic was independently replicated in standalone Node (no `node_modules`/
+`tsc` in this sandbox) and run against 18 scenarios: empty doc arrays (both
+functions return `''`), a doc with `analysis: null` (excluded, matches
+`tabuBlock`'s `done` filter), a full apartment-scope doc exercising every
+field including `perFloorRights` and all three area fields, a
+building-scope doc with no mortgages/cautionNotes (correctly falls back to
+the "none found" line, matching `tabuBlock`'s exact branching), and
+tik-meida docs with/without a staff note — all 18 passed, matching the
+HTML version's behavior field-for-field. No DB schema touched (pure
+application code) so no `BEGIN/ROLLBACK` verification was needed for this
+specific fix. Zero regression: `reportEmailHtml`/`tabuBlock`/`tikMeidaBlock`
+untouched; `reportEmailText`'s existing sections (street/valuation/listings/
+categories/deals/priceTrend/vipEstimates/warnings) are unchanged, only two
+new conditional sections inserted. `core.build_tasks` id=116 (system 32,
+priority 72) inserted as `done` with the full note. Committed to
+`fix/32-nadlan-berega-tabu-tikmeida-email-text-0903`, pushed — not merged.
+System 35 KioskFleet, systems 01/15/36, and no protected schema (`zr_*`,
+`csj`, `csj_src`, `igud`) touched, per the HARD STEERING / task scope.

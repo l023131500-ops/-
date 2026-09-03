@@ -140,7 +140,7 @@ export async function POST(req: NextRequest) {
       to: claimed.email,
       subject: `דוח נדל"ן — ${report.title.headline}`,
       html,
-      text: reportEmailText(report),
+      text: reportEmailText(report, { tabuDocs, tikMeidaDocs }),
     });
 
     if (!sent.ok) {
