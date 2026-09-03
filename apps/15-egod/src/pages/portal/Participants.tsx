@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Users, Plus, Search, Phone, Mail, UserCheck, UserX, Send } from "lucide-react";
+import { Users, Plus, Search, Phone, Mail, UserCheck, UserX, Send, History, CheckCircle2, XCircle, Clock } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import PortalLayout from "@/components/portal/PortalLayout";
@@ -30,6 +30,9 @@ const Participants = () => {
   const [notifySubject, setNotifySubject] = useState("");
   const [notifyMessage, setNotifyMessage] = useState("");
   const [sending, setSending] = useState(false);
+  const [showHistory, setShowHistory] = useState(false);
+  const [history, setHistory] = useState<any[]>([]);
+  const [loadingHistory, setLoadingHistory] = useState(false);
 
   useEffect(() => { if (user) fetchData(); }, [user]);
 
@@ -54,6 +57,22 @@ const Participants = () => {
     setNewParticipant({ full_name: "", phone: "", email: "", lesson_id: "" });
     fetchData();
   };
+
+  const fetchHistory = async () => {
+    if (lessons.length === 0) return;
+    setLoadingHistory(true);
+    const ids = lessons.map(l => l.id);
+    const { data, error } = await supabase
+      .from("notifications_log")
+      .select("*")
+      .in("lesson_id", ids)
+      .order("created_at", { ascending: false })
+      .limit(100);
+    if (!error) setHistory(data || []);
+    setLoadingHistory(false);
+  };
+
+  useEffect(() => { if (showHistory) fetchHistory(); }, [showHistory]);
 
   const handleNotify = async () => {
     if (!notifyLesson) { toast.error("נא לבחור שיעור"); return; }
@@ -100,6 +119,49 @@ const Participants = () => {
             <p className="text-muted-foreground text-sm mt-1">ניהול משתתפי השיעורים שלך</p>
           </div>
           <div className="flex gap-2">
+            <Dialog open={showHistory} onOpenChange={setShowHistory}>
+              <DialogTrigger asChild>
+                <Button variant="outline" disabled={lessons.length === 0}><History className="w-4 h-4 ml-2" />היסטוריית הודעות</Button>
+              </DialogTrigger>
+              <DialogContent className="max-w-lg">
+                <DialogHeader><DialogTitle>היסטוריית הודעות שנשלחו</DialogTitle></DialogHeader>
+                <div className="space-y-2 mt-2 max-h-[60vh] overflow-y-auto">
+                  {loadingHistory && <p className="text-sm text-muted-foreground text-center py-6">טוען...</p>}
+                  {!loadingHistory && history.length === 0 && (
+                    <p className="text-sm text-muted-foreground text-center py-6">לא נשלחו הודעות עדיין.</p>
+                  )}
+                  {!loadingHistory && history.map((h) => {
+                    const lessonSubject = lessons.find(l => l.id === h.lesson_id)?.subject;
+                    const participantName = participants.find(p => p.id === h.participant_id)?.full_name;
+                    const statusMeta = h.status === "sent"
+                      ? { icon: CheckCircle2, cls: "text-green-600", label: "נשלח" }
+                      : h.status === "failed"
+                        ? { icon: XCircle, cls: "text-red-500", label: "נכשל" }
+                        : { icon: Clock, cls: "text-amber-500", label: "סימולציה" };
+                    const StatusIcon = statusMeta.icon;
+                    return (
+                      <div key={h.id} className="bg-card rounded-lg p-3 border border-border text-sm">
+                        <div className="flex items-center justify-between gap-2">
+                          <div className="flex items-center gap-2 font-medium text-foreground">
+                            {h.channel === "email" ? <Mail className="w-3.5 h-3.5" /> : <Phone className="w-3.5 h-3.5" />}
+                            {participantName || h.recipient}
+                          </div>
+                          <div className={`flex items-center gap-1 text-xs ${statusMeta.cls}`}>
+                            <StatusIcon className="w-3.5 h-3.5" />{statusMeta.label}
+                          </div>
+                        </div>
+                        <p className="text-xs text-muted-foreground mt-1">
+                          {lessonSubject && `${lessonSubject} · `}{h.recipient} · {new Date(h.created_at).toLocaleString("he-IL")}
+                        </p>
+                        {h.status === "failed" && h.error && (
+                          <p className="text-xs text-red-500 mt-1">{h.error}</p>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              </DialogContent>
+            </Dialog>
             <Dialog open={showNotify} onOpenChange={setShowNotify}>
               <DialogTrigger asChild>
                 <Button variant="outline" disabled={lessons.length === 0}><Send className="w-4 h-4 ml-2" />שלח הודעה לתלמידים</Button>

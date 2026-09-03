@@ -406,6 +406,66 @@ export type Database = {
           },
         ]
       }
+      notifications_log: {
+        Row: {
+          channel: string
+          created_at: string
+          error: string | null
+          id: string
+          lesson_id: string | null
+          message: string
+          meta: Json
+          participant_id: string | null
+          recipient: string
+          sent_by: string | null
+          status: string
+          subject: string | null
+        }
+        Insert: {
+          channel: string
+          created_at?: string
+          error?: string | null
+          id?: string
+          lesson_id?: string | null
+          message: string
+          meta?: Json
+          participant_id?: string | null
+          recipient: string
+          sent_by?: string | null
+          status?: string
+          subject?: string | null
+        }
+        Update: {
+          channel?: string
+          created_at?: string
+          error?: string | null
+          id?: string
+          lesson_id?: string | null
+          message?: string
+          meta?: Json
+          participant_id?: string | null
+          recipient?: string
+          sent_by?: string | null
+          status?: string
+          subject?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notifications_log_lesson_id_fkey"
+            columns: ["lesson_id"]
+            isOneToOne: false
+            referencedRelation: "lessons"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "notifications_log_participant_id_fkey"
+            columns: ["participant_id"]
+            isOneToOne: false
+            referencedRelation: "participants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       participants: {
         Row: {
           created_at: string
