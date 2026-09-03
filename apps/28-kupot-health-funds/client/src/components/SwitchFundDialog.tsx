@@ -35,7 +35,11 @@ const formSchema = z.object({
     .min(9, "נא להזין מספר טלפון תקין")
     .regex(/^[0-9\-+\s]{9,15}$/, "מספר הטלפון אינו תקין"),
   email: z.string().email("כתובת דוא\"ל אינה תקינה").optional().or(z.literal("")),
-  idNumber: z.string().optional().or(z.literal("")),
+  idNumber: z
+    .string()
+    .regex(/^[0-9]{5,9}$/, "תעודת הזהות צריכה להכיל 5 עד 9 ספרות")
+    .optional()
+    .or(z.literal("")),
   city: z.string().optional().or(z.literal("")),
   currentFund: z.string().optional().or(z.literal("")),
   currentSupplemental: z.string().optional().or(z.literal("")),
@@ -266,7 +270,7 @@ export function SwitchFundDialog({
                     autoComplete="email"
                   />
                 </Field>
-                <Field label="תעודת זהות">
+                <Field id="idNumber" label="תעודת זהות" error={form.formState.errors.idNumber?.message}>
                   <Input
                     {...form.register("idNumber")}
                     inputMode="numeric"
