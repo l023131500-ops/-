@@ -281,6 +281,33 @@ function buildSlides(d: PropertyReport): Slide[] {
     });
   }
 
+  // §5 sold-deals + price trend: `PriceTrend.tsx` sits immediately after the
+  // sold-deals table on-screen (ReportView.tsx, "sold" category, tier !==
+  // 'basic') and already reaches the email (`priceTrendBlock`, lib/reporthtml.ts)
+  // — but the deck never had a slide for it, the same "screen-only" shape as
+  // every other gap already fixed in this file. `d.priceTrend` is built for
+  // every report regardless of tier (buildreport.ts), so the tier gate has to
+  // be checked here explicitly rather than relying on data absence.
+  if (d.tier !== 'basic' && d.priceTrend && d.priceTrend.length >= 3) {
+    const points = d.priceTrend;
+    const first = points[0].value;
+    const last = points[points.length - 1].value;
+    const changePct = first ? Math.round(((last - first) / first) * 1000) / 10 : null;
+    s.push({
+      kicker: 'מגמת שוק',
+      title: 'מגמת מחירי הדירות בישראל',
+      subtitle:
+        'המדד הארצי של הלשכה המרכזית לסטטיסטיקה — מתאר את מגמת השוק בכללותו, לא את הנכס הזה.' +
+        (changePct != null
+          ? ` שינוי בתקופה המוצגת: ${changePct > 0 ? '+' : ''}${changePct}%.`
+          : ''),
+      rows: points.slice(-4).map((p) => ({
+        label: p.period,
+        value: new Intl.NumberFormat('he-IL').format(p.value),
+      })),
+    });
+  }
+
   // §7 "הרחוב" is one of the four layers the spec requires (property, building,
   // street, neighborhood) and already stands on its own on-screen (StreetPanel.tsx)
   // and in the emailed report (reporthtml.ts) — the deck never had a slide for it.

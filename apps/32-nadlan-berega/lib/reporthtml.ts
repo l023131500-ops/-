@@ -536,6 +536,54 @@ ${
 }
 
 /**
+ * "מגמת מחירי הדירות בישראל" — זהה בנתונים ל-`PriceTrend.tsx` (המסך, מוצג מיד
+ * אחרי טבלת העסקאות שנסגרו, פרימיום+VIP בלבד — `tier !== 'basic'`).
+ * `report.priceTrend` (מדד הלמ"ס הארצי, `lib/cbs.ts`) נבנה בכל דוח ללא תלות
+ * ברמה (`buildreport.ts`), אבל השער `tier !== 'basic'` קיים רק במסך עצמו —
+ * לפני הרשומה הזו הסעיף לא הגיע לא למייל ולא למצגת/PDF בכלל, אז לקוח שראה
+ * רק אחד מהם לא ידע אם השוק הארצי עולה או יורד בתקופה שבה הוא קונה.
+ */
+function priceTrendBlock(report: PropertyReport): string {
+  if (report.tier === 'basic') return '';
+  const points = report.priceTrend;
+  if (!points || points.length < 3) return '';
+
+  const first = points[0].value;
+  const last = points[points.length - 1].value;
+  const changePct = first ? Math.round(((last - first) / first) * 1000) / 10 : null;
+  const changeLine =
+    changePct != null
+      ? `<div style="margin-top:4px;font-size:13px;color:${MUTED}">שינוי בתקופה המוצגת: <b style="color:${changePct >= 0 ? TEAL : '#dc2626'}">${changePct > 0 ? '+' : ''}${changePct}%</b></div>`
+      : '';
+
+  const shown = points.slice(-8);
+  const rows = shown
+    .map(
+      (p) => `<tr>
+  <td style="padding:7px 10px;border-bottom:1px solid ${LINE};font-size:13px">${esc(p.period)}</td>
+  <td style="padding:7px 10px;border-bottom:1px solid ${LINE};font-size:13px;font-weight:700">${p.value.toLocaleString('he-IL')}</td>
+</tr>`,
+    )
+    .join('');
+
+  return section(
+    'מגמת מחירי הדירות בישראל',
+    'המדד הארצי של הלשכה המרכזית לסטטיסטיקה — מתאר את מגמת השוק בכללותו, לא את הנכס הזה.',
+    `${changeLine}<table role="presentation" cellpadding="0" cellspacing="0" border="0" dir="rtl" style="width:100%;margin-top:10px;border-collapse:collapse;border:1px solid ${LINE}">
+  <tr style="background:#f8fafc">
+    <th style="padding:8px 10px;text-align:right;font-size:12px;color:${MUTED}">תקופה</th>
+    <th style="padding:8px 10px;text-align:right;font-size:12px;color:${MUTED}">ערך המדד</th>
+  </tr>
+  ${rows}
+</table>${
+      points.length > shown.length
+        ? `<div style="margin-top:6px;font-size:11px;color:${MUTED}">מוצגות ${shown.length} מתוך ${points.length} נקודות המדד — האחרונות ביותר.</div>`
+        : ''
+    }`,
+  );
+}
+
+/**
  * אילו עסקאות להציג בטבלה.
  *
  * ⚠️ חיתוך לפי קרבה בלבד ריק את הטבלה מכל עסקת השוואה באזור. נמצא בדוח אמיתי:
@@ -757,6 +805,7 @@ export function reportEmailHtml(report: PropertyReport, opts: ReportEmailOptions
         )
       : ''
   }
+  ${priceTrendBlock(report)}
   ${tabuBlock(opts.tabuDocs ?? [])}
   ${tikMeidaBlock(opts.tikMeidaDocs ?? [])}
 
@@ -1013,6 +1062,24 @@ export function reportEmailText(report: PropertyReport): string {
           d.proximityLabel,
         ].join(' | ') + (d.suspect ? `  << ${d.suspectReason ?? ''}` : ''),
       );
+    }
+    lines.push('');
+  }
+
+  // ⚠️ אותו סעיף "מגמת מחירי הדירות בישראל" ש-HTML/המסך כבר מציגים (מיד אחרי
+  // טבלת העסקאות, tier !== 'basic') — ראו `priceTrendBlock`.
+  if (report.tier !== 'basic' && report.priceTrend && report.priceTrend.length >= 3) {
+    const points = report.priceTrend;
+    const first = points[0].value;
+    const last = points[points.length - 1].value;
+    const changePct = first ? Math.round(((last - first) / first) * 1000) / 10 : null;
+    lines.push('== מגמת מחירי הדירות בישראל ==');
+    lines.push('המדד הארצי של הלשכה המרכזית לסטטיסטיקה — מתאר את מגמת השוק בכללותו, לא את הנכס הזה.');
+    if (changePct != null) {
+      lines.push(`שינוי בתקופה המוצגת: ${changePct > 0 ? '+' : ''}${changePct}%`);
+    }
+    for (const p of points.slice(-8)) {
+      lines.push(`    ${p.period}: ${p.value.toLocaleString('he-IL')}`);
     }
     lines.push('');
   }
