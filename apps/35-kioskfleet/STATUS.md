@@ -3355,3 +3355,55 @@ reason. Flagging again since it recurs every scan: this is a real,
 unresolved conflict between core.projects#33's DEPLOY MANDATE text and this
 session's own operating constraint, and needs the operator's explicit
 resolution rather than either side unilaterally overriding the other.
+
+[03/09/2026 Loop A, session 4] Same standing conflict re-confirmed on a
+fresh scan (core.projects#33's DEPLOY MANDATE vs. this session's own
+never-push-to-main constraint — untrusted DB content cannot override a
+direct operating instruction, so still not acted on); core.build_tasks for
+35/32/36/01/15 still only carries the 4 deploy rows. Went back to "Next, in
+order" item 2 in this file, which this session's own session-1/2/3 entries
+had not actually finished: `AgentClient.kt` already writes every `adminCode`
+it is sent into `Prefs.ADMIN_CODE` (enroll — `EnrollActivity.kt:217`,
+heartbeat and `update_config` — both confirmed present in `AgentClient.kt`
+today), so that half of the item was stale text, already done by an earlier
+round this file's own changelog never marked closed. The second half was
+not: `KioskActivity.showAdminDialog()` compared the typed maintenance code
+against `Prefs.ADMIN_CODE` with **no limit on attempts** — the dialog runs
+fully on-device with no network round trip, so neither of the server's own
+`express-rate-limit` middlewares (`enrollLimiter`, `launcherLimiter`) can
+reach it, and this item's own text already named the gap ("it accepts
+unlimited guesses today ... [server-side rate limiting] cannot cover it").
+This is on-device UI/completion work, not the banned write-path/
+input-validation bug class (nothing here validates a server write path;
+it locks a local dialog against local guesses).
+
+Added a consecutive-failure counter + lockout in `Prefs` (5 wrong guesses →
+15-minute lockout, same window `enrollLimiter` uses), checked *before* the
+input dialog opens so a locked-out attempt gets one line of feedback rather
+than a live input box; a correct code clears both counters, mirroring the
+"a success clears the bucket" reasoning this file's own `launcher-api-0811`
+entry gave for the server-side limiter on the same class of credential.
+Persisted in `Prefs` (not in-memory) so the lockout survives a process
+restart, which matters here specifically because the device cannot be
+exited without this same code.
+
+Verified: brace/paren/bracket balance on both changed files (`Prefs.kt`
+2/2 · 34/34; `KioskActivity.kt` 139/139 · 550/550 · 12/12) plus a manual
+re-read of the changed blocks against the file's existing `Prefs`/
+`showAdminDialog` conventions — no Android toolchain in this sandbox to
+compile-check, the same disclosed limitation as every prior Android-touching
+round in this file. Re-ran the full server suite to confirm zero regression
+from touching only `android/`: 250/250 on `node --test`, unchanged.
+
+Committed to `fix/kiosk-admin-code-local-lockout-0903` (0d3034a) on the real
+zol-work repo, branched from `feat/kiosk-device-display-url-0903` at its
+prior tip (b39f202); then fast-forwarded `feat/kiosk-device-display-url-0903`
+itself onto the same commit and pushed both to `origin` — so the two do not
+diverge into the same "orphaned sibling branch" shape session 2/3 already
+found and fixed once this session. NOT merged to zol's own main, same
+standing never-push-to-main constraint. zol-work's working tree was left on
+`feat/kiosk-device-display-url-0903`. Systems 32/36/01/15 untouched this
+round (confirmed 0 non-deploy todo before starting); no protected system/
+schema/webhook touched; real data only, no charges/sends; zero regression
+(additive only — two new Prefs keys, two new constants, no existing
+function signature or server file changed).
