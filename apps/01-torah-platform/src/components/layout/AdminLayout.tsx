@@ -1,6 +1,6 @@
 import { Outlet, NavLink } from "react-router-dom";
 import { useSuperAdminGate } from "@/hooks/useSuperAdmin";
-import { LayoutDashboard, Building2, Users, Sparkles, MessageSquare, ShoppingCart, BarChart3, Lightbulb, Tags, MessageCircle, Settings2, ShieldAlert, ShieldCheck, FileCheck2, GraduationCap, Mail, HelpCircle, FolderTree, Wallet, Phone } from "lucide-react";
+import { LayoutDashboard, Building2, Users, Sparkles, MessageSquare, ShoppingCart, BarChart3, Lightbulb, Tags, MessageCircle, Settings2, ShieldAlert, ShieldCheck, FileCheck2, GraduationCap, Mail, HelpCircle, FolderTree, Wallet, Phone, ArrowLeftRight, Eye } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Navbar } from "./Navbar";
 
@@ -17,7 +17,9 @@ export function AdminLayout() {
     { to: "/admin/users", icon: Users, label: "משתמשים" },
     { to: "/admin/teachers", icon: GraduationCap, label: "מגידים ופורטלים" },
     { to: "/admin/matching", icon: Sparkles, label: "התאמת AI" },
+    { to: "/admin/matching-guru", icon: ArrowLeftRight, label: "לוח התאמות דו-טורי" },
     { to: "/admin/leads", icon: MessageSquare, label: "פניות ולידים" },
+    { to: "/admin/leads-guru", icon: Eye, label: "לידים — תצוגה מורחבת" },
     { to: "/admin/messages", icon: Mail, label: "פניות ציבור" },
     { to: "/admin/commerce", icon: ShoppingCart, label: "מסחר ותרומות" },
     { to: "/admin/analytics", icon: BarChart3, label: "ניתוחים" },
