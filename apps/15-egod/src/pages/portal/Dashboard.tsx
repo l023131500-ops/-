@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { 
-  Users, Calendar, BookOpen, MessageSquare, Lightbulb, 
-  Send, FileDown, Palette, ArrowLeft, Share2, Copy, ExternalLink, Sparkles
+import {
+  Users, Calendar, BookOpen, MessageSquare, Lightbulb,
+  Send, FileDown, Palette, ArrowLeft, Share2, Copy, ExternalLink, Sparkles,
+  UserPlus, Phone, MapPin
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
@@ -21,6 +22,7 @@ const Dashboard = () => {
   const [participantCount, setParticipantCount] = useState(0);
   const [tip, setTip] = useState<any>(null);
   const [savingAvail, setSavingAvail] = useState(false);
+  const [assignedLeads, setAssignedLeads] = useState<any[]>([]);
 
   useEffect(() => {
     if (user) {
@@ -59,6 +61,15 @@ const Dashboard = () => {
           .in("lesson_id", lessonIds);
         setParticipantCount(pCount || 0);
       }
+
+      // Fetch students assigned to me by admin matching, not yet completed/cancelled
+      const { data: leadsData } = await supabase
+        .from("leads")
+        .select("*")
+        .eq("assigned_teacher_id", profileData.id)
+        .in("status", ["assigned", "contacted"])
+        .order("created_at", { ascending: false });
+      setAssignedLeads(leadsData || []);
     }
 
     // Fetch active tip
@@ -151,6 +162,48 @@ const Dashboard = () => {
                   <ExternalLink className="w-4 h-4" />צפה
                 </Button>
               </a>
+            </div>
+          </motion.div>
+        )}
+
+        {/* Students assigned to me by admin matching */}
+        {assignedLeads.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.06 }}
+            className="bg-gradient-to-l from-blue-500/10 via-card to-card border-2 border-blue-500/30 rounded-2xl p-5 space-y-4"
+          >
+            <div className="flex items-center gap-3">
+              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center shadow-md shrink-0">
+                <UserPlus className="w-6 h-6 text-white" />
+              </div>
+              <div>
+                <h3 className="font-heading font-bold text-foreground text-lg">תלמידים חדשים שהוקצו לך</h3>
+                <p className="text-sm text-muted-foreground">פניות שהתאמת שיעורים בניהול שייכה אליך — צור קשר להתחלת השיעור</p>
+              </div>
+            </div>
+            <div className="space-y-2">
+              {assignedLeads.map((l) => (
+                <div key={l.id} className="bg-background/60 rounded-xl p-3 border border-border flex flex-col md:flex-row md:items-center justify-between gap-2">
+                  <div>
+                    <p className="font-bold text-foreground">{l.full_name}</p>
+                    <div className="flex flex-wrap gap-3 text-xs text-muted-foreground mt-1">
+                      {l.area && <span className="flex items-center gap-1"><MapPin className="w-3 h-3" />{l.area}</span>}
+                      {l.preferred_subject && <span className="flex items-center gap-1"><BookOpen className="w-3 h-3" />{l.preferred_subject}</span>}
+                      {l.preferred_times && <span>זמנים מועדפים: {l.preferred_times}</span>}
+                    </div>
+                    {l.notes && <p className="text-xs text-muted-foreground mt-1">{l.notes}</p>}
+                  </div>
+                  {l.phone && (
+                    <a href={`tel:${l.phone}`} dir="ltr" className="shrink-0">
+                      <Button size="sm" variant="outline" className="gap-2 border-blue-500/40 hover:bg-blue-500/5">
+                        <Phone className="w-3.5 h-3.5" />{l.phone}
+                      </Button>
+                    </a>
+                  )}
+                </div>
+              ))}
             </div>
           </motion.div>
         )}
