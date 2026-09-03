@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { ClipboardCheck, Check, X, Send, AlertCircle } from "lucide-react";
+import { ClipboardCheck, Check, X, Send, AlertCircle, StickyNote } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import PortalLayout from "@/components/portal/PortalLayout";
@@ -18,6 +18,8 @@ const Attendance = () => {
   const [selectedLesson, setSelectedLesson] = useState<string>("");
   const [date, setDate] = useState(new Date().toISOString().split("T")[0]);
   const [absentStreaks, setAbsentStreaks] = useState<Record<string, number>>({});
+  const [editingNote, setEditingNote] = useState<string | null>(null);
+  const [noteDraft, setNoteDraft] = useState("");
 
   useEffect(() => { if (user) loadInit(); }, [user]);
   useEffect(() => { if (selectedLesson) loadAttendance(); }, [selectedLesson, date]);
@@ -60,6 +62,23 @@ const Attendance = () => {
     } else {
       await supabase.from("attendance").insert({ participant_id: participantId, lesson_id: selectedLesson, date, was_present: present });
     }
+    loadAttendance();
+  };
+
+  const openNoteEditor = (p: any) => {
+    setEditingNote(p.id);
+    setNoteDraft(getStatus(p.id)?.notes || "");
+  };
+
+  const saveNote = async (participantId: string) => {
+    const existing = attendance.find(a => a.participant_id === participantId);
+    const trimmed = noteDraft.trim();
+    if (existing) {
+      await supabase.from("attendance").update({ notes: trimmed || null }).eq("id", existing.id);
+    } else {
+      await supabase.from("attendance").insert({ participant_id: participantId, lesson_id: selectedLesson, date, notes: trimmed || null });
+    }
+    setEditingNote(null);
     loadAttendance();
   };
 
@@ -115,11 +134,30 @@ const Attendance = () => {
                     )}
                   </div>
                   {p.phone && <p className="text-xs text-muted-foreground">{p.phone}</p>}
+                  {editingNote === p.id ? (
+                    <div className="flex items-center gap-2 mt-2">
+                      <Input value={noteDraft} onChange={(e) => setNoteDraft(e.target.value)}
+                        placeholder="הערה (למשל: הגיע באיחור)" className="h-8 text-xs" autoFocus
+                        onKeyDown={(e) => e.key === "Enter" && saveNote(p.id)} />
+                      <Button size="sm" className="h-8" onClick={() => saveNote(p.id)}>שמור</Button>
+                      <Button size="sm" variant="ghost" className="h-8" onClick={() => setEditingNote(null)}>ביטול</Button>
+                    </div>
+                  ) : status?.notes ? (
+                    <button onClick={() => openNoteEditor(p)} className="text-xs text-muted-foreground mt-1 flex items-center gap-1 hover:text-foreground">
+                      <StickyNote className="w-3 h-3" />{status.notes}
+                    </button>
+                  ) : null}
                 </div>
 
                 {streak >= 2 && p.phone && (
                   <Button size="sm" variant="outline" onClick={() => sendEncouragement(p)} className="gap-1">
                     <Send className="w-3 h-3" />שלח עידוד
+                  </Button>
+                )}
+
+                {editingNote !== p.id && !status?.notes && (
+                  <Button size="sm" variant="ghost" onClick={() => openNoteEditor(p)} title="הוסף הערה">
+                    <StickyNote className="w-4 h-4" />
                   </Button>
                 )}
 
