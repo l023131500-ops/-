@@ -791,18 +791,23 @@ async function renderContacts() {
   const body = $('contactsBody');
   body.innerHTML = '<p class="loading"><span class="spinner"></span>טוען…</p>';
 
-  let rows;
+  let rows, members;
   try {
-    rows = await rpc('np_contacts', {
-      p_office: OFFICE.id,
-      p_q: $('cQ').value.trim() || null,
-      p_kind: $('cKind').value || null,
-      p_source: $('cSource').value || null,
-      p_limit: 300,
-    });
+    [rows, members] = await Promise.all([
+      rpc('np_contacts', {
+        p_office: OFFICE.id,
+        p_q: $('cQ').value.trim() || null,
+        p_kind: $('cKind').value || null,
+        p_source: $('cSource').value || null,
+        p_limit: 300,
+      }),
+      rpc('np_office_members', { p_office: OFFICE.id }).catch(() => []),
+    ]);
   } catch (e) { body.innerHTML = '<div class="err">' + esc(e.message) + '</div>'; return; }
 
   rows = rows || [];
+  members = (members || []).filter((m) => m.is_active);
+  const ownerName = (uid) => { const m = members.find((x) => x.user_id === uid); return m ? m.full_name : null; };
   if (!rows.length) {
     body.innerHTML = '<div class="empty"><b>אין אנשי קשר להצגה</b>' +
       ($('cQ').value || $('cKind').value || $('cSource').value
@@ -812,7 +817,7 @@ async function renderContacts() {
   }
 
   body.innerHTML = '<div class="table-scroll"><table><thead><tr>' +
-    '<th>שם</th><th>סוג</th><th>טלפון</th><th>עיר</th><th>מקור</th>' +
+    '<th>שם</th><th>סוג</th><th>טלפון</th><th>עיר</th><th>מקור</th><th>סוכן אחראי</th>' +
     '<th>עסקאות פתוחות</th><th>פעילות אחרונה</th></tr></thead><tbody>' +
     rows.map((c) =>
       '<tr class="row" data-id="' + c.id + '">' +
@@ -820,6 +825,7 @@ async function renderContacts() {
         '<td><span class="pill">' + esc(KIND_HE[c.kind] || c.kind) + '</span></td>' +
         '<td>' + v(c.phone) + '</td><td>' + v(c.city) + '</td>' +
         '<td>' + esc(SOURCE_HE[c.source] || c.source) + '</td>' +
+        '<td>' + v(ownerName(c.owner_id)) + '</td>' +
         '<td class="num">' + (Number(c.open_deals) || 0) + '</td>' +
         '<td>' + (c.last_activity ? dt(c.last_activity) : NA) + '</td>' +
       '</tr>').join('') +
@@ -832,12 +838,18 @@ async function renderContacts() {
 }
 
 async function openContact(id) {
-  let d;
-  try { d = await rpc('np_contact_get', { p_id: id }); }
-  catch (e) { return toast('טעינה נכשלה: ' + e.message, true); }
+  let d, members;
+  try {
+    [d, members] = await Promise.all([
+      rpc('np_contact_get', { p_id: id }),
+      rpc('np_office_members', { p_office: OFFICE.id }).catch(() => []),
+    ]);
+  } catch (e) { return toast('טעינה נכשלה: ' + e.message, true); }
   if (!d || !d.contact) return toast('איש הקשר לא נמצא', true);
 
   const c = d.contact;
+  members = (members || []).filter((m) => m.is_active);
+  const ownerName = (uid) => { const m = members.find((x) => x.user_id === uid); return m ? m.full_name : null; };
   const wants = [
     c.want_city ? 'עיר: ' + esc(c.want_city) : null,
     c.want_min_rooms ? 'מ-' + c.want_min_rooms + ' חדרים' : null,
@@ -853,6 +865,7 @@ async function openContact(id) {
       '<div><p class="k">דוא״ל</p><p class="v">' + v(c.email) + '</p></div>' +
       '<div><p class="k">עיר</p><p class="v">' + v(c.city) + '</p></div>' +
       '<div><p class="k">מקור</p><p class="v">' + esc(SOURCE_HE[c.source] || c.source) + '</p></div>' +
+      '<div><p class="k">סוכן אחראי</p><p class="v">' + v(ownerName(c.owner_id)) + '</p></div>' +
     '</div>' +
     '<p style="margin:0 0 18px"><button class="btn btn-quiet btn-sm" id="cEdit">עריכה</button> ' +
     '<button class="btn btn-quiet btn-sm" id="cTask">+ משימה</button> ' +
