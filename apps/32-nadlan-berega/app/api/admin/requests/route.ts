@@ -10,6 +10,8 @@ import { buildReport } from '@/lib/buildreport';
 import { publicBaseUrl } from '@/lib/baseurl';
 import { emailConfigured, sendEmail } from '@/lib/email';
 import { reportEmailHtml, reportEmailText } from '@/lib/reporthtml';
+import { propertyKeyOf, slugOf } from '@/lib/savedreports';
+import { getStreetVideo } from '@/lib/store';
 import {
   claimForProcessing,
   getReportRequest,
@@ -128,19 +130,27 @@ export async function POST(req: NextRequest) {
       helka: report.building.registeredHelka ?? report.title.helka,
     }).catch(() => []);
 
+    // סיור-רחוב (build_tasks id=2) מקודד אצל צופה קודם באתר ונשמר תחת אותו
+    // slug דטרמיניסטי (`slugOf`, לא דורש `saveReport`) — אם קליפ כבר קיים
+    // לאותו נכס בדיוק, המייל מקבל אותו; אחרת הסעיף פשוט לא מופיע.
+    const propertyKey = propertyKeyOf(report, { entrance: claimed.entrance });
+    const slug = slugOf(report, propertyKey);
+    const streetVideo = await getStreetVideo(slug).catch(() => null);
+
     const baseUrl = publicBaseUrl(req);
     const html = reportEmailHtml(report, {
       baseUrl,
       tabuDocs,
       tikMeidaDocs,
       customerName: claimed.full_name,
+      streetVideoUrl: streetVideo?.url ?? null,
     });
 
     const sent = await sendEmail({
       to: claimed.email,
       subject: `דוח נדל"ן — ${report.title.headline}`,
       html,
-      text: reportEmailText(report, { tabuDocs, tikMeidaDocs }),
+      text: reportEmailText(report, { tabuDocs, tikMeidaDocs, streetVideoUrl: streetVideo?.url ?? null }),
     });
 
     if (!sent.ok) {

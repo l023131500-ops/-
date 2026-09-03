@@ -313,6 +313,24 @@ function streetBlock(report: PropertyReport): string {
 }
 
 /**
+ * "סיור רחוב" (build_tasks id=2, `StreetWalkPanel.tsx`) מקודד בדפדפן הצופה
+ * ונשמר במטמון ציבורי לפי ה-slug הקבוע של הנכס (`lib/store.ts`,
+ * `street_video_cache`) — אבל מעולם לא הגיע למייל שנשלח בפועל ללקוח
+ * (`app/api/admin/requests`), רק למסך. מוצג רק כשכבר קיים קליפ שמור לאותו
+ * נכס: הקידוד קורה אצל צופה קודם באתר, לא בשרת בזמן שליחת המייל, כך שרוב
+ * הדוחות פשוט לא ישאו סעיף הזה — בדיוק כמו כל שדה אחר בקובץ הזה שמותנה
+ * בזמינות נתון אמיתי.
+ */
+function streetVideoBlock(url: string | null | undefined): string {
+  if (!url) return '';
+  return section(
+    'סיור רחוב',
+    'קליפ שצולם בעבר לדוח הזה באתר — רצף תמונות רחוב אמיתיות מקודד לווידאו.',
+    `<a href="${url}" style="display:inline-block;margin-top:8px;padding:10px 18px;border-radius:8px;background:${TEAL};color:#fff;font-weight:700;font-size:14px;text-decoration:none">▶ צפייה בסיור הרחוב</a>`,
+  );
+}
+
+/**
  * §4 · "דירות מוצעות כרגע" — זהה בנתונים ל-`Listings.tsx` (המסך). `report.listings`
  * (`lib/apify.ts`, נמשך ב-`buildReport` לכל דוח שאינו חינמי ואינו קרקע) כבר
  * מוצג במסך בקטגוריה `listings`/`rental`/`commercial` — אבל מעולם לא הגיע
@@ -693,6 +711,8 @@ export interface ReportEmailOptions {
   tikMeidaDocs?: TikMeidaDocRow[];
   /** מה שהלקוח כתב בטופס. */
   customerName?: string | null;
+  /** קישור לקליפ "סיור רחוב" שמור לנכס הזה, אם כבר יוצר ע"י צופה קודם. */
+  streetVideoUrl?: string | null;
 }
 
 /** מבנה הדוח כ-HTML למייל. */
@@ -838,6 +858,7 @@ export function reportEmailHtml(report: PropertyReport, opts: ReportEmailOptions
   ${backgroundBlock}
   ${valuationBlock(report)}
   ${streetBlock(report)}
+  ${streetVideoBlock(opts.streetVideoUrl)}
   ${listingsBlock(report)}
   ${nearbyPlansBlock(report.nearbyPlans)}
   ${feasibilityBlock(report.feasibility)}
@@ -967,7 +988,7 @@ function tikMeidaBlockText(docs: TikMeidaDocRow[]): string {
  */
 export function reportEmailText(
   report: PropertyReport,
-  docs?: { tabuDocs?: TabuDocRow[]; tikMeidaDocs?: TikMeidaDocRow[] },
+  docs?: { tabuDocs?: TabuDocRow[]; tikMeidaDocs?: TikMeidaDocRow[]; streetVideoUrl?: string | null },
 ): string {
   const lines: string[] = [];
   const shownDeals = report.tier === 'basic' ? 8 : 40;
@@ -1060,6 +1081,13 @@ export function reportEmailText(
         );
       }
     }
+    lines.push('');
+  }
+
+  // ⚠️ אותו סעיף "סיור רחוב" ש-HTML כבר מציג — ראו `streetVideoBlock`.
+  if (docs?.streetVideoUrl) {
+    lines.push('== סיור רחוב ==');
+    lines.push(`קליפ שצולם בעבר לדוח הזה באתר: ${docs.streetVideoUrl}`);
     lines.push('');
   }
 
