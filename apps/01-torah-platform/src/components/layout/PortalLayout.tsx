@@ -41,6 +41,7 @@ import {
   Bell,
   ScrollText,
   BarChart3,
+  Library,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Navbar } from "./Navbar";
@@ -182,11 +183,21 @@ export function PortalLayout() {
   // public.teachers had a tenant_id column but zero write RLS and zero screen
   // anywhere (build_tasks#42, migration 20260831260000 added the tenant-scoped
   // read/write RLS this new /portal/teachers screen relies on).
+  // "ספרייה דיגיטלית" (architecture.md §5.2 organization, build_tasks#93):
+  // src/pages/legacy/LessonDirectory.tsx (union-wide search/filter across
+  // every approved lesson) has been fully built and routed at /lessons-dir
+  // since it was ported from the legacy ZIP, but nothing anywhere ever
+  // linked to it -- distinct from /legacy/seeker-dashboard, which was a
+  // different, mock-data-only page already redirected away (core.issues
+  // #141). It lives outside the /portal route tree (public, no tenant
+  // scoping -- the whole point is a union-wide catalog), so this is a plain
+  // external NavLink rather than a nested /portal/* route.
   const orgItems =
     tenant?.type === "organization"
       ? [
           { to: "/portal/synagogues", icon: Building2, label: "בתי כנסת קשורים" },
           { to: "/portal/teachers", icon: GraduationCap, label: "מגידי שיעור" },
+          { to: "/lessons-dir", icon: Library, label: "ספרייה דיגיטלית" },
         ]
       : [];
 
