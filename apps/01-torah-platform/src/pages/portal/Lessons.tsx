@@ -299,7 +299,13 @@ const Lessons = () => {
                     <h3 className="font-heading font-bold text-foreground text-lg">{l.title}</h3>
                     {l.style && <Badge variant="outline" className="text-xs">{l.style}</Badge>}
                     {!l.is_approved && <Badge variant="outline" className="text-xs text-amber-600 border-amber-300">ממתין לאישור</Badge>}
-                    {l.recording_url && <Badge variant="secondary" className="text-xs"><Mic className="w-3 h-3 ml-1" />מוקלט</Badge>}
+                    {l.recording_url && (/^https?:\/\//i.test(l.recording_url) ? (
+                      <a href={l.recording_url} target="_blank" rel="noopener noreferrer">
+                        <Badge variant="secondary" className="text-xs hover:bg-secondary/80"><Mic className="w-3 h-3 ml-1" />מוקלט</Badge>
+                      </a>
+                    ) : (
+                      <Badge variant="secondary" className="text-xs" title={l.recording_url}><Mic className="w-3 h-3 ml-1" />מוקלט</Badge>
+                    ))}
                     {l.meta?.is_live_stream && <Badge variant="secondary" className="text-xs"><Video className="w-3 h-3 ml-1" />חי</Badge>}
                   </div>
                   <div className="flex flex-wrap gap-3 mt-2 text-sm text-muted-foreground">
