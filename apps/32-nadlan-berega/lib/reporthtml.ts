@@ -157,6 +157,13 @@ function tabuBlock(docs: TabuDocRow[]): string {
     if (a.otherEncumbrances?.length) {
       lines.push(`<b>הגבלות נוספות:</b> ${a.otherEncumbrances.map(esc).join(' · ')}`);
     }
+    if (a.perFloorRights?.length) {
+      lines.push(
+        `<b>פירוט לפי קומה/תת-חלקה:</b> ${a.perFloorRights
+          .map((f) => (f.floor ? `קומה ${esc(f.floor)} — ` : '') + esc(f.summary))
+          .join(' · ')}`,
+      );
+    }
     if (!a.mortgages?.length && !a.cautionNotes?.length) {
       lines.push('<b>משכנתאות והערות אזהרה:</b> לא נמצאו בנסח הזה.');
     }

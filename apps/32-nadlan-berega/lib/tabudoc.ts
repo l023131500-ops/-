@@ -34,6 +34,9 @@ const PROMPT = [
   '· "הערת אזהרה" היא לא משכנתה. אל תערבב ביניהן.',
   '· אם הנסח מרוכז וכולל כמה תתי-חלקות, חלץ את מה שמשותף לבניין, וציין ב-summary',
   '  שזהו נסח מרוכז וכמה תתי-חלקות מופיעות בו.',
+  '· אם הנסח מרוכז וכולל כמה תתי-חלקות/קומות, מלא גם את perFloorRights: פירוט קצר',
+  '  (קומה/תת-חלקה + מי רשום עליה + שעבוד אם יש) לכל יחידה שמופיעה בנסח בנפרד.',
+  '  אם הנסח הוא של דירה בודדת — perFloorRights יכול להישאר מערך ריק.',
   '· summary: שלוש עד חמש שורות בעברית מדוברת, מה שקונה צריך לדעת מהנסח הזה.',
   '',
   'החזר JSON יחיד בלבד, בלי טקסט לפניו ואחריו, במבנה הזה:',
@@ -43,6 +46,7 @@ const PROMPT = [
   '  "cautionNotes": [{"kind": "", "inFavourOf": null, "note": null}],',
   '  "leases": [{"holder": "", "until": null, "note": null}],',
   '  "otherEncumbrances": [],',
+  '  "perFloorRights": [{"floor": null, "tatHelka": null, "summary": ""}],',
   '  "parcelArea": null, "subParcelArea": null, "sharedAreas": null,',
   '  "extractDate": null,',
   '  "identifiedGush": null, "identifiedHelka": null, "identifiedTatHelka": null,',
@@ -57,6 +61,7 @@ const EMPTY: TabuAnalysis = {
   cautionNotes: [],
   leases: [],
   otherEncumbrances: [],
+  perFloorRights: [],
   parcelArea: null,
   subParcelArea: null,
   sharedAreas: null,
@@ -123,6 +128,13 @@ function normalize(raw: any): TabuAnalysis {
     otherEncumbrances: asArray<unknown>(raw?.otherEncumbrances)
       .map((v) => asString(v))
       .filter((v): v is string => !!v),
+    perFloorRights: asArray<any>(raw?.perFloorRights)
+      .map((f) => ({
+        floor: asString(f?.floor),
+        tatHelka: asString(f?.tatHelka),
+        summary: asString(f?.summary) ?? '',
+      }))
+      .filter((f) => f.summary),
     parcelArea: asString(raw?.parcelArea),
     subParcelArea: asString(raw?.subParcelArea),
     sharedAreas: asString(raw?.sharedAreas),

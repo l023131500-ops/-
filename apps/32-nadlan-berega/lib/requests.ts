@@ -243,6 +243,8 @@ export interface TabuAnalysis {
   cautionNotes: { kind: string; inFavourOf: string | null; note: string | null }[];
   leases: { holder: string; until: string | null; note: string | null }[];
   otherEncumbrances: string[];
+  /** נסח מרוכז עם כמה תתי-חלקות/קומות — פירוט קצר לכל יחידה בנפרד. ריק לנסח דירה בודדת. */
+  perFloorRights: { floor: string | null; tatHelka: string | null; summary: string }[];
   parcelArea: string | null;
   subParcelArea: string | null;
   sharedAreas: string | null;

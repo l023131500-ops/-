@@ -477,6 +477,16 @@ function TabuPanel({ token, request }: { token: string; request: ReportRequestRo
                           .join(' · ')
                       : 'לא נמצאו'}
                   </div>
+                  {d.analysis.perFloorRights?.length > 0 && (
+                    <div>
+                      <b>פירוט לפי קומה/תת-חלקה:</b>
+                      <ul className="mt-0.5 list-disc pe-4">
+                        {d.analysis.perFloorRights.map((f, i) => (
+                          <li key={i}>{(f.floor ? `קומה ${f.floor} — ` : '') + f.summary}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
                   {(d.analysis.parcelArea || d.analysis.subParcelArea || d.analysis.sharedAreas) && (
                     <div>
                       <b>שטח רשום בנסח:</b>{' '}
