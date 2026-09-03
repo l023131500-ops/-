@@ -1093,6 +1093,37 @@ export default function Editor() {
                     <Wand2 className="h-3.5 w-3.5" />
                     {removingBg ? "מסיר רקע..." : "הסר רקע (Recraft)"}
                   </Button>
+
+                  <div>
+                    <Label className="mb-1 block text-xs text-[#F5EEDD]/70">
+                      התאמת תמונה <code className="font-mono text-[10px] text-[#C9A227]/70">fit</code>
+                    </Label>
+                    <Select
+                      value={(selectedLayer as ImageLayer).fit ?? "cover"}
+                      onValueChange={(v) => handleChangeLayer(selectedLayer.id, { fit: v as ImageLayer["fit"] })}
+                    >
+                      <SelectTrigger className="h-8 border-[#C9A227]/30 bg-[#0B1526] text-xs" data-testid="select-layer-image-fit">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="cover">מילוי וחיתוך (cover)</SelectItem>
+                        <SelectItem value="contain">הכלה מלאה (contain)</SelectItem>
+                        <SelectItem value="fill">מתיחה (fill)</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="flex items-center justify-between">
+                    <Label className="text-xs text-[#F5EEDD]/70" htmlFor="layer-image-circle-switch">
+                      חיתוך עגול <code className="font-mono text-[10px] text-[#C9A227]/70">circle</code>
+                    </Label>
+                    <Switch
+                      id="layer-image-circle-switch"
+                      checked={!!(selectedLayer as ImageLayer).circle}
+                      onCheckedChange={(v) => handleChangeLayer(selectedLayer.id, { circle: v })}
+                      data-testid="switch-layer-image-circle"
+                    />
+                  </div>
                 </div>
               )}
 
