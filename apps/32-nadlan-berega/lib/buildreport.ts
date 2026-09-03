@@ -21,6 +21,7 @@ import {
 import type { Place, StreetView, PlaceGroupKey } from './googlemaps';
 import { mapillaryConfigured, mapillaryNearest } from './mapillary';
 import { mikvaotNear, type Mikve } from './mikve';
+import { crimeProfile } from './crime';
 import { parcelAtPoint, parcelByGushHelka, parcelValidity } from './cadastre';
 import { stopsWithLinesDetailed, type StopWithLines } from './gtfs';
 import {
@@ -73,7 +74,7 @@ import { fetchListings } from './apify';
 import type { Listing, ListingsResult } from './apify';
 import { populationProfile, publicPopulation } from './elections';
 import type { PopulationProfile } from './elections';
-import { resolveStreet, neighborhoodInfo, nearestJunction, displayName } from './placenames';
+import { resolveStreet, neighborhoodInfo, nearestJunction, displayName, findCityCode } from './placenames';
 import type { ResolvedName, NeighborhoodInfo, Junction } from './placenames';
 import { localityArticle, neighborhoodArticle } from './wikipedia';
 import type { WikiPlace } from './wikipedia';
@@ -1647,6 +1648,7 @@ export async function buildReport(
   let leisure: Place[] = [];
   let transport: Place[] = [];
   let mikvaot: Mikve[] = [];
+  let crime: Awaited<ReturnType<typeof crimeProfile>> = null;
 
   /**
    * ברמה החינמית סעיף הסביבה נבנה מהמרשמים הפתוחים ששמורים אצלנו במטמון —
@@ -1761,6 +1763,19 @@ export async function buildReport(
   // מקוואות — מקור ממשלתי ייעודי, לא Google (ראה lib/mikve.ts).
   if (city) {
     mikvaot = await mikvaotNear(city, lat, lng, { radiusM: 4000 }).catch(() => []);
+  }
+
+  // פשיעה — ברמת יישוב בלבד (ראה lib/crime.ts). מזהה היישוב מגיע מ-city
+  // (שם הקדסטר, כבר נפתר למעלה) ולא מהגיאוקוד הגולמי. אותו מקור/דפוס בדיוק
+  // שכבר חובר ל-app/api/profile (זרם "כרטיס זיהוי" הישן) — כאן זו הפעם
+  // הראשונה שהוא מגיע גם לדוח המודרני (/report, PDF, מייל, מצגת).
+  if (city) {
+    try {
+      const cityCode = await findCityCode(city);
+      crime = await crimeProfile(cityCode);
+    } catch (e: any) {
+      warnings.push(`נתוני פשיעה לא זמינים: ${e?.message ?? e}`);
+    }
   }
 
   // --- אילו קווים עוברים בכל תחנה (GTFS דרך Stride) ---
@@ -2558,6 +2573,33 @@ export async function buildReport(
         : undefined,
       missingReason: 'אין רשומות מקוואות ליישוב הזה במאגר הממשלתי.',
     }),
+    // פשיעה — ברמת יישוב בלבד, לא רדיוס כמו בתי-הספר/תחבורה למעלה (משטרת
+    // ישראל אינה מפרסמת לציבור את גבולות "האזור הסטטיסטי" שלה). אותו נוסח
+    // בדיוק שכבר אומת ומחובר בזרם "כרטיס זיהוי" הישן (app/api/profile).
+    fact(
+      `תיקי פשיעה שנפתחו ביישוב${crime ? ` (${crime.year})` : ''}`,
+      crime ? crime.total : null,
+      {
+        certainty: 'verified',
+        tier: 'premium',
+        sourceKey: 'datagov',
+        sourceNote: crime
+          ? [
+              crime.topCategories.length
+                ? `בעיקר: ${crime.topCategories.map((c) => `${c.label} (${c.count.toLocaleString('he-IL')})`).join(', ')}.`
+                : null,
+              'ברמת היישוב כולו — משטרת ישראל אינה מפרסמת לציבור את גבולות "האזור הסטטיסטי" ' +
+                'שלה, ולכן זו אינה ספירה שכונתית/רדיוס כמו בתי-הספר והתחבורה למעלה. הנתון הוא ' +
+                'תיקי חקירה שנפתחו (לא הרשעות) — מקור: משטרת ישראל.',
+            ]
+              .filter(Boolean)
+              .join(' ')
+          : undefined,
+        missingReason: city
+          ? 'מאגר הפשיעה הממשלתי לא החזיר נתון ליישוב הזה כרגע.'
+          : 'לא זוהה יישוב, ולכן לא ניתן לשלוף נתוני פשיעה.',
+      },
+    ),
     ...nearestAndCount(
       'המרכול הקרוב ביותר',
       'מסחר וקניות בסביבה',
