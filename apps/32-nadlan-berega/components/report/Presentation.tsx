@@ -155,6 +155,14 @@ interface Slide {
   image?: string;
 }
 
+/** אותו מיפוי בדיוק כמו `LISTINGS_NOUN` ב-lib/reporthtml.ts. */
+const LISTINGS_NOUN: Record<string, string> = {
+  residential: 'דירות שמוצעות למכירה',
+  rental: 'דירות שמוצעות להשכרה',
+  commercial: 'נכסים מסחריים המוצעים',
+  land: 'מגרשים המוצעים',
+};
+
 /** גוף השקופית — משותף למסך ולקובץ, כדי ששניהם לא ייפרדו עם הזמן. */
 function SlideBody({
   slide,
@@ -347,6 +355,30 @@ function buildSlides(d: PropertyReport): Slide[] {
         note: c.pricePerSqm
           ? `${new Intl.NumberFormat('he-IL').format(c.pricePerSqm)} ₪ למ"ר · ${c.proximityLabel}`
           : c.proximityLabel,
+      })),
+    });
+  }
+
+  // §4 "דירות מוצעות כרגע" (report.listings, lib/apify.ts): כבר מוצג במסך
+  // (Listings.tsx, ReportView.tsx) ובמייל (`listingsBlock`, lib/reporthtml.ts)
+  // — אבל הדק/PDF (buildSlides) מעולם לא כלל שקופית עבורו. באמצעות
+  // `?skipListings=1` (הפקת ה-PDF, print=true) `d.listings` נשאר ריק בכוונה
+  // כדי לא לשלם על השכבה בכל הפקת קובץ — אז אותו guard שהמייל כבר משתמש בו
+  // (`listingsStatus.configured` + מערך לא-ריק) מכבד את זה אוטומטית: אין
+  // שקופית ב-PDF, אבל יש במצגת האינטראקטיבית החיה (print=false), ששם הנתון
+  // כן נמשך.
+  if (d.listingsStatus?.configured && d.listings?.length) {
+    const noun = LISTINGS_NOUN[d.assetType] ?? LISTINGS_NOUN.residential;
+    s.push({
+      kicker: noun,
+      title: `${d.listings.length} ${noun} כרגע באזור`,
+      subtitle: 'אלה מחירי בקשה, לא מחירים שנסגרו בפועל.',
+      rows: d.listings.slice(0, 4).map((l) => ({
+        label: l.address ?? 'כתובת לא צוינה',
+        value: l.price ? ils(l.price) : '—',
+        note: l.pricePerSqm
+          ? `${new Intl.NumberFormat('he-IL').format(l.pricePerSqm)} ₪ למ"ר`
+          : undefined,
       })),
     });
   }
