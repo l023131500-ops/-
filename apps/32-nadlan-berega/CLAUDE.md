@@ -1,5 +1,42 @@
 # CLAUDE.md — נדל"ן ברגע (קרא אותי בתחילת כל סשן)
 
+## עדכון — 03/09/2026 (Loop A — 36 nadlan-pro: לוחות נסח/תיק-מידע לא הראו מי ביקש/שלח, `sites/36-nadlan-pro/tivuch/app.html` + `np_property_get`)
+המשך לסבב האתמול (session 2/3 למטה — אותה מחלקת-פער בדיוק, שדה שקיים ב-DB
+ולא מגיע לתצוגה): `nadlan_pro.tabu_requests`/`tik_meida_requests` (0153/0155)
+שומרות `requested_by`/`sent_by` (`auth.users` FK, נכתבות ע"י
+`np_tabu_request_create`/`np_tikmeida_request_create` ועל ידי שתי פונקציות
+ה-`mark_sent`), אבל `np_property_get` מעולם לא בחרה את שתי העמודות לתוך ה-
+jsonb שהוא מחזיר — כך ש-`tabuHtml()`/`tikMeidaHtml()` לא היה להן על מה לרנדר,
+גם אם רצו. במשרד עם כמה סוכנים (`nadlan_pro.office_members` קיים בדיוק בשביל
+זה) כרטיס בקשה הראה מה קרה אבל לא מי הזמין ומי טיפל — אותו פער-אחריותיות
+שכבר נסגר בלשונית עסקה/עמלות (`commAgentName` מול `np_office_members`).
+
+נוסף migration `0160_nadlan_pro_request_actor_names.sql` — `np_property_get`
+מוסיף `requested_by`/`sent_by` (uuid) לשתי מערכי ה-jsonb (`tabu_requests`,
+`tik_meida_requests`). תוספת טהורה: אין עמודה/RLS חדשים, ה-SELECT כבר חשף את
+כל השורה, רק ה-projection ב-API היה חסר. מיושם חי (MCP `apply_migration`)
+ואומת ב-transaction עם נתונים אמיתיים על משרד ה-QA הקבוע
+(`משרד בדיקה QA 18/08`): נכס זמני + בקשת-נסח עם `requested_by`/`sent_by`
+אמיתיים (שני משתמשי QA שונים) + בקשת-תיק-מידע עם `requested_by` בלבד —
+`np_property_get` החזיר את שני השדות נכון בשתיהן — ואז נמחק הכל, 0 שורות
+נותרות בכל שלוש הטבלאות (נבדק).
+
+בצד ה-`app.html`: `openProperty` מביא עכשיו גם `np_office_members` (במקביל
+ל-`np_property_get`, אותו דפוס `Promise.all` בדיוק כמו `openDeal`), ובונה
+`actorName(uid)` שמתרגם uuid לשם מלא של חבר-משרד פעיל. `tabuHtml`/
+`tikMeidaHtml` מקבלות פרמטר `actorName` חדש ומוסיפות שורת "ביקש/ה X" /
+"נשלח ע״י Y" כשהשם נפתר; uuid לא-מזוהה (עובד שהוסר, או קורא חסר) פשוט לא
+מציג שורה — לא קורס ולא מציג `undefined`. אומת ע"י חילוץ `tabuHtml`+
+`tikMeidaHtml`+`tabuAnalysisHtml`+התלויות לקובץ עצמאי והרצה ב-Node מול 6
+תרחישים: שני השמות נפתרים, מבקש-בלבד (עדיין `pending`), uuid לא-מזוהה (0
+קריסה, 0 שורת-שווא), קריאה בלי הפרמטר `actorName` כלל (קורא ישן, ברירת מחדל
+בטוחה), ותיק-מידע עם/בלי שדות-actor — כל 11 הבדיקות עברו. `node --check`
+נקי על בלוק ה-`<script type="module">` היחיד בקובץ. בדיקת איזון-סוגריים על
+הקובץ המלא עברה (933/933 מסולסלים, 3327/3327 רגילים, 255/255 מרובעים). אפס
+רגרסיה: תוספת פרמטר אופציונלי + שורת-תצוגה בלבד, שום handler/RPC קיים לא
+נגע. נדחף לענף `fix/36-nadlan-pro-request-actor-names-0903` — לא מוזג.
+System 35 KioskFleet לא נגע, לפי ה-HARD STEERING.
+
 ## עדכון — 02/09/2026, session 3 (Loop A — 36 nadlan-pro: `sent_at` של בקשת נסח לא הוצג, `sites/36-nadlan-pro/tivuch/app.html`)
 המשך ישיר לתיקון `fulfilled_at`/שם-מסמך למעלה (session 2): אותה `tabuHtml()`
 (שורות 1341-1372) הציגה `created_at` תמיד ו-`fulfilled_at` כש-`status='fulfilled'`,

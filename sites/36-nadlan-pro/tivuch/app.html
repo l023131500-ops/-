@@ -978,12 +978,18 @@ async function renderProperties() {
 }
 
 async function openProperty(id) {
-  let d;
-  try { d = await rpc('np_property_get', { p_id: id }); }
-  catch (e) { return toast('טעינה נכשלה: ' + e.message, true); }
+  let d, members;
+  try {
+    [d, members] = await Promise.all([
+      rpc('np_property_get', { p_id: id }),
+      rpc('np_office_members', { p_office: OFFICE.id }).catch(() => []),
+    ]);
+  } catch (e) { return toast('טעינה נכשלה: ' + e.message, true); }
   if (!d || !d.property) return toast('הנכס לא נמצא', true);
 
   const p = d.property;
+  members = (members || []).filter((m) => m.is_active);
+  const actorName = (uid) => { const m = members.find((x) => x.user_id === uid); return m ? m.full_name : null; };
   let html =
     '<div class="facts">' +
       '<div><p class="k">סוג</p><p class="v">' + esc(ASSET_HE[p.asset_type] || p.asset_type) + '</p></div>' +
@@ -1033,10 +1039,10 @@ async function openProperty(id) {
 
   if (p.gush && p.helka) {
     html += '<h2 class="sec">בקשות נסח טאבו</h2><div id="tabuBox">' +
-      tabuHtml(p, d.tabu_requests || [], d.documents || []) + '</div>';
+      tabuHtml(p, d.tabu_requests || [], d.documents || [], actorName) + '</div>';
 
     html += '<h2 class="sec">בקשות מידע להיתר (תיק מידע)</h2><div id="tikMeidaBox">' +
-      tikMeidaHtml(p, d.tik_meida_requests || [], d.documents || []) + '</div>';
+      tikMeidaHtml(p, d.tik_meida_requests || [], d.documents || [], actorName) + '</div>';
   }
 
   html += '<h2 class="sec">ניתוח כדאיות והשקעה</h2><div id="feasBox">' + feasibilityHtml(p) + '</div>';
@@ -1338,13 +1344,22 @@ function tabuAnalysisHtml(a) {
     '</div>';
 }
 
-function tabuHtml(p, requests, docs) {
+function tabuHtml(p, requests, docs, actorName) {
   const canManage = OFFICE.role === 'owner' || OFFICE.role === 'manager';
   const docById = (id) => docs.find((d) => d.id === id);
+  const nameOf = actorName || (() => null);
   const rows = (requests || []).map((r) => {
     const doc = r.document_id ? docById(r.document_id) : null;
     const badge = '<span class="pill">' + esc(TABU_STATUS_HE[r.status] || r.status) + '</span>' +
       (r.grade === 'urgent' ? ' <span class="pill" style="color:#b42318">דחוף</span>' : '');
+    const requestedName = nameOf(r.requested_by);
+    const sentName = nameOf(r.sent_by);
+    const actorHtml = (requestedName || sentName)
+      ? '<span class="w">' +
+          (requestedName ? ' · ביקש/ה ' + esc(requestedName) : '') +
+          (sentName ? ' · נשלח ע״י ' + esc(sentName) : '') +
+        '</span>'
+      : '';
     let actions = '';
     if (r.status === 'pending' && canManage) {
       actions = '<button class="btn btn-quiet btn-sm" data-tabusent="' + r.id + '">סומן כהוזמן — נשלח לרשם המקרקעין</button>';
@@ -1368,7 +1383,7 @@ function tabuHtml(p, requests, docs) {
       '<p class="na" style="margin-top:6px">נשלח לרשם המקרקעין ' + dtm(r.sent_at) + '</p>' : '';
     return '<li>' + badge + ' · עדיפות ' + esc(TABU_GRADE_HE[r.grade] || r.grade) +
       (r.notes ? '<br/><span class="na" style="font-size:12px">' + esc(r.notes) + '</span>' : '') +
-      '<span class="w"> · ' + dtm(r.created_at) + '</span>' +
+      '<span class="w"> · ' + dtm(r.created_at) + '</span>' + actorHtml +
       (actions ? '<div class="controls" style="margin-top:8px">' + actions + '</div>' : '') +
       sentHtml + fulfilledHtml + analysisHtml + '</li>';
   }).join('');
@@ -1504,13 +1519,22 @@ function wireTabu(p, requests, docs) {
 // auto-fulfils the moment the file lands (np_tikmeida_document_upload,
 // migration 0155). The issued file is a property document, category='permit'
 // (0105 already reserves this exact category for planning-info files).
-function tikMeidaHtml(p, requests, docs) {
+function tikMeidaHtml(p, requests, docs, actorName) {
   const canManage = OFFICE.role === 'owner' || OFFICE.role === 'manager';
   const docById = (id) => docs.find((d) => d.id === id);
+  const nameOf = actorName || (() => null);
   const rows = (requests || []).map((r) => {
     const doc = r.document_id ? docById(r.document_id) : null;
     const badge = '<span class="pill">' + esc(TIKMEIDA_STATUS_HE[r.status] || r.status) + '</span>' +
       (r.grade === 'urgent' ? ' <span class="pill" style="color:#b42318">דחוף</span>' : '');
+    const requestedName = nameOf(r.requested_by);
+    const sentName = nameOf(r.sent_by);
+    const actorHtml = (requestedName || sentName)
+      ? '<span class="w">' +
+          (requestedName ? ' · ביקש/ה ' + esc(requestedName) : '') +
+          (sentName ? ' · נשלח ע״י ' + esc(sentName) : '') +
+        '</span>'
+      : '';
     let actions = '';
     if (r.status === 'pending' && canManage) {
       actions = '<button class="btn btn-quiet btn-sm" data-tikmeidasent="' + r.id + '">סומן כהוגש — הוגש לוועדה המקומית</button>';
@@ -1529,7 +1553,7 @@ function tikMeidaHtml(p, requests, docs) {
         (doc && doc.name ? ' · ' + esc(doc.name) : '') + '</p>' : '';
     return '<li>' + badge + ' · עדיפות ' + esc(TABU_GRADE_HE[r.grade] || r.grade) +
       (r.notes ? '<br/><span class="na" style="font-size:12px">' + esc(r.notes) + '</span>' : '') +
-      '<span class="w"> · ' + dtm(r.created_at) + '</span>' +
+      '<span class="w"> · ' + dtm(r.created_at) + '</span>' + actorHtml +
       (actions ? '<div class="controls" style="margin-top:8px">' + actions + '</div>' : '') +
       fulfilledHtml + '</li>';
   }).join('');
