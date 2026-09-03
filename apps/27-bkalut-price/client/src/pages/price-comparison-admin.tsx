@@ -574,6 +574,9 @@ export default function PriceComparisonAdmin() {
                   <div className="text-xs text-muted-foreground">
                     חנויות+{j.storesUpserted} · מוצרים+{j.productsUpserted} · מחירים+{j.pricesUpserted} · מבצעים+{j.promotionsUpserted} · שגיאות {j.errors}
                   </div>
+                  {j.message && (
+                    <div className="text-xs mt-1 break-words" data-testid={`pc-job-message-${j.id}`}>{j.message}</div>
+                  )}
                   {jobLogs[j.id] && (
                     <pre dir="ltr" className="mt-2 text-[11px] bg-muted/50 rounded p-2 max-h-40 overflow-auto whitespace-pre-wrap">
                       {jobLogs[j.id].map((l) => `[${l.level}] ${l.message}`).join("\n")}
