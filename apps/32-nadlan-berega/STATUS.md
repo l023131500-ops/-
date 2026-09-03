@@ -1,5 +1,60 @@
 # 32 נדל"ן ברגע + 36 נדל"ן פרו — deploy-readiness (P2, per OWNER ORDER 2026-09-02b)
 
+## 2026-09-03, session (loop A) — RequestForm leads (נסח/רמ"י/היתר) נשמרו ל-DB אך נעלמו: אין לוח ניהול ל-`document_requests`
+
+בדיקה עצמאית של `document_requests` (הטבלה הכללית שמזינה `RequestForm.tsx`,
+מוטמעת בדף הבית `app/page.tsx` וב-`/request`) מצאה `grep` אחד עם תוצאה
+יחידה בכל הריפו: `lib/store.ts`'s `submitDocumentRequest` — הכתיבה בלבד.
+שום קובץ לא קרא מהטבלה מעולם. `document_requests` כבר נושאת עמודת `status`
+(ברירת מחדל `'new'`) שמעולם לא נקראה על ידי שום קוד — בדיוק אותה מחלקת-פער
+שנמצאה שוב ושוב היום ב-`tabu_requests`/`tik_meida_requests` (ראו
+`CLAUDE.md`), רק שכאן זה הטופס הכללי-יותר והישן-יותר שקדם לשניהם, וכבר
+תועד כפער-ידוע-ולא-תוקן בסבב `session 5` (25/08/2026): "בקשות אליו נעלמות
+היום בלי שאף אחד רואה אותן... לא תוקן בסבב הזה (מחוץ לסקופ)". לקוח ששלח
+שם+טלפון/מייל דרך דף הבית עצמו (לא רק `/request`) ובחר "נסח טאבו"/"אישור
+רמ״י"/"מידע היתר"/"מסמך אחר" קיבל "הבקשה נשמרה ✓" — אבל הבקשה נעלמה
+לצמיתות מבחינת הצוות. אומת חי ב-MCP: הטבלה קיימת עם RLS מופעל ומדיניות
+`public_insert_requests` (INSERT-בלבד ל-`public`, `with check(true)`) —
+בדיוק אותו דפוס כמו `tabu_requests`/`report_requests`, לא באג-אבטחה (אין
+מדיניות SELECT/UPDATE, כך שגם למרות ה-GRANT הרחב שכבר קיים על הטבלה, קריאה
+בפועל חסומה לגמרי חוץ מ-`service_role`).
+
+**התיקון:** לוח ניהול חדש, אותו דפוס מדויק כמו `TabuRequestsBoard`/
+`TikMeidaRequestsBoard` (אין מיגרציה חדשה — הטבלה/עמודת ה-`status` כבר
+קיימות, רק חיווט קריאה+פעולה חסרים):
+- `lib/store.ts`: `listDocumentRequests`/`pendingDocumentRequestCount`/
+  `markDocumentRequestContacted` (service-role, `getStore()` הקיים) —
+  מותנה ב-`status='new'` כדי שלחיצה כפולה לא תדרוס תיוג קודם, בדיוק כמו
+  `markTabuRequestSent`.
+- `app/api/admin/document-requests/route.ts` (GET+POST, `adminGate`
+  הקיים, אותו חוזה כמו `tabu-requests/route.ts`).
+- `components/admin/DocumentRequestsBoard.tsx` — רשימת בקשות + תג
+  סטטוס (חדש/נוצר קשר) + כפתור "סומן שנוצר קשר".
+- מקטע "בקשות מסמכים (נסח / רמ״י / היתר / אחר)" חדש ב-`app/admin/page.tsx`,
+  אחרי "בקשות תיק מידע להיתר" ולפני "התראות אזוריות" — אותו gate על
+  `ADMIN_TOKEN` כמו שני הלוחות הסמוכים.
+
+אומת: `npx esbuild` (רשת זמינה הסבב הזה) תרגם את כל ארבעת הקבצים
+שנוספו/שונו נקי (`--bundle --platform=node`, עם `--external` על כל
+ה-imports החיצוניים/פנימיים). בדיקת איזון-סוגריים על כל ארבעת הקבצים
+עברה. אומת חי ב-MCP בתוך `BEGIN;...ROLLBACK;` מול הטבלה האמיתית: הכנסת
+בקשה מדומה → `UPDATE ... WHERE status='new'` ראשון הופך אותה ל-`contacted`
+(1 שורה) → אותו `UPDATE` בדיוק בשנית מחזיר 0 שורות (השומר עובד, בדיוק כמו
+שני-קליקים על הכפתור) → מצב סופי `contacted` אומת בשאילתה נפרדת אחרי שני
+העדכונים (לא בתוך אותו `WITH` — CTEs מתקנים בשלב-אימות ראשון גילו ש-CTEs
+מקבילות בפקודה אחת לא רואות זו את זו, אז חולק לשלושה statements עוקבים
+כמו הקוד האמיתי) — התאמה מדויקת בין ה-DB וההתנהגות ש-`markDocumentRequestContacted`
+מיישמת. אפס שיוריות אחרי `ROLLBACK` (נבדק בנפרד). לא הופעלה `apply_migration`
+בכלל — אין שינוי סכימה/RLS/מדיניות, רק קוד-אפליקציה שקורא/כותב דרך מפתח
+השירות הקיים כבר.
+
+אפס רגרסיה: `submitDocumentRequest`/`RequestForm.tsx`/`/api/request` לא
+נגעו — נתיב היצירה הציבורי זהה לפני/אחרי. שני קבצים חדשים + הרחבה תוספתית
+של `lib/store.ts` ומקטע חדש ב-`app/admin/page.tsx` (import אחד + `<Section>`
+אחת, שום לוח/מקטע/ייבוא קיימים לא נגעו). נדחף לענף
+`fix/32-nadlan-berega-document-requests-admin-board-0903` — לא מוזג. System
+35 KioskFleet ו-36 nadlan-pro לא נגעו, לפי ה-HARD STEERING.
+
 ## 2026-09-02, session (loop A) — quantified the P2 "not live" blocker, same method as apps/35-kioskfleet/STATUS.md session 7
 
 `core.projects` note #33 got `OWNER ORDER 2026-09-02b` today: MERGE each

@@ -243,6 +243,77 @@ export async function submitDocumentRequest(payload: DocRequest): Promise<void> 
   if (error) throw new Error(error.message);
 }
 
+export interface DocumentRequestRow {
+  id: number;
+  doc_type: string;
+  gush: string | null;
+  helka: string | null;
+  tat_helka: string | null;
+  address: string | null;
+  full_name: string | null;
+  email: string | null;
+  phone: string | null;
+  notes: string | null;
+  status: string;
+  created_at: string;
+}
+
+const DOCUMENT_REQUEST_FIELDS =
+  'id,doc_type,gush,helka,tat_helka,address,full_name,email,phone,notes,status,created_at';
+
+/**
+ * `RequestForm` (דף הבית + `/request`) שולחת לכאן דרך `submitDocumentRequest`
+ * מאז ומתמיד — אבל עד לתוספת הזו שום קוד לא קרא בחזרה מ-`document_requests`,
+ * ולא הייתה שום מסך-ניהול. לקוח ששלח שם+טלפון/מייל לבקשת נסח/רמ"י/היתר קיבל
+ * "הבקשה נשמרה ✓" בממשק, אבל הבקשה נעלמה לצמיתות מבחינת הצוות — בדיוק אותה
+ * מחלקת-פער שנמצאה שוב ושוב היום (03/09) בבקשות טאבו/תיק-מידע, רק שכאן זה
+ * הטופס הכללי-יותר והישן-יותר שקדם לשניהם.
+ */
+export async function listDocumentRequests(
+  opts: { status?: string; limit?: number } = {},
+): Promise<DocumentRequestRow[]> {
+  const db = getStore();
+  if (!db) throw new Error('SUPABASE_SERVICE_KEY חסר — אין הרשאת קריאה לבקשות מסמכים.');
+  let q = db
+    .from('document_requests')
+    .select(DOCUMENT_REQUEST_FIELDS)
+    .order('created_at', { ascending: false })
+    .limit(opts.limit ?? 200);
+  if (opts.status) q = q.eq('status', opts.status);
+  const { data, error } = await q;
+  if (error) throw new Error(error.message);
+  return (data ?? []) as DocumentRequestRow[];
+}
+
+export async function pendingDocumentRequestCount(): Promise<number | null> {
+  const db = getStore();
+  if (!db) return null;
+  const { count, error } = await db
+    .from('document_requests')
+    .select('id', { count: 'exact', head: true })
+    .eq('status', 'new');
+  if (error) return null;
+  return count ?? 0;
+}
+
+/** אין CHECK constraint על העמודה — שני הערכים האלה בלבד משמשים בפועל. */
+export type DocumentRequestStatus = 'new' | 'contacted';
+
+/** מותנה ב-`status='new'` כדי שלחיצה כפולה לא תדרוס תיוג קודם. */
+export async function markDocumentRequestContacted(id: number): Promise<DocumentRequestRow | null> {
+  const db = getStore();
+  if (!db) throw new Error('SUPABASE_SERVICE_KEY חסר.');
+  const { data, error } = await db
+    .from('document_requests')
+    .update({ status: 'contacted' satisfies DocumentRequestStatus })
+    .eq('id', id)
+    .eq('status', 'new')
+    .select(DOCUMENT_REQUEST_FIELDS)
+    .maybeSingle();
+  if (error) throw new Error(error.message);
+  return (data as DocumentRequestRow) ?? null;
+}
+
 export interface AreaAlert {
   email: string;
   address?: string | null;

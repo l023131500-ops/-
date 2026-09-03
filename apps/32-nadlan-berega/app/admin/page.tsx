@@ -3,6 +3,7 @@ import AreaAlertsBoard from '@/components/admin/AreaAlertsBoard';
 import RequestsBoard from '@/components/admin/RequestsBoard';
 import TabuRequestsBoard from '@/components/admin/TabuRequestsBoard';
 import TikMeidaRequestsBoard from '@/components/admin/TikMeidaRequestsBoard';
+import DocumentRequestsBoard from '@/components/admin/DocumentRequestsBoard';
 import SavedReportsBoard from '@/components/admin/SavedReportsBoard';
 import SessionGate from '@/components/admin/SessionGate';
 import { ADMIN_COOKIE, verifyAdminCookie } from '@/lib/adminauth';
@@ -106,6 +107,20 @@ export default function AdminPage({ searchParams }: { searchParams: { key?: stri
         ) : (
           <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">
             הלוח נעול עד שיוגדר <code>ADMIN_TOKEN</code>. הוא קורא כתובות מייל ושמות של לקוחות.
+          </div>
+        )}
+      </Section>
+
+      {/* ===== בקשות מסמכים כלליות — טופס RequestForm הישן (דף הבית + /request) ===== */}
+      <Section
+        title="בקשות מסמכים (נסח / רמ״י / היתר / אחר)"
+        note="בקשה שלקוח שלח דרך הטופס הכללי בדף הבית או ב-/request — נסח טאבו, אישור זכויות רמ״י, מידע היתרי בנייה, או מסמך אחר. סמן 'נוצר קשר' אחרי שהתקשרתם/כתבתם ללקוח."
+      >
+        {process.env.ADMIN_TOKEN ? (
+          <DocumentRequestsBoard token={searchParams.key ?? ''} />
+        ) : (
+          <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">
+            הלוח נעול עד שיוגדר <code>ADMIN_TOKEN</code>. הוא קורא כתובות מייל וטלפונים של לקוחות.
           </div>
         )}
       </Section>
