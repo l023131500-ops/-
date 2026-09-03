@@ -9,6 +9,8 @@ import FeatureLocked from "@/components/portal/FeatureLocked";
 import { useFeatureGate } from "@/hooks/useFeatureGate";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { toast } from "sonner";
@@ -27,6 +29,9 @@ const StudySchedule = () => {
   const [showAdd, setShowAdd] = useState(false);
   const exportRef = useRef<HTMLDivElement>(null);
   const [newSchedule, setNewSchedule] = useState({ topic: "", pace_type: "pages", pace_amount: 1, lesson_id: "", start_date: "" });
+  const [editingDate, setEditingDate] = useState<Date | null>(null);
+  const [dayForm, setDayForm] = useState({ id: "", schedule_id: "", content: "", tasks: "", notes: "", is_special: false, special_type: "" });
+  const [savingDay, setSavingDay] = useState(false);
 
   useEffect(() => {
     if (user) fetchData();
@@ -83,6 +88,38 @@ const StudySchedule = () => {
     toast.success("הספק לימודי נוסף!");
     setShowAdd(false);
     setNewSchedule({ topic: "", pace_type: "pages", pace_amount: 1, lesson_id: "", start_date: "" });
+    fetchData();
+  };
+
+  const openDayEditor = (date: Date) => {
+    if (schedules.length === 0) return;
+    const existing = getDailyContent(date);
+    setEditingDate(date);
+    setDayForm(existing
+      ? { id: existing.id, schedule_id: existing.schedule_id, content: existing.content || "", tasks: existing.tasks || "", notes: existing.notes || "", is_special: !!existing.is_special, special_type: existing.special_type || "" }
+      : { id: "", schedule_id: schedules[0].id, content: "", tasks: "", notes: "", is_special: false, special_type: "" });
+  };
+
+  const handleSaveDay = async () => {
+    if (!editingDate || !dayForm.schedule_id) return;
+    setSavingDay(true);
+    const dateStr = editingDate.toISOString().split("T")[0];
+    const payload = {
+      schedule_id: dayForm.schedule_id,
+      date: dateStr,
+      content: dayForm.content || null,
+      tasks: dayForm.tasks || null,
+      notes: dayForm.notes || null,
+      is_special: dayForm.is_special,
+      special_type: dayForm.is_special ? (dayForm.special_type || null) : null,
+    };
+    const { error } = dayForm.id
+      ? await supabase.from("study_daily").update(payload).eq("id", dayForm.id)
+      : await supabase.from("study_daily").insert(payload);
+    setSavingDay(false);
+    if (error) { toast.error("שגיאה בשמירת היום"); return; }
+    toast.success("היום נשמר!");
+    setEditingDate(null);
     fetchData();
   };
 
@@ -235,7 +272,13 @@ const StudySchedule = () => {
                 const colorClass = getDayColor(date);
                 const isToday = date.toDateString() === new Date().toDateString();
                 return (
-                  <div key={i} className={`p-2 border border-border min-h-[80px] ${colorClass} ${isToday ? "ring-2 ring-secondary ring-inset" : ""}`}>
+                  <button
+                    type="button"
+                    key={i}
+                    onClick={() => openDayEditor(date)}
+                    disabled={schedules.length === 0}
+                    className={`p-2 border border-border min-h-[80px] text-right ${colorClass} ${isToday ? "ring-2 ring-secondary ring-inset" : ""} ${schedules.length > 0 ? "hover:brightness-95 cursor-pointer" : "cursor-default"}`}
+                  >
                     <span className={`text-xs font-bold ${isToday ? "text-secondary" : ""}`}>{i + 1}</span>
                     {daily && (
                       <div className="mt-1">
@@ -243,7 +286,7 @@ const StudySchedule = () => {
                         {daily.is_special && <Star className="w-3 h-3 text-secondary inline" />}
                       </div>
                     )}
-                  </div>
+                  </button>
                 );
               })}
             </div>
@@ -263,6 +306,52 @@ const StudySchedule = () => {
           </div>
         )}
       </div>
+
+      <Dialog open={!!editingDate} onOpenChange={(open) => !open && setEditingDate(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>
+              {editingDate?.toLocaleDateString("he-IL", { weekday: "long", day: "numeric", month: "long" })}
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 mt-4">
+            {schedules.length > 1 && (
+              <div>
+                <label className="text-sm font-medium mb-1 block">הספק</label>
+                <Select value={dayForm.schedule_id} onValueChange={(v) => setDayForm(p => ({ ...p, schedule_id: v }))}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>{schedules.map(s => <SelectItem key={s.id} value={s.id}>{s.topic}</SelectItem>)}</SelectContent>
+                </Select>
+              </div>
+            )}
+            <div>
+              <label className="text-sm font-medium mb-1 block">מה נלמד היום</label>
+              <Textarea value={dayForm.content} onChange={(e) => setDayForm(p => ({ ...p, content: e.target.value }))} placeholder="למשל: דף י״ב עמוד א'" />
+            </div>
+            <div>
+              <label className="text-sm font-medium mb-1 block">משימות</label>
+              <Textarea value={dayForm.tasks} onChange={(e) => setDayForm(p => ({ ...p, tasks: e.target.value }))} />
+            </div>
+            <div>
+              <label className="text-sm font-medium mb-1 block">הערות</label>
+              <Textarea value={dayForm.notes} onChange={(e) => setDayForm(p => ({ ...p, notes: e.target.value }))} />
+            </div>
+            <div className="flex items-center justify-between">
+              <label className="text-sm font-medium">יום מיוחד</label>
+              <Switch checked={dayForm.is_special} onCheckedChange={(v) => setDayForm(p => ({ ...p, is_special: v }))} />
+            </div>
+            {dayForm.is_special && (
+              <div>
+                <label className="text-sm font-medium mb-1 block">סוג היום המיוחד</label>
+                <Input value={dayForm.special_type} onChange={(e) => setDayForm(p => ({ ...p, special_type: e.target.value }))} placeholder="למשל: יום סיום, חופשה" />
+              </div>
+            )}
+            <Button onClick={handleSaveDay} disabled={savingDay} className="w-full bg-secondary text-secondary-foreground hover:bg-gold-dark">
+              {savingDay ? "שומר..." : "שמור"}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </PortalLayout>
   );
 };
