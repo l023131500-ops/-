@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { Fragment, useState } from "react";
 import { useSuspenseQuery, useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { Plus, Pencil, Trash2, Loader2 } from "lucide-react";
@@ -72,32 +72,44 @@ export function FamilyTab({ clientId }: { clientId: string }) {
           <TableBody>
             {family.length === 0 && <TableRow><TableCell colSpan={7} className="text-center text-muted-foreground py-6">אין בני משפחה רשומים</TableCell></TableRow>}
             {family.map((m) => (
-              <TableRow key={m.id}>
-                <TableCell>{(RELATION as Record<string, string>)[m.relation] ?? m.relation}</TableCell>
-                <TableCell className="font-medium">{m.first_name} {m.last_name ?? ""}</TableCell>
-                <TableCell dir="ltr" className="text-start">{m.id_number ?? "—"}</TableCell>
-                <TableCell>{formatDateHe(m.birth_date)}</TableCell>
-                <TableCell><HealthFundBadge fund={m.health_fund} /></TableCell>
-                <TableCell className="text-sm text-muted-foreground">{m.health_status ?? "—"}</TableCell>
-                <TableCell className="text-end">
-                  <Button variant="ghost" size="icon" onClick={() => setEditing(m as Draft)}><Pencil className="h-4 w-4" /></Button>
-                  <AlertDialog>
-                    <AlertDialogTrigger asChild>
-                      <Button variant="ghost" size="icon" className="text-destructive"><Trash2 className="h-4 w-4" /></Button>
-                    </AlertDialogTrigger>
-                    <AlertDialogContent dir="rtl">
-                      <AlertDialogHeader>
-                        <AlertDialogTitle>למחוק בן משפחה?</AlertDialogTitle>
-                        <AlertDialogDescription>{m.first_name} {m.last_name}</AlertDialogDescription>
-                      </AlertDialogHeader>
-                      <AlertDialogFooter>
-                        <AlertDialogCancel>ביטול</AlertDialogCancel>
-                        <AlertDialogAction onClick={() => del.mutate(m.id)}>מחק</AlertDialogAction>
-                      </AlertDialogFooter>
-                    </AlertDialogContent>
-                  </AlertDialog>
-                </TableCell>
-              </TableRow>
+              <Fragment key={m.id}>
+                <TableRow>
+                  <TableCell>{(RELATION as Record<string, string>)[m.relation] ?? m.relation}</TableCell>
+                  <TableCell className="font-medium">{m.first_name} {m.last_name ?? ""}</TableCell>
+                  <TableCell dir="ltr" className="text-start">{m.id_number ?? "—"}</TableCell>
+                  <TableCell>{formatDateHe(m.birth_date)}</TableCell>
+                  <TableCell><HealthFundBadge fund={m.health_fund} /></TableCell>
+                  <TableCell className="text-sm text-muted-foreground">{m.health_status ?? "—"}</TableCell>
+                  <TableCell className="text-end">
+                    <Button variant="ghost" size="icon" onClick={() => setEditing(m as Draft)}><Pencil className="h-4 w-4" /></Button>
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Button variant="ghost" size="icon" className="text-destructive"><Trash2 className="h-4 w-4" /></Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent dir="rtl">
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>למחוק בן משפחה?</AlertDialogTitle>
+                          <AlertDialogDescription>{m.first_name} {m.last_name}</AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>ביטול</AlertDialogCancel>
+                          <AlertDialogAction onClick={() => del.mutate(m.id)}>מחק</AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
+                  </TableCell>
+                </TableRow>
+                {m.notes && (
+                  <TableRow className="hover:bg-transparent">
+                    <TableCell colSpan={7} className="py-2 bg-muted/20">
+                      <div className="text-xs">
+                        <span className="text-muted-foreground">הערות: </span>
+                        <span className="whitespace-pre-wrap">{m.notes}</span>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                )}
+              </Fragment>
             ))}
           </TableBody>
         </Table>
