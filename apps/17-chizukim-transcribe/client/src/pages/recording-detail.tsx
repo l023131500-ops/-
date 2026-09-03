@@ -12,6 +12,7 @@ import {
   STATUS_ORDER,
   type Recording,
   type RecordingStatus,
+  type LowConfidenceSegment,
 } from "@/lib/supabase";
 import { statusBadgeClass, canTranscribe, isProcessing } from "@/lib/status";
 import { queryClient } from "@/lib/queryClient";
@@ -81,6 +82,13 @@ export default function RecordingDetailPage() {
     },
   });
 
+  // Passages the transcription engine itself flagged as uncertain (low
+  // confidence, possible silence, runaway repetition — see server/transcribe.ts).
+  // The API returns this once, right after transcribing; it is not persisted
+  // to the `recordings` row, so it only exists here, in this component's
+  // state, until the next transcription run replaces it or the page reloads.
+  const [lowConfidence, setLowConfidence] = useState<LowConfidenceSegment[]>([]);
+
   // Kick off transcription. The backend runs the full pipeline (long-lived);
   // meanwhile the polling query above tracks status transitions live.
   const transcribe = useMutation({
@@ -91,11 +99,13 @@ export default function RecordingDetailPage() {
       queryClient.setQueryData<Recording>(["/recordings", id], (prev) =>
         prev ? { ...prev, status: "transcribing" } : prev,
       );
+      setLowConfidence([]);
     },
-    onSuccess: (rec) => {
-      queryClient.setQueryData(["/recordings", id], rec);
+    onSuccess: ({ recording, low_confidence }) => {
+      queryClient.setQueryData(["/recordings", id], recording);
       queryClient.invalidateQueries({ queryKey: ["/recordings"] });
       queryClient.invalidateQueries({ queryKey: ["/recordings", id] });
+      setLowConfidence(low_confidence ?? []);
     },
     onError: (e: Error) => {
       queryClient.invalidateQueries({ queryKey: ["/recordings", id] });
@@ -295,6 +305,14 @@ export default function RecordingDetailPage() {
           onTranscribe={() => transcribe.mutate()}
         />
 
+        {/* Passages the engine itself flagged as uncertain — worth a second look */}
+        {lowConfidence.length > 0 && (
+          <LowConfidencePanel
+            segments={lowConfidence}
+            onJump={(text) => jumpToText(rawRef.current, text)}
+          />
+        )}
+
         {/* Transcripts side by side */}
         <div className="grid lg:grid-cols-2 gap-4 items-start">
           {/* Edited transcript */}
@@ -450,14 +468,81 @@ function jumpToNextHit(
     m = re.exec(el.value);
   }
   if (!m) return;
+  selectAndScroll(el, m.index, m.index + m[0].length);
+}
 
+// Shared with jumpToNextHit/jumpToText: textarea has no scrollIntoView for a
+// selection, so the line is estimated from the text before it.
+function selectAndScroll(el: HTMLTextAreaElement, start: number, end: number) {
   el.focus();
-  el.setSelectionRange(m.index, m.index + m[0].length);
-  // Scroll the hit into view: textarea has no scrollIntoView for a selection,
-  // so estimate the line from the text before it.
-  const linesBefore = el.value.slice(0, m.index).split("\n").length - 1;
+  el.setSelectionRange(start, end);
+  const linesBefore = el.value.slice(0, start).split("\n").length - 1;
   const lineHeight = parseFloat(getComputedStyle(el).lineHeight) || 24;
   el.scrollTop = Math.max(0, linesBefore * lineHeight - el.clientHeight / 2);
+}
+
+// Jump the raw-transcript textarea to a specific flagged passage. The engine
+// returns the segment's own text, so this looks for that exact substring
+// rather than a search term.
+function jumpToText(el: HTMLTextAreaElement | null, text: string) {
+  if (!el || !text.trim()) return;
+  const at = el.value.indexOf(text.trim());
+  if (at < 0) return;
+  selectAndScroll(el, at, at + text.trim().length);
+}
+
+// ---- Low-confidence passages ----
+// The engine flags its own weak spots (low avg_logprob, likely silence,
+// runaway repetition — see server/transcribe.ts). This is exactly the kind of
+// hint a human editor wants right after transcribing, and it used to be
+// computed and shipped in the API response only to be thrown away by the
+// caller. It is not saved anywhere, so it is shown only for the run that just
+// finished — gone again after a reload or a re-transcribe.
+function LowConfidencePanel({
+  segments,
+  onJump,
+}: {
+  segments: LowConfidenceSegment[];
+  onJump: (text: string) => void;
+}) {
+  return (
+    <Card
+      className="p-4 space-y-3 border-chart-4/40 bg-chart-4/5"
+      data-testid="panel-low-confidence"
+    >
+      <div className="flex items-center gap-2 text-sm font-medium">
+        <AlertTriangle className="w-4 h-4 text-chart-4 shrink-0" />
+        <span data-testid="text-low-confidence-summary">
+          המנוע סימן {segments.length === 1 ? "קטע אחד" : `${segments.length} קטעים`} כלא־בטוחים
+          בתמלול הזה — כדאי לבדוק אותם מול ההקלטה.
+        </span>
+      </div>
+      <ul className="space-y-2">
+        {segments.map((seg, i) => (
+          <li
+            key={i}
+            className="flex items-start justify-between gap-3 text-sm border-t pt-2 first:border-t-0 first:pt-0"
+            data-testid={`row-low-confidence-${i}`}
+          >
+            <div className="min-w-0">
+              <p className="text-muted-foreground truncate">{seg.text}</p>
+              <p className="text-xs text-chart-4 mt-0.5">{seg.reason}</p>
+            </div>
+            <Button
+              variant="outline"
+              size="sm"
+              className="shrink-0"
+              onClick={() => onJump(seg.text)}
+              data-testid={`button-jump-low-confidence-${i}`}
+            >
+              <Search className="w-3.5 h-3.5 ml-1" />
+              איתור בגולמי
+            </Button>
+          </li>
+        ))}
+      </ul>
+    </Card>
+  );
 }
 
 function SearchContextBar({

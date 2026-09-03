@@ -242,12 +242,30 @@ export async function updateRecording(
   return rows[0];
 }
 
+/** A passage the transcription engine itself flagged as uncertain. */
+export interface LowConfidenceSegment {
+  start: number | null;
+  end: number | null;
+  text: string;
+  reason: string;
+}
+
+export interface TranscribeApiResult {
+  recording: Recording;
+  low_confidence?: LowConfidenceSegment[];
+}
+
 // Kick off on-demand transcription via our backend. Long-running (server polls
 // RunPod until COMPLETED). Uses API_BASE prefix through apiRequest.
-export async function startTranscription(id: string): Promise<Recording> {
+//
+// The response also carries `low_confidence` — segments the engine itself
+// flagged (low avg_logprob, high no-speech probability, runaway repetition;
+// see server/transcribe.ts). That list only ever existed in this one response
+// and was previously discarded by the caller — it is not persisted to the
+// `recordings` row, so it has to be read here, on the response that has it.
+export async function startTranscription(id: string): Promise<TranscribeApiResult> {
   const res = await apiRequest("POST", `/api/transcribe/${id}`);
-  const json = (await res.json()) as { recording: Recording };
-  return json.recording;
+  return (await res.json()) as TranscribeApiResult;
 }
 
 // Lightweight polling status via our backend (GET /api/recordings/:id).
