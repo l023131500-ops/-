@@ -1039,10 +1039,10 @@ async function openProperty(id) {
 
   if (p.gush && p.helka) {
     html += '<h2 class="sec">בקשות נסח טאבו</h2><div id="tabuBox">' +
-      tabuHtml(p, d.tabu_requests || [], d.documents || [], actorName) + '</div>';
+      tabuHtml(p, d.tabu_requests || [], d.documents || [], actorName, d.deals || []) + '</div>';
 
     html += '<h2 class="sec">בקשות מידע להיתר (תיק מידע)</h2><div id="tikMeidaBox">' +
-      tikMeidaHtml(p, d.tik_meida_requests || [], d.documents || [], actorName) + '</div>';
+      tikMeidaHtml(p, d.tik_meida_requests || [], d.documents || [], actorName, d.deals || []) + '</div>';
   }
 
   html += '<h2 class="sec">ניתוח כדאיות והשקעה</h2><div id="feasBox">' + feasibilityHtml(p) + '</div>';
@@ -1057,8 +1057,8 @@ async function openProperty(id) {
     wireShareBox(p);
     wirePropDocs(p, d.documents || []);
     if (p.gush && p.helka) {
-      wireTabu(p, d.tabu_requests || [], d.documents || []);
-      wireTikMeida(p, d.tik_meida_requests || [], d.documents || []);
+      wireTabu(p, d.tabu_requests || [], d.documents || [], d.deals || []);
+      wireTikMeida(p, d.tik_meida_requests || [], d.documents || [], d.deals || []);
     }
     wireFeasibility(p);
   });
@@ -1344,9 +1344,10 @@ function tabuAnalysisHtml(a) {
     '</div>';
 }
 
-function tabuHtml(p, requests, docs, actorName) {
+function tabuHtml(p, requests, docs, actorName, deals) {
   const canManage = OFFICE.role === 'owner' || OFFICE.role === 'manager';
   const docById = (id) => docs.find((d) => d.id === id);
+  const dealById = (id) => (deals || []).find((x) => x.id === id);
   const nameOf = actorName || (() => null);
   const rows = (requests || []).map((r) => {
     const doc = r.document_id ? docById(r.document_id) : null;
@@ -1360,6 +1361,8 @@ function tabuHtml(p, requests, docs, actorName) {
           (sentName ? ' · נשלח ע״י ' + esc(sentName) : '') +
         '</span>'
       : '';
+    const deal = r.deal_id ? dealById(r.deal_id) : null;
+    const dealHtml = deal ? '<span class="w"> · קשור לעסקה: ' + esc(deal.title || 'עסקה') + '</span>' : '';
     let actions = '';
     if (r.status === 'pending' && canManage) {
       actions = '<button class="btn btn-quiet btn-sm" data-tabusent="' + r.id + '">סומן כהוזמן — נשלח לרשם המקרקעין</button>';
@@ -1383,7 +1386,7 @@ function tabuHtml(p, requests, docs, actorName) {
       '<p class="na" style="margin-top:6px">נשלח לרשם המקרקעין ' + dtm(r.sent_at) + '</p>' : '';
     return '<li>' + badge + ' · עדיפות ' + esc(TABU_GRADE_HE[r.grade] || r.grade) +
       (r.notes ? '<br/><span class="na" style="font-size:12px">' + esc(r.notes) + '</span>' : '') +
-      '<span class="w"> · ' + dtm(r.created_at) + '</span>' + actorHtml +
+      '<span class="w"> · ' + dtm(r.created_at) + '</span>' + actorHtml + dealHtml +
       (actions ? '<div class="controls" style="margin-top:8px">' + actions + '</div>' : '') +
       sentHtml + fulfilledHtml + analysisHtml + '</li>';
   }).join('');
@@ -1393,7 +1396,7 @@ function tabuHtml(p, requests, docs, actorName) {
     '<div id="tabuAddBox"></div>';
 }
 
-function wireTabu(p, requests, docs) {
+function wireTabu(p, requests, docs, deals) {
   const box = $('tabuBox');
   if (!box) return;
 
@@ -1491,14 +1494,21 @@ function wireTabu(p, requests, docs) {
         '<label class="f">עדיפות<select id="tabu_grade">' +
           Object.entries(TABU_GRADE_HE).map(([k, l]) => '<option value="' + k + '">' + l + '</option>').join('') +
         '</select></label>' +
+        ((deals || []).length
+          ? '<label class="f">קשור לעסקה<select id="tabu_deal"><option value="">ללא עסקה</option>' +
+              deals.map((x) => '<option value="' + x.id + '">' + esc(x.title || 'עסקה') + '</option>').join('') +
+            '</select></label>'
+          : '') +
         '<label class="f" style="min-width:220px">הערה<input id="tabu_notes" /></label>' +
         '<button class="btn btn-sm" id="tabuSave">שליחת בקשה</button>' +
       '</div>';
     $('tabuSave').addEventListener('click', async () => {
       $('tabuSave').disabled = true;
       try {
+        const dealSel = $('tabu_deal');
         await rpc('np_tabu_request_create', { p: {
           property_id: p.id, grade: $('tabu_grade').value, notes: $('tabu_notes').value.trim(),
+          deal_id: dealSel ? (dealSel.value || null) : null,
         } });
         toast('הבקשה נשלחה');
         openProperty(p.id);
@@ -1519,9 +1529,10 @@ function wireTabu(p, requests, docs) {
 // auto-fulfils the moment the file lands (np_tikmeida_document_upload,
 // migration 0155). The issued file is a property document, category='permit'
 // (0105 already reserves this exact category for planning-info files).
-function tikMeidaHtml(p, requests, docs, actorName) {
+function tikMeidaHtml(p, requests, docs, actorName, deals) {
   const canManage = OFFICE.role === 'owner' || OFFICE.role === 'manager';
   const docById = (id) => docs.find((d) => d.id === id);
+  const dealById = (id) => (deals || []).find((x) => x.id === id);
   const nameOf = actorName || (() => null);
   const rows = (requests || []).map((r) => {
     const doc = r.document_id ? docById(r.document_id) : null;
@@ -1535,6 +1546,8 @@ function tikMeidaHtml(p, requests, docs, actorName) {
           (sentName ? ' · נשלח ע״י ' + esc(sentName) : '') +
         '</span>'
       : '';
+    const deal = r.deal_id ? dealById(r.deal_id) : null;
+    const dealHtml = deal ? '<span class="w"> · קשור לעסקה: ' + esc(deal.title || 'עסקה') + '</span>' : '';
     let actions = '';
     if (r.status === 'pending' && canManage) {
       actions = '<button class="btn btn-quiet btn-sm" data-tikmeidasent="' + r.id + '">סומן כהוגש — הוגש לוועדה המקומית</button>';
@@ -1553,7 +1566,7 @@ function tikMeidaHtml(p, requests, docs, actorName) {
         (doc && doc.name ? ' · ' + esc(doc.name) : '') + '</p>' : '';
     return '<li>' + badge + ' · עדיפות ' + esc(TABU_GRADE_HE[r.grade] || r.grade) +
       (r.notes ? '<br/><span class="na" style="font-size:12px">' + esc(r.notes) + '</span>' : '') +
-      '<span class="w"> · ' + dtm(r.created_at) + '</span>' + actorHtml +
+      '<span class="w"> · ' + dtm(r.created_at) + '</span>' + actorHtml + dealHtml +
       (actions ? '<div class="controls" style="margin-top:8px">' + actions + '</div>' : '') +
       fulfilledHtml + '</li>';
   }).join('');
@@ -1563,7 +1576,7 @@ function tikMeidaHtml(p, requests, docs, actorName) {
     '<div id="tikMeidaAddBox"></div>';
 }
 
-function wireTikMeida(p, requests, docs) {
+function wireTikMeida(p, requests, docs, deals) {
   const box = $('tikMeidaBox');
   if (!box) return;
 
@@ -1641,14 +1654,21 @@ function wireTikMeida(p, requests, docs) {
         '<label class="f">עדיפות<select id="tikmeida_grade">' +
           Object.entries(TABU_GRADE_HE).map(([k, l]) => '<option value="' + k + '">' + l + '</option>').join('') +
         '</select></label>' +
+        ((deals || []).length
+          ? '<label class="f">קשור לעסקה<select id="tikmeida_deal"><option value="">ללא עסקה</option>' +
+              deals.map((x) => '<option value="' + x.id + '">' + esc(x.title || 'עסקה') + '</option>').join('') +
+            '</select></label>'
+          : '') +
         '<label class="f" style="min-width:220px">הערה<input id="tikmeida_notes" /></label>' +
         '<button class="btn btn-sm" id="tikMeidaSave">שליחת בקשה</button>' +
       '</div>';
     $('tikMeidaSave').addEventListener('click', async () => {
       $('tikMeidaSave').disabled = true;
       try {
+        const dealSel = $('tikmeida_deal');
         await rpc('np_tikmeida_request_create', { p: {
           property_id: p.id, grade: $('tikmeida_grade').value, notes: $('tikmeida_notes').value.trim(),
+          deal_id: dealSel ? (dealSel.value || null) : null,
         } });
         toast('הבקשה נשלחה');
         openProperty(p.id);
