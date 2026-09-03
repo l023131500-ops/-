@@ -48,6 +48,12 @@ const AdminContent = () => {
     load();
   };
 
+  const updateForumCategory = async (id: string, forumCategoryId: string) => {
+    await supabase.from("materials").update({ display_forum_category_id: forumCategoryId || null }).eq("id", id);
+    toast.success(forumCategoryId ? "שיוך הפורום עודכן" : "שיוך הפורום הוסר");
+    load();
+  };
+
   const remove = async (id: string) => {
     if (!confirm("למחוק את הקובץ?")) return;
     await supabase.from("materials").delete().eq("id", id);
@@ -127,14 +133,21 @@ const AdminContent = () => {
                       {m.featured_on_homepage && (
                         <span className="text-xs flex items-center gap-1 text-secondary"><Star className="w-3 h-3 fill-secondary" />מוצג בעמוד הבית</span>
                       )}
-                      {m.display_forum_category_id && (
-                        <Badge variant="outline" className="text-xs">
-                          פורום: {forumCategoriesMap[m.display_forum_category_id] || "—"}
-                        </Badge>
-                      )}
                     </div>
                     <p className="text-xs text-muted-foreground">העלה: {profilesMap[m.uploader_id] || "—"} · {new Date(m.created_at).toLocaleString("he-IL")}</p>
                     {m.description && <p className="text-sm text-muted-foreground mt-2">{m.description}</p>}
+                    {Object.keys(forumCategoriesMap).length > 0 && (
+                      <div className="mt-2 flex items-center gap-2">
+                        <span className="text-xs text-muted-foreground shrink-0">שיוך לפורום:</span>
+                        <Select value={m.display_forum_category_id || "none"} onValueChange={v => updateForumCategory(m.id, v === "none" ? "" : v)}>
+                          <SelectTrigger className="h-7 w-44 text-xs"><SelectValue /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="none">ללא שיוך</SelectItem>
+                            {Object.entries(forumCategoriesMap).map(([id, name]) => <SelectItem key={id} value={id}>{name}</SelectItem>)}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    )}
                   </div>
                   <div className="flex items-center gap-1 shrink-0">
                     <a href={m.file_url} target="_blank" rel="noreferrer">
