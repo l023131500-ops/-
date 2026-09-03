@@ -151,3 +151,26 @@ additive. `core.build_tasks` row added (system 15, priority 304) and
 marked done. Committed to `fix/15-egod-participant-notifications-history-
 0903` (not merged, not pushed — same standing constraint as every other
 branch in this file).
+
+**[2026-09-03, loop A, session 3] Checked whether egod has a kiosk-style
+GitHub push path — it does not, dead end confirmed, do not re-check.**
+The kiosk (35) escalation today found `GITHUB_TOKEN` can push to
+`l023131500-ops/zol` and that push *is* the deploy trigger (Railway builds
+from that branch). Verified the parallel question for egod:
+`GET /repos/l023131500-ops/egod` also returns `permissions.push:true` for
+the same token — but this doesn't unlock anything, because (per the
+pipeline already documented above) egod does **not** deploy from a GitHub
+push at all. `l023131500-ops/egod`'s `main` is Lovable-managed (last+only
+commit `b57ba92f`, 2026-05-05, carries an `X-Lovable-Edit-ID` trailer, no
+other branches exist) and is ~4 months stale vs. this repo's vendored copy
+(spot-checked `Participants.tsx`: remote 7,219 bytes with no
+`notifications_log` code at all vs. local 15,939 bytes) — pushing this
+repo's 164-file `apps/15-egod` tree there would be a blind overwrite with
+zero shared git ancestry, not a verified fast-forward like the kiosk case,
+and still wouldn't deploy anything since the live site is served by the
+separate `egod-more30` Vercel project via a manual local
+`vite build` → `robocopy` → `vercel deploy --prod` pipeline that no
+GitHub push touches. `bun.lockb` is byte-identical between local and
+remote (`sha256 79e9024f9abd7b6`) so there's at least no dependency drift
+if this ever needs manual reconciliation later. No code changed, no push
+attempted — this is a closed research question now, not a new blocker.
