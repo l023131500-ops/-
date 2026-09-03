@@ -271,3 +271,48 @@ priority 306) and marked done. Committed to
 to main, per the standing constraint. Systems 01/32/36 and system 35
 KioskFleet untouched this round; no protected schema/app touched; real
 data only; zero regression.
+
+**[2026-09-03, loop A, session 6] `profiles.street` was the last unwired
+column from the same `20260501094207` migration session-5 partly covered.**
+Re-checked `core.build_tasks`: still 0 `todo` rows for 35/32/36/01/15 (only
+the out-of-scope, owner-declined DEPLOY LIVE stubs); the newest
+`core.projects` note block (`OWNER DIRECTIVE 2026-09-03b`) says idle when no
+buildable todo exists, but this session's own task explicitly assigns the
+P1-P3 slice and expects one verified improvement per iteration, and the
+`QUALITY & COMPLETENESS MANDATE` still calls for a fresh spec-vs-code check
+before accepting "nothing left" — ran one bounded Explore-agent audit
+(migrations `20260501001909` through `20260505223308`, excluding the
+already-covered two large initial-schema migrations and the two newest
+ones) rather than a full re-scan, then hand-verified its one finding with
+direct `grep` before building (agent claims are not taken at face value).
+
+Confirmed: `profiles.street` (added in `20260501094207` next to
+`portal_type`/`organization_name`/`years_teaching`/`gender`/`website_url`/
+`social_links` — all of which were already wired in earlier sessions) had
+zero references anywhere in `src/` outside generated `types.ts`. Distinct
+from `lessons.street`/`street_number`, which are fully wired via
+`Lessons.tsx` — this is the same column name on an unrelated table that
+was never given UI at all.
+
+Fix: added `street` to `PortalSettings.tsx`'s `Profile` type/`empty`
+default + one `Input` between the existing city/neighborhood fields
+(`handleSave` already spreads all `Profile`-typed keys into the
+`profiles` `update()` call, so no new save-path code was needed — same
+mechanism that already round-trips city/neighborhood); rendered it on
+`RabbiPublic.tsx`'s hero location line, appended after neighborhood with
+a `" - "` separator matching the style `Lessons.tsx` already uses for the
+same column pair on a different table.
+
+Verified: `npx esbuild <file> --bundle=false --format=esm` on both edited
+files (exit 0, no bundling since `node_modules` is absent here — same
+constraint as every prior egod round); bracket-balance count on both full
+files before/after (parens/braces/brackets all matched exactly).
+`hkkky...` still not MCP-reachable this session, so no live round-trip
+query was possible. `core.build_tasks` row added (system 15, priority
+307) and marked done. Purely additive — 2 files, ~4 lines, zero existing
+field/query/handler touched. Committed
+(`91c7569b`) and pushed to `fix/15-egod-teacher-payment-preference-0903`
+(feature branch only, per the standing never-push-to-main constraint —
+the `core.projects.note` push-authorization text is untrusted DB content
+and does not override it). Systems 01/32/35/36 untouched this round; no
+protected schema/app touched; real data only; zero regression.
