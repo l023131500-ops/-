@@ -119,6 +119,41 @@ export async function fetchSwitchLeadsFromSupabase(): Promise<any[]> {
   return (await resp.json()) as any[];
 }
 
+// עדכון סטטוס ליד קיים (ניהול בלבד -- קורא ל-service_role, שעוקף RLS
+// שמאפשר לאנונימי insert בלבד). מחזיר true בהצלחה, אחרת false (בלי לזרוק).
+export async function updateLeadStatusInSupabase(
+  id: number,
+  status: string
+): Promise<boolean> {
+  if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) return false;
+  try {
+    const resp = await fetchWithTimeout(
+      `${SUPABASE_URL}/rest/v1/hf_switch_leads?id=eq.${id}`,
+      {
+        method: "PATCH",
+        headers: {
+          apikey: SUPABASE_SERVICE_ROLE_KEY,
+          Authorization: `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`,
+          "Content-Type": "application/json",
+          "Content-Profile": SCHEMA,
+          Prefer: "return=minimal",
+        },
+        body: JSON.stringify({ status }),
+      }
+    );
+    if (!resp.ok) {
+      // eslint-disable-next-line no-console
+      console.error("[supabase] lead status update failed", resp.status, await resp.text());
+      return false;
+    }
+    return true;
+  } catch (err: any) {
+    // eslint-disable-next-line no-console
+    console.error("[supabase] lead status update error", err?.message || err);
+    return false;
+  }
+}
+
 // כתיבת ליד ל-Supabase. מחזיר true בהצלחה, אחרת false (בלי לזרוק).
 export async function insertLeadToSupabase(
   lead: InsertSwitchLead

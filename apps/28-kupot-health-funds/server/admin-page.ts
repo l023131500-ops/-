@@ -76,6 +76,18 @@ export function renderAdminPage(): string {
   var errorEl = document.getElementById("error");
   var pwInput = document.getElementById("pw");
   var COLUMNS = ["id","created_at","topic","full_name","phone","email","id_number","city","current_fund","current_supplemental","target_fund","people_count","status","note"];
+  var STATUSES = ["new","in_progress","done","irrelevant"];
+
+  function updateStatus(id, status, onDone) {
+    fetch("switch-leads/" + id, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+      body: JSON.stringify({ status: status }),
+    })
+      .then(function (r) { onDone(r.ok); })
+      .catch(function () { onDone(false); });
+  }
 
   function renderTable(rows) {
     var wrap = document.getElementById("table-wrap");
@@ -103,7 +115,29 @@ export function renderAdminPage(): string {
       COLUMNS.forEach(function (col) {
         var td = document.createElement("td");
         var val = row[col];
-        td.textContent = val === null || val === undefined ? "" : String(val);
+        if (col === "status") {
+          var select = document.createElement("select");
+          STATUSES.forEach(function (s) {
+            var opt = document.createElement("option");
+            opt.value = s;
+            opt.textContent = s;
+            if (s === val) opt.selected = true;
+            select.appendChild(opt);
+          });
+          select.addEventListener("change", function () {
+            var prev = val;
+            var next = select.value;
+            select.disabled = true;
+            updateStatus(row.id, next, function (ok) {
+              select.disabled = false;
+              if (!ok) select.value = prev;
+              else val = next;
+            });
+          });
+          td.appendChild(select);
+        } else {
+          td.textContent = val === null || val === undefined ? "" : String(val);
+        }
         tr.appendChild(td);
       });
       tbody.appendChild(tr);

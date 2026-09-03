@@ -12,6 +12,7 @@ import {
   fetchTopicsFromSupabase,
   fetchTopicFromSupabase,
   fetchSwitchLeadsFromSupabase,
+  updateLeadStatusInSupabase,
 } from "./supabase";
 import type { HfTopic } from "@shared/schema";
 import { fundDetailsFor } from "./fund-details";
@@ -27,6 +28,9 @@ const AGENT_RATE_LIMIT_PER_HOUR = 20;
 // בקשות לשעה, לכל כתובת IP, ל-/api/switch-lead (טופס ציבורי בלי אימות -- בלי
 // תקרה, בקשות חוזרות היו כותבות שורות ליד ללא הגבלה לטבלה המקומית ול-Supabase).
 const SWITCH_LEAD_RATE_LIMIT_PER_HOUR = 20;
+
+// ערכי הסטטוס האפשריים לליד (shared/schema.ts: hf_switch_leads.status).
+const SWITCH_LEAD_STATUSES = ["new", "in_progress", "done", "irrelevant"];
 
 // קריאת נושאים — מ-Supabase בפרודקשן, אחרת מ-SQLite המקומי.
 async function readTopics(): Promise<HfTopic[]> {
@@ -161,6 +165,31 @@ export async function registerRoutes(
     } catch (e: any) {
       console.error("[switch-leads] error", e?.message || e);
       res.status(502).json({ error: "שגיאה בטעינת פניות" });
+    }
+  });
+
+  // ---- (לניהול) עדכון סטטוס ליד -- מוגן באותו טוקן ניהול כמו הרשימה ----
+  app.patch("/api/switch-leads/:id", async (req, res) => {
+    if (!isAdminRequest(req)) {
+      return res.status(403).json({ error: "גישה נדחתה" });
+    }
+    const id = Number(req.params.id);
+    const status = typeof req.body?.status === "string" ? req.body.status : "";
+    if (!Number.isInteger(id) || !SWITCH_LEAD_STATUSES.includes(status)) {
+      return res.status(400).json({ error: "סטטוס לא תקין" });
+    }
+    try {
+      if (useSupabaseStore()) {
+        const ok = await updateLeadStatusInSupabase(id, status);
+        if (!ok) return res.status(502).json({ error: "עדכון הסטטוס נכשל" });
+      } else {
+        const lead = storage.updateSwitchLeadStatus(id, status);
+        if (!lead) return res.status(404).json({ error: "פנייה לא נמצאה" });
+      }
+      res.json({ ok: true });
+    } catch (e: any) {
+      console.error("[switch-lead-status] error", e?.message || e);
+      res.status(502).json({ error: "עדכון הסטטוס נכשל" });
     }
   });
 
