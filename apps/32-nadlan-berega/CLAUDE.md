@@ -1,5 +1,53 @@
 # CLAUDE.md — נדל"ן ברגע (קרא אותי בתחילת כל סשן)
 
+## עדכון — 03/09/2026, session 5 (Loop A — 32: דו"ח איכות עסקה (GO/CAUTION/NO-GO) חסר לגמרי מ-`/report` המודרני)
+`PRODUCT_TIERS.md` §רמה 2 (פרימיום) מבטיח "דו״ח איכות עסקה (ציון GO/בזהירות/
+NO-GO + השוואות)" — `lib/score.ts` כבר נשא מנוע `dealQuality()` שלם ועובד
+(ציון 0-100, דגל GO/CAUTION/NO_GO, פער-מול-שוק, רמת-ביטחון), אבל היה מחווט
+**רק** לזרם הישן `app/api/profile` + `PropertyIdCard.tsx` — הדוח המודרני
+(`lib/buildreport.ts` → `ReportView.tsx`, מה ש-`/report?q=` בפועל מציג היום)
+מעולם לא קרא לו. לקוח פרימיום/VIP לא ראה ציון-איכות-עסקה בכלל, למרות
+שהמפרט מבטיח אותו במפורש כפריט-רמה.
+
+**החלטה:** במקום להעביר `askingPrice`/`askingArea` דרך שרשרת ה-`PropertyInput`
+המלאה (שינוי ל-`buildreport.ts` עצמו — קובץ 3,400+ שורות בלי `tsc` בסביבה
+הזו לאימות שינוי-מבנה עמוק), `dealQuality()` שוכתב לקבל מערך עסקאות-השוואה
+גולמי (`{price, areaSqm}[]`) במקום `PropertyProfile` מלא — אותו דפוס בדיוק
+כמו `valuate()` הקיים כבר ב-`lib/valuation.ts`. כך אפשר להריץ אותו **כולו
+בצד הלקוח** מול `data.valuation.comparables` — אותן עסקאות השוואה בדיוק
+שטבלת ההערכה (`ValuationPanel`) כבר מציגה ושכבר נשלחו ללקוח בכל דוח פרימיום/
+VIP. אין קריאת רשת/מקור/שדה-DB חדש בכלל — רק מחיר מבוקש, שהלקוח מקליד.
+
+נוסף `components/report/DealQualityPanel.tsx` (client component: שדה מחיר
+מבוקש + כפתור "חשב", תג צבעוני GO/CAUTION/NO-GO + פער-מול-חציון + נימוקים,
+אותו סגנון תצוגה בדיוק כמו הגרסה הישנה ב-`PropertyIdCard.tsx`), מחובר
+ב-`ReportView.tsx` מיד אחרי `ValuationPanel`, גדור ל-`tier !== 'basic'` (המפרש
+ממקם את הפיצ'ר ברמה 2, לא בחינם) ול-`layers.includes('valuation')` (אותו
+שער כמו ה-`ValuationPanel` שהוא מתלווה אליו). קורא הקיים היחיד של
+`dealQuality()` (`app/api/profile/route.ts`) עודכן ל-`dealQuality(base.
+transactions, ...)` — אותם ערכים בדיוק, רק דרך החתימה החדשה.
+
+אומת: שוכפלה עצמאית ב-Node טהור לוגיקת `dealQuality()` (ללא תלויות) מול 6
+תרחישים (בלי עסקאות-השוואה בכלל, מחיר נמוך משמעותית משוק → GO, מחיר גבוה
+משמעותית → NO_GO, מחיר קרוב לשוק, מחיר-מבוקש 0 → מטופל כ"לא סופק" בדיוק
+כמו קודם, עסקאות עם שדות חסרים מסוננות ולא נספרות ברמת-הביטחון) — כולם
+תואמים את ההתנהגות המקורית ביט-לביט. `npx esbuild` (רשת זמינה הסבב הזה,
+בניגוד לרוב הסבבים הקודמים) תרגם את כל 4 הקבצים שהשתנו/נוספו נקי; בדיקת
+איזון-סוגריים על כולם עברה. הותקנו `react`/`react-dom` בתיקיית `/tmp`
+מבודדת (לא נגעו ב-`node_modules`/`package.json` של האפליקציה עצמה) ובוצע
+רינדור אמיתי דרך `react-dom/server` מול ארבעה תרחישי-props (הערכה מלאה עם
+עסקאות, `valuation=null`, `notEnoughData` (בלי `comparables`), ומערך
+`comparables` ריק) — הראשון רינדר את הפאנל נכון (מונה-עסקאות/placeholder
+נכונים), שלושת האחרים החזירו מחרוזת ריקה כצפוי, בלי שום חריגה. אין דפדפן
+חי בסנדבוקס הזה כדי ללחוץ בפועל על כפתור "חשב" — הלוגיקה שמאחוריו (מה
+שקורה בלחיצה) אומתה בנפרד ב-Node טהור למעלה.
+
+אפס רגרסיה: `dealQuality()` שינה חתימה אך התנהגות זהה (הקורא היחיד עודכן
+בהתאם); `PropertyIdCard.tsx`/הזרם הישן לא נגעו; קובץ חדש + שתי שורות חדשות
+ב-`ReportView.tsx` בלבד. נדחף לענף
+`fix/32-nadlan-berega-deal-quality-report-0903` (c1ad7abe) — לא מוזג. System
+35 KioskFleet לא נגע, לפי ה-HARD STEERING.
+
 ## עדכון — 03/09/2026, session 4 (Loop A — 36 nadlan-pro: כפתור "Research report" עצמאי לניתוח AI של נסח טאבו, `sites/36-nadlan-pro/tivuch/app.html`)
 המשך לאותה שרשרת ביקורת (03/09 session 1-3 למעלה): סעיף c של ה-TOP BUILD
 DIRECTIVE ל-TABU workflow מבטיח "a place to upload the nesach tabu file...
