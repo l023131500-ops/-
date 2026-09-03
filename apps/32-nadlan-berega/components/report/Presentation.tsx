@@ -462,6 +462,33 @@ function buildSlides(d: PropertyReport): Slide[] {
     });
   }
 
+  // Land reports (`assetType === 'land'`): `lib/rami.ts` already pulls the
+  // relevant "agricultural land rezoning" chapter of the Israel Land Authority's
+  // council-decisions file whenever the report is a land report, and it's
+  // already shown on-screen (RamiPolicyPanel.tsx) and reaches the email via
+  // the generic per-category `notes` array (buildreport.ts's `notes.land`,
+  // rendered by reporthtml.ts's categories loop) — but the deck never had a
+  // slide for it at all, and never even branches on `assetType==='land'`
+  // anywhere, so a client who only saw the deck/PDF for a land report never
+  // learned what the land-rezoning policy says about their parcel.
+  if (d.ramiPolicy && d.ramiPolicy.sections.length > 0) {
+    const rp = d.ramiPolicy;
+    s.push({
+      kicker: 'קרקע',
+      title: 'מדיניות רמ"י — שינוי ייעוד של קרקע חקלאית',
+      subtitle:
+        rp.note +
+        ` מתוך קובץ החלטות מועצת מקרקעי ישראל, גרסה ${rp.version}` +
+        (rp.versionDate ? ` (${new Date(rp.versionDate).toLocaleDateString('he-IL')})` : '') +
+        '.',
+      rows: rp.sections.slice(0, 4).map((sec) => ({
+        label: sec.number ? `${sec.number} · ${sec.title}` : sec.title,
+        value: sec.path,
+        note: sec.text ? sec.text.slice(0, 140) : undefined,
+      })),
+    });
+  }
+
   s.push({
     kicker: 'סיכום',
     title: 'מה חשוב לזכור',
