@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { FileText, Download, CheckCircle2, XCircle, Clock, Trash2 } from "lucide-react";
+import { FileText, Download, CheckCircle2, XCircle, Clock, Trash2, Star, Globe } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -63,6 +64,21 @@ const AdminContent = () => {
     setBusyId(null);
     if (error) toast.error("שגיאה: " + error.message);
     else { toast.success("נמחק"); load(); }
+  };
+
+  // display_in_public_profile/featured_on_homepage: written on `materials`
+  // since 20260519000002 and column-protected as moderator-only decisions by
+  // 20260831070000, but this screen never exposed a toggle for either flag --
+  // there was no way for a moderator to actually turn them on. Additive: same
+  // `materials` row, no new query, no change to the existing status/rejection
+  // update path above.
+  const toggleFlag = async (id: string, field: "display_in_public_profile" | "featured_on_homepage", value: boolean) => {
+    if (busyId) return;
+    setBusyId(id);
+    const { error } = await supabase.from("materials").update({ [field]: value }).eq("id", id);
+    setBusyId(null);
+    if (error) toast.error("שגיאה: " + error.message);
+    else { load(); }
   };
 
   const filtered = materials.filter(m =>
@@ -162,6 +178,32 @@ const AdminContent = () => {
                     <Trash2 className="w-3 h-3 text-destructive" />מחק
                   </Button>
                 </div>
+                {m.status === "approved" && (
+                  <div className="flex flex-wrap items-center gap-4 mt-3 pt-3 border-t border-border">
+                    <div className="flex items-center gap-2">
+                      <Switch
+                        checked={!!m.display_in_public_profile}
+                        disabled={busyId === m.id}
+                        onCheckedChange={(v) => toggleFlag(m.id, "display_in_public_profile", v)}
+                        id={`pub-${m.id}`}
+                      />
+                      <label htmlFor={`pub-${m.id}`} className="text-xs text-muted-foreground flex items-center gap-1">
+                        <Globe className="w-3 h-3" />הצג בדף הציבורי של המגיד
+                      </label>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Switch
+                        checked={!!m.featured_on_homepage}
+                        disabled={busyId === m.id}
+                        onCheckedChange={(v) => toggleFlag(m.id, "featured_on_homepage", v)}
+                        id={`feat-${m.id}`}
+                      />
+                      <label htmlFor={`feat-${m.id}`} className="text-xs text-muted-foreground flex items-center gap-1">
+                        <Star className="w-3 h-3" />הצג בדף הבית
+                      </label>
+                    </div>
+                  </div>
+                )}
               </div>
             );
           })}

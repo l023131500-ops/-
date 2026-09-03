@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { motion } from "framer-motion";
-import { BookOpen, MapPin, Clock, Phone, Mail, Send, Building2, Globe } from "lucide-react";
+import { BookOpen, MapPin, Clock, Phone, Mail, Send, Building2, Globe, FileText, Download } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -17,6 +17,7 @@ const RabbiPublic = () => {
   const [synagogues, setSynagogues] = useState<any[]>([]);
   const [prayerTimes, setPrayerTimes] = useState<any[]>([]);
   const [photos, setPhotos] = useState<any[]>([]);
+  const [materials, setMaterials] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [contactForm, setContactForm] = useState({ sender_name: "", sender_phone: "", sender_email: "", message: "" });
   const [sending, setSending] = useState(false);
@@ -73,6 +74,22 @@ const RabbiPublic = () => {
     // because this repo doesn't regenerate generated-types.ts per migration.
     const { data: photosData } = await supabase.from("portal_photos" as any).select("*").eq("teacher_id", profile.id);
     setPhotos((photosData as any) || []);
+
+    // materials.display_in_public_profile (20260519000002) is the moderator-
+    // approved "show on this rabbi's public page" flag -- protected as
+    // moderator-only by 20260831070000's trigger and now settable from
+    // admin/Content.tsx, but this page never read it, so an approved+flagged
+    // upload had no way to actually reach the public profile it was meant
+    // for. `status="approved"` is enforced again here (not just trusted from
+    // the flag) as defense in depth, matching this page's existing
+    // is_active+is_approved double-gate on lessons above.
+    const { data: materialsData } = await supabase
+      .from("materials")
+      .select("*")
+      .eq("owner_user_id", profile.id)
+      .eq("status", "approved")
+      .eq("display_in_public_profile", true);
+    setMaterials(materialsData || []);
 
     setLoading(false);
   };
@@ -200,6 +217,30 @@ const RabbiPublic = () => {
             <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
               {photos.map(p => (
                 <img key={p.id} src={p.image_url} alt={p.caption || ""} className="rounded-xl w-full h-40 object-cover" />
+              ))}
+            </div>
+          </motion.section>
+        )}
+
+        {/* Materials */}
+        {materials.length > 0 && (
+          <motion.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }}>
+            <h2 className="font-heading text-xl font-bold text-foreground mb-4 flex items-center gap-2">
+              <FileText className="w-5 h-5 text-secondary" />חומרי לימוד
+            </h2>
+            <div className="grid gap-3">
+              {materials.map(m => (
+                <div key={m.id} className="bg-card rounded-xl border border-border p-4 flex items-center justify-between gap-3">
+                  <div className="min-w-0">
+                    <h3 className="font-bold text-foreground truncate">{m.title}</h3>
+                    {m.description && <p className="text-sm text-muted-foreground truncate">{m.description}</p>}
+                  </div>
+                  {m.file_url && (
+                    <a href={m.file_url} target="_blank" rel="noreferrer" className="shrink-0">
+                      <Button size="sm" variant="outline" className="gap-1"><Download className="w-3 h-3" />הורד</Button>
+                    </a>
+                  )}
+                </div>
               ))}
             </div>
           </motion.section>

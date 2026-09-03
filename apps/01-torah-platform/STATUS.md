@@ -115,3 +115,77 @@ pushed to main, per this session's standing operating constraint (see the
 `OWNER ORDER 2026-09-02b` vs. never-push-to-main conflict noted throughout
 this repo's other STATUS.md/CLAUDE.md files this week). Systems 15/32/35/36
 untouched this round.
+
+## 2026-09-03, session (loop B) — approved teacher materials never reached the public profile or homepage
+
+Same "field exists, never rendered" shape as the donation-receipt session
+above, found on a different table this round: `core.build_tasks` for
+35/32/36/01/15 reconfirmed still 0 non-deploy `todo` rows; deploy still
+blocked at the sandbox-environment level (no `vercel`/`railway` CLI, no
+deploy-hook secret) — not re-litigated, see the two sessions above.
+
+`materials.display_in_public_profile` and `materials.featured_on_homepage`
+(added `20260519000002_torah_content.sql`) are moderator-decision columns —
+confirmed load-bearing, not vestigial, because
+`20260831070000_materials_protect_moderation_fields.sql`'s trigger explicitly
+column-protects them (reverts any change from a plain tenant `member`,
+allows only `moderator`/`tenant_admin`/super-admin), the same protection
+pattern already applied to `status`/`rejection_reason` on the same table.
+But grepping every call site of `.from("materials")` in `src/` (only two:
+`src/pages/portal/Materials.tsx`, the teacher's upload form, and
+`src/pages/admin/Content.tsx`, the moderator's approve/reject screen) showed
+neither ever read or wrote either column — a moderator had no UI control to
+turn either flag on in the first place, and even if the DB value were set
+directly, `src/pages/public/RabbiPublic.tsx` (the public teacher-profile
+page, the obvious "public profile" this column's name refers to) never
+queried `materials` at all, and neither did `src/pages/public/Home.tsx`. The
+column's own migration comment predicted exactly this: "moderator-only
+surfaces once the public teacher portal starts reading them" — it never
+had. Net effect: a fully-approved teaching material could never actually
+reach a teacher's public page, regardless of what any admin wanted, because
+no UI on either end of the flag existed.
+
+Fixed the `display_in_public_profile` half end-to-end (scoped narrowly;
+left `featured_on_homepage`/`Home.tsx` alone rather than touching a second,
+unrelated page in the same round):
+- `src/pages/admin/Content.tsx`: added two `Switch` toggles (only rendered
+  once a material is `status === "approved"`, matching the existing
+  approve/reject flow) that call a new `toggleFlag()` helper doing
+  `.from("materials").update({ [field]: value }).eq("id", id)` — same table,
+  same client, no new query, no change to the existing `updateStatus()`/
+  `remove()` handlers.
+- `src/pages/public/RabbiPublic.tsx`: added one new query,
+  `.from("materials").select("*").eq("owner_user_id", profile.id).eq("status",
+  "approved").eq("display_in_public_profile", true)`, and a new "חומרי
+  לימוד" section rendered in the same place/style as the page's existing
+  Lessons/Photos sections. `status="approved"` is re-checked here (not just
+  trusted from the flag) as defense in depth, matching this page's existing
+  `is_active`+`is_approved` double-gate on its `lessons` query directly
+  above. Confirmed the read is actually reachable under RLS: `materials` is
+  one of the generic tenant-scope tables from
+  `20260519000002_torah_content.sql`'s policy-generation loop, whose
+  `_tenant_read` policy allows `select` when the owning tenant's
+  `status = 'active'` — the same policy shape this page already relies on
+  for its `lessons`/`synagogues`/`prayer_times` queries above, so no RLS
+  change was needed or made.
+
+Verified: `npx esbuild <file> --bundle=false --format=esm` on both edited
+files (clean compile, exit 0) and inspected the transpiled JS output,
+confirming the new imports/state/handler/query/render block all reference
+the correct field names and call sites. Extracted the two pure predicates
+added (public-profile visibility filter; moderator-toggle visibility gate)
+into a standalone Node script and ran 6 representative rows through
+them — pending/unflagged, approved-but-unflagged, approved-and-flagged (the
+fixed case), rejected-with-flag-true (must stay hidden), flag-true-but-
+different-owner (cross-profile leak check), and null-flag (pre-existing
+rows with no value ever set) — all 6 passed. Also confirmed via `grep -c`
+that only these two files changed (`git status --porcelain`) and no other
+file in the repo references `materials` in a way this touches.
+
+Zero regression: purely additive on both files (new imports, new state, one
+new query, one new handler, one new render block, two new toggle controls)
+— no existing query, handler, column, RLS policy, or trigger touched or
+narrowed. `featured_on_homepage`/`Home.tsx` intentionally left as a
+follow-up (same shape, different page) rather than widened in this round.
+Committed to `fix/01-torah-platform-materials-public-display-0903` — not
+merged, not pushed to main. Systems 15/32/35/36 untouched this round.
