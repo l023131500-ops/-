@@ -428,6 +428,40 @@ function buildSlides(d: PropertyReport): Slide[] {
     });
   }
 
+  // §7 "היתכנות להיתר נוסף" (lib/feasibility.ts, FeasibilityPanel.tsx):
+  // answers "can I add construction here, and what counts as a violation" —
+  // built for every report whenever permits data exists (not tier-gated),
+  // and shown on-screen under the same permits category as the slide above —
+  // but the deck never had a slide for it, so a client who only saw the
+  // deck/PDF never learned what additive plans/restrictions apply.
+  if (d.feasibility) {
+    const f = d.feasibility;
+    s.push({
+      kicker: 'תכנון והיתרים',
+      title: 'היתכנות להיתר נוסף',
+      subtitle: f.headline,
+      rows: [
+        ...(f.additivePlans.length
+          ? [
+              {
+                label: 'תוכניות מאושרות שמאפשרות תוספת',
+                value: String(f.additivePlans.length),
+                note: f.additivePlans[0]?.why,
+              },
+            ]
+          : []),
+        ...(f.pendingPlans.length
+          ? [{ label: 'תוכניות בהליך שעשויות לפתוח תוספת', value: String(f.pendingPlans.length) }]
+          : []),
+        {
+          label: 'קווי בניין ומגבלות על החלקה',
+          value: String(f.buildingLines.length + f.restrictions.length),
+          note: f.buildingLines.length || f.restrictions.length ? undefined : 'לא אותרו על התשריט',
+        },
+      ],
+    });
+  }
+
   s.push({
     kicker: 'סיכום',
     title: 'מה חשוב לזכור',

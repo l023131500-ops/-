@@ -16,6 +16,7 @@ import type { TabuAnalysis, TabuDocRow, TikMeidaDocRow } from './requests';
 import { computeStreetStats } from './streetstats';
 import { hasValuation } from './valuation';
 import type { NearbyPlan } from './nearbyplans';
+import type { Feasibility } from './feasibility';
 
 const INK = '#141619';
 const MUTED = '#6b7280';
@@ -345,6 +346,58 @@ function nearbyPlansBlock(plans: NearbyPlan[] | null | undefined): string {
 }
 
 /**
+ * §7 · "היתכנות להיתר נוסף" — זהה בנתונים ל-`FeasibilityPanel.tsx` (המסך).
+ * `report.feasibility` נבנה בכל דוח כש-`report.permits` קיים (לא תלוי-רמה,
+ * `lib/buildreport.ts`) ומוצג במסך תחת אותה קטגוריית "תכנון והיתרים" כמו
+ * `permitGuidance`/`nearbyPlans` שכבר יש להם סעיף כאן — אבל מעולם לא הגיע
+ * למייל. בכוונה אין כאן שום מספר של זכויות בנייה (ראו `lib/feasibility.ts`) —
+ * רק תוכניות/קווי-בניין/מה לא ידוע, בדיוק כמו הפאנל במסך.
+ */
+function feasibilityBlock(f: Feasibility | null | undefined): string {
+  if (!f) return '';
+
+  const additive = f.additivePlans.length
+    ? bullets(
+        'תוכניות מאושרות שמכוחן אפשר לבקש תוספת',
+        f.additivePlans.map(
+          (p) => `${p.planNumber ?? 'תכנית ללא מספר'}${p.planName ? ` · ${p.planName}` : ''} — ${p.why}`,
+        ),
+      )
+    : '';
+
+  const pending = f.pendingPlans.length
+    ? bullets(
+        'תוכניות בהליך שעשויות לפתוח תוספת (טרם אושרו)',
+        f.pendingPlans.map(
+          (p) => `${p.planNumber ?? 'ללא מספר'}${p.planName ? ` · ${p.planName}` : ''} — ${p.why}`,
+        ),
+      )
+    : '';
+
+  const lines = [...f.buildingLines, ...f.restrictions];
+  const linesBlock = lines.length
+    ? bullets(
+        'קווי בניין ומגבלות על החלקה',
+        lines.map(
+          (e) => `${e.name}${e.planNumber ? ` · מתכנית ${e.planNumber}` : ''}${e.status ? ` · ${e.status}` : ''}`,
+        ),
+      )
+    : `<div style="margin-top:8px;font-size:13px;color:${MUTED}">לא אותרו קווי בניין מצוירים על החלקה בשירות המפות.</div>`;
+
+  const unknowns = f.unknowns.length
+    ? `<div style="margin-top:12px;padding:12px;border:1px solid #e9d9a8;border-radius:8px;background:#fdf8ec">
+  <div style="font-size:13px;font-weight:700;color:#8a6d24">מה אי אפשר לדעת מכאן</div>
+  <ul style="margin:6px 0 0;padding-inline-start:18px;font-size:12.5px;line-height:1.8;color:${INK}">
+    ${f.unknowns.map((u) => `<li>${esc(u)}</li>`).join('')}
+  </ul>
+  <div style="margin-top:8px;font-size:12.5px;font-weight:600;color:${INK}">${esc(f.whereToCheck)}</div>
+</div>`
+    : '';
+
+  return section('היתכנות להיתר נוסף', f.headline, `${additive}${pending}${linesBlock}${unknowns}`);
+}
+
+/**
  * §2 · הערכת שווי — זהה בנתונים ל-`ValuationPanel.tsx` (המסך) ולסליידר
  * ה"הערכת שווי" בחפיסה (`Presentation.tsx`), שניהם קוראים מ-`report.valuation`
  * בלי חישוב משלהם. לפני הרשומה הזו הסעיף לא היה קיים במייל בכלל — מי שקורא
@@ -626,6 +679,7 @@ export function reportEmailHtml(report: PropertyReport, opts: ReportEmailOptions
   ${valuationBlock(report)}
   ${streetBlock(report)}
   ${nearbyPlansBlock(report.nearbyPlans)}
+  ${feasibilityBlock(report.feasibility)}
   ${categories}
   ${
     soldTable
@@ -772,6 +826,40 @@ export function reportEmailText(report: PropertyReport): string {
     }
     if (report.nearbyPlans.length > 8) {
       lines.push(`    מוצגות 8 מתוך ${report.nearbyPlans.length} תוכניות שנמצאו.`);
+    }
+    lines.push('');
+  }
+
+  // ⚠️ אותו סעיף "היתכנות להיתר נוסף" ש-HTML/המסך כבר מציגים (§7) — ראו `feasibilityBlock`.
+  const feas = report.feasibility;
+  if (feas) {
+    lines.push('== היתכנות להיתר נוסף ==');
+    lines.push(feas.headline);
+    if (feas.additivePlans.length) {
+      lines.push('  תוכניות מאושרות שמכוחן אפשר לבקש תוספת:');
+      for (const p of feas.additivePlans) {
+        lines.push(`    ${p.planNumber ?? 'תכנית ללא מספר'}${p.planName ? ` · ${p.planName}` : ''} — ${p.why}`);
+      }
+    }
+    if (feas.pendingPlans.length) {
+      lines.push('  תוכניות בהליך שעשויות לפתוח תוספת (טרם אושרו):');
+      for (const p of feas.pendingPlans) {
+        lines.push(`    ${p.planNumber ?? 'ללא מספר'}${p.planName ? ` · ${p.planName}` : ''} — ${p.why}`);
+      }
+    }
+    const feasLines = [...feas.buildingLines, ...feas.restrictions];
+    if (feasLines.length) {
+      lines.push('  קווי בניין ומגבלות על החלקה:');
+      for (const e of feasLines) {
+        lines.push(`    ${e.name}${e.planNumber ? ` · מתכנית ${e.planNumber}` : ''}${e.status ? ` · ${e.status}` : ''}`);
+      }
+    } else {
+      lines.push('  לא אותרו קווי בניין מצוירים על החלקה בשירות המפות.');
+    }
+    if (feas.unknowns.length) {
+      lines.push('  מה אי אפשר לדעת מכאן:');
+      for (const u of feas.unknowns) lines.push(`    ${u}`);
+      lines.push(`  ${feas.whereToCheck}`);
     }
     lines.push('');
   }
