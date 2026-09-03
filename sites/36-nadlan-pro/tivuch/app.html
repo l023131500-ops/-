@@ -637,6 +637,7 @@ async function renderDash() {
     tile('עסקאות פתוחות', nf.format(d.deals_open)) +
     tile('שווי צינור', money(d.pipeline_value)) +
     tile('עסקאות שנסגרו', nf.format(d.deals_closed), null, d.deals_closed > 0 ? 'good' : '') +
+    tile('עסקאות שאבדו', nf.format(d.deals_lost), null, d.deals_lost > 0 ? 'warn' : '') +
     tile('עמלה שנגבתה', money(d.commission_collected), null, 'good') +
     tile('עמלה בהמתנה', money(d.commission_pending)) +
     tile('משימות פתוחות', nf.format(d.tasks_open),
