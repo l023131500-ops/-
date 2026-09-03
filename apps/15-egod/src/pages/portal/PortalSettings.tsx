@@ -10,8 +10,13 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
 import { BACKGROUND_PRESETS, PORTAL_LANGUAGES } from "@/types/portalDesign";
 import { buildRabbiUrl } from "@/lib/site";
+import { AGE_GROUPS } from "@/types/questionnaire";
+import MultiSelect from "@/components/questionnaire/MultiSelect";
+import RadioSelect from "@/components/questionnaire/RadioSelect";
 
 type SocialLinks = { facebook?: string; instagram?: string; youtube?: string; telegram?: string };
+
+const AUDIENCE_GENDER_OPTIONS = ["נשים", "גברים", "מעורב"];
 
 type Profile = {
   id?: string;
@@ -21,6 +26,7 @@ type Profile = {
   donation_link: string; lesson_download_url: string; website_url: string;
   rabbi_photo_url: string; logo_url: string; custom_background_url: string;
   background_preset: string; font_color: string; portal_language: string;
+  years_teaching: string; gender: string;
   public_token?: string;
 };
 
@@ -34,6 +40,7 @@ const empty: Profile = {
   donation_link: "", lesson_download_url: "", website_url: "",
   rabbi_photo_url: "", logo_url: "", custom_background_url: "",
   background_preset: "preset-1", font_color: "light", portal_language: "עברית",
+  years_teaching: "", gender: "",
 };
 
 const emptySocial: SocialLinks = { facebook: "", instagram: "", youtube: "", telegram: "" };
@@ -44,6 +51,7 @@ const PortalSettings = () => {
   const [socialLinks, setSocialLinks] = useState<SocialLinks>(emptySocial);
   const [photos, setPhotos] = useState<Photo[]>([]);
   const [customSections, setCustomSections] = useState<CustomSection[]>([]);
+  const [ageGroups, setAgeGroups] = useState<string[]>([]);
   const [saving, setSaving] = useState(false);
   const photoInput = useRef<HTMLInputElement>(null);
 
@@ -54,11 +62,14 @@ const PortalSettings = () => {
     if (data) {
       setProfile({ ...empty, ...Object.fromEntries(Object.entries(data).map(([k,v]) => [k, v ?? (empty as any)[k] ?? ""])) } as Profile);
       setCustomSections(Array.isArray(data.custom_sections) ? data.custom_sections as CustomSection[] : []);
+      setAgeGroups(Array.isArray((data as any).preferred_age_groups) ? (data as any).preferred_age_groups as string[] : []);
       setSocialLinks({ ...emptySocial, ...(data.social_links && typeof data.social_links === "object" && !Array.isArray(data.social_links) ? data.social_links as SocialLinks : {}) });
       const { data: ph } = await supabase.from("portal_photos").select("*").eq("teacher_id", data.id).order("created_at", { ascending: false });
       setPhotos(ph || []);
     }
   };
+
+  const toggleAgeGroup = (v: string) => setAgeGroups(g => g.includes(v) ? g.filter(x => x !== v) : [...g, v]);
 
   const addSection = () => setCustomSections(s => [...s, { id: crypto.randomUUID(), title: "", content: "" }]);
   const updateSection = (id: string, k: "title" | "content", v: string) =>
@@ -107,9 +118,16 @@ const PortalSettings = () => {
 
   const handleSave = async () => {
     setSaving(true);
-    const { id, public_token, ...payload } = profile;
+    const { id, public_token, years_teaching, ...payload } = profile;
     const cleanedSocial = Object.fromEntries(Object.entries(socialLinks).filter(([, v]) => !!v && String(v).trim() !== ""));
-    const { error } = await supabase.from("profiles").update({ ...payload, custom_sections: customSections, social_links: cleanedSocial }).eq("user_id", user!.id);
+    const yearsTeachingValue = years_teaching === "" || years_teaching === null ? null : Number(years_teaching);
+    const { error } = await supabase.from("profiles").update({
+      ...payload,
+      years_teaching: Number.isFinite(yearsTeachingValue as number) ? yearsTeachingValue : null,
+      preferred_age_groups: ageGroups,
+      custom_sections: customSections,
+      social_links: cleanedSocial,
+    }).eq("user_id", user!.id);
     setSaving(false);
     if (error) { toast.error("שגיאה בשמירה"); return; }
     toast.success("ההגדרות נשמרו בהצלחה!");
@@ -172,11 +190,15 @@ const PortalSettings = () => {
                   <Input value={profile.city} onChange={(e) => update("city", e.target.value)} /></div>
                 <div><label className="text-sm font-medium mb-1 block">שכונה</label>
                   <Input value={profile.neighborhood} onChange={(e) => update("neighborhood", e.target.value)} /></div>
+                <div><label className="text-sm font-medium mb-1 block">שנות ניסיון בהוראה</label>
+                  <Input type="number" min={0} value={profile.years_teaching} onChange={(e) => update("years_teaching", e.target.value)} /></div>
               </div>
               <div><label className="text-sm font-medium mb-1 block">תיאור קצר (יופיע בתפריט)</label>
                 <Input value={profile.bio} onChange={(e) => update("bio", e.target.value)} /></div>
               <div><label className="text-sm font-medium mb-1 block">אודות (טקסט מלא לדף הציבורי)</label>
                 <Textarea value={profile.about_text} onChange={(e) => update("about_text", e.target.value)} rows={5} /></div>
+              <RadioSelect label="מגדר הקהל" options={AUDIENCE_GENDER_OPTIONS} selected={profile.gender} onSelect={(v) => update("gender", v)} />
+              <MultiSelect label="קבוצות גיל (ניתן לסמן כמה)" options={AGE_GROUPS} selected={ageGroups} onToggle={toggleAgeGroup} />
             </div>
           </TabsContent>
 

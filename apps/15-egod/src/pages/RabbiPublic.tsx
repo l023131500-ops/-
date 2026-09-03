@@ -116,6 +116,25 @@ const RabbiPublic = () => {
           )}
           <h1 className="font-heading text-3xl md:text-4xl font-bold mb-2">{profile.full_name}</h1>
           {profile.city && <p className={`${heroSubClass} flex items-center justify-center gap-1`}><MapPin className="w-4 h-4" />{profile.city} {profile.neighborhood || ""}</p>}
+          {(profile.years_teaching || profile.gender || (profile.preferred_age_groups && profile.preferred_age_groups.length > 0)) && (
+            <div className="flex flex-wrap items-center justify-center gap-2 mt-3">
+              {profile.years_teaching && (
+                <span className={`text-xs px-3 py-1 rounded-full border ${isLight ? "border-white/30 text-white/90" : "border-slate-300 text-slate-700"}`}>
+                  {profile.years_teaching} שנות ניסיון בהוראה
+                </span>
+              )}
+              {profile.gender && (
+                <span className={`text-xs px-3 py-1 rounded-full border ${isLight ? "border-white/30 text-white/90" : "border-slate-300 text-slate-700"}`}>
+                  קהל: {profile.gender}
+                </span>
+              )}
+              {(profile.preferred_age_groups || []).map((g: string) => (
+                <span key={g} className={`text-xs px-3 py-1 rounded-full border ${isLight ? "border-white/30 text-white/90" : "border-slate-300 text-slate-700"}`}>
+                  {g}
+                </span>
+              ))}
+            </div>
+          )}
           {profile.about_text && <p className={`mt-4 max-w-2xl mx-auto ${heroSubClass}`}>{profile.about_text}</p>}
         </div>
       </div>
