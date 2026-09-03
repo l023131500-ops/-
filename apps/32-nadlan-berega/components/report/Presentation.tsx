@@ -377,6 +377,31 @@ function buildSlides(d: PropertyReport): Slide[] {
     });
   }
 
+  // §7 permits/planning: `lib/permits.ts` already composes `permitGuidance`
+  // (the practical "who to ask for a building permit" text) and plan counts
+  // for every report — on-screen it only reaches the client as a fact's
+  // `missingReason` (buildreport.ts, "היתר בנייה על הנכס"), and the deck's
+  // hand-picked slides never surfaced it at all. A client who only saw the
+  // deck/PDF (this component, printed) never learned which committee to ask
+  // or how many plans already apply to the property.
+  if (d.permits) {
+    const p = d.permits;
+    s.push({
+      kicker: 'תכנון והיתרים',
+      title: 'איך משיגים היתר בנייה בפועל',
+      subtitle: p.permitGuidance,
+      rows: [
+        {
+          label: 'תוכניות מאושרות שחלות על הנכס',
+          value: String(p.approved.length),
+          note: p.approved.length ? 'מכוחן אפשר להוציא היתר בנייה היום' : undefined,
+        },
+        { label: 'תוכניות בהליך (טרם אושרו)', value: String(p.inProcess.length) },
+        ...(p.committee ? [{ label: 'הוועדה המקומית המוסמכת', value: p.committee }] : []),
+      ],
+    });
+  }
+
   s.push({
     kicker: 'סיכום',
     title: 'מה חשוב לזכור',
