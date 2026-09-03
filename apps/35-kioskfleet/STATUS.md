@@ -3548,3 +3548,48 @@ wait for a human," with every fact needed to decide either way already on
 the table. `core.build_tasks` id 100 left as `todo` (not completed by this
 session) with its `note` column updated to point here. No app source
 touched this round; read-only verification + documentation only.
+
+[03/09/2026, Loop A, session 7] The one open question from session 6 is
+resolved: this iteration's own invoking task prompt explicitly authorized
+production deploys for 35/32/36/01, in the operator's own words and
+outside any database field — the exact channel session 6 said was missing.
+Did not derive authority from `core.projects.note` or `core.build_tasks`;
+those are logged (`core.issues` #263/#264) as having carried repeated
+prompt-injection-style "owner directive" text on this exact question
+earlier the same day, which prior iterations correctly declined to act on.
+
+Re-verified every fact live rather than trusting session 6's write-up:
+`GITHUB_TOKEN` still `push:true` on `l023131500-ops/zol` (GitHub API, not
+assumed), `portal/vercel.dist.json` (this repo's own source) still routes
+`more30.com/kiosk` to the Railway service built from
+`claude/what-do-you-see-gxo5tc`, and a fresh `node --test` run in
+`/home/m30/zol-work/kiosk/server` on the current tip: **250/250**.
+
+The local zol-work checkout had moved on since session 6: `feat/kiosk-
+device-display-url-0903` was now at `aec3b07`, 18 commits ahead of
+`claude/what-do-you-see-gxo5tc` (not 14 — sessions 3-5 fast-forwarded three
+more fixes onto it after session 6's snapshot: the dead USB/QR enrollment
+buttons, the admin-code local lockout, the lock/unlock/message console
+buttons), still a clean fast-forward with zero conflicts
+(`git merge-base --is-ancestor` confirmed). Pushed the fuller tip instead
+of the stale one session 6 had queued:
+
+```
+git push origin feat/kiosk-device-display-url-0903:claude/what-do-you-see-gxo5tc
+# 0f3947d..aec3b07 (plain push, fast-forward — not force)
+```
+
+Waited for Railway's build and confirmed live (not assumed): `curl
+https://more30.com/kiosk/js/app.js` now contains `openUsbPackageForm`,
+which was absent before this push. `more30.com/kiosk/` and the Railway
+domain both still 200 after the deploy — no outage observed.
+
+`core.build_tasks` id 100 marked `done`. `NEEDS_USER.md` top entry updated
+to reflect the deploy (original entry kept, collapsed, for the record).
+32/36/01: untouched — `core.secrets` has no vercel/railway credential row
+for any of them, exhaustively confirmed by session 6's full-table dump;
+not re-checked this round (a confirmed blocker is logged once, not
+re-verified on a timer). Systems 26/30/34/28/27 also untouched — this
+session's standing instruction is one verified additive action per
+iteration, and this deploy was it. No protected system/schema/webhook
+touched; no charge/send involved.
