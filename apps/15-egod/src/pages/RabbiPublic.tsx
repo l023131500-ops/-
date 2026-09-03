@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { motion } from "framer-motion";
-import { BookOpen, MapPin, Clock, Phone, Mail, Send, Building2, MessageCircle, Printer, FileText, Download, PlayCircle, Music, Mic, Video, LayoutList } from "lucide-react";
+import { BookOpen, MapPin, Clock, Phone, Mail, Send, Building2, MessageCircle, Printer, FileText, Download, PlayCircle, Music, Mic, Video, LayoutList, Globe, Facebook, Instagram, Youtube } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -293,6 +293,37 @@ const RabbiPublic = () => {
             )}
             {profile.contact_fax && <span className="flex items-center gap-1"><Printer className="w-4 h-4" />פקס: {profile.contact_fax}</span>}
             {profile.contact_mailing_address && <span className="flex items-center gap-1"><MapPin className="w-4 h-4" />{profile.contact_mailing_address}</span>}
+          </div>
+        )}
+
+        {/* Website + Social Links */}
+        {(isSafeHttpsUrl(profile.website_url) || (profile.social_links && typeof profile.social_links === "object" && Object.values(profile.social_links).some((v) => isSafeHttpsUrl(v as string)))) && (
+          <div className="flex flex-wrap gap-4 justify-center text-sm text-muted-foreground">
+            {isSafeHttpsUrl(profile.website_url) && (
+              <a href={profile.website_url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 hover:text-secondary transition-colors">
+                <Globe className="w-4 h-4" />אתר אינטרנט
+              </a>
+            )}
+            {isSafeHttpsUrl(profile.social_links?.facebook) && (
+              <a href={profile.social_links.facebook} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 hover:text-secondary transition-colors">
+                <Facebook className="w-4 h-4" />פייסבוק
+              </a>
+            )}
+            {isSafeHttpsUrl(profile.social_links?.instagram) && (
+              <a href={profile.social_links.instagram} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 hover:text-secondary transition-colors">
+                <Instagram className="w-4 h-4" />אינסטגרם
+              </a>
+            )}
+            {isSafeHttpsUrl(profile.social_links?.youtube) && (
+              <a href={profile.social_links.youtube} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 hover:text-secondary transition-colors">
+                <Youtube className="w-4 h-4" />יוטיוב
+              </a>
+            )}
+            {isSafeHttpsUrl(profile.social_links?.telegram) && (
+              <a href={profile.social_links.telegram} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 hover:text-secondary transition-colors">
+                <Send className="w-4 h-4" />טלגרם
+              </a>
+            )}
           </div>
         )}
 

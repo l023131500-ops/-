@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { Settings, Save, Upload, Image as ImageIcon, Trash2, ExternalLink, Copy, Plus, LayoutList } from "lucide-react";
+import { Settings, Save, Upload, Image as ImageIcon, Trash2, ExternalLink, Copy, Plus, LayoutList, Globe, Facebook, Instagram, Youtube, Send as TelegramIcon } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import PortalLayout from "@/components/portal/PortalLayout";
@@ -11,12 +11,14 @@ import { toast } from "sonner";
 import { BACKGROUND_PRESETS, PORTAL_LANGUAGES } from "@/types/portalDesign";
 import { buildRabbiUrl } from "@/lib/site";
 
+type SocialLinks = { facebook?: string; instagram?: string; youtube?: string; telegram?: string };
+
 type Profile = {
   id?: string;
   full_name: string; phone: string; email: string; city: string; neighborhood: string;
   bio: string; about_text: string;
   contact_whatsapp: string; contact_fax: string; contact_mailing_address: string;
-  donation_link: string; lesson_download_url: string;
+  donation_link: string; lesson_download_url: string; website_url: string;
   rabbi_photo_url: string; logo_url: string; custom_background_url: string;
   background_preset: string; font_color: string; portal_language: string;
   public_token?: string;
@@ -29,14 +31,17 @@ const empty: Profile = {
   full_name: "", phone: "", email: "", city: "", neighborhood: "",
   bio: "", about_text: "",
   contact_whatsapp: "", contact_fax: "", contact_mailing_address: "",
-  donation_link: "", lesson_download_url: "",
+  donation_link: "", lesson_download_url: "", website_url: "",
   rabbi_photo_url: "", logo_url: "", custom_background_url: "",
   background_preset: "preset-1", font_color: "light", portal_language: "עברית",
 };
 
+const emptySocial: SocialLinks = { facebook: "", instagram: "", youtube: "", telegram: "" };
+
 const PortalSettings = () => {
   const { user } = useAuth();
   const [profile, setProfile] = useState<Profile>(empty);
+  const [socialLinks, setSocialLinks] = useState<SocialLinks>(emptySocial);
   const [photos, setPhotos] = useState<Photo[]>([]);
   const [customSections, setCustomSections] = useState<CustomSection[]>([]);
   const [saving, setSaving] = useState(false);
@@ -49,6 +54,7 @@ const PortalSettings = () => {
     if (data) {
       setProfile({ ...empty, ...Object.fromEntries(Object.entries(data).map(([k,v]) => [k, v ?? (empty as any)[k] ?? ""])) } as Profile);
       setCustomSections(Array.isArray(data.custom_sections) ? data.custom_sections as CustomSection[] : []);
+      setSocialLinks({ ...emptySocial, ...(data.social_links && typeof data.social_links === "object" && !Array.isArray(data.social_links) ? data.social_links as SocialLinks : {}) });
       const { data: ph } = await supabase.from("portal_photos").select("*").eq("teacher_id", data.id).order("created_at", { ascending: false });
       setPhotos(ph || []);
     }
@@ -60,6 +66,7 @@ const PortalSettings = () => {
   const removeSection = (id: string) => setCustomSections(s => s.filter(sec => sec.id !== id));
 
   const update = (k: keyof Profile, v: string) => setProfile(p => ({ ...p, [k]: v }));
+  const updateSocial = (k: keyof SocialLinks, v: string) => setSocialLinks(s => ({ ...s, [k]: v }));
 
   const uploadFile = async (file: File, prefix: string): Promise<string | null> => {
     if (!user) return null;
@@ -101,7 +108,8 @@ const PortalSettings = () => {
   const handleSave = async () => {
     setSaving(true);
     const { id, public_token, ...payload } = profile;
-    const { error } = await supabase.from("profiles").update({ ...payload, custom_sections: customSections }).eq("user_id", user!.id);
+    const cleanedSocial = Object.fromEntries(Object.entries(socialLinks).filter(([, v]) => !!v && String(v).trim() !== ""));
+    const { error } = await supabase.from("profiles").update({ ...payload, custom_sections: customSections, social_links: cleanedSocial }).eq("user_id", user!.id);
     setSaving(false);
     if (error) { toast.error("שגיאה בשמירה"); return; }
     toast.success("ההגדרות נשמרו בהצלחה!");
@@ -229,6 +237,21 @@ const PortalSettings = () => {
                 <Input value={profile.donation_link} onChange={(e) => update("donation_link", e.target.value)} placeholder="https://..." /></div>
               <div><label className="text-sm font-medium mb-1 block">קישור להורדת שיעורים</label>
                 <Input value={profile.lesson_download_url} onChange={(e) => update("lesson_download_url", e.target.value)} placeholder="https://..." /></div>
+              <div><label className="text-sm font-medium mb-1 block flex items-center gap-1.5"><Globe className="w-4 h-4" />אתר אינטרנט</label>
+                <Input value={profile.website_url} onChange={(e) => update("website_url", e.target.value)} placeholder="https://..." dir="ltr" /></div>
+              <div className="pt-2 border-t border-border">
+                <p className="text-sm font-medium mb-3">רשתות חברתיות</p>
+                <div className="grid grid-cols-2 gap-3">
+                  <div><label className="text-xs text-muted-foreground mb-1 flex items-center gap-1.5"><Facebook className="w-3.5 h-3.5" />פייסבוק</label>
+                    <Input value={socialLinks.facebook || ""} onChange={(e) => updateSocial("facebook", e.target.value)} placeholder="https://facebook.com/..." dir="ltr" /></div>
+                  <div><label className="text-xs text-muted-foreground mb-1 flex items-center gap-1.5"><Instagram className="w-3.5 h-3.5" />אינסטגרם</label>
+                    <Input value={socialLinks.instagram || ""} onChange={(e) => updateSocial("instagram", e.target.value)} placeholder="https://instagram.com/..." dir="ltr" /></div>
+                  <div><label className="text-xs text-muted-foreground mb-1 flex items-center gap-1.5"><Youtube className="w-3.5 h-3.5" />יוטיוב</label>
+                    <Input value={socialLinks.youtube || ""} onChange={(e) => updateSocial("youtube", e.target.value)} placeholder="https://youtube.com/..." dir="ltr" /></div>
+                  <div><label className="text-xs text-muted-foreground mb-1 flex items-center gap-1.5"><TelegramIcon className="w-3.5 h-3.5" />טלגרם</label>
+                    <Input value={socialLinks.telegram || ""} onChange={(e) => updateSocial("telegram", e.target.value)} placeholder="https://t.me/..." dir="ltr" /></div>
+                </div>
+              </div>
             </div>
           </TabsContent>
 
