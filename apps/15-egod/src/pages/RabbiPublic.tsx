@@ -130,7 +130,7 @@ const RabbiPublic = () => {
             <img src={profile.logo_url} alt="לוגו" className="w-20 h-20 mx-auto mb-4" />
           )}
           <h1 className="font-heading text-3xl md:text-4xl font-bold mb-2">{profile.full_name}</h1>
-          {profile.city && <p className={`${heroSubClass} flex items-center justify-center gap-1`}><MapPin className="w-4 h-4" />{profile.city} {profile.neighborhood || ""}</p>}
+          {profile.city && <p className={`${heroSubClass} flex items-center justify-center gap-1`}><MapPin className="w-4 h-4" />{profile.city} {profile.neighborhood || ""}{profile.street ? ` - ${profile.street}` : ""}</p>}
           {(profile.years_teaching || profile.gender || (profile.preferred_age_groups && profile.preferred_age_groups.length > 0)) && (
             <div className="flex flex-wrap items-center justify-center gap-2 mt-3">
               {profile.years_teaching && (

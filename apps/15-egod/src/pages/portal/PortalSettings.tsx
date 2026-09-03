@@ -24,7 +24,7 @@ const AUDIENCE_GENDER_OPTIONS = ["נשים", "גברים", "מעורב"];
 
 type Profile = {
   id?: string;
-  full_name: string; phone: string; email: string; city: string; neighborhood: string;
+  full_name: string; phone: string; email: string; city: string; neighborhood: string; street: string;
   bio: string; about_text: string;
   contact_whatsapp: string; contact_fax: string; contact_mailing_address: string;
   donation_link: string; lesson_download_url: string; website_url: string;
@@ -41,7 +41,7 @@ type Photo = { id: string; image_url: string; caption: string | null };
 type CustomSection = { id: string; title: string; content: string };
 
 const empty: Profile = {
-  full_name: "", phone: "", email: "", city: "", neighborhood: "",
+  full_name: "", phone: "", email: "", city: "", neighborhood: "", street: "",
   bio: "", about_text: "",
   contact_whatsapp: "", contact_fax: "", contact_mailing_address: "",
   donation_link: "", lesson_download_url: "", website_url: "",
@@ -211,6 +211,8 @@ const PortalSettings = () => {
                   <Input value={profile.city} onChange={(e) => update("city", e.target.value)} /></div>
                 <div><label className="text-sm font-medium mb-1 block">שכונה</label>
                   <Input value={profile.neighborhood} onChange={(e) => update("neighborhood", e.target.value)} /></div>
+                <div><label className="text-sm font-medium mb-1 block">רחוב</label>
+                  <Input value={profile.street} onChange={(e) => update("street", e.target.value)} /></div>
                 <div><label className="text-sm font-medium mb-1 block">שנות ניסיון בהוראה</label>
                   <Input type="number" min={0} value={profile.years_teaching} onChange={(e) => update("years_teaching", e.target.value)} /></div>
               </div>
