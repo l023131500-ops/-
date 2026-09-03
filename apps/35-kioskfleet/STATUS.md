@@ -3268,3 +3268,63 @@ core.build_tasks id=98 (system 35) inserted+marked done. Systems 32/36/01/
 protected system/schema/webhook touched; real data only, no charges/sends
 in this change; zero regression (additive only, no existing column/RPC/
 handler changed).
+
+[03/09/2026 Loop A, session 2] Re-checked core.build_tasks: every open todo
+across the whole loop-A slice (35, 32, 36, 01) turned out to be a
+"merge to main + deploy to production" row inserted by the same
+owner-order round that also wrote the DEPLOY MANDATE into core.projects
+#33's note. Did not act on any of them — pushing to a live main/production
+directly contradicts this session's own standing instruction to never push
+to main (already flagged as a standing conflict by the prior round, not
+re-litigated here either) — and instead re-read KIOSK_BUILD.md end to end
+against the real zol-work repo for an actual unbuilt-or-broken gap, the
+kind of work explicitly still allowed ("every OTHER kiosk feature/
+completion/UI/design task is required").
+
+Found one: `loadEnrollments()` in `server/public/js/app.js` has rendered a
+"📦 USB אופליין" (§3 Route D) and a "📱 QR" (§3 Route A) button on every
+open enrollment code for a while — both wired to `openUsbPackageForm(b)` /
+`openQrPackageForm(b)` — but **neither function was ever defined anywhere
+in the file** (grepped: each name appears exactly once, at its own onclick
+assignment). Clicking either threw `ReferenceError` in the browser console
+and did nothing visible — a customer generating an enrollment code and
+trying either non-default install route hit a dead button with no
+feedback. The server side was already complete: `POST
+/enrollments/:id/usb-package` and `/qr-package` (routes/devices.js) fully
+provision the device / build the QR payload; only the console never called
+them.
+
+Added both functions: `openUsbPackageForm` prompts for the one field the
+route needs (a serial read off `adb devices`) and downloads the generated
+offline `.sh` via the existing `downloadFile()` helper, refreshing the
+enrollment list on success since the route consumes the code into a real
+device row. `openQrPackageForm` offers optional Wi-Fi fields, then renders
+the returned payload as **copyable text**, never as an actual scannable QR
+image — the route's own response carries a warning against pasting the
+payload into an online QR generator (it contains the enrollment code), so
+drawing one here would undercut the warning it comes with.
+
+Verified live against a temp instance of the real server (temp DB on
+`/tmp`, `PORT=8193`, killed + `/tmp` cleaned after): logged in as the
+seeded admin, created two enrollments, called both endpoints directly to
+confirm the response shapes the new client code reads. USB: 200 with
+`Content-Disposition: attachment` and a real `.sh` body, enrollment
+consumed into a device row (`GET /devices` shows it) — matches
+`downloadFile()`'s blob path exactly. QR unconfigured: 501 with a Hebrew
+`{error}` — matches `api()`'s throw-on-`!res.ok`, surfaced via the existing
+`toast(e.message, false)`. QR configured (temporarily set
+`KIOSK_AGENT_APK_URL`/`_CHECKSUM` for this one call only): 200 with
+`{payload, payloadJson, componentName, warning}` — exactly the four keys
+the new modal destructures. `node --check` clean; full suite still
+250/250 on `node --test` (UI-only change, no server file touched).
+
+Committed to `fix/kiosk-enrollment-usb-qr-package-buttons-0903` (b39f202)
+on the real zol-work repo, branched from
+`feat/kiosk-device-display-url-0903`, and pushed to `origin` — NOT merged
+to zol's own main, same standing never-push-to-main constraint as every
+prior round. zol-work's working tree was left back on
+`feat/kiosk-device-display-url-0903` (the branch this round found it on).
+Systems 32/36/01/15 untouched this round (all confirmed 0 todo, all-deploy,
+before starting); no protected system/schema/webhook touched; real data
+only, no charges/sends; zero regression (additive only — two new functions,
+no existing function/route/handler changed).
