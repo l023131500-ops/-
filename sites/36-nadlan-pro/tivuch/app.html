@@ -869,6 +869,10 @@ async function openContact(id) {
       '<div><p class="k">מקור</p><p class="v">' + esc(SOURCE_HE[c.source] || c.source) + '</p></div>' +
       '<div><p class="k">סוכן אחראי</p><p class="v">' + v(ownerName(c.owner_id)) + '</p></div>' +
     '</div>' +
+    '<p class="k" style="margin:0 0 6px">תגיות</p>' +
+    '<p style="margin:0 0 18px">' + ((c.tags || []).length
+      ? c.tags.map((t) => '<span class="pill">' + esc(t) + '</span>').join(' ')
+      : NA) + '</p>' +
     '<p style="margin:0 0 18px"><button class="btn btn-quiet btn-sm" id="cEdit">עריכה</button> ' +
     '<button class="btn btn-quiet btn-sm" id="cTask">+ משימה</button> ' +
     '<button class="btn btn-sm" id="cDeal">+ עסקה</button></p>';
@@ -940,6 +944,7 @@ function contactForm(existing) {
       '<label class="f">כתובת<input id="f_address" value="' + esc(c.address || '') + '" /></label>' +
       '<label class="f">ת.ז.<input id="f_id_number" value="' + esc(c.id_number || '') + '" /></label>' +
       '<label class="f">פירוט מקור<input id="f_source_detail" value="' + esc(c.source_detail || '') + '" /></label>' +
+      '<label class="f">תגיות<input id="f_tags" value="' + esc((c.tags || []).join(', ')) + '" placeholder="מופרד בפסיקים" /></label>' +
       '<label class="f span2">הערות<textarea id="f_notes">' + esc(c.notes || '') + '</textarea></label>' +
     '</div>' +
     '<h2 class="sec">קריטריוני חיפוש (לקונה)</h2>' +
@@ -963,6 +968,7 @@ function contactForm(existing) {
                        'want_min_area', 'want_asset_type']) {
         p[k] = $('f_' + k).value.trim();
       }
+      p.tags = $('f_tags').value.split(',').map((t) => t.trim()).filter(Boolean);
       if (!p.full_name) {
         $('cfErr').innerHTML = '<div class="err">שם מלא הוא שדה חובה.</div>';
         return;
