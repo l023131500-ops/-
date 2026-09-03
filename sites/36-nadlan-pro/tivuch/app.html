@@ -2925,7 +2925,12 @@ async function openDeal(id) {
         (k.is_done ? ' checked' : '') + ' />' +
         '<label class="lb" for="k_' + k.step_key + '">' + esc(k.label) +
         (k.done_at ? '<span class="when">הושלם ' + dtm(k.done_at) + '</span>' : '') +
-        '</label></li>').join('') + '</ul>';
+        (k.note ? '<span class="when" style="color:var(--gold)">הערה: ' + esc(k.note) + '</span>' : '') +
+        '</label>' +
+        '<button class="btn btn-quiet btn-sm" type="button" data-note="' + k.step_key +
+          '" data-notecur="' + esc(k.note || '') + '" style="flex:none">' +
+          (k.note ? 'עריכת הערה' : '+ הערה') + '</button>' +
+        '</li>').join('') + '</ul>';
 
   html += '<h2 class="sec">צדדים</h2><div class="table-scroll"><table><tbody>' +
     '<tr><th>נכס</th><td>' + (d.property ? esc(d.property.address || d.property.title || '—') : NA) + '</td></tr>' +
@@ -2994,6 +2999,24 @@ async function openDeal(id) {
         } catch (err) {
           cb.checked = !cb.checked;
           toast('עדכון נכשל: ' + err.message, true);
+        }
+      });
+    }
+    for (const nb of document.querySelectorAll('.check [data-note]')) {
+      nb.addEventListener('click', async () => {
+        const note = window.prompt('הערה לשלב הצ׳קליסט (רשות):', nb.dataset.notecur || '');
+        if (note === null) return;
+        const li = nb.closest('li');
+        const cb = li.querySelector('input[data-step]');
+        nb.disabled = true;
+        try {
+          await rpc('np_checklist_toggle', {
+            p_deal: dl.id, p_step: nb.dataset.note, p_done: cb.checked, p_note: note,
+          });
+          close(); openDeal(dl.id);
+        } catch (err) {
+          toast('עדכון ההערה נכשל: ' + err.message, true);
+          nb.disabled = false;
         }
       });
     }
