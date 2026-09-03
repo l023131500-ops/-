@@ -21,6 +21,16 @@ function sigBadge(status: string | null) {
   return v ? <Badge className={`${v.cls} border-0`} variant="secondary">{v.label}</Badge> : null;
 }
 
+function processingBadge(status: string) {
+  const map: Record<string, { label: string; cls: string }> = {
+    processing: { label: "בעיבוד", cls: "bg-blue-100 text-blue-900" },
+    completed: { label: "הושלם", cls: "bg-green-100 text-green-900" },
+    failed: { label: "נכשל", cls: "bg-red-100 text-red-900" },
+  };
+  const v = map[status];
+  return v ? <Badge variant="secondary" className={`${v.cls} border-0`}>{v.label}</Badge> : null;
+}
+
 export function DocumentsTab({ clientId }: { clientId: string }) {
   const { data: client } = useSuspenseQuery(clientQuery(clientId));
   const { data: me } = useSuspenseQuery(meProfileQuery());
@@ -96,7 +106,12 @@ export function DocumentsTab({ clientId }: { clientId: string }) {
                     <div className="text-xs text-muted-foreground">{formatDateTimeHe(d.created_at)}</div>
                   </div>
                 </div>
-                {d.requires_signature && <div>{sigBadge(d.signature_status)}</div>}
+                {(d.requires_signature || d.processing_status !== "pending") && (
+                  <div className="flex flex-wrap gap-1.5">
+                    {d.requires_signature && sigBadge(d.signature_status)}
+                    {d.processing_status !== "pending" && processingBadge(d.processing_status)}
+                  </div>
+                )}
                 <div className="flex gap-1 justify-end pt-1">
                   <Button variant="ghost" size="icon" onClick={() => openDoc(d.storage_path)}><Download className="h-4 w-4" /></Button>
                   <AlertDialog>
