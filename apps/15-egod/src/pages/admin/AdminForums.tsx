@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { MessageSquare, Plus, Trash2, Pin, Ban, CheckCircle, Send, Search } from "lucide-react";
+import { MessageSquare, Plus, Trash2, Pin, Ban, CheckCircle, Send, Search, Pencil } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import AdminLayout from "@/components/admin/AdminLayout";
 import { Button } from "@/components/ui/button";
@@ -10,14 +10,20 @@ import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import MultiSelect from "@/components/questionnaire/MultiSelect";
+import { subjectOptions } from "@/types/questionnaire";
 import { toast } from "sonner";
+
+const emptyForm = { name: "", description: "", icon: "MessageSquare", is_restricted: false, sort_order: 0, allowed_subjects: [] as string[] };
 
 const AdminForums = () => {
   const [categories, setCategories] = useState<any[]>([]);
   const [posts, setPosts] = useState<any[]>([]);
   const [search, setSearch] = useState("");
   const [showNew, setShowNew] = useState(false);
-  const [form, setForm] = useState({ name: "", description: "", icon: "MessageSquare", is_restricted: false, sort_order: 0 });
+  const [form, setForm] = useState(emptyForm);
+  const [editing, setEditing] = useState<any | null>(null);
+  const [editForm, setEditForm] = useState(emptyForm);
   const [composeFor, setComposeFor] = useState<any | null>(null);
   const [composeText, setComposeText] = useState("");
 
@@ -37,7 +43,25 @@ const AdminForums = () => {
     if (error) return toast.error(error.message);
     toast.success("הפורום נוצר");
     setShowNew(false);
-    setForm({ name: "", description: "", icon: "MessageSquare", is_restricted: false, sort_order: 0 });
+    setForm(emptyForm);
+    load();
+  };
+
+  const openEdit = (c: any) => {
+    setEditing(c);
+    setEditForm({
+      name: c.name || "", description: c.description || "", icon: c.icon || "MessageSquare",
+      is_restricted: !!c.is_restricted, sort_order: c.sort_order || 0, allowed_subjects: c.allowed_subjects || [],
+    });
+  };
+
+  const saveEdit = async () => {
+    if (!editing) return;
+    if (!editForm.name) return toast.error("שם פורום חובה");
+    const { error } = await supabase.from("forum_categories").update(editForm).eq("id", editing.id);
+    if (error) return toast.error(error.message);
+    toast.success("הפורום עודכן");
+    setEditing(null);
     load();
   };
 
@@ -107,10 +131,18 @@ const AdminForums = () => {
                         {c.is_restricted && <Badge variant="outline">מוגבל</Badge>}
                       </p>
                       {c.description && <p className="text-sm text-muted-foreground mt-1">{c.description}</p>}
+                      {c.is_restricted && (
+                        <p className="text-xs text-muted-foreground mt-1">
+                          נושאים מורשים: {(c.allowed_subjects && c.allowed_subjects.length) ? c.allowed_subjects.join(", ") : "לא הוגדרו (אף מורה חדש לא יקבל גישה כברירת מחדל)"}
+                        </p>
+                      )}
                     </div>
                     <div className="flex flex-col gap-1">
                       <Button size="sm" variant="outline" onClick={() => setComposeFor(c)} className="gap-1">
                         <Send className="w-3 h-3" />פרסם מטעם הניהול
+                      </Button>
+                      <Button size="sm" variant="outline" onClick={() => openEdit(c)} className="gap-1">
+                        <Pencil className="w-3 h-3" />עריכה
                       </Button>
                       <Button size="sm" variant="ghost" onClick={() => deleteCategory(c.id)} className="text-destructive">
                         <Trash2 className="w-3 h-3" />מחק
@@ -180,10 +212,53 @@ const AdminForums = () => {
                   <Switch checked={form.is_restricted} onCheckedChange={v => setForm(f => ({ ...f, is_restricted: v }))} />
                 </label>
               </div>
+              {form.is_restricted && (
+                <MultiSelect
+                  label="נושאים מורשים (מורים עם אחד מהנושאים האלו יקבלו גישה אוטומטית)"
+                  options={subjectOptions}
+                  selected={form.allowed_subjects}
+                  onToggle={(v) => setForm(f => ({ ...f, allowed_subjects: f.allowed_subjects.includes(v) ? f.allowed_subjects.filter(s => s !== v) : [...f.allowed_subjects, v] }))}
+                />
+              )}
             </div>
             <DialogFooter>
               <Button variant="outline" onClick={() => setShowNew(false)}>ביטול</Button>
               <Button onClick={createCategory} className="bg-gradient-to-l from-secondary to-gold-dark text-secondary-foreground">צור פורום</Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
+        <Dialog open={!!editing} onOpenChange={(o) => !o && setEditing(null)}>
+          <DialogContent dir="rtl" className="bg-gradient-to-br from-card to-secondary/5 border-2 border-secondary/30">
+            <DialogHeader><DialogTitle className="font-heading text-2xl">עריכת פורום: {editing?.name}</DialogTitle></DialogHeader>
+            <div className="space-y-3">
+              <div><label className="text-sm font-medium mb-1 block">שם הפורום *</label>
+                <Input value={editForm.name} onChange={e => setEditForm(f => ({ ...f, name: e.target.value }))} />
+              </div>
+              <div><label className="text-sm font-medium mb-1 block">תיאור</label>
+                <Textarea rows={2} value={editForm.description} onChange={e => setEditForm(f => ({ ...f, description: e.target.value }))} />
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div><label className="text-sm font-medium mb-1 block">סדר תצוגה</label>
+                  <Input type="number" value={editForm.sort_order} onChange={e => setEditForm(f => ({ ...f, sort_order: +e.target.value }))} />
+                </div>
+                <label className="flex items-center justify-between bg-muted/30 rounded-lg p-2 mt-6">
+                  <span className="text-sm">פורום מוגבל</span>
+                  <Switch checked={editForm.is_restricted} onCheckedChange={v => setEditForm(f => ({ ...f, is_restricted: v }))} />
+                </label>
+              </div>
+              {editForm.is_restricted && (
+                <MultiSelect
+                  label="נושאים מורשים (מורים עם אחד מהנושאים האלו יקבלו גישה אוטומטית)"
+                  options={subjectOptions}
+                  selected={editForm.allowed_subjects}
+                  onToggle={(v) => setEditForm(f => ({ ...f, allowed_subjects: f.allowed_subjects.includes(v) ? f.allowed_subjects.filter(s => s !== v) : [...f.allowed_subjects, v] }))}
+                />
+              )}
+            </div>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setEditing(null)}>ביטול</Button>
+              <Button onClick={saveEdit} className="bg-gradient-to-l from-secondary to-gold-dark text-secondary-foreground">שמור שינויים</Button>
             </DialogFooter>
           </DialogContent>
         </Dialog>
