@@ -221,6 +221,12 @@ export default function Editor() {
     updateDoc(setFieldText(doc!, fieldName, value));
   }
 
+  // שם העבודה — נשמר בשדה projects.name (נכתב-נקרא במלואו ב-API), אך עד כה
+  // הוצג רק כטקסט קבוע בכותרת העורך בלי דרך לשנות אותו מכאן.
+  function handleRenameProject(name: string) {
+    setSelected({ ...selected!, name });
+  }
+
   function handleChangeLayer(id: string, patch: Partial<AnyLayer>) {
     updateDoc({
       ...doc!,
@@ -782,7 +788,13 @@ export default function Editor() {
           </Button>
           <Crown className="h-5 w-5 text-[#C9A227]" />
           <div>
-            <h1 className="text-sm font-bold leading-tight">{selected.name}</h1>
+            <Input
+              value={selected.name}
+              onChange={(e) => handleRenameProject(e.target.value)}
+              aria-label="שם העבודה"
+              data-testid="input-project-name"
+              className="h-7 w-48 border-transparent bg-transparent px-1 text-sm font-bold leading-tight text-[#F5EEDD] hover:border-[#C9A227]/30 focus-visible:border-[#C9A227]/50 focus-visible:bg-[#101B32]"
+            />
             <p className="text-[11px] text-[#F5EEDD]/50">{style.label}</p>
           </div>
         </div>
