@@ -129,6 +129,13 @@ const PortalSettings = () => {
     setPhotos(p => p.filter(x => x.id !== id));
   };
 
+  const updatePhotoCaption = async (id: string, caption: string) => {
+    const trimmed = caption.trim();
+    const { error } = await supabase.from("portal_photos").update({ caption: trimmed || null }).eq("id", id);
+    if (error) { toast.error("שגיאה בשמירת הכיתוב"); return; }
+    setPhotos(p => p.map(x => x.id === id ? { ...x, caption: trimmed || null } : x));
+  };
+
   const handleSave = async () => {
     setSaving(true);
     const { id, public_token, years_teaching, ...payload } = profile;
@@ -316,12 +323,21 @@ const PortalSettings = () => {
               ) : (
                 <div className="grid grid-cols-3 gap-3">
                   {photos.map(p => (
-                    <div key={p.id} className="relative group aspect-square rounded-lg overflow-hidden border border-border">
-                      <img src={p.image_url} alt="" className="w-full h-full object-cover" />
-                      <button onClick={() => deletePhoto(p.id)}
-                        className="absolute top-2 left-2 bg-destructive text-destructive-foreground rounded-full p-1.5 opacity-0 group-hover:opacity-100 transition">
-                        <Trash2 className="w-3.5 h-3.5" />
-                      </button>
+                    <div key={p.id} className="space-y-1.5">
+                      <div className="relative group aspect-square rounded-lg overflow-hidden border border-border">
+                        <img src={p.image_url} alt={p.caption || ""} className="w-full h-full object-cover" />
+                        <button onClick={() => deletePhoto(p.id)}
+                          className="absolute top-2 left-2 bg-destructive text-destructive-foreground rounded-full p-1.5 opacity-0 group-hover:opacity-100 transition">
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                      <Input
+                        value={p.caption ?? ""}
+                        onChange={(e) => setPhotos(ph => ph.map(x => x.id === p.id ? { ...x, caption: e.target.value } : x))}
+                        onBlur={(e) => updatePhotoCaption(p.id, e.target.value)}
+                        placeholder="כיתוב לתמונה (אופציונלי)"
+                        className="text-xs h-8"
+                      />
                     </div>
                   ))}
                 </div>

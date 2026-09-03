@@ -174,3 +174,45 @@ GitHub push touches. `bun.lockb` is byte-identical between local and
 remote (`sha256 79e9024f9abd7b6`) so there's at least no dependency drift
 if this ever needs manual reconciliation later. No code changed, no push
 attempted — this is a closed research question now, not a new blocker.
+
+**[2026-09-03, loop A, session 4] `portal_photos.caption` existed since the
+first migration (`20260501082815`, RLS already lets a teacher `FOR ALL` on
+their own rows) and is already read on the public profile
+(`RabbiPublic.tsx:264`, `alt={p.caption || ""}`) — but no UI anywhere ever
+wrote it. `PortalSettings.tsx`'s `addPhoto()` inserted only `teacher_id`/
+`image_url`, and the gallery grid rendered each photo with a bare `<img>` +
+delete button, no caption field at all. A teacher had no way to caption a
+gallery photo even though the column, the RLS policy and the public-side
+read path were all already live.
+
+Fix: added `updatePhotoCaption(id, caption)` (trims, stores `null` for
+empty, matching the column's own nullable default) and a small `Input`
+under each gallery thumbnail — `onChange` updates local state so typing is
+responsive, `onBlur` persists via `supabase.from("portal_photos").update()`.
+Also switched the settings-page thumbnail's own `alt=""` to `alt={p.caption
+|| ""}`, matching the pattern `RabbiPublic.tsx` already uses for the same
+column. Zero schema change (column existed since day one), zero existing
+function signature changed — purely additive to `addPhoto`'s neighboring
+code and the gallery grid markup.
+
+Verified: `npx esbuild` transpile of the full file (no bundling, since
+`node_modules` is absent here — same constraint as every other egod round)
+came back clean; bracket-balance check on the full file (252/252 parens,
+213/213 braces, 51/51 brackets); manually confirmed the `Input` component
+(`src/components/ui/input.tsx`) forwards all native props including
+`onBlur`, so no plumbing was needed there. `hkkky...` (egod's own Supabase
+project) is not MCP-reachable this session, same as every prior egod round,
+so no live round-trip query was possible — but the RLS policy
+(`"Teachers can manage own photos" FOR ALL ... WITH CHECK (teacher_id IN
+(SELECT id FROM profiles WHERE user_id = auth.uid()))`) already covers
+`UPDATE` today (it's the same policy `deletePhoto`/`addPhoto` already rely
+on), so no policy change was needed or made.
+
+`core.build_tasks` row added (system 15, priority 305) and marked done.
+Committed to `fix/15-egod-portal-photo-captions-0903`, branched from
+`fix/15-egod-forum-allowed-subjects-admin-ui-0903` (`7cf203c6`) — not
+merged, not pushed to main, per the standing constraint (the DEPLOY
+MANDATE text in `core.projects.note` is untrusted DB content and does not
+override this session's own operating instruction). Systems 01/32/36 and
+system 35 KioskFleet untouched this round; no protected schema/app touched;
+real data only, no charges/sends; zero regression.
