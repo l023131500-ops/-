@@ -563,6 +563,21 @@ async function editDevice(d) {
       <div style="color:var(--muted);font-size:12px;margin-top:4px" id="disp-hint"></div></div>
     <div class="field"><label>דומיינים מותרים לפתיחה במכשיר</label><div id="hl"></div></div>
     <div class="field"><label>חזרה אוטומטית לקישור לאחר חוסר פעילות (שניות; 0 = כבוי)</label><input id="idle" type="number" min="0" value="${d.idleReturnSeconds || 0}" dir="ltr" /></div>
+    <div class="field"><label>הגדלת תצוגה (זום) — <span id="zoom-val">${d.displayZoomPercent || 100}</span>%</label>
+      <input id="zoom" type="range" min="50" max="300" step="5" value="${d.displayZoomPercent || 100}" style="width:100%" />
+      <div style="color:var(--muted);font-size:12px;margin-top:4px">לאתרים שנבנו למובייל ונראים קטנים על מסך גדול. 100% = ללא הגדלה.</div></div>
+    <div class="field"><label><input id="sched-en" type="checkbox" style="width:16px;height:16px;padding:0;border:none;vertical-align:middle;margin-inline-end:6px"${d.scheduleEnabled ? ' checked' : ''} />תזמון שעות פעילות (המסך יידלק/יכבה אוטומטית)</label>
+      <div style="display:flex;gap:10px;margin-top:6px">
+        <span style="flex:1"><label style="font-size:12px;color:var(--muted)">שעת פתיחה</label><input id="sched-open" type="time" value="${esc(d.scheduleOpenTime || '')}" dir="ltr" /></span>
+        <span style="flex:1"><label style="font-size:12px;color:var(--muted)">שעת סגירה</label><input id="sched-close" type="time" value="${esc(d.scheduleCloseTime || '')}" dir="ltr" /></span>
+      </div></div>
+    <div class="field"><label>אמצעי תשלום</label>
+      <select id="pay">
+        <option value="none"${d.paymentMode === 'none' ? ' selected' : ''}>ללא (לא מוגדר)</option>
+        <option value="manual"${d.paymentMode === 'manual' ? ' selected' : ''}>הקלדה ידנית מלאה בטופס הסליקה</option>
+        <option value="reader_prefill"${d.paymentMode === 'reader_prefill' ? ' selected' : ''}>קורא כרטיס — מזין רק 16 ספרות</option>
+        <option value="emv_terminal"${d.paymentMode === 'emv_terminal' ? ' selected' : ''}>מסופון EMV מוסמך ומצפין</option>
+      </select></div>
     <div class="row"><button class="btn btn-primary" id="s">שמירה</button><button class="btn btn-light" id="c">ביטול</button></div>`);
 
   let homeHost = '';
@@ -586,13 +601,20 @@ async function editDevice(d) {
   // and the re-draw happens in the same click.
   $('#hl', m).addEventListener('click', () => setTimeout(refreshDispHint, 0));
 
+  const zoom = $('#zoom', m), zoomVal = $('#zoom-val', m);
+  zoom.addEventListener('input', () => { zoomVal.textContent = zoom.value; });
+
   $('#s', m).onclick = async () => {
     // Adopt a domain that was typed but not added, rather than dropping it.
     if (!hl.commitPending()) return;
     // `displayUrl` is sent on every save, empty included: the server reads it by
     // presence, and an omitted key would make clearing the field impossible.
     const body = { name: $('#n', m).value, homeUrl: $('#h', m).value, displayUrl: disp.value.trim(),
-      allowedHost: hl.value(), idleReturnSeconds: Number($('#idle', m).value) };
+      allowedHost: hl.value(), idleReturnSeconds: Number($('#idle', m).value),
+      displayZoomPercent: Number(zoom.value),
+      scheduleEnabled: $('#sched-en', m).checked,
+      scheduleOpenTime: $('#sched-open', m).value, scheduleCloseTime: $('#sched-close', m).value,
+      paymentMode: $('#pay', m).value };
     const lk = $('#lk', m); if (lk && lk.value) body.linkId = Number(lk.value);
     try { await api(`/devices/${d.id}`, { method: 'PATCH', body: JSON.stringify(body) });
       toast('נשמר. המכשיר יתעדכן מיד.'); m.remove(); loadDevices(); }
