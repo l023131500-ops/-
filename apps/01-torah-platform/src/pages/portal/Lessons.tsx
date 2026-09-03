@@ -24,7 +24,7 @@ const emptyForm = {
   audience: "", target_audience: [] as string[], audience_type: [] as string[],
   rabbi_phone: "", rabbi_role: "", contact_name: "", contact_phone: "",
   contact_email: "", donation_link: "", is_recurring: true, is_recorded: false,
-  is_live_stream: false, recording_location: "", specific_date: "",
+  is_live_stream: false, recording_location: "", stream_url: "", specific_date: "",
 };
 
 const dayIndex = (label: string) => DAY_NAMES.indexOf(label);
@@ -107,6 +107,7 @@ const Lessons = () => {
       audience: form.audience || null,
       style: form.lesson_style || null,
       recording_url: form.is_recorded ? (form.recording_location || null) : null,
+      stream_url: form.is_live_stream ? (form.stream_url || null) : null,
       contact_name: form.contact_name || null,
       contact_phone: form.contact_phone || null,
       contact_email: form.contact_email || null,
@@ -261,6 +262,10 @@ const Lessons = () => {
                     <div><label className="text-sm font-medium mb-1 block">מיקום הקלטה</label>
                       <Input value={form.recording_location} onChange={e => setForm(p => ({ ...p, recording_location: e.target.value }))} placeholder="קישור או מיקום" /></div>
                   )}
+                  {form.is_live_stream && (
+                    <div><label className="text-sm font-medium mb-1 block">קישור לשידור החי</label>
+                      <Input value={form.stream_url} onChange={e => setForm(p => ({ ...p, stream_url: e.target.value }))} placeholder="קישור לזום / יוטיוב / אחר" /></div>
+                  )}
                   <div className="grid grid-cols-2 gap-3">
                     <div><label className="text-sm font-medium mb-1 block">טלפון הרב</label>
                       <Input value={form.rabbi_phone} onChange={e => setForm(p => ({ ...p, rabbi_phone: e.target.value }))} /></div>
@@ -306,7 +311,13 @@ const Lessons = () => {
                     ) : (
                       <Badge variant="secondary" className="text-xs" title={l.recording_url}><Mic className="w-3 h-3 ml-1" />מוקלט</Badge>
                     ))}
-                    {l.meta?.is_live_stream && <Badge variant="secondary" className="text-xs"><Video className="w-3 h-3 ml-1" />חי</Badge>}
+                    {l.meta?.is_live_stream && (l.stream_url && /^https?:\/\//i.test(l.stream_url) ? (
+                      <a href={l.stream_url} target="_blank" rel="noopener noreferrer">
+                        <Badge variant="secondary" className="text-xs hover:bg-secondary/80"><Video className="w-3 h-3 ml-1" />חי</Badge>
+                      </a>
+                    ) : (
+                      <Badge variant="secondary" className="text-xs" title={l.stream_url || undefined}><Video className="w-3 h-3 ml-1" />חי</Badge>
+                    ))}
                   </div>
                   <div className="flex flex-wrap gap-3 mt-2 text-sm text-muted-foreground">
                     {l.city && <span className="flex items-center gap-1"><MapPin className="w-4 h-4" />{l.city} {l.neighborhood || ""}</span>}

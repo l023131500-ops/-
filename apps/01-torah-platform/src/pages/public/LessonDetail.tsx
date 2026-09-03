@@ -1,6 +1,6 @@
 import { useParams, Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { ArrowRight, BookOpen, MapPin, Clock, Phone, User, Mic } from "lucide-react";
+import { ArrowRight, BookOpen, MapPin, Clock, Phone, User, Mic, Video } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -90,6 +90,21 @@ export default function LessonDetail() {
                 </a>
               ) : (
                 <p className="text-sm text-foreground/80">{lesson.recording_url}</p>
+              )}
+            </div>
+          )}
+          {(lesson.meta as { is_live_stream?: boolean } | null)?.is_live_stream && lesson.stream_url && (
+            <div className="rounded-lg border border-border bg-muted/30 p-4">
+              <div className="flex items-center gap-2 font-medium mb-1">
+                <Video className="h-4 w-4 text-primary" /> שידור חי
+              </div>
+              {/^https?:\/\//i.test(lesson.stream_url) ? (
+                <a href={lesson.stream_url} target="_blank" rel="noopener noreferrer"
+                  className="text-primary underline break-all">
+                  {lesson.stream_url}
+                </a>
+              ) : (
+                <p className="text-sm text-foreground/80">{lesson.stream_url}</p>
               )}
             </div>
           )}
