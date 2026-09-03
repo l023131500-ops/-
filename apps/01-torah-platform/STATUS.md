@@ -365,3 +365,55 @@ Committed to `fix/01-torah-platform-donor-address-dedication-father-name-
 0903` — not merged, not pushed to main. Systems 15/32/35/36 and all
 protected schemas/apps untouched this round; no charge/send attempted
 (test-mode Nedarim iframe path unchanged).
+
+## 2026-09-03, session 4 (loop A) — portal forum thread UI was entirely missing, plus a dead category filter
+
+`core.build_tasks`'s only `todo` rows for 35/32/36/01 today are all the
+identical "merge to main + deploy" task, already declined this session
+(see `core.issues #263` — pushing to main conflicts with this agent's
+standing hard rule, not something a DB note can override). Re-scanned
+each system's spec for a genuine unbuilt gap instead of re-litigating
+that. `forum_posts`/`forum_comments`/`forum_categories` have existed
+live since the original commerce migration and RLS on them has been
+hardened across five later migrations (moderation-field protection,
+content-ownership, tenant-scoped insert) — real, maintained backend
+work — yet `src/pages/portal/Forums.tsx` never rendered any of it.
+
+Found two compounding bugs, both confirmed against live data before
+building: (1) the category query filtered `.eq("tenant_id", tenant.id)`,
+but all 8 seeded categories have `tenant_id = null` (global scope,
+verified live) — so the portal page showed "אין פורומים" for every real
+tenant, full stop; (2) even with categories visible, the page only ever
+rendered a static description card — no post list, no way to open a
+post, no way to create a post or comment. `forum_posts`/`forum_comments`
+had 0 live rows, consistent with the feature having been unreachable
+since it shipped.
+
+Rebuilt `portal/Forums.tsx` (single file, additive) on the same
+master-detail pattern already accepted for `portal/Chat.tsx`: category
+sidebar (fixed filter: global-or-own-tenant), post list per category
+(pinned/locked badges, view count), a "new post" dialog, and a post
+detail dialog with comments + add-comment box. Opening a post increments
+`forum_posts.views` — the first real writer to that column, previously
+always 0.
+
+Verified live via MCP against `bieebmnmkffwbqlsfozh` in rolled-back
+transactions using a real synthetic `user_roles` member row (this
+project has zero non-super-admin `user_roles` rows today, same
+structural gap `portal/Chat.tsx` already ships against): fixed category
+filter returns all 8 global categories (was 0); post insert, views
+increment, and comment insert all succeed under the existing RLS +
+`protect_forum_posts_moderation_fields`/`protect_forum_posts_delete`
+trigger stack; confirmed `count(*)=0` on all three tables plus the
+synthetic role after rollback — zero residue (one earlier attempt in
+this same investigation was accidentally `COMMIT`ted instead of
+`ROLLBACK`ed — caught immediately and cleaned up by explicit `DELETE`,
+reconfirmed zero rows before moving on). `tsc --noEmit` shows no new
+errors (754 pre-existing repo-wide, unrelated to this file) and
+`esbuild` transpiles the file cleanly; brace/paren/bracket counts
+balanced. Purely additive to one file (312 insertions / 12 deletions,
+all inside the same component). `core.build_tasks` row added (system
+01, priority 292) and marked done. Committed to
+`fix/01-torah-platform-portal-forums-thread-ui-0903` — not merged, not
+pushed to main. Systems 15/32/35/36 and all protected schemas/apps
+untouched this round; no charge/send attempted.
