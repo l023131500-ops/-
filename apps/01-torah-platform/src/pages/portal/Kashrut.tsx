@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Plus, Edit2, Trash2, ShieldCheck } from "lucide-react";
+import { Plus, Edit2, Trash2, ShieldCheck, AlertTriangle } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -18,6 +18,24 @@ import { toast } from "sonner";
 // public/Kashrut.tsx reads exactly this table (status='active') but until now no
 // screen anywhere ever wrote to it, so the public page was permanently empty for
 // every tenant.
+
+// architecture.md line 87 documents kashrut_certifications as "תעודות, אישורים,
+// התראות" (certificates, approvals, ALERTS) and §5.2 council bullet repeats
+// "רשימת תעודות + התראות" -- valid_until existed since the table was created but
+// nothing anywhere ever flagged an approaching/passed expiry to the tenant admin.
+// Computed client-side from valid_until (no new table/migration needed): a
+// certificate is "expiring soon" inside EXPIRY_WARNING_DAYS and "expired" once
+// valid_until is in the past, regardless of the manually-set status field (which
+// tenants often forget to update by hand -- the date is the source of truth here).
+const EXPIRY_WARNING_DAYS = 30;
+
+function daysUntil(dateStr: string) {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const target = new Date(dateStr);
+  target.setHours(0, 0, 0, 0);
+  return Math.round((target.getTime() - today.getTime()) / 86400000);
+}
 
 const STATUS_OPTIONS = [
   { value: "active", label: "בתוקף" },
@@ -132,6 +150,21 @@ export default function Kashrut() {
   const statusVariant = (s: string) => (s === "active" ? "success" : s === "expired" ? "destructive" : "outline");
   const statusLabel = (s: string) => STATUS_OPTIONS.find((o) => o.value === s)?.label || s;
 
+  // Expiry alerts: only certificates the tenant still treats as live (not
+  // already marked expired/pending-renewal by hand) are worth alerting on --
+  // avoids nagging about a cert that's already been dealt with.
+  const expired = (data || []).filter((k: any) => k.valid_until && k.status === "active" && daysUntil(k.valid_until) < 0);
+  const expiringSoon = (data || []).filter(
+    (k: any) => k.valid_until && k.status === "active" && daysUntil(k.valid_until) >= 0 && daysUntil(k.valid_until) <= EXPIRY_WARNING_DAYS,
+  );
+  const expiryState = (k: any): "expired" | "soon" | null => {
+    if (!k.valid_until || k.status !== "active") return null;
+    const d = daysUntil(k.valid_until);
+    if (d < 0) return "expired";
+    if (d <= EXPIRY_WARNING_DAYS) return "soon";
+    return null;
+  };
+
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
@@ -141,6 +174,31 @@ export default function Kashrut() {
           תעודה חדשה
         </Button>
       </div>
+
+      {(expired.length > 0 || expiringSoon.length > 0) && (
+        <Card className="mb-6 border-yellow-300 bg-yellow-50/70 dark:bg-yellow-950/20">
+          <CardContent className="py-3">
+            <div className="flex items-start gap-3">
+              <AlertTriangle className="h-5 w-5 text-yellow-600 shrink-0 mt-0.5" />
+              <div className="text-sm space-y-1">
+                {expired.length > 0 && (
+                  <div>
+                    <span className="font-medium text-destructive">{expired.length} תעודות פג תוקפן: </span>
+                    {expired.map((k: any) => k.business_name).join(", ")}
+                  </div>
+                )}
+                {expiringSoon.length > 0 && (
+                  <div>
+                    <span className="font-medium">{expiringSoon.length} תעודות עומדות לפוג ({EXPIRY_WARNING_DAYS} הימים הקרובים): </span>
+                    {expiringSoon.map((k: any) => k.business_name).join(", ")}
+                  </div>
+                )}
+                <div className="text-muted-foreground">מומלץ לעדכן את התעודות מול הגוף המכשיר ולסמן כ״פג תוקף״ / לחדש את התאריך.</div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="max-w-lg max-h-[85vh] overflow-y-auto">
@@ -250,6 +308,8 @@ export default function Kashrut() {
               </div>
               <div className="flex items-center gap-2">
                 <Badge variant={statusVariant(k.status)}>{statusLabel(k.status)}</Badge>
+                {expiryState(k) === "expired" && <Badge variant="destructive">פג תוקף בפועל</Badge>}
+                {expiryState(k) === "soon" && <Badge className="bg-yellow-500 hover:bg-yellow-500">עומד לפוג</Badge>}
                 <Button size="icon" variant="ghost" onClick={() => openEdit(k)}>
                   <Edit2 className="h-4 w-4" />
                 </Button>
