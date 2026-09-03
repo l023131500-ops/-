@@ -615,9 +615,16 @@ async function renderDash() {
     : '';
   body.innerHTML = '<p class="loading"><span class="spinner"></span>טוען…</p>';
 
-  let d;
-  try { d = await rpc('np_dashboard', { p_office: OFFICE.id }); }
+  let d, registryPending;
+  try {
+    [d, registryPending] = await Promise.all([
+      rpc('np_dashboard', { p_office: OFFICE.id }),
+      rpc('np_registry_requests_pending', { p_office: OFFICE.id }).catch(() => []),
+    ]);
+  }
   catch (e) { body.innerHTML = '<div class="err">' + esc(e.message) + '</div>'; return; }
+  registryPending = registryPending || [];
+  const registryUrgent = registryPending.filter((r) => r.grade === 'urgent').length;
 
   const tile = (k, val, note, cls) =>
     '<div class="kpi"><p class="k">' + k + '</p><p class="v ' + (cls || '') + '">' + val + '</p>' +
@@ -635,7 +642,38 @@ async function renderDash() {
     tile('משימות פתוחות', nf.format(d.tasks_open),
          d.tasks_overdue > 0 ? nf.format(d.tasks_overdue) + ' באיחור' : null,
          d.tasks_overdue > 0 ? 'warn' : '') +
+    tile('בקשות נסח/תיק-מידע פתוחות', nf.format(registryPending.length),
+         registryUrgent > 0 ? registryUrgent + ' דחופות' : null,
+         registryUrgent > 0 ? 'warn' : '') +
     '</div>';
+
+  // TOP BUILD DIRECTIVE, TABU item (b): a request must act as "a task in
+  // management" — but np_tabu_request_create/np_tikmeida_request_create only
+  // ever wrote a row on the ONE property it was filed against, and app.html
+  // only ever fetched tabu_requests/tik_meida_requests inside openProperty().
+  // An office with more than a couple of properties had no way to discover a
+  // pending request short of opening every property card in turn. This lists
+  // every pending/sent request office-wide, oldest-urgent first, each linking
+  // straight into the property drawer where the existing action buttons live.
+  if (registryPending.length) {
+    html += '<h2 class="sec">בקשות נסח טאבו / תיק מידע — ממתינות</h2>' +
+      '<ul class="timeline">' + registryPending.map((r) => {
+        const isTabu = r.kind === 'tabu';
+        const label = isTabu ? 'נסח טאבו' : 'תיק מידע להיתר';
+        const statusHe = (isTabu ? TABU_STATUS_HE : TIKMEIDA_STATUS_HE)[r.status] || r.status;
+        return '<li>' +
+          '<span class="pill">' + esc(label) + '</span> ' +
+          '<span class="pill">' + esc(statusHe) + '</span>' +
+          (r.grade === 'urgent' ? ' <span class="pill" style="color:#b42318">דחוף</span>' : '') +
+          ' <b>' + esc(r.title || r.address || ('גוש ' + (r.gush || '') + ' חלקה ' + (r.helka || ''))) + '</b>' +
+          (r.city ? '<span class="w"> · ' + esc(r.city) + '</span>' : '') +
+          '<span class="w"> · ' + dtm(r.created_at) + '</span>' +
+          '<div class="controls" style="margin-top:8px">' +
+            '<button class="btn btn-quiet btn-sm" data-regopen="' + r.property_id + '">פתיחת הנכס</button>' +
+          '</div>' +
+        '</li>';
+      }).join('') + '</ul>';
+  }
 
   html += '<h2 class="sec">מקורות ליד — מה באמת סוגר עסקאות</h2>';
   const src = d.by_source || [];
@@ -660,6 +698,10 @@ async function renderDash() {
       'שיעור המרה מוצג רק ממקור עם 5 לידים ומעלה.</p>';
   }
   body.innerHTML = html;
+
+  for (const b of body.querySelectorAll('[data-regopen]')) {
+    b.addEventListener('click', () => openProperty(b.dataset.regopen));
+  }
 }
 
 /* ── pipeline board ──────────────────────────────────────────────────────── */
