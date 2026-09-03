@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import type { PropertyReport } from '@/lib/buildreport';
 import type { AssetType } from '@/lib/assettype';
-import { distanceText, walkText } from '@/lib/report';
+import { distanceText } from '@/lib/report';
 import { apiUrl } from '@/lib/basepath';
 import { MARKER_LABELS } from '@/lib/googlemaps';
 import { hasValuation } from '@/lib/valuation';
@@ -383,18 +383,46 @@ function buildSlides(d: PropertyReport): Slide[] {
     });
   }
 
-  const ed = d.places.education.slice(0, 2);
-  const tr = d.places.transport.slice(0, 2);
-  const rel = d.places.religion.slice(0, 2);
-  if (ed.length || tr.length || rel.length) {
+  // §"מה יש מסביב" (קטגוריית surroundings): המסך (PlacesPanel.tsx, שש קבוצות)
+  // והמייל (notes.surroundings ב-lib/buildreport.ts, אותן שש קבוצות + מקוואות)
+  // כבר מציגים חינוך/גנים/דת/מסחר/בריאות/פנאי + מקוואות במלואם — אבל השקופית
+  // כאן הציגה רק שלוש קבוצות (חינוך/תחבורה/דת, top-2 כל אחת) והשמיטה
+  // גנים-ומעונות/מסחר/בריאות/פנאי/מקוואות לגמרי. אין קריאת-מקור חדשה —
+  // d.places/d.mikvaot כבר נמשכים בכל דוח, כולל בהפקת PDF (בשונה מ-listings
+  // שיש לו guard ייעודי ל-skipListings בשביל עלות-Apify).
+  const surroundingsRows = (
+    [
+      ['מוסדות חינוך', d.places.education],
+      ['גנים ומעונות', d.places.preschool],
+      ['בתי כנסת ומוסדות דת', d.places.religion],
+      ['מסחר וקניות', d.places.commerce],
+      ['בריאות', d.places.health],
+      ['פארקים ופנאי', d.places.leisure],
+    ] as const
+  )
+    .filter(([, places]) => places.length > 0)
+    .map(([title, places]) => {
+      const nearest = places[0]; // כבר ממוין לפי מרחק (mergePlaces), כמו PlacesPanel
+      return {
+        label: title,
+        value: `${places.length} בסביבה`,
+        note: `הקרוב ביותר: ${nearest.name} · ${distanceText(nearest.straightMeters) ?? '—'}`,
+      };
+    });
+  if (d.mikvaot.length) {
+    const nearest = d.mikvaot[0];
+    surroundingsRows.push({
+      label: 'מקוואות',
+      value: `${d.mikvaot.length} ביישוב`,
+      note: nearest.meters != null ? `${nearest.name} · ${distanceText(nearest.meters)}` : nearest.name,
+    });
+  }
+  if (surroundingsRows.length) {
     s.push({
       kicker: 'מה יש מסביב',
-      title: 'מוסדות, תחבורה ובתי כנסת במרחק הליכה',
-      rows: [...ed, ...tr, ...rel].map((p) => ({
-        label: `${p.kind} · ${p.name}`,
-        value: distanceText(p.straightMeters) ?? '—',
-        note: p.walkSeconds != null ? `${walkText(p.walkSeconds)} הליכה` : undefined,
-      })),
+      title: 'מוסדות ושירותים במרחק הליכה',
+      subtitle: 'לכל קטגוריה: כמה נמצאו בסביבה, והקרובה מביניהן.',
+      rows: surroundingsRows,
     });
   }
 
