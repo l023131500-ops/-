@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
+import AdsBanner from "@/components/AdsBanner";
 
 const DAY_NAMES = ["א'", "ב'", "ג'", "ד'", "ה'", "ו'", "ש'"];
 
@@ -58,6 +59,8 @@ export default function SynagogueDetail() {
           {data.description && <p className="text-foreground/85 pt-3">{data.description}</p>}
         </CardContent>
       </Card>
+
+      <AdsBanner placement="homepage" synagogueId={data.id} className="px-0" />
 
       {data.prayer_times && data.prayer_times.length > 0 && (
         <Card className="mt-6">

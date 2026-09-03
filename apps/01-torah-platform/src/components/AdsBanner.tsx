@@ -10,6 +10,15 @@ import { useTenant } from "@/hooks/useTenant";
 // banners (DonationBanner/SynagogueBanner/StudyDayBanner/BulkUploadBanner)
 // existed, so a tenant admin had no way to run an actual promotional banner
 // on their own site. This renders whatever that tenant configured.
+//
+// synagogue_id (migration 20260903010000, architecture.md §5.2 religious
+// council bullet "פרסום פנימי – באנרים פר-ביכ״נ"): a council can now target
+// a banner at one specific synagogue instead of only tenant-wide. When
+// synagogueId is passed (from the synagogue's own public page) only banners
+// targeted at that synagogue show; when omitted (tenant homepage etc.) only
+// tenant-wide banners (synagogue_id null) show, so a banner aimed at one
+// synagogue never leaks onto the council's general site or another
+// synagogue's page.
 
 const SIZE_CLASSES: Record<string, string> = {
   small: "h-20 md:h-24",
@@ -20,22 +29,25 @@ const SIZE_CLASSES: Record<string, string> = {
 
 interface AdsBannerProps {
   placement: "homepage" | "sidebar" | "footer" | "strip";
+  synagogueId?: string;
   className?: string;
 }
 
-export default function AdsBanner({ placement, className }: AdsBannerProps) {
+export default function AdsBanner({ placement, synagogueId, className }: AdsBannerProps) {
   const { tenant } = useTenant();
 
   const { data: ads } = useQuery({
-    queryKey: ["ads-banner", tenant?.id, placement],
+    queryKey: ["ads-banner", tenant?.id, placement, synagogueId],
     enabled: !!tenant?.id,
     queryFn: async () => {
-      const { data } = await supabase
+      let query = supabase
         .from("ads")
         .select("*")
         .eq("tenant_id", tenant!.id)
         .eq("placement", placement)
-        .eq("is_active", true)
+        .eq("is_active", true);
+      query = synagogueId ? query.eq("synagogue_id", synagogueId) : query.is("synagogue_id", null);
+      const { data } = await query
         .order("sort_order", { ascending: true })
         .order("created_at", { ascending: false });
       const now = Date.now();

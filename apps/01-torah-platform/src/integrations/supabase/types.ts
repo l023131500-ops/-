@@ -53,6 +53,7 @@ export type Database = {
           size: string
           sort_order: number | null
           starts_at: string | null
+          synagogue_id: string | null
           tenant_id: string
           title: string
         }
@@ -67,6 +68,7 @@ export type Database = {
           size?: string
           sort_order?: number | null
           starts_at?: string | null
+          synagogue_id?: string | null
           tenant_id: string
           title: string
         }
@@ -81,10 +83,18 @@ export type Database = {
           size?: string
           sort_order?: number | null
           starts_at?: string | null
+          synagogue_id?: string | null
           tenant_id?: string
           title?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "ads_synagogue_id_fkey"
+            columns: ["synagogue_id"]
+            isOneToOne: false
+            referencedRelation: "synagogues"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "ads_tenant_id_fkey"
             columns: ["tenant_id"]

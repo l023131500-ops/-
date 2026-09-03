@@ -19,6 +19,13 @@ import { toast } from "sonner";
 // but no screen anywhere ever wrote to it — only the hard-coded platform
 // self-promo banners existed. This is the first write path, same UI-wiring
 // gap class as Synagogues/CommunityServices/Azkarot/Newsletters before it.
+//
+// synagogue_id (migration 20260903010000, architecture.md §5.2 religious
+// council bullet "פרסום פנימי – באנרים פר-ביכ״נ"): a religious-council
+// tenant owns multiple synagogues (src/pages/portal/Synagogues.tsx) and can
+// now aim a banner at one of them instead of only the whole tenant. The
+// picker below only appears when the tenant actually has synagogues rows —
+// empty/no-op for tenant types that don't (synagogue/organization/teacher).
 
 const SIZE_OPTIONS = [
   { value: "small", label: "קטן" },
@@ -34,6 +41,8 @@ const PLACEMENT_OPTIONS = [
   { value: "strip", label: "רצועה" },
 ];
 
+const NO_SYNAGOGUE = "__tenant_wide__";
+
 const emptyForm = {
   title: "",
   link_url: "",
@@ -42,6 +51,7 @@ const emptyForm = {
   starts_at: "",
   ends_at: "",
   sort_order: "0",
+  synagogue_id: NO_SYNAGOGUE,
 };
 
 export default function PortalAds() {
@@ -69,6 +79,19 @@ export default function PortalAds() {
     },
   });
 
+  const { data: synagogues } = useQuery({
+    queryKey: ["portal-ads-synagogues", tenant?.id],
+    enabled: !!tenant?.id,
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("synagogues")
+        .select("id, name")
+        .eq("tenant_id", tenant!.id)
+        .order("name", { ascending: true });
+      return data || [];
+    },
+  });
+
   const openCreate = () => {
     setEditId(null);
     setForm(emptyForm);
@@ -88,6 +111,7 @@ export default function PortalAds() {
       starts_at: ad.starts_at ? ad.starts_at.slice(0, 10) : "",
       ends_at: ad.ends_at ? ad.ends_at.slice(0, 10) : "",
       sort_order: ad.sort_order != null ? String(ad.sort_order) : "0",
+      synagogue_id: ad.synagogue_id || NO_SYNAGOGUE,
     });
     setExistingImageUrl(ad.image_url || null);
     setImageFile(null);
@@ -118,6 +142,7 @@ export default function PortalAds() {
         starts_at: form.starts_at || null,
         ends_at: form.ends_at || null,
         sort_order: form.sort_order ? parseInt(form.sort_order, 10) : 0,
+        synagogue_id: form.synagogue_id === NO_SYNAGOGUE ? null : form.synagogue_id,
       };
 
       if (editId) {
@@ -205,6 +230,22 @@ export default function PortalAds() {
                 placeholder="https://..."
               />
             </div>
+            {synagogues && synagogues.length > 0 && (
+              <div>
+                <Label>בית כנסת (אופציונלי — פרסום פנימי לביכ"נ אחד בלבד)</Label>
+                <Select value={form.synagogue_id} onValueChange={(v) => setForm({ ...form, synagogue_id: v })}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value={NO_SYNAGOGUE}>כל הארגון (ברירת מחדל)</SelectItem>
+                    {synagogues.map((s: any) => (
+                      <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
             <div className="grid grid-cols-2 gap-3">
               <div>
                 <Label>גודל</Label>
@@ -300,6 +341,11 @@ export default function PortalAds() {
                   {PLACEMENT_OPTIONS.find((o) => o.value === ad.placement)?.label || ad.placement}
                 </Badge>
                 {!ad.is_active && <Badge variant="secondary" className="text-xs">מוסתר</Badge>}
+                {ad.synagogue_id && (
+                  <Badge variant="outline" className="text-xs">
+                    {synagogues?.find((s: any) => s.id === ad.synagogue_id)?.name || "בית כנסת ספציפי"}
+                  </Badge>
+                )}
               </div>
               <div className="flex flex-wrap items-center gap-2">
                 {ad.link_url && (
