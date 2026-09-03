@@ -377,6 +377,32 @@ function buildSlides(d: PropertyReport): Slide[] {
     });
   }
 
+  // §12 "מה נבנה באזור?" (nearbyConstructionPlans, lib/nearbyplans.ts): the
+  // report already computes located building/planning plans within 400m,
+  // and NearbyPlansPanel.tsx renders them on-screen — but the deck (and the
+  // PDF, which prints this same component) never had a slide for it, so a
+  // client who only saw the deck/PDF never learned what's being built nearby.
+  // Premium/VIP only: `nearbyPlans` is `null` at basic tier because the
+  // layer is never queried there (no extra tier check needed here).
+  if (d.nearbyPlans && d.nearbyPlans.length > 0) {
+    const plans = d.nearbyPlans;
+    s.push({
+      kicker: 'תכנון והיתרים',
+      title: `${plans.length} תוכניות בנייה ותכנון ברדיוס 400 מ'`,
+      subtitle: 'תוכניות מרשם התכנון שנמצאות סמוך לנכס, עם מיקום מדויק וסטטוס.',
+      rows: plans.slice(0, 4).map((p) => ({
+        label: p.planNumber ?? 'תוכנית ללא מספר',
+        value: p.status ?? '—',
+        note: [
+          p.planName ?? undefined,
+          Number.isFinite(p.distanceM) ? `כ-${Math.round(p.distanceM)} מ' מהנכס` : undefined,
+        ]
+          .filter(Boolean)
+          .join(' · ') || undefined,
+      })),
+    });
+  }
+
   // §7 permits/planning: `lib/permits.ts` already composes `permitGuidance`
   // (the practical "who to ask for a building permit" text) and plan counts
   // for every report — on-screen it only reaches the client as a fact's

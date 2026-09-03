@@ -15,6 +15,7 @@ import type { Fact } from './report';
 import type { TabuAnalysis, TabuDocRow, TikMeidaDocRow } from './requests';
 import { computeStreetStats } from './streetstats';
 import { hasValuation } from './valuation';
+import type { NearbyPlan } from './nearbyplans';
 
 const INK = '#141619';
 const MUTED = '#6b7280';
@@ -303,6 +304,47 @@ function streetBlock(report: PropertyReport): string {
 }
 
 /**
+ * §12 · "מה נבנה באזור?" — זהה בנתונים ל-`NearbyPlansPanel.tsx` (המסך).
+ * `report.nearbyPlans` (lib/nearbyplans.ts) הוא `null` ברמה חינמית (השכבה
+ * לא נשאלת כלל, בדיוק כמו במסך) ולכן אין צורך בבדיקת-רמה נוספת כאן — רק
+ * "האם יש בכלל נתון להציג". לפני הרשומה הזו הסעיף לא היה קיים במייל בכלל,
+ * למרות שהוא כבר נשלח לדפדפן בכל דוח פרימיום/VIP.
+ */
+function nearbyPlansBlock(plans: NearbyPlan[] | null | undefined): string {
+  if (!plans || !plans.length) return '';
+
+  const rows = plans
+    .slice(0, 8)
+    .map(
+      (p) => `<tr>
+  <td style="padding:7px 10px;border-bottom:1px solid ${LINE};font-size:13px">${esc(p.planNumber ?? 'ללא מספר')}</td>
+  <td style="padding:7px 10px;border-bottom:1px solid ${LINE};font-size:13px">${esc(p.planName ?? '—')}</td>
+  <td style="padding:7px 10px;border-bottom:1px solid ${LINE};font-size:13px">${esc(p.status ?? '—')}</td>
+  <td style="padding:7px 10px;border-bottom:1px solid ${LINE};font-size:13px">${Number.isFinite(p.distanceM) ? `${Math.round(p.distanceM)} מ'` : '—'}</td>
+</tr>`,
+    )
+    .join('');
+
+  return section(
+    'מה נבנה באזור?',
+    "תוכניות בנייה ותכנון מאושרות ברדיוס 400 מ' מהנכס, עם מיקום מדויק וסטטוס.",
+    `<table role="presentation" cellpadding="0" cellspacing="0" border="0" dir="rtl" style="width:100%;margin-top:10px;border-collapse:collapse;border:1px solid ${LINE}">
+  <tr style="background:#f8fafc">
+    <th style="padding:8px 10px;text-align:right;font-size:12px;color:${MUTED}">מספר תוכנית</th>
+    <th style="padding:8px 10px;text-align:right;font-size:12px;color:${MUTED}">שם</th>
+    <th style="padding:8px 10px;text-align:right;font-size:12px;color:${MUTED}">מצב</th>
+    <th style="padding:8px 10px;text-align:right;font-size:12px;color:${MUTED}">מרחק מהנכס</th>
+  </tr>
+  ${rows}
+</table>${
+      plans.length > 8
+        ? `<div style="margin-top:6px;font-size:11px;color:${MUTED}">מוצגות 8 מתוך ${plans.length} תוכניות שנמצאו.</div>`
+        : ''
+    }`,
+  );
+}
+
+/**
  * §2 · הערכת שווי — זהה בנתונים ל-`ValuationPanel.tsx` (המסך) ולסליידר
  * ה"הערכת שווי" בחפיסה (`Presentation.tsx`), שניהם קוראים מ-`report.valuation`
  * בלי חישוב משלהם. לפני הרשומה הזו הסעיף לא היה קיים במייל בכלל — מי שקורא
@@ -583,6 +625,7 @@ export function reportEmailHtml(report: PropertyReport, opts: ReportEmailOptions
   ${backgroundBlock}
   ${valuationBlock(report)}
   ${streetBlock(report)}
+  ${nearbyPlansBlock(report.nearbyPlans)}
   ${categories}
   ${
     soldTable
@@ -713,6 +756,22 @@ export function reportEmailText(report: PropertyReport): string {
           }, עסקה אחרונה ${r.lastDate ? heDate(r.lastDate) : '—'}`,
         );
       }
+    }
+    lines.push('');
+  }
+
+  // ⚠️ אותו סעיף "מה נבנה באזור?" ש-HTML/המסך כבר מציגים (§12) — ראו `nearbyPlansBlock`.
+  if (report.nearbyPlans && report.nearbyPlans.length) {
+    lines.push('== מה נבנה באזור? ==');
+    for (const p of report.nearbyPlans.slice(0, 8)) {
+      lines.push(
+        `    ${p.planNumber ?? 'ללא מספר'} | ${p.planName ?? '—'} | ${p.status ?? '—'} | ${
+          Number.isFinite(p.distanceM) ? `${Math.round(p.distanceM)} מ'` : '—'
+        }`,
+      );
+    }
+    if (report.nearbyPlans.length > 8) {
+      lines.push(`    מוצגות 8 מתוך ${report.nearbyPlans.length} תוכניות שנמצאו.`);
     }
     lines.push('');
   }
