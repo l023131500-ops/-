@@ -75,6 +75,11 @@ export function TopicCard({ topic, meta }: { topic: HfTopic; meta?: HfMeta }) {
                 {topic.category}
               </Badge>
             )}
+            {topic.subCategory && (
+              <Badge variant="outline" className="text-xs font-normal">
+                {topic.subCategory}
+              </Badge>
+            )}
             {/* מדליה רק כשיש זוכה אמיתי — "טעון השוואה פרטנית" הוצג קודם עם
                 אותו עיטור, כאילו הוא שם של קופה מנצחת. */}
             {winnerKey ? (
