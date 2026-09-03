@@ -16,6 +16,7 @@ const AdminContent = () => {
   const [categoryFilter, setCategoryFilter] = useState("all");
   const [search, setSearch] = useState("");
   const [busyId, setBusyId] = useState<string | null>(null);
+  const [categoryNames, setCategoryNames] = useState<string[]>(Object.keys(MATERIAL_CATEGORIES));
 
   const load = async () => {
     const { data: ms, error } = await supabase.from("materials").select("*").order("created_at", { ascending: false });
@@ -31,6 +32,20 @@ const AdminContent = () => {
   };
 
   useEffect(() => { load(); }, []);
+
+  useEffect(() => {
+    // material_categories (admin/MaterialCategories.tsx) is the managed source
+    // of truth; MATERIAL_CATEGORIES stays as the initial/fallback state above.
+    (async () => {
+      const { data } = await supabase
+        .from("material_categories")
+        .select("name")
+        .is("parent_id", null)
+        .eq("is_active", true)
+        .order("sort_order", { ascending: true });
+      if (data && data.length > 0) setCategoryNames(data.map((c: any) => c.name));
+    })();
+  }, []);
 
   const updateStatus = async (id: string, status: string, notes?: string) => {
     if (busyId) return;
@@ -101,7 +116,7 @@ const AdminContent = () => {
             <SelectTrigger className="w-44"><SelectValue /></SelectTrigger>
             <SelectContent>
               <SelectItem value="all">כל הקטגוריות</SelectItem>
-              {Object.keys(MATERIAL_CATEGORIES).map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}
+              {categoryNames.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}
             </SelectContent>
           </Select>
         </div>

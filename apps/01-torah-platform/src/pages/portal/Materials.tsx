@@ -15,6 +15,34 @@ import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
 import { MATERIAL_CATEGORIES } from "@/types/questionnaire";
 
+type CategoryRow = { id: string; name: string; parent_id: string | null; is_active: boolean | null };
+
+// material_categories is the super-admin-managed source of truth (see
+// admin/MaterialCategories.tsx); MATERIAL_CATEGORIES is kept only as a
+// fallback so this form still works if the table is ever empty/unreachable.
+function useMaterialCategoryMap() {
+  const { data } = useQuery({
+    queryKey: ["material-categories-active"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("material_categories")
+        .select("id, name, parent_id, is_active")
+        .eq("is_active", true)
+        .order("sort_order", { ascending: true });
+      if (error) throw error;
+      return (data || []) as CategoryRow[];
+    },
+    staleTime: 60_000,
+  });
+  if (!data || data.length === 0) return MATERIAL_CATEGORIES;
+  const tops = data.filter((c) => !c.parent_id);
+  const map: Record<string, string[]> = {};
+  for (const t of tops) {
+    map[t.name] = data.filter((s) => s.parent_id === t.id).map((s) => s.name);
+  }
+  return map;
+}
+
 const MEDIA_KINDS: Record<string, string> = {
   document: "מסמך / PDF",
   audio: "קובץ שמע",
@@ -31,6 +59,7 @@ export default function Materials() {
   const [open, setOpen] = useState(false);
   const [form, setForm] = useState(emptyForm);
   const [file, setFile] = useState<File | null>(null);
+  const categoryMap = useMaterialCategoryMap();
 
   const { data, isLoading } = useQuery({
     queryKey: ["materials", tenant?.id],
@@ -115,7 +144,7 @@ export default function Materials() {
                 <Select value={form.category} onValueChange={(v) => setForm({ ...form, category: v, subcategory: "" })}>
                   <SelectTrigger><SelectValue placeholder="בחר קטגוריה" /></SelectTrigger>
                   <SelectContent>
-                    {Object.keys(MATERIAL_CATEGORIES).map((c) => <SelectItem key={c} value={c}>{c}</SelectItem>)}
+                    {Object.keys(categoryMap).map((c) => <SelectItem key={c} value={c}>{c}</SelectItem>)}
                   </SelectContent>
                 </Select>
               </div>
@@ -124,7 +153,7 @@ export default function Materials() {
                 <Select value={form.subcategory} onValueChange={(v) => setForm({ ...form, subcategory: v })} disabled={!form.category}>
                   <SelectTrigger><SelectValue placeholder="בחר תת־קטגוריה" /></SelectTrigger>
                   <SelectContent>
-                    {(MATERIAL_CATEGORIES[form.category] || []).map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}
+                    {(categoryMap[form.category] || []).map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}
                   </SelectContent>
                 </Select>
               </div>
