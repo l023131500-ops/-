@@ -3193,3 +3193,78 @@ to that constraint: they import only dependency-free modules (`hosts.js`,
      — this step touches `public/js/app.js` only. Open after it is a copy
      decision and not an accessibility one: `#e-list`'s אתר column is contained
      but not bounded, where the other two tables cap theirs at 230px and 220px.
+
+[03/09/2026 Loop A] IMPORTANT correction of a standing session assumption: the
+directory this monorepo carries at `apps/35-kioskfleet/server/` is a **stale,
+abandoned mirror**, not the live system. Only 7 files under it are actually
+git-tracked in this repo (`console.html`, `app.js`, `seed.js`, `seedadmin.js`,
+one test file, this STATUS.md, `app.json`) — the rest (config.js, every
+route, db.js, etc.) sit on disk untracked, last touched 31/08, and diverge
+significantly from the real system. The **real** KioskFleet source is the
+separate git repo checked out at `/home/m30/zol-work/kiosk` (remote
+`l023131500-ops/zol`, currently on integration branch
+`feat/kiosk-exit-gesture-config-reconcile-0902`) — every "kiosk: ..." commit
+this STATUS.md has logged all session was actually made there, not in this
+apps/ mirror; this file has always been the cross-repo changelog, never the
+source. Discovered this round after nearly duplicating an already-built
+feature (alerts.js/routes/alerts.js already exist in zol-work, commit
+709bc88) by building it against the stale mirror instead — caught before
+committing, mirror edits reverted, zero residue. Flagging explicitly so a
+future round does not repeat the same near-miss: **always read/edit
+`/home/m30/zol-work/kiosk`, never `apps/35-kioskfleet/server`.**
+
+Real gap found in the real repo: KIOSK_BUILD.md §2★א (marked "מחייב, גובר
+על כל השאר" — mandatory, overrides everything else) requires two separate
+per-device fields — "אתר ראשי" (home_url, the fleet-wide default that locks
+the device) and "קישור שיוצג על המכשיר" (the specific link shown on THAT
+device's screen) — but only home_url ever existed anywhere in zol-work's
+history (`git log --all -S"display_url"` / `-S"displayUrl"` returns zero
+hits across every branch). KioskActivity.kt's own `returnToVenue()` comment
+already said "return to the exact event/venue link — never a generic home",
+but the dedicated field to make that true never existed — every device
+showed its owner's one shared default, with no way to point a single
+device at a different link without changing what it's locked to for
+everyone.
+
+Built `devices.display_url` (additive migration, NULL everywhere = today's
+unchanged behavior) end to end: validated server-side the same way
+home_url is (empty = explicit clear, folds its own host into allowed_host
+so the on-device allow-list can never block the very override it exists to
+show), wired through PATCH /devices/:id (and therefore template bulk-apply,
+same shared `applyDevicePolicy` path already used by both), enroll/
+heartbeat/update_config payloads, and a new field in the console's
+device-edit form. On Android: `Prefs.DISPLAY_URL` persisted the same way
+`HOME_URL` is; every navigation that meant "go back to the device's own
+home" (`returnToVenue`, `switchToHome`, the first-boot LAST_URL fallback, a
+pushed `update_config`) now prefers `DISPLAY_URL` and falls back to
+`HOME_URL` when no override is set. Deliberately NOT added to
+`templates`/`policy_snapshots`: those are shared presets meant to apply
+identically across a batch of devices, while this field's whole purpose is
+to differ per device.
+
+Verified live end-to-end against a real running instance of the actual
+zol-work server (temp DB, `node src/index.js`, killed + cleaned up after):
+enroll → PATCH with a display-url on a different host (confirmed
+allowed_host merges both hosts) → GET /devices → heartbeat (confirmed the
+pushed `update_config` command payload carries `displayUrl`) → invalid-
+scheme rejection → explicit clear via empty string → a name-only edit
+leaving the field untouched. Full suite 250/250 on `node --test` (this
+repo's real baseline, not the mirror's 151/152). No kotlinc/gradle in this
+sandbox to compile-check the Android side — verified by a brace/paren-
+balance check plus a manual re-read of every changed block against the
+existing AgentClient/KioskActivity conventions instead, same disclosed
+limitation as every other Android-touching round.
+
+Committed to `feat/kiosk-device-display-url-0903` (e5d425a) on the real
+zol-work repo and pushed to `origin` (the `l023131500-ops/zol` remote) —
+NOT merged to zol's own main, per this session's standing never-push-to-
+main instruction (zol's main is far behind this integration chain — same
+standing DEPLOY MANDATE conflict every prior round this session flagged,
+not re-litigated again). zol-work's working tree was left back on
+`feat/kiosk-exit-gesture-config-reconcile-0902` (the branch this round
+found it on) so the next round starts from the same reference point.
+core.build_tasks id=98 (system 35) inserted+marked done. Systems 32/36/01/
+15 untouched this round (all confirmed 0 todo before starting); no
+protected system/schema/webhook touched; real data only, no charges/sends
+in this change; zero regression (additive only, no existing column/RPC/
+handler changed).
