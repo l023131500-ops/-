@@ -426,6 +426,32 @@ function buildSlides(d: PropertyReport): Slide[] {
     });
   }
 
+  // §"קווים בכל תחנה" (קטגוריית transport): המסך (TransitLines.tsx) והמייל
+  // (notes.transport ב-lib/buildreport.ts, קטגוריית transport הגנרית) כבר
+  // מציגים לכל תחנת-הליכה את הקווים שעוצרים בה בפועל — אבל buildSlides()
+  // מעולם לא כלל שקופית לתחבורה ציבורית. אין קריאת-מקור חדשה: d.transitStops
+  // כבר נמשך בכל דוח ללא תלות ברמה (רק כמות התחנות משתנה, tier==='basic' → 3
+  // במקום 6, ראו lib/buildreport.ts).
+  if (d.transitStops.length) {
+    s.push({
+      kicker: 'תחבורה ציבורית',
+      title: 'קווים בכל תחנה',
+      subtitle: 'לכל תחנה בטווח הליכה — הקווים שעוצרים בה בפועל, לפי לוח הזמנים הרשמי.',
+      rows: d.transitStops.slice(0, 5).map((stop) => ({
+        label: stop.code != null ? `${stop.name} · תחנה ${stop.code}` : stop.name,
+        value: distanceText(stop.meters) ?? '—',
+        note: stop.linesUnavailable
+          ? 'רשימת הקווים לתחנה הזו לא נטענה כרגע.'
+          : stop.lines.length
+            ? `קווים: ${stop.lines
+                .slice(0, 6)
+                .map((l) => l.shortName)
+                .join(', ')}${stop.lines.length > 6 ? ` ועוד ${stop.lines.length - 6}` : ''}`
+            : 'לא נמצאו קווים שעוצרים בתחנה הזו בחלון הנבדק.',
+      })),
+    });
+  }
+
   if (lat != null && lng != null) {
     const markers = [...d.places.education, ...d.places.transport, ...d.places.religion]
       .sort((a, b) => a.straightMeters - b.straightMeters)
