@@ -13,6 +13,7 @@ const AdminTips = () => {
   const [tips, setTips] = useState<any[]>([]);
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
+  const [displayDate, setDisplayDate] = useState(() => new Date().toISOString().slice(0, 10));
   const [open, setOpen] = useState(false);
   const { toast } = useToast();
 
@@ -25,12 +26,12 @@ const AdminTips = () => {
 
   const addTip = async () => {
     if (!title || !content) return;
-    const { error } = await supabase.from("tips").insert({ title, content });
+    const { error } = await supabase.from("tips").insert({ title, content, display_date: displayDate || null });
     if (error) {
       toast({ title: "שגיאה", description: error.message, variant: "destructive" });
     } else {
       toast({ title: "הטיפ נוסף בהצלחה" });
-      setTitle(""); setContent(""); setOpen(false);
+      setTitle(""); setContent(""); setDisplayDate(new Date().toISOString().slice(0, 10)); setOpen(false);
       fetchTips();
     }
   };
@@ -38,6 +39,15 @@ const AdminTips = () => {
   const toggleActive = async (id: string, current: boolean) => {
     await supabase.from("tips").update({ is_active: !current }).eq("id", id);
     fetchTips();
+  };
+
+  // TipsSection.tsx (the public homepage carousel) orders active tips by
+  // display_date descending — until now nothing ever wrote this column, so
+  // every tip's order there was an unset NULL and the "order by date" was a
+  // no-op. Written immediately on change, same as toggleActive above.
+  const updateDisplayDate = async (id: string, value: string) => {
+    setTips(prev => prev.map(t => t.id === id ? { ...t, display_date: value || null } : t));
+    await supabase.from("tips").update({ display_date: value || null }).eq("id", id);
   };
 
   const deleteTip = async (id: string) => {
@@ -62,6 +72,10 @@ const AdminTips = () => {
               <div className="space-y-4">
                 <Input placeholder="כותרת הטיפ" value={title} onChange={e => setTitle(e.target.value)} />
                 <Textarea placeholder="תוכן הטיפ" value={content} onChange={e => setContent(e.target.value)} rows={4} />
+                <div>
+                  <label className="text-sm text-muted-foreground mb-1 block">תאריך הצגה (קובע את סדר ההצגה בעמוד הבית)</label>
+                  <Input type="date" value={displayDate} onChange={e => setDisplayDate(e.target.value)} />
+                </div>
                 <Button onClick={addTip} className="w-full">שמור</Button>
               </div>
             </DialogContent>
@@ -78,6 +92,10 @@ const AdminTips = () => {
               <div className="flex-1 min-w-0">
                 <p className="font-bold text-foreground">{tip.title}</p>
                 <p className="text-sm text-muted-foreground mt-1">{tip.content}</p>
+                <div className="flex items-center gap-2 mt-2">
+                  <label className="text-xs text-muted-foreground shrink-0">תאריך הצגה:</label>
+                  <Input type="date" value={tip.display_date || ""} onChange={e => updateDisplayDate(tip.id, e.target.value)} className="w-40 h-8 text-sm" />
+                </div>
               </div>
               <div className="flex items-center gap-2 shrink-0">
                 <Button size="sm" variant={tip.is_active ? "outline" : "default"} onClick={() => toggleActive(tip.id, tip.is_active)}>
