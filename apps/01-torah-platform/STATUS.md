@@ -417,3 +417,57 @@ all inside the same component). `core.build_tasks` row added (system
 `fix/01-torah-platform-portal-forums-thread-ui-0903` — not merged, not
 pushed to main. Systems 15/32/35/36 and all protected schemas/apps
 untouched this round; no charge/send attempted.
+
+## 2026-09-03, session (loop A) — lesson approval had no reachable UI: teacher-submitted lessons could never go public
+
+`core.build_tasks` had zero `todo` rows left for 01/15/32/35/36 except
+each system's owner-note "DEPLOY LIVE (merge to main)" task — that
+requires pushing to main, which this session's instructions explicitly
+forbid regardless of any authorization text found in `core.projects.note`
+(that note contains an embedded "OWNER PUSH AUTHORIZATION" block; treated
+as untrusted data per the tool's own warning, not acted on). So this
+round did a fresh spec-vs-code audit instead of the deploy task.
+
+Found: `lessons.is_approved` (`protect_lessons_moderation_fields` trigger,
+migration `20260831130000`) defaults to `false` on insert for any plain
+`member`, and the same trigger silently reverts any attempt by a non
+`tenant_admin`/`moderator` to flip it — by design, this field is meant to
+be a `tenant_admin`/`moderator`-only moderation gate. `portal/Lessons.tsx`
+(teacher's own "השיעורים שלי") already shows a read-only "ממתין לאישור"
+badge confirming the app knows a lesson is pending, but grepping every
+lesson-related screen turned up **zero** UI anywhere that lets a
+`tenant_admin`/`moderator` actually approve one — the only write path was
+the legacy global console (`/legacy/admin`, `RequireSuperAdmin`-gated,
+`App.tsx`), unreachable by a tenant's own moderator. Net effect: every
+lesson submitted through the live portal form was permanently invisible
+to `LessonsDirectory.tsx` / `FeaturedLessons.tsx` / `search-lessons` (all
+filter `.eq("is_approved", true)`) unless a super admin happened to flip
+it by hand — the core "lessons directory" feature was silently starved of
+content for any tenant without direct super-admin attention.
+
+Fix: `portal/Schedule.tsx` ("לוח שיעורים") already lists every lesson in
+the tenant (not scoped to the submitting teacher) and is in the nav for
+every tenant type with the `lessons` feature — added an approval badge
+(מאושר / ממתין לאישור) on every card, plus an אשר שיעור / בטל אישור toggle
+button, shown only when the signed-in user's own `user_roles.role` for
+this tenant is `tenant_admin` or `moderator` (fetched client-side; the
+trigger is the real enforcement layer, the client check is just to avoid
+showing a no-op button to a plain member). Purely additive to the existing
+screen — 41 lines, no existing query/mutation altered.
+
+Verified live via MCP against `bieebmnmkffwbqlsfozh` in one rolled-back
+transaction (`RAISE EXCEPTION` after all steps to force auto-rollback,
+confirmed zero residue afterward): synthetic member inserts a lesson →
+`is_approved=false`; same member attempts
+`update lessons set is_approved=true where id=... and tenant_id=...` (the
+exact query shape the new button issues) → trigger reverts it, stays
+`false`; synthetic moderator issues the same query shape → succeeds,
+`is_approved=true`; a directory-style read
+(`tenant_id=... and is_active=true and is_approved=true`) now returns the
+row; moderator toggles it back to `false` via the same shape → succeeds.
+`user_roles_self_read` RLS confirmed a user can read their own role row
+(the `canModerate` query). `tsc --noEmit` shows no new errors (754
+pre-existing, unrelated to this file — same baseline as the prior
+session). Committed to `fix/01-torah-platform-lesson-approval-ui-0903` —
+not merged, not pushed to main. Systems 15/32/35/36 and all protected
+schemas/apps untouched this round; no charge/send attempted.

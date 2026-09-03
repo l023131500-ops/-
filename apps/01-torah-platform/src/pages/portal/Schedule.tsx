@@ -31,6 +31,41 @@ export default function Schedule() {
     },
   });
 
+  // lessons.is_approved is the moderation gate the public directory/search
+  // actually reads (LessonsDirectory.tsx, FeaturedLessons.tsx, search-lessons
+  // edge fn all filter .eq("is_approved", true)), and defaults to false on
+  // insert (protect_lessons_moderation_fields trigger, migration
+  // 20260831130000) unless the inserting user already holds tenant_admin/
+  // moderator. That trigger also silently reverts any is_approved change
+  // attempted by a plain member. But no portal screen anywhere ever showed
+  // the flag or offered a way to flip it -- portal/Lessons.tsx (teacher's own
+  // "השיעורים שלי") only ever renders a read-only "ממתין לאישור" badge, and
+  // the one screen that lists every lesson in the tenant (this one) showed
+  // nothing about approval at all. The only UI that ever wrote is_approved
+  // was the global super-admin-only /legacy/admin console (RequireSuperAdmin
+  // gate, App.tsx) -- not reachable by a tenant's own moderator/tenant_admin.
+  // Net effect: a teacher-submitted lesson could never actually become
+  // publicly visible unless a super admin happened to flip it by hand.
+  const { data: myRole } = useQuery({
+    queryKey: ["my-tenant-role", tenant?.id, user?.id],
+    enabled: !!tenant?.id && !!user?.id,
+    queryFn: async () => {
+      const { data } = await supabase.from("user_roles").select("role")
+        .eq("user_id", user!.id).eq("tenant_id", tenant!.id).limit(1).maybeSingle();
+      return data?.role ?? null;
+    },
+  });
+  const canModerate = myRole === "tenant_admin" || myRole === "moderator";
+
+  const approve = useMutation({
+    mutationFn: async ({ id, value }: { id: string; value: boolean }) => {
+      const { error } = await supabase.from("lessons").update({ is_approved: value }).eq("id", id).eq("tenant_id", tenant!.id);
+      if (error) throw error;
+    },
+    onSuccess: () => { qc.invalidateQueries({ queryKey: ["my-lessons"] }); },
+    onError: (e: any) => toast.error(e.message),
+  });
+
   const create = useMutation({
     mutationFn: async () => {
       // "lessons" has no teacher_name/location/time/days_of_week[]/lesson_type/is_public
@@ -115,14 +150,27 @@ export default function Schedule() {
         {(lessons || []).map((l: any) => (
           <Card key={l.id}>
             <CardHeader>
-              <CardTitle className="text-lg">{l.title}</CardTitle>
+              <div className="flex items-center gap-2 flex-wrap">
+                <CardTitle className="text-lg">{l.title}</CardTitle>
+                <Badge variant={l.is_approved ? "default" : "outline"} className={l.is_approved ? "" : "text-amber-600 border-amber-300"}>
+                  {l.is_approved ? "מאושר" : "ממתין לאישור"}
+                </Badge>
+              </div>
               <div className="text-sm text-muted-foreground">{l.rabbi_name}</div>
             </CardHeader>
             <CardContent className="space-y-1 text-sm">
               {l.address && <div>{l.address}</div>}
               {l.time_hhmm && <div>{l.time_hhmm}</div>}
               {l.day_of_week != null && <div className="flex gap-1"><Badge variant="secondary" className="text-xs">{DAYS[l.day_of_week]}</Badge></div>}
-              <div className="flex justify-end pt-2"><Button size="icon" variant="ghost" onClick={() => del.mutate(l.id)}><Trash2 className="h-4 w-4 text-destructive" /></Button></div>
+              <div className="flex items-center justify-between pt-2">
+                {canModerate ? (
+                  <Button size="sm" variant={l.is_approved ? "outline" : "default"} disabled={approve.isPending}
+                    onClick={() => approve.mutate({ id: l.id, value: !l.is_approved })}>
+                    {l.is_approved ? "בטל אישור" : "אשר שיעור"}
+                  </Button>
+                ) : <span />}
+                <Button size="icon" variant="ghost" onClick={() => del.mutate(l.id)}><Trash2 className="h-4 w-4 text-destructive" /></Button>
+              </div>
             </CardContent>
           </Card>
         ))}
