@@ -1,6 +1,6 @@
 import { Outlet, NavLink } from "react-router-dom";
 import { useSuperAdminGate } from "@/hooks/useSuperAdmin";
-import { LayoutDashboard, Building2, Users, Sparkles, MessageSquare, ShoppingCart, BarChart3, Lightbulb, Tags, MessageCircle, Settings2, ShieldAlert, ShieldCheck, FileCheck2, GraduationCap, Mail, HelpCircle, FolderTree } from "lucide-react";
+import { LayoutDashboard, Building2, Users, Sparkles, MessageSquare, ShoppingCart, BarChart3, Lightbulb, Tags, MessageCircle, Settings2, ShieldAlert, ShieldCheck, FileCheck2, GraduationCap, Mail, HelpCircle, FolderTree, Wallet, Phone } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Navbar } from "./Navbar";
 
@@ -25,6 +25,8 @@ export function AdminLayout() {
     { to: "/admin/topics", icon: Tags, label: "מאגר נושאים" },
     { to: "/admin/material-categories", icon: FolderTree, label: "קטגוריות חומרי עזר" },
     { to: "/admin/content", icon: FileCheck2, label: "מודרציית חומרי עזר" },
+    { to: "/legacy/nedarim", icon: Wallet, label: "נדרים פלוס" },
+    { to: "/legacy/ivr", icon: Phone, label: "ימות המשיח" },
     { to: "/admin/whitelist", icon: ShieldCheck, label: "רשימת נטפרי" },
     { to: "/admin/forums", icon: MessageCircle, label: "פורומים" },
     { to: "/admin/rabbi-questions", icon: HelpCircle, label: "שאלות לרב" },
