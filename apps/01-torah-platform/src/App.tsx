@@ -211,6 +211,7 @@ export default function App() {
 
                     <Route path="/synagogues" element={<Synagogues />} />
                     <Route path="/synagogues/:id" element={<SynagogueDetail />} />
+                    <Route path="/s/:token" element={<SynagogueDetail />} />
                     <Route path="/halacha" element={<HalachaDaily />} />
                     <Route path="/ask-rabbi" element={<RabbiQuestions />} />
                     <Route path="/mourning" element={<Mourning />} />

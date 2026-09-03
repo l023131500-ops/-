@@ -8,22 +8,44 @@ import { supabase } from "@/integrations/supabase/client";
 
 const DAY_NAMES = ["א'", "ב'", "ג'", "ד'", "ה'", "ו'", "ש'"];
 
+// Reached either via /synagogues/:id (internal, from the tenant-scoped public
+// directory) or /s/:token (architecture.md §5.2 synagogue bullet "כרטיס ביכ"נ
+// ציבורי /s/[token]" -- a standalone shareable link independent of the
+// directory). synagogues.public_token has existed on every row since the
+// column was added (NOT NULL, auto-generated via igud_new_token()) but until
+// now nothing anywhere ever read it -- no route, no lookup, no share link.
+// A row with is_public=false is only reachable via /synagogues/:id (internal
+// tenant browsing); the /s/:token entrypoint additionally requires is_public.
 export default function SynagogueDetail() {
-  const { id } = useParams();
+  const { id, token } = useParams();
   const { data } = useQuery({
-    queryKey: ["synagogue", id],
-    enabled: !!id,
+    queryKey: ["synagogue", id, token],
+    enabled: !!id || !!token,
     queryFn: async () => {
-      const { data } = await supabase.from("synagogues").select("*, prayer_times(*)").eq("id", id!).maybeSingle();
+      const query = supabase.from("synagogues").select("*, prayer_times(*)");
+      const { data } = token
+        ? await query.eq("public_token", token).eq("is_public", true).maybeSingle()
+        : await query.eq("id", id!).maybeSingle();
       return data;
     },
   });
 
-  if (!data) return <div className="container mx-auto px-4 py-10">טוען...</div>;
+  if (!data) return (
+    <div className="container mx-auto px-4 py-10 text-center">
+      {token ? (
+        <>
+          <h1 className="font-heading text-2xl font-bold mb-2">הדף לא נמצא</h1>
+          <p className="text-muted-foreground">הקישור אינו תקף או שבית הכנסת אינו מפורסם עוד</p>
+        </>
+      ) : "טוען..."}
+    </div>
+  );
 
   return (
     <div className="container mx-auto px-4 py-10 max-w-4xl">
-      <Button asChild variant="ghost" className="mb-4"><Link to="/synagogues"><ArrowRight className="ml-2 h-4 w-4" /> חזור</Link></Button>
+      {!token && (
+        <Button asChild variant="ghost" className="mb-4"><Link to="/synagogues"><ArrowRight className="ml-2 h-4 w-4" /> חזור</Link></Button>
+      )}
       <Card>
         <CardHeader>
           <CardTitle className="text-3xl">{data.name}</CardTitle>

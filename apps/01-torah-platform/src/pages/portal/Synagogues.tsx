@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Plus, Edit2, Trash2, Building2, MapPin, User, Phone, ChevronDown, ChevronUp } from "lucide-react";
+import { Plus, Edit2, Trash2, Building2, MapPin, User, Phone, ChevronDown, ChevronUp, Link2, Eye, EyeOff } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -19,6 +19,12 @@ import { toast } from "sonner";
 // 20260519000002) but no screen anywhere ever wrote to it, so every
 // religious_council tenant (e.g. the live "מועצה דתית גליל") had zero synagogues
 // and no way to add one — the public directory was permanently empty.
+//
+// is_public/public_token: architecture.md §5.2 synagogue bullet "כרטיס ביכ"נ
+// ציבורי /s/[token]" — both columns existed on every row (NOT NULL, defaulted)
+// since the table was created, but nothing anywhere ever surfaced them: no
+// toggle to hide/show a synagogue's standalone public card, no way to copy its
+// shareable /s/:token link. Added below, purely additive.
 
 const emptyForm = {
   name: "",
@@ -133,6 +139,24 @@ export default function PortalSynagogues() {
     },
     onError: (e: Error) => toast.error(e.message),
   });
+
+  const togglePublic = useMutation({
+    mutationFn: async ({ id, next }: { id: string; next: boolean }) => {
+      const { error } = await supabase.from("synagogues").update({ is_public: next }).eq("id", id).eq("tenant_id", tenant!.id);
+      if (error) throw error;
+    },
+    onSuccess: (_d, { next }) => {
+      toast.success(next ? "הדף הציבורי הופעל" : "הדף הציבורי הוסתר");
+      qc.invalidateQueries({ queryKey: ["portal-synagogues"] });
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+
+  const copyPublicLink = (s: any) => {
+    const url = `${window.location.origin}/s/${s.public_token}`;
+    navigator.clipboard.writeText(url);
+    toast.success("קישור הדף הציבורי הועתק!");
+  };
 
   return (
     <div>
@@ -266,6 +290,10 @@ export default function PortalSynagogues() {
                   <div className="flex items-center gap-2">
                     {s.has_mikve && <Badge variant="outline">מקווה</Badge>}
                     {s.has_kollel && <Badge variant="outline">כולל</Badge>}
+                    <Badge variant={s.is_public ? "secondary" : "outline"} className="gap-1">
+                      {s.is_public ? <Eye className="h-3 w-3" /> : <EyeOff className="h-3 w-3" />}
+                      {s.is_public ? "דף ציבורי פעיל" : "מוסתר"}
+                    </Badge>
                     <Button size="icon" variant="ghost" onClick={() => openEdit(s)}>
                       <Edit2 className="h-4 w-4" />
                     </Button>
@@ -285,6 +313,22 @@ export default function PortalSynagogues() {
                     {s.gabbai_phone && !s.gabbai_name && <div className="flex items-center gap-2"><Phone className="h-3 w-3" /> {s.gabbai_phone}</div>}
                     {s.capacity != null && <div>קיבולת: {s.capacity} מקומות</div>}
                     {s.description && <p className="text-foreground/85 pt-1">{s.description}</p>}
+                    <div className="flex items-center gap-2 pt-2">
+                      <div className="flex items-center gap-2">
+                        <Switch
+                          checked={!!s.is_public}
+                          onCheckedChange={(v) => togglePublic.mutate({ id: s.id, next: v })}
+                          disabled={togglePublic.isPending}
+                        />
+                        <Label className="text-foreground">דף ציבורי (/s/[קישור])</Label>
+                      </div>
+                      {s.is_public && (
+                        <Button size="sm" variant="outline" onClick={() => copyPublicLink(s)}>
+                          <Link2 className="ml-2 h-3.5 w-3.5" />
+                          העתק קישור ציבורי
+                        </Button>
+                      )}
+                    </div>
                   </div>
                 )}
               </CardContent>
