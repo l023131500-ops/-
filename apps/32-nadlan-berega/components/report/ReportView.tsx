@@ -21,6 +21,7 @@ import PermitsPanel, { RamiPolicyPanel } from './PermitsPanel';
 import PlanMap from './PlanMap';
 import FeasibilityPanel from './FeasibilityPanel';
 import ValuationPanel from './ValuationPanel';
+import DealQualityPanel from './DealQualityPanel';
 import SoldDeals from './SoldDeals';
 import Listings from './Listings';
 import PlacesPanel from './PlacesPanel';
@@ -555,6 +556,15 @@ export default function ReportView({
 
         {/* §2 · הערכת שווי — מוצגת מיד אחרי הרקע, כי זו השאלה הראשונה. */}
         {layers.includes('valuation') && <ValuationPanel valuation={data.valuation} />}
+
+        {/*
+          §2 · דו"ח איכות עסקה (PRODUCT_TIERS.md רמה 2 — פרימיום). מחושב
+          כולו מ-`data.valuation.comparables` שכבר נשלח ללקוח, אין תלות-
+          שכבה/מקור נוסף — רק שער-רמה (basic לא כולל את הפריט הזה במפורש).
+        */}
+        {layers.includes('valuation') && tier !== 'basic' && (
+          <DealQualityPanel valuation={data.valuation} />
+        )}
 
         {/* מפה אינטראקטיבית בכל הרמות; צילום ומפה אזורית — VIP (§2, §4). */}
         {layers.includes('imagery') && (

@@ -48,12 +48,17 @@ export function opportunityScore(profile: PropertyProfile, renewalBonus: number)
 }
 
 // ציון איכות עסקה מול מחיר מבוקש.
+//
+// ⚠️ מקבל מערך עסקאות-השוואה גולמי (לא `PropertyProfile`) — אותו דפוס בדיוק
+// כמו `valuate()` ב-`lib/valuation.ts`, כדי שאפשר יהיה להזין אליו ישירות את
+// `ValuationResult.comparables` הקיים (כבר מחושב+נשלח ללקוח בכל דוח פרימיום/
+// VIP) בלי לבנות `PropertyProfile` מלאכותי סביבו.
 export function dealQuality(
-  profile: PropertyProfile,
+  deals: { price: number | null; areaSqm: number | null }[],
   askingPrice: number | null,
   askingArea: number | null,
 ): DealQuality {
-  const priced = profile.transactions.filter((t) => t.price && t.areaSqm);
+  const priced = deals.filter((t) => t.price && t.areaSqm);
   const pps = priced
     .map((t) => pricePerSqm(t.price, t.areaSqm))
     .filter((v): v is number => v !== null);

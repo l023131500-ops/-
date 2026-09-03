@@ -402,7 +402,7 @@ export async function GET(req: NextRequest) {
   const renewalBonus = renewal?.inCompound ? 15 : 0;
   const opp = opportunityScore(base, renewalBonus);
   const deal = dealQuality(
-    base,
+    base.transactions,
     Number.isFinite(askPrice) ? askPrice : null,
     lastDeal?.areaSqm ?? null,
   );
