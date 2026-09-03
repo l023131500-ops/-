@@ -157,6 +157,13 @@ function tabuBlock(docs: TabuDocRow[]): string {
     if (!a.mortgages?.length && !a.cautionNotes?.length) {
       lines.push('<b>משכנתאות והערות אזהרה:</b> לא נמצאו בנסח הזה.');
     }
+    const areaParts: string[] = [];
+    if (a.parcelArea) areaParts.push(`שטח החלקה ${esc(a.parcelArea)}`);
+    if (a.subParcelArea) areaParts.push(`שטח תת-החלקה ${esc(a.subParcelArea)}`);
+    if (a.sharedAreas) areaParts.push(`שטחים משותפים ${esc(a.sharedAreas)}`);
+    if (areaParts.length) {
+      lines.push(`<b>שטח רשום בנסח:</b> ${areaParts.join(' · ')}`);
+    }
     if (a.unreadable?.length) {
       lines.push(
         `<b>לא ניתן לקרוא מהנסח:</b> ${a.unreadable.map(esc).join(' · ')} — נדרשת קריאה ידנית.`,

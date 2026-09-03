@@ -477,6 +477,18 @@ function TabuPanel({ token, request }: { token: string; request: ReportRequestRo
                           .join(' · ')
                       : 'לא נמצאו'}
                   </div>
+                  {(d.analysis.parcelArea || d.analysis.subParcelArea || d.analysis.sharedAreas) && (
+                    <div>
+                      <b>שטח רשום בנסח:</b>{' '}
+                      {[
+                        d.analysis.parcelArea && `חלקה ${d.analysis.parcelArea}`,
+                        d.analysis.subParcelArea && `תת-חלקה ${d.analysis.subParcelArea}`,
+                        d.analysis.sharedAreas && `משותף ${d.analysis.sharedAreas}`,
+                      ]
+                        .filter(Boolean)
+                        .join(' · ')}
+                    </div>
+                  )}
                   {d.analysis.unreadable.length > 0 && (
                     <div className="mt-1 text-[#8a6d24]">
                       <b>לא נקרא מהנסח:</b> {d.analysis.unreadable.join(' · ')}
