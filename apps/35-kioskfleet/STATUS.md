@@ -3407,3 +3407,93 @@ round (confirmed 0 non-deploy todo before starting); no protected system/
 schema/webhook touched; real data only, no charges/sends; zero regression
 (additive only — two new Prefs keys, two new constants, no existing
 function signature or server file changed).
+
+[03/09/2026 Loop A, session 5] Read KIOSK_BUILD.md §8/§9 line by line
+against the real zol-work repo and grepped every module the section
+mentions (analytics, alerts, watchdog, snapshots/backup-restore, device
+event log, maintenance mode, branding, session-cleanup, signage,
+templates/groups, app OTA, remote screenshot) across `server/src`,
+`server/public` and `android/`. Every one of those turned out
+already fully wired end-to-end — server route, console UI and (where
+relevant) the Android handler — which this session confirmed file by file
+rather than assuming from this file's own past entries. One real gap
+survived that sweep: `commands.js`'s `COMMAND_TYPES` has shipped `lock`,
+`unlock` (`payload.minutes`) and `message` (`payload.text`) for a while,
+`KioskActivity.kt`'s `onLock()`/`onUnlock()`/`onMessage()` fully implement
+all three on the device (`onUnlock` clamps minutes to 1–120, `onMessage`
+with blank text removes an existing overlay), and `public/js/app.js`'s own
+`COMMAND_LABELS` already carried Hebrew labels for all three — but only to
+render them *after the fact* in the per-device activity log
+(`viewDeviceLog`). Nothing in the console ever issued one: `deviceCard()`
+had buttons for reboot/reload/set_url/screen_on/screen_off/clear_cache/
+screenshot/update_app but none for `lock`, `unlock` or `message`, so a
+customer wanting to remotely re-lock a kiosk (§8 "פקודות מרחוק: ...
+נעילה/שחרור"), grant a technician temporary admin access, or post an
+on-screen operator note had no button and no documented way to do either
+short of a raw authenticated API call. Exactly the "server+device
+complete, console never called it" shape this file's changelog keeps
+finding.
+
+Added three buttons to `deviceCard()`, same `mk()`/`modal()` conventions as
+every neighboring action: "🔒 נעילה מיידית" (`confirmCmd(d, 'lock', ...)`,
+no payload, same shape as the existing reboot/update_app confirmations),
+"🔓 שחרור זמני" (`promptUnlock` — a minutes field, sent through unvalidated
+server-side on purpose: the device already clamps the range, and every
+other payload-only command here — `screen_off`, `clear_cache`, etc. — has
+no server-side payload validator either, so this adds no new write-path
+surface, staying inside this session's standing input-validation-bug-class
+boundary), and "💬 הודעה על המסך" (`promptMessage` — a text field; empty
+submits `{text: ''}`, matching `onMessage`'s own blank-clears-overlay
+contract, so the same field doubles as a "remove message" control).
+
+Verified live against a temp instance of the real server (temp DB under
+`/tmp`, `node src/index.js`, killed and `/tmp` cleaned after): logged in as
+the seeded admin, created an enrollment, enrolled a device over
+`POST /agent/enroll`, then called `POST /devices/:id/command` with the
+exact three payload shapes the new buttons send — `{type:"lock"}`,
+`{type:"unlock",payload:{minutes:7}}`,
+`{type:"message",payload:{text:"בהמתנה, נחזור מיד"}}`, and once more with
+`{text:""}` — all four returned 200 with the expected `{command:{...}}`
+body, and a follow-up `GET /devices/:id` showed all four rows in
+`commands` with the right `type`/`payload`/`pending` status, which
+`viewDeviceLog()` already renders with the pre-existing `COMMAND_LABELS`
+entries. Confirmed the "object inside payload" shape used against `unlock`/
+`message` behaves identically to the same shape already reachable against
+`screen_off`/`clear_cache` before this change (that payload freedom is
+`inputguard.js`'s pre-existing, documented exemption for the `payload`
+field itself, unrelated to this change, and `set_url` — the one payload
+command with its own dedicated validator — still correctly rejects a
+malformed `url`, unaffected). `node --check` clean on the one changed file.
+Full suite 250/250 on `node --test` before and after (this is a
+`public/js/app.js`-only change; no server file touched).
+
+Committed to `fix/kiosk-console-lock-unlock-message-buttons-0903`
+(aec3b07) on the real zol-work repo, branched from
+`feat/kiosk-device-display-url-0903` at its prior tip (0d3034a); then
+fast-forwarded `feat/kiosk-device-display-url-0903` itself onto the same
+commit and pushed both to `origin` — so the two do not diverge into the
+"orphaned sibling branch" shape sessions 2/3 already found and fixed once
+this session. NOT merged to zol's own main, same standing never-push-to-
+main constraint (same DEPLOY MANDATE conflict every prior round this
+session flagged, not re-litigated again). zol-work's working tree was left
+on `feat/kiosk-device-display-url-0903`. No protected system/schema/
+webhook touched; real data only, no charges/sends, no synthetic records
+where real ones matter; zero regression (additive only — three new console
+functions and three new buttons, no existing function signature, route or
+server file changed).
+
+Found and deliberately **not** fixed, so it is not silently lost: the
+`unlock`/`message` commands have no server-side payload validator at all
+(unlike `set_url`'s `normalizeHomeUrl`) — today that is harmless (the
+device itself clamps `minutes` and safely coerces `text` via Kotlin's
+`JSONObject.optInt`/`optString`, and it is the same shape every other
+bare-payload command here already has), but it is a pre-existing gap, not
+one this session opened, and adding validation there would be new
+write-path/input-validation work — explicitly out of scope per this
+session's own standing constraint (that bug class was declared closed
+after 16 fixes earlier this project). Also confirmed but not touched:
+`--line`/card-edge contrast (item 4 in "Next, in order" above) remains a
+design choice rather than an accessibility defect, same as the last
+several sessions found it; and the on-device selection screen (§2★ה/ו,
+item 3 above) is still blocked on the missing Android toolchain in this
+sandbox, unchanged from every prior round's same disclosed limitation.
