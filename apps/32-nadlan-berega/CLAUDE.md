@@ -2341,6 +2341,48 @@ v3) דרך `deploy_edge_function` ואומתה בחזרה מול הגרסה שנ
 `fix/36-nadlan-pro-signature-reminder-0903` — לא מוזג. System 35 KioskFleet
 לא נגע, לפי ה-HARD STEERING.
 
+## עדכון — 03/09/2026 (Loop A, ספק חשבוניות — עמודה בלי שום דרך לכתוב אליה)
+המשך ביקורת עמודה-מול-UI על 36 nadlan-pro חשף ש-`nadlan_pro.offices.
+invoice_provider`/`invoice_provider_ref` קיימות מאז המיגרציה הראשונה של
+הסכמה (0009) בדיוק בשביל הבדיקה ב-`np_invoice_precheck` (0011,
+`provider_connected`/`can_issue_tax_invoice`) — הבדיקה שקובעת אם `invoicePanel`
+בכרטיסיית עסקה מציעה הפקת חשבונית מס אמיתית עם מספר הקצאה, או רק "דרישת
+תשלום" כברירת מחדל. אבל אף RPC ואף טופס לא כתבו לעמודות האלה מעולם:
+`np_office_settings_get/save` (0129, זוג הקריאה/כתיבה היחיד להגדרות משרד)
+מעולם לא כללו אותן, וטופס "פרטי המשרד" ב-`app.html` לא הציג עבורן שדה.
+התוצאה: `invoice_provider` היה `NULL` קבוע אצל **כל** משרד שאי-פעם נוצר,
+`provider_connected` תמיד `false`, וענף "ספק מחובר... הפקה מתבצעת בצד השרת"
+ב-`invoicePanel` היה קוד מת שלא יכול היה לרוץ לעולם — אין דרך למשרד שכבר יש
+לו חשבון אצל ספק מורשה (iCount/חשבונית ירוקה/Morning) לרשום זאת.
+
+התיקון **אינו** מחבר API אמיתי לספק (זה עדיין דורש הסמכה/מפתחות אמיתיים,
+אותה מחלקה כמו טאבו/תיק מידע ש"בתהליך מול ספקים") — רק חושף שדה קיים לכתיבה,
+בדיוק כמו כל שדה מזהה-משרד אחר שכבר ניתן לעריכה (`license_number`/`phone`
+וכו'). מיגרציה `0162_nadlan_pro_office_invoice_provider.sql` מוסיפה את שני
+המפתחות ל-`np_office_settings_get`/`save` (תוספת טהורה ל-jsonb הקיים, בלי
+לשנות חתימה). ב-`app.html`: כרטיס חדש "ספק חשבוניות" בטאב ההגדרות (שני שדות
+טקסט, אותו pattern בדיוק כמו שאר "פרטי המשרד"), ו-`wireSettingsBody` שולח את
+שני הערכים ב-`np_office_settings_save`.
+
+אומת חי ב-MCP בתוך `BEGIN/ROLLBACK` על משרד ה-QA האמיתי כ-owner אמיתי
+(`request.jwt.claims`): `np_office_settings_get` לפני השמירה החזיר `null`
+לשני השדות; `np_office_settings_save` עם ספק+מזהה שמר ומחזיר את שניהם נכון;
+שמירה נוספת עם רק רווחים ב-`invoice_provider` ניקתה אותו בחזרה ל-`null`
+(אותה נורמליזציה `nullif(trim())` כמו שאר השדות) בעוד `invoice_provider_ref`
+נשאר כמו שהיה (סמנטיקת עדכון-חלקי `p ? 'key'` תקינה). נבדק גם ישירות מול
+הביטוי הבוליאני שמפעיל `np_invoice_precheck`: `NULL` → `false`,
+`'Green Invoice'` → `true`, `'   '` → `false` — בדיוק ההתנהגות המיועדת.
+הוחל בפועל דרך `apply_migration`; נבדק חי מול משרד ה-QA (שמירה אמיתית ואז
+`UPDATE` מפורש שהחזיר את המשרד בדיוק ל-`NULL`/`NULL` — אפס שיוריות, כל שאר
+השדות של המשרד לא נגעו). `get_advisors` (security): האזהרה היחידה על שתי
+הפונקציות היא `security_definer_function_executable` המובנית שקדמה
+לסבב הזה (מ-0129, לא חדשה). בדיקת איזון-סוגריים/מירכאות על `app.html` המלא
+עברה (3421/3421 סוגריים עגולים, 943/943 מסולסלים, 272/272 מרובעים), ו-
+`node --check` על ה-`<script type="module">` שחולץ עבר נקי. אפס רגרסיה —
+תוספת טהורה בשני קבצים, שום שדה/RPC/זרימה קיימים לא נגעו. נדחה+נדחף לענף
+`fix/36-nadlan-pro-invoice-provider-settings-0903`. System 35 KioskFleet לא
+נגע, לפי ה-HARD STEERING.
+
 ## איך ממשיכים בין סשנים (חשוב!)
 - עבוד ב-Claude Code **מקומי** (לא Remote) על התיקייה הזו — הכל נשמר על הדיסק.
 - להמשך שיחה אחרונה: `claude --continue`   ·   לבחירת סשן קודם: `claude --resume`

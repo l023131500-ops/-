@@ -3849,6 +3849,23 @@ async function renderSettings() {
     '<textarea id="st_about" rows="3"' + (canManage ? '' : ' disabled') + '>' + esc(s.about || '') + '</textarea></label>' +
     (canManage ? '<p style="margin:14px 0 0"><button class="btn" id="stSave">שמירת פרטים</button></p>' : '');
 
+  // invoice_provider/invoice_provider_ref existed on nadlan_pro.offices since
+  // the schema's first migration, and np_invoice_precheck (invoicePanel, in
+  // the deal drawer) already keys its whole "can issue a real tax invoice"
+  // branch off them — but until now nothing ever let an office set them, so
+  // provider_connected could never be true and every office was stuck on the
+  // payment-request-only fallback. This does not talk to any provider API
+  // (still needs real accreditation) — it only records that the office
+  // already has an account with an authorised provider (iCount / חשבונית
+  // ירוקה / Morning), same as every other office-identifying field above.
+  html += '<h2 class="sec">ספק חשבוניות</h2>' +
+    '<p class="sub" style="margin:0 0 10px">אם למשרד יש כבר חשבון אצל ספק מורשה להפקת חשבוניות מס ' +
+    '(iCount / חשבונית ירוקה / Morning), רשמו אותו כאן — כך שבעסקה יוצע להפיק חשבונית מס אמיתית עם ' +
+    'מספר הקצאה, במקום דרישת תשלום בלבד.</p><div class="controls">' +
+    field('st_invprov', 'ספק חשבוניות', s.invoice_provider) +
+    field('st_invref', 'מזהה/חשבון אצל הספק', s.invoice_provider_ref) +
+    '</div>';
+
   html += '<h2 class="sec">אתר משרד ציבורי</h2>' +
     '<p class="sub" style="margin:0 0 10px">עמוד ללא כניסה, מותאם למובייל, שמציג את פרטי המשרד ואת ' +
     'הנכסים שכבר הופעל עבורם קישור צפייה בטאב "נכסים" — לא נכסים נוספים.</p>' +
@@ -4075,6 +4092,8 @@ function wireSettingsBody(canManage, s) {
         address: $('st_address').value.trim(),
         logo_url: $('st_logo').value.trim(),
         about: $('st_about').value.trim(),
+        invoice_provider: $('st_invprov').value.trim(),
+        invoice_provider_ref: $('st_invref').value.trim(),
       } });
       toast('הפרטים נשמרו');
     } catch (e) { toast('השמירה נכשלה: ' + e.message, true); }
