@@ -75,7 +75,7 @@ export function renderAdminPage(): string {
   var app = document.getElementById("app");
   var errorEl = document.getElementById("error");
   var pwInput = document.getElementById("pw");
-  var COLUMNS = ["id","created_at","topic","full_name","phone","email","city","current_fund","target_fund","people_count","status","note"];
+  var COLUMNS = ["id","created_at","topic","full_name","phone","email","id_number","city","current_fund","current_supplemental","target_fund","people_count","status","note"];
 
   function renderTable(rows) {
     var wrap = document.getElementById("table-wrap");
