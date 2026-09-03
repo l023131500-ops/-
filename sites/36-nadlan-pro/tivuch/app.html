@@ -864,6 +864,8 @@ async function openContact(id) {
       '<div><p class="k">טלפון</p><p class="v">' + v(c.phone) + '</p></div>' +
       '<div><p class="k">דוא״ל</p><p class="v">' + v(c.email) + '</p></div>' +
       '<div><p class="k">עיר</p><p class="v">' + v(c.city) + '</p></div>' +
+      '<div><p class="k">כתובת</p><p class="v">' + v(c.address) + '</p></div>' +
+      '<div><p class="k">ת.ז.</p><p class="v">' + v(c.id_number) + '</p></div>' +
       '<div><p class="k">מקור</p><p class="v">' + esc(SOURCE_HE[c.source] || c.source) + '</p></div>' +
       '<div><p class="k">סוכן אחראי</p><p class="v">' + v(ownerName(c.owner_id)) + '</p></div>' +
     '</div>' +
@@ -935,6 +937,8 @@ function contactForm(existing) {
       '<label class="f">טלפון<input id="f_phone" value="' + esc(c.phone || '') + '" /></label>' +
       '<label class="f">דוא״ל<input id="f_email" type="email" value="' + esc(c.email || '') + '" /></label>' +
       '<label class="f">עיר<input id="f_city" value="' + esc(c.city || '') + '" /></label>' +
+      '<label class="f">כתובת<input id="f_address" value="' + esc(c.address || '') + '" /></label>' +
+      '<label class="f">ת.ז.<input id="f_id_number" value="' + esc(c.id_number || '') + '" /></label>' +
       '<label class="f">פירוט מקור<input id="f_source_detail" value="' + esc(c.source_detail || '') + '" /></label>' +
       '<label class="f span2">הערות<textarea id="f_notes">' + esc(c.notes || '') + '</textarea></label>' +
     '</div>' +
@@ -954,8 +958,8 @@ function contactForm(existing) {
     $('cfSave').addEventListener('click', async () => {
       const p = { office_id: OFFICE.id };
       if (c.id) p.id = c.id;
-      for (const k of ['full_name', 'kind', 'source', 'phone', 'email', 'city', 'source_detail',
-                       'notes', 'want_city', 'want_min_rooms', 'want_max_price',
+      for (const k of ['full_name', 'kind', 'source', 'phone', 'email', 'city', 'address', 'id_number',
+                       'source_detail', 'notes', 'want_city', 'want_min_rooms', 'want_max_price',
                        'want_min_area', 'want_asset_type']) {
         p[k] = $('f_' + k).value.trim();
       }

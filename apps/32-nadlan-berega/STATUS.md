@@ -1,5 +1,41 @@
 # 32 נדל"ן ברגע + 36 נדל"ן פרו — deploy-readiness (P2, per OWNER ORDER 2026-09-02b)
 
+## 2026-09-03, session (loop A) — 36: contacts.id_number/address existed in np_contact_save/get since migration 0009, never wired into the CRM contact form or detail drawer
+
+`nadlan_pro.contacts.id_number`/`.address` were fully supported end-to-end
+on the backend (`np_contact_save` insert+coalesce-update, `np_contact_get`
+via `to_jsonb(c)`) but `contactForm()`/`openContact()` in
+`sites/36-nadlan-pro/tivuch/app.html` never surfaced either field — `grep`
+for `id_number` across the whole file returned zero hits before this round.
+Every contact ever created was permanently stuck with both fields `NULL`,
+with no way to record a personal ID number or a personal address (distinct
+from `properties.address`, already shown elsewhere).
+
+Fix: added two `<label class="f">` inputs (id_number, address) to
+`contactForm()` next to the existing `city` input, added both keys to the
+save-payload field loop, and added two matching `.facts` rows to
+`openContact()` next to `city` — mirroring that sibling field exactly. No
+migration/RPC change needed.
+
+Verified: `node --check` on the extracted `<script type="module">` passed;
+whole-file bracket balance unchanged in shape (parens 3561->3565, braces
+971->971, brackets 293->293 — matches three additive one-line edits).
+Live round-trip verified via MCP inside `BEGIN/ROLLBACK` against the real
+QA office ("משרד בדיקה QA 18/08 - אל תמחק"), impersonating its real owner
+via `set local role authenticated` + `request.jwt.claims`: create with
+both fields persisted correctly, `np_contact_get` read them back correctly,
+a partial update sending only `id_number` changed it while `address` was
+preserved via the existing coalesce semantics (same as `city`). Rolled
+back; a separate follow-up transaction confirmed zero residue
+(`count(*)=0`) for the test contact.
+
+Zero regression: three additive one-line edits only, no existing
+handler/RPC/field touched — `np_contacts` (summary list RPC) intentionally
+left unchanged. `core.build_tasks` id=126 (system 36, priority 82) inserted
+as `done`. Pushed to `fix/36-nadlan-pro-contact-id-address-0903` — not
+merged. System 35 KioskFleet, systems 01/15/32-unrelated-work not touched,
+per HARD STEERING.
+
 ## 2026-09-03, session (loop A) — RequestForm leads (נסח/רמ"י/היתר) נשמרו ל-DB אך נעלמו: אין לוח ניהול ל-`document_requests`
 
 בדיקה עצמאית של `document_requests` (הטבלה הכללית שמזינה `RequestForm.tsx`,
