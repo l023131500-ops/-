@@ -115,3 +115,39 @@ MCP-reachable, so no live round-trip query was possible. `profiles`' own
 RLS already lets a user update arbitrary columns on their own row (that's
 how `years_teaching`/`gender` already round-trip), so no policy change
 needed. Zero existing field/behavior touched, purely additive.
+
+**[2026-09-03, loop A, session 2] Re-scanned the whole slice for genuine new
+gaps before accepting "nothing left but the blocked DEPLOY LIVE stub
+rows."** Fresh (not memory-of-old-docs) checks this round: `which vercel
+railway` still empty, no `VERCEL_*`/`RAILWAY_*` env vars — the deploy
+blocker documented above is unchanged, so did not re-document it a 5th
+time (that's exactly the rule-2 busywork this file already flags). Instead
+ran Explore-agent audits for the "modeled but unwired" bug class against
+32/36 and 01 first (per slice order) — both came back clean, no gap found
+with confidence. This system (15) was audited last and found one:
+**`public.notifications_log`** (migration `20260903000000`, today's own
+`build_tasks#95` notify-participants edge function) was insert-only —
+written by the edge function on every send, RLS already allows the owning
+teacher to `SELECT` their own rows, but zero UI anywhere ever queried it.
+A teacher who sent a message had no way to see what was actually sent, to
+whom, on which channel, or whether it landed/failed/was simulated.
+
+Fix: added a "היסטוריית הודעות" dialog to `Participants.tsx` next to the
+existing send-notification button — fetches `notifications_log` filtered
+to the teacher's own `lesson_id`s, renders channel icon + recipient/
+participant name + a sent/simulated/failed status badge + lesson subject +
+timestamp + error text on failure. Also had to add a `notifications_log`
+entry to `src/integrations/supabase/types.ts` (Row/Insert/Update + FK
+relationships to `lessons`/`participants`) — this is the *first* frontend
+code to ever reference the table (the edge function that writes it runs
+untyped Deno, so the gap in the generated types file was latent until
+now); column list hand-verified against the live migration SQL.
+
+Verified: brace/bracket-balance clean on both changed files (no
+`node_modules`/`tsc` in this sandbox, same limitation as every prior
+egod round); `hkkky...` not MCP-reachable so no live round-trip. Zero
+existing line changed besides 2 new imports/state lines — purely
+additive. `core.build_tasks` row added (system 15, priority 304) and
+marked done. Committed to `fix/15-egod-participant-notifications-history-
+0903` (not merged, not pushed — same standing constraint as every other
+branch in this file).
