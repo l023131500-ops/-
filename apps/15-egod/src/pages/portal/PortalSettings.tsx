@@ -10,7 +10,10 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
 import { BACKGROUND_PRESETS, PORTAL_LANGUAGES } from "@/types/portalDesign";
 import { buildRabbiUrl } from "@/lib/site";
-import { AGE_GROUPS } from "@/types/questionnaire";
+import {
+  AGE_GROUPS, backgroundOptions, teachingStyleOptions, speakingStyleOptions,
+  audienceOptions, locationOptions, frequencyOptions, dayOptions, hourOptions,
+} from "@/types/questionnaire";
 import MultiSelect from "@/components/questionnaire/MultiSelect";
 import RadioSelect from "@/components/questionnaire/RadioSelect";
 
@@ -27,6 +30,9 @@ type Profile = {
   rabbi_photo_url: string; logo_url: string; custom_background_url: string;
   background_preset: string; font_color: string; portal_language: string;
   years_teaching: string; gender: string;
+  background: string[]; teaching_style: string[]; speaking_style: string[];
+  target_audience: string[]; lesson_locations: string[]; frequency: string;
+  available_days: string[]; available_hours: string[];
   public_token?: string;
 };
 
@@ -41,6 +47,9 @@ const empty: Profile = {
   rabbi_photo_url: "", logo_url: "", custom_background_url: "",
   background_preset: "preset-1", font_color: "light", portal_language: "עברית",
   years_teaching: "", gender: "",
+  background: [], teaching_style: [], speaking_style: [],
+  target_audience: [], lesson_locations: [], frequency: "",
+  available_days: [], available_hours: [],
 };
 
 const emptySocial: SocialLinks = { facebook: "", instagram: "", youtube: "", telegram: "" };
@@ -70,6 +79,10 @@ const PortalSettings = () => {
   };
 
   const toggleAgeGroup = (v: string) => setAgeGroups(g => g.includes(v) ? g.filter(x => x !== v) : [...g, v]);
+  const toggleArr = (k: keyof Profile, v: string) => setProfile(p => {
+    const current = (p[k] as unknown as string[]) || [];
+    return { ...p, [k]: current.includes(v) ? current.filter(x => x !== v) : [...current, v] };
+  });
 
   const addSection = () => setCustomSections(s => [...s, { id: crypto.randomUUID(), title: "", content: "" }]);
   const updateSection = (id: string, k: "title" | "content", v: string) =>
@@ -199,6 +212,17 @@ const PortalSettings = () => {
                 <Textarea value={profile.about_text} onChange={(e) => update("about_text", e.target.value)} rows={5} /></div>
               <RadioSelect label="מגדר הקהל" options={AUDIENCE_GENDER_OPTIONS} selected={profile.gender} onSelect={(v) => update("gender", v)} />
               <MultiSelect label="קבוצות גיל (ניתן לסמן כמה)" options={AGE_GROUPS} selected={ageGroups} onToggle={toggleAgeGroup} />
+              <div className="pt-4 border-t border-border space-y-4">
+                <p className="text-sm font-semibold text-foreground">העדפות התאמה (משמש את הצוות בהתאמת שיעורים ומוצג בדף הציבורי)</p>
+                <MultiSelect label="רקע (ניתן לסמן כמה)" options={backgroundOptions} selected={profile.background} onToggle={(v) => toggleArr("background", v)} />
+                <MultiSelect label="סגנון השיעור (ניתן לסמן כמה)" options={teachingStyleOptions} selected={profile.teaching_style} onToggle={(v) => toggleArr("teaching_style", v)} />
+                <MultiSelect label="סגנון דיבור (ניתן לסמן כמה)" options={speakingStyleOptions} selected={profile.speaking_style} onToggle={(v) => toggleArr("speaking_style", v)} />
+                <MultiSelect label="קהל יעד (ניתן לסמן כמה)" options={audienceOptions} selected={profile.target_audience} onToggle={(v) => toggleArr("target_audience", v)} />
+                <MultiSelect label="היכן אתה מעביר שיעורים (ניתן לסמן כמה)" options={locationOptions} selected={profile.lesson_locations} onToggle={(v) => toggleArr("lesson_locations", v)} />
+                <RadioSelect label="קביעות השיעור" options={frequencyOptions} selected={profile.frequency} onSelect={(v) => update("frequency", v)} />
+                <MultiSelect label="ימים מועדפים (ניתן לסמן כמה)" options={dayOptions} selected={profile.available_days} onToggle={(v) => toggleArr("available_days", v)} />
+                <MultiSelect label="שעות מועדפות (ניתן לסמן כמה)" options={hourOptions} selected={profile.available_hours} onToggle={(v) => toggleArr("available_hours", v)} />
+              </div>
             </div>
           </TabsContent>
 

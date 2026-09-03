@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { motion } from "framer-motion";
-import { BookOpen, MapPin, Clock, Phone, Mail, Send, Building2, MessageCircle, Printer, FileText, Download, PlayCircle, Music, Mic, Video, LayoutList, Globe, Facebook, Instagram, Youtube } from "lucide-react";
+import { BookOpen, MapPin, Clock, Phone, Mail, Send, Building2, MessageCircle, Printer, FileText, Download, PlayCircle, Music, Mic, Video, LayoutList, Globe, Facebook, Instagram, Youtube, Sparkles } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -13,6 +13,20 @@ import { formatDuration } from "@/lib/utils";
 function isSafeHttpsUrl(url: string | null | undefined): url is string {
   return !!url && /^https:\/\//i.test(url);
 }
+
+const TagRow = ({ label, values }: { label: string; values?: string[] }) => {
+  if (!values || values.length === 0) return null;
+  return (
+    <div>
+      <p className="text-xs text-muted-foreground mb-1.5">{label}</p>
+      <div className="flex flex-wrap gap-1.5">
+        {values.map(v => (
+          <span key={v} className="bg-secondary/10 text-secondary text-xs px-2.5 py-1 rounded-full">{v}</span>
+        ))}
+      </div>
+    </div>
+  );
+};
 
 const RabbiPublic = () => {
   const { id } = useParams<{ id: string }>();
@@ -141,6 +155,27 @@ const RabbiPublic = () => {
       </div>
 
       <div className="max-w-4xl mx-auto px-4 py-8 space-y-8">
+        {/* Teaching preferences */}
+        {!!(profile.background?.length || profile.teaching_style?.length || profile.speaking_style?.length ||
+          profile.target_audience?.length || profile.lesson_locations?.length || profile.frequency ||
+          profile.available_days?.length || profile.available_hours?.length) && (
+          <motion.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+            <h2 className="font-heading text-xl font-bold text-foreground mb-4 flex items-center gap-2">
+              <Sparkles className="w-5 h-5 text-secondary" />אופי השיעורים
+            </h2>
+            <div className="bg-card rounded-xl border border-border p-4 space-y-3">
+              <TagRow label="רקע" values={profile.background} />
+              <TagRow label="סגנון השיעור" values={profile.teaching_style} />
+              <TagRow label="סגנון דיבור" values={profile.speaking_style} />
+              <TagRow label="קהל יעד" values={profile.target_audience} />
+              <TagRow label="היכן מתקיימים השיעורים" values={profile.lesson_locations} />
+              {profile.frequency && <p className="text-sm text-muted-foreground"><strong className="text-foreground">קביעות: </strong>{profile.frequency}</p>}
+              <TagRow label="ימים מועדפים" values={profile.available_days} />
+              <TagRow label="שעות מועדפות" values={profile.available_hours} />
+            </div>
+          </motion.section>
+        )}
+
         {/* Lessons */}
         {lessons.length > 0 && (
           <motion.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>

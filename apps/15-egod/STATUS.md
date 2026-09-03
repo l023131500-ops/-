@@ -68,3 +68,50 @@ duration_seconds select on both read sites were confirmed to already or now
 include the column. No `npm install`/typecheck run (no `node_modules` in
 this sandbox, and installs are disallowed this session) — same limitation
 noted by every prior app.html/tsx-only round in this repo.
+
+**[2026-09-03, loop A] New real gap found + fixed: teacher matching-preference
+columns on `profiles` were schema-only.** `profiles.background`,
+`teaching_style`, `speaking_style`, `target_audience`, `lesson_locations`,
+`frequency`, `available_days`, `available_hours` (all `text[]` except
+`frequency`) were added together in migration `20260501082815` — the exact
+same columns `TeacherForm.tsx`'s intake questionnaire already collects via
+`MultiSelect`/`RadioSelect` — but every one of them was write-only-never
+(no field in `PortalSettings.tsx`) and read-only-in-one-place:
+`AdminMatching.tsx`'s AI-match prompt already selects `target_audience` off
+`profiles` and inlines it into the Claude prompt (`aiMatch()`, line 77), so
+that feature has been silently running on permanently-empty data since it
+shipped. Same "modeled but unwired" bug class as `duration_seconds`/
+`years_teaching`/`custom_category` fixed earlier today.
+
+Fix: added all 8 fields to `PortalSettings.tsx`'s `Profile` type/`empty`
+default, a generic `toggleArr` helper (parallel to the existing
+`toggleAgeGroup` one), and a new "העדפות התאמה" block in the profile tab
+reusing the exact same `MultiSelect`/`RadioSelect` components and option
+lists (`backgroundOptions`, `teachingStyleOptions`, `speakingStyleOptions`,
+`audienceOptions`, `locationOptions`, `frequencyOptions`, `dayOptions`,
+`hourOptions`) `TeacherForm.tsx` already uses at intake — visual/UX
+consistency for free. No special save-path handling needed: `handleSave`
+already spreads arbitrary `profile`-state keys into the `update()` call
+(same mechanism that round-trips `website_url`/`social_links`), so adding
+the fields to the `Profile` type was sufficient to make them persist.
+
+Also surfaced all 8 on the public profile (`RabbiPublic.tsx`) as a new
+"אופי השיעורים" section (tag-group badges + a `קביעות:` line for
+`frequency`), via a new `TagRow` helper, so a visitor can see a teacher's
+style/audience/availability before reaching out — mirrors the precedent of
+surfacing `years_teaching`/`gender`/`preferred_age_groups` in the hero.
+Caught and fixed one bug of my own before verifying: the section's
+visibility guard originally mixed array-length numbers and the `frequency`
+string under `||` then compared the result `> 0`, which would coerce a
+non-empty Hebrew `frequency` string to `NaN` and hide the whole section
+when only `frequency` was set — rewrote as an explicit `!!(...)` boolean
+instead of a numeric comparison.
+
+Verified via esbuild transpile of both edited files (tsx loader, zero
+errors) plus a manual bracket-balance count (parens/braces/brackets
+matched exactly on both files) — same constraint as every other egod round
+this session: this app's own Supabase project (`hkkky...`) is not
+MCP-reachable, so no live round-trip query was possible. `profiles`' own
+RLS already lets a user update arbitrary columns on their own row (that's
+how `years_teaching`/`gender` already round-trip), so no policy change
+needed. Zero existing field/behavior touched, purely additive.
