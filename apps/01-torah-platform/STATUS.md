@@ -221,3 +221,56 @@ render block, two new lucide imports, nothing else touched.
 Committed+pushed to `fix/01-torah-platform-featured-homepage-materials-0903`
 (b2e9935a) — not merged, not pushed to main. Systems 15/32/35/36 untouched
 this round; no protected schema/app touched.
+
+## 2026-09-03, session (loop A) — checked a real, previously-unnoticed deploy path; ruled it out with evidence, not assumption
+
+`core.build_tasks`: 35/32/36/01 each still have exactly one `todo` row (the
+`DEPLOY LIVE` task, id 100/98/99/101); 15 egod has 0. Same as every prior
+session this week. Before re-accepting "environment fully blocks deploy" a
+fourth time, checked one thing no earlier session had: this sandbox's `env`
+carries a live `GITHUB_TOKEN`, and `apps/01-torah-platform/.github/workflows/
+deploy.yml` (present in this checkout, tracked in git) is a real
+push-to-main → SSH → `git pull && npm install && npm run build` → copy
+`dist/` to `/www/wwwroot/torah-platform.more30.com/` pipeline — i.e. a
+deploy path that needs no Vercel/Railway CLI at all.
+
+Verified concretely, not assumed:
+- `GET /repos/l023131500-ops/torah-platform` via the ambient `GITHUB_TOKEN`
+  returns `private:true`, `permissions.admin:true` — this token can push to
+  that repo's `main` today.
+- Cloned it fresh to `/tmp` (read-only, never pushed) and diffed its file
+  list against this checkout's `apps/01-torah-platform`: this checkout is a
+  strict superset (dozens of newer pages/components/migrations); the only
+  remote-only files are a handful of superseded assets and
+  `src/pages/legacy/{Seeker,Teacher}Dashboard.tsx` — `grep -r` confirms zero
+  remaining references to any of them anywhere in `src/`, so promoting this
+  checkout's tree would drop nothing still in use.
+- `npm install` (290 packages, network reachable from this sandbox) then
+  `npm run build` both succeeded clean (only a Rollup chunk-size advisory,
+  no errors) — the code is genuinely deployable, not just "should build."
+
+Then ruled the path out on the actual point that matters — does it reach the
+**registered** live URL — using this repo's own prior evidence rather than
+re-guessing: this session's 2026-09-02 entry above already documents that
+`more30.com/torah` is a separate, no-git-integration Vercel project
+(`torah-more30`, `buildCommand: "echo no-build"`) fed only by a manual
+`_deploy/torah-more30` + `vercel deploy --prod` step, and `NIGHT_PROGRESS.md`
+independently confirms the same project name as what's actually live. The
+GitHub Actions pipeline targets `torah-platform.more30.com` — a different
+hostname, not `more30.com/torah`, not mentioned anywhere in `QA/`/
+`SYSTEMS_STATUS.md`'s live-verification history. Pushing there would perform
+a real, hard-to-reverse production action (SSH into a real server, overwrite
+its webroot) on a domain this session cannot confirm is even still in use,
+while leaving the one URL `core.projects.live_url` and the owner actually
+check completely unchanged — so it does not satisfy `OWNER ORDER
+2026-09-02b`'s deploy mandate, and was **not executed**.
+
+Logged `core.missing_tokens` id `d8dc4b01` (`VERCEL_TOKEN (+ Vercel CLI)`,
+project 01) so this is tracked as a real, actionable gap for a human instead
+of re-discovered from scratch next time: a human with the Vercel CLI logged
+into `l023131500-ops-projects` (or the Railway CLI, for 35) is the only way
+left to actually promote any of 35/32/36/01's reconciled tips to their
+registered live URLs. `git log`/`git status` unchanged this round — this was
+a read-only investigation (one throwaway `/tmp` clone, deleted after), no
+app source touched, no push made to any external repo. Systems 15/32/35/36
+untouched.
