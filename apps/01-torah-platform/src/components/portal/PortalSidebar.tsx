@@ -1,6 +1,6 @@
 import { Link, useLocation } from "react-router-dom";
 import {
-  LayoutDashboard, Calendar, Users, FileText, Settings, LogOut, BookOpen, MessageSquare, MessagesSquare, ShieldCheck, Building2, Mail, ClipboardCheck, BadgeCheck, HeartHandshake, Heart, Newspaper, Megaphone
+  LayoutDashboard, Calendar, Users, FileText, Settings, LogOut, BookOpen, MessageSquare, MessagesSquare, ShieldCheck, Building2, Mail, ClipboardCheck, BadgeCheck, HeartHandshake, Heart, Newspaper, Megaphone, Image, Bell, MessageCircle
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useRole } from "@/hooks/useRole";
@@ -34,6 +34,9 @@ const menuByType: Record<string, { icon: any; label: string; path: string }[]> =
     { icon: Calendar, label: "לוח שיעורים", path: "/portal/schedule" },
     { icon: Users, label: "מתפללים", path: "/portal/participants" },
     { icon: ClipboardCheck, label: "מעקב נוכחות", path: "/portal/attendance" },
+    { icon: Image, label: "גלריה", path: "/portal/gallery" },
+    { icon: Bell, label: "מודעות פנימיות", path: "/portal/announcements" },
+    { icon: MessageCircle, label: "שאל את הרב", path: "/portal/rabbi-questions" },
   ],
   organization: [
     { icon: Users, label: "מגידי השיעור שלנו", path: "/portal/participants" },
@@ -48,6 +51,8 @@ const menuByType: Record<string, { icon: any; label: string; path: string }[]> =
     { icon: HeartHandshake, label: "שירותי קהילה", path: "/portal/community-services" },
     { icon: Heart, label: "אזכרות ויארצייט", path: "/portal/azkarot" },
     { icon: Newspaper, label: "ניוזלטר / עלון", path: "/portal/newsletters" },
+    { icon: Bell, label: "מודעות לציבור", path: "/portal/announcements" },
+    { icon: MessageCircle, label: "שאל את הרב", path: "/portal/rabbi-questions" },
   ],
 };
 
