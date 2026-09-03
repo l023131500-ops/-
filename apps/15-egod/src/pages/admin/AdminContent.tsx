@@ -13,6 +13,7 @@ import { MATERIAL_CATEGORIES } from "@/types/questionnaire";
 const AdminContent = () => {
   const [materials, setMaterials] = useState<any[]>([]);
   const [profilesMap, setProfilesMap] = useState<Record<string, string>>({});
+  const [forumCategoriesMap, setForumCategoriesMap] = useState<Record<string, string>>({});
   const [statusFilter, setStatusFilter] = useState("all");
   const [categoryFilter, setCategoryFilter] = useState("all");
   const [search, setSearch] = useState("");
@@ -27,6 +28,10 @@ const AdminContent = () => {
       (profs || []).forEach((p: any) => { map[p.id] = p.full_name; });
       setProfilesMap(map);
     }
+    const { data: cats } = await supabase.from("forum_categories").select("id, name");
+    const cmap: Record<string, string> = {};
+    (cats || []).forEach((c: any) => { cmap[c.id] = c.name; });
+    setForumCategoriesMap(cmap);
   };
 
   useEffect(() => { load(); }, []);
@@ -121,6 +126,11 @@ const AdminContent = () => {
                       <span className={`text-xs flex items-center gap-1 ${color}`}><Icon className="w-3 h-3" />{m.status === "approved" ? "מאושר" : m.status === "rejected" ? "נדחה" : "ממתין"}</span>
                       {m.featured_on_homepage && (
                         <span className="text-xs flex items-center gap-1 text-secondary"><Star className="w-3 h-3 fill-secondary" />מוצג בעמוד הבית</span>
+                      )}
+                      {m.display_forum_category_id && (
+                        <Badge variant="outline" className="text-xs">
+                          פורום: {forumCategoriesMap[m.display_forum_category_id] || "—"}
+                        </Badge>
                       )}
                     </div>
                     <p className="text-xs text-muted-foreground">העלה: {profilesMap[m.uploader_id] || "—"} · {new Date(m.created_at).toLocaleString("he-IL")}</p>

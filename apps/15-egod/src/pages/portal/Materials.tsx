@@ -52,9 +52,10 @@ const Materials = () => {
   const previewRef = useRef<HTMLDivElement>(null);
   const [tab, setTab] = useState<"templates" | "uploads">("templates");
   const [uploads, setUploads] = useState<any[]>([]);
+  const [forumCategories, setForumCategories] = useState<any[]>([]);
   const [uploadForm, setUploadForm] = useState({
     title: "", description: "", category: "", subcategory: "", file: null as File | null,
-    display_in_public_profile: false,
+    display_in_public_profile: false, display_forum_category_id: "",
   });
   const [uploading, setUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
@@ -76,6 +77,11 @@ const Materials = () => {
         .from("materials").select("*").eq("uploader_id", p.id)
         .order("created_at", { ascending: false });
       setUploads(ms || []);
+
+      const { data: cats } = await supabase.from("forum_categories").select("id, name").order("sort_order");
+      const { data: access } = await supabase.from("teacher_forum_access").select("category_id, can_post").eq("teacher_id", p.id);
+      const blocked = new Set((access || []).filter(a => a.can_post === false).map(a => a.category_id));
+      setForumCategories((cats || []).filter(c => !blocked.has(c.id)));
     }
   };
 
@@ -109,11 +115,12 @@ const Materials = () => {
         file_size: uploadForm.file.size,
         media_kind: mediaKind,
         display_in_public_profile: uploadForm.display_in_public_profile,
+        display_forum_category_id: uploadForm.display_forum_category_id || null,
         status: "pending",
       });
       if (insErr) throw insErr;
       toast.success("הקובץ נשלח לאישור הניהול");
-      setUploadForm({ title: "", description: "", category: "", subcategory: "", file: null, display_in_public_profile: false });
+      setUploadForm({ title: "", description: "", category: "", subcategory: "", file: null, display_in_public_profile: false, display_forum_category_id: "" });
       loadProfile();
     } catch (e: any) {
       toast.error("שגיאה בהעלאה: " + e.message);
@@ -214,6 +221,18 @@ const Materials = () => {
                     <span>הצג באתר התדמית הציבורי שלי לאחר אישור</span>
                     <input type="checkbox" checked={uploadForm.display_in_public_profile} onChange={e => setUploadForm(f => ({ ...f, display_in_public_profile: e.target.checked }))} />
                   </label>
+                  {forumCategories.length > 0 && (
+                    <div><label className="text-sm font-medium mb-1 block">שיוך לפורום (רשות)</label>
+                      <Select value={uploadForm.display_forum_category_id || "none"} onValueChange={v => setUploadForm(f => ({ ...f, display_forum_category_id: v === "none" ? "" : v }))}>
+                        <SelectTrigger><SelectValue placeholder="ללא שיוך" /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="none">ללא שיוך</SelectItem>
+                          {forumCategories.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
+                        </SelectContent>
+                      </Select>
+                      <p className="text-xs text-muted-foreground mt-1">לאחר אישור הקובץ יוצג כחומר עזר בפורום שנבחר</p>
+                    </div>
+                  )}
                   <Button onClick={submitUpload} disabled={uploading} className="w-full bg-secondary text-secondary-foreground hover:bg-gold-dark gap-2">
                     <Upload className="w-4 h-4" />{uploading ? "מעלה..." : "שלח לאישור"}
                   </Button>
@@ -236,6 +255,11 @@ const Materials = () => {
                           <div className="flex items-center gap-2 flex-wrap">
                             <p className="font-bold text-foreground">{m.title}</p>
                             <Badge variant="outline" className="text-xs">{m.category}{m.subcategory ? ` / ${m.subcategory}` : ""}</Badge>
+                            {m.display_forum_category_id && (
+                              <Badge variant="outline" className="text-xs">
+                                פורום: {forumCategories.find(c => c.id === m.display_forum_category_id)?.name || "—"}
+                              </Badge>
+                            )}
                             <span className={`text-xs flex items-center gap-1 ${color}`}><Icon className="w-3 h-3" />{label}</span>
                           </div>
                           {m.description && <p className="text-sm text-muted-foreground mt-1">{m.description}</p>}

@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
-import { MessageSquare, ChevronLeft, Send, ArrowRight, Pin, MessageCircle } from "lucide-react";
+import { MessageSquare, ChevronLeft, Send, ArrowRight, Pin, MessageCircle, Paperclip, Download } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import PortalLayout from "@/components/portal/PortalLayout";
@@ -18,6 +18,7 @@ const Forums = () => {
   const [categories, setCategories] = useState<any[]>([]);
   const [selectedCat, setSelectedCat] = useState<any>(null);
   const [posts, setPosts] = useState<any[]>([]);
+  const [materials, setMaterials] = useState<any[]>([]);
   const [profileId, setProfileId] = useState<string | null>(null);
   const [profileName, setProfileName] = useState("");
   const [newMessage, setNewMessage] = useState("");
@@ -70,9 +71,20 @@ const Forums = () => {
     setTimeout(() => bottomRef.current?.scrollIntoView({ behavior: "smooth" }), 100);
   };
 
+  const fetchMaterials = async (catId: string) => {
+    const { data } = await supabase
+      .from("materials")
+      .select("id, title, description, file_url, media_kind, profiles:uploader_id(full_name)")
+      .eq("display_forum_category_id", catId)
+      .eq("status", "approved")
+      .order("created_at", { ascending: false });
+    setMaterials(data || []);
+  };
+
   const openCategory = (cat: any) => {
     setSelectedCat(cat);
     fetchPosts(cat.id);
+    fetchMaterials(cat.id);
   };
 
   const handleSend = async () => {
@@ -138,6 +150,25 @@ const Forums = () => {
               <p className="text-xs text-muted-foreground">{selectedCat.description}</p>
             </div>
           </div>
+
+          {/* Attached materials */}
+          {materials.length > 0 && (
+            <div className="border-b border-border py-3 space-y-2">
+              <p className="text-xs font-bold text-muted-foreground flex items-center gap-1">
+                <Paperclip className="w-3 h-3" />חומרי עזר מצורפים
+              </p>
+              <div className="flex flex-wrap gap-2">
+                {materials.map(m => (
+                  <a key={m.id} href={m.file_url} target="_blank" rel="noreferrer"
+                    className="flex items-center gap-2 bg-muted/40 hover:bg-muted/70 border border-border rounded-lg px-3 py-1.5 text-xs transition-colors">
+                    <Download className="w-3 h-3 text-secondary shrink-0" />
+                    <span className="font-medium text-foreground">{m.title}</span>
+                    <span className="text-muted-foreground">· {m.profiles?.full_name || "אנונימי"}</span>
+                  </a>
+                ))}
+              </div>
+            </div>
+          )}
 
           {/* Messages */}
           <div className="flex-1 overflow-y-auto py-4 space-y-3">
