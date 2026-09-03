@@ -3585,16 +3585,21 @@ async function renderTasks() {
   const body = $('tasksBody');
   body.innerHTML = '<p class="loading"><span class="spinner"></span>טוען…</p>';
 
-  let rows;
+  let rows, members;
   try {
-    rows = await rpc('np_activities', {
-      p_office: OFFICE.id,
-      p_only_open: $('tFilter').value === 'open',
-      p_limit: 300,
-    });
+    [rows, members] = await Promise.all([
+      rpc('np_activities', {
+        p_office: OFFICE.id,
+        p_only_open: $('tFilter').value === 'open',
+        p_limit: 300,
+      }),
+      rpc('np_office_members', { p_office: OFFICE.id }).catch(() => []),
+    ]);
   } catch (e) { body.innerHTML = '<div class="err">' + esc(e.message) + '</div>'; return; }
 
   rows = rows || [];
+  members = (members || []).filter((m) => m.is_active);
+  const assigneeName = (uid) => { const m = members.find((x) => x.user_id === uid); return m ? m.full_name : null; };
   if (!rows.length) {
     body.innerHTML = '<div class="empty"><b>אין משימות</b>' +
       ($('tFilter').value === 'open' ? 'אין משימות פתוחות כרגע.' : 'עדיין לא נרשמה פעילות.') + '</div>';
@@ -3603,7 +3608,7 @@ async function renderTasks() {
 
   const now = Date.now();
   body.innerHTML = '<div class="table-scroll"><table><thead><tr>' +
-    '<th></th><th>סוג</th><th>נושא</th><th>איש קשר</th><th>יעד</th></tr></thead><tbody>' +
+    '<th></th><th>סוג</th><th>נושא</th><th>איש קשר</th><th>מוקצה ל</th><th>יעד</th></tr></thead><tbody>' +
     rows.map((a) => {
       const overdue = !a.is_done && a.due_at && new Date(a.due_at).getTime() < now;
       return '<tr><td><input type="checkbox" data-act="' + a.id + '"' + (a.is_done ? ' checked' : '') +
@@ -3611,6 +3616,7 @@ async function renderTasks() {
         '<td><span class="pill">' + esc(AKIND_HE[a.kind] || a.kind) + '</span></td>' +
         '<td>' + esc(a.title) + (a.body ? '<br/><span class="na" style="font-size:12px">' + esc(a.body) + '</span>' : '') + '</td>' +
         '<td>' + v(a.contact_name) + '</td>' +
+        '<td>' + v(assigneeName(a.assigned_to)) + '</td>' +
         '<td>' + (a.due_at
           ? (overdue ? '<span class="pill hot">' + dtm(a.due_at) + '</span>' : dtm(a.due_at))
           : NA) + '</td></tr>';
@@ -3632,12 +3638,17 @@ async function renderAgenda() {
   const body = $('agendaBody');
   body.innerHTML = '<p class="loading"><span class="spinner"></span>טוען…</p>';
 
-  let rows;
+  let rows, members;
   try {
-    rows = await rpc('np_activities', { p_office: OFFICE.id, p_only_open: true, p_limit: 500 });
+    [rows, members] = await Promise.all([
+      rpc('np_activities', { p_office: OFFICE.id, p_only_open: true, p_limit: 500 }),
+      rpc('np_office_members', { p_office: OFFICE.id }).catch(() => []),
+    ]);
   } catch (e) { body.innerHTML = '<div class="err">' + esc(e.message) + '</div>'; return; }
 
   rows = rows || [];
+  members = (members || []).filter((m) => m.is_active);
+  const assigneeName = (uid) => { const m = members.find((x) => x.user_id === uid); return m ? m.full_name : null; };
   if (!rows.length) {
     body.innerHTML = '<div class="empty"><b>היומן ריק</b>אין משימות פתוחות עם תאריך יעד.</div>';
     return;
@@ -3675,6 +3686,7 @@ async function renderAgenda() {
       ' style="width:17px;height:17px;accent-color:var(--gold);margin-top:2px;flex:none" aria-label="סמן כבוצע" />' +
       '<div style="flex:1"><span class="pill">' + esc(AKIND_HE[a.kind] || a.kind) + '</span> ' +
       '<b class="t">' + esc(a.title) + '</b>' + (a.contact_name ? ' — ' + v(a.contact_name) : '') +
+      (assigneeName(a.assigned_to) ? ' <span class="na" style="font-size:12px">(' + esc(assigneeName(a.assigned_to)) + ')</span>' : '') +
       (a.due_at ? (overdue ? ' <span class="pill hot">' + dtm(a.due_at) + '</span>' : ' <span class="na">' + dtm(a.due_at) + '</span>') : '') +
       (a.body ? '<p class="m">' + esc(a.body) + '</p>' : '') + '</div></div>';
   };
@@ -3696,13 +3708,24 @@ async function renderAgenda() {
   }
 }
 
-function taskForm(ctx) {
+async function taskForm(ctx) {
   const c = ctx || {};
+  let members = [];
+  try { members = await rpc('np_office_members', { p_office: OFFICE.id }); } catch (e) { members = []; }
+  members = (members || []).filter((m) => m.is_active);
+  const canAssignOthers = OFFICE.role === 'owner' || OFFICE.role === 'manager';
+  const meName = (members.find((m) => m.user_id === ME.user_id) || {}).full_name || 'אני';
+  const assignOpts = canAssignOthers
+    ? members.map((m) => '<option value="' + m.user_id + '"' + (m.user_id === ME.user_id ? ' selected' : '') + '>' +
+        esc(m.full_name) + '</option>').join('')
+    : '<option value="' + ME.user_id + '" selected>' + esc(meName) + '</option>';
+
   const opts = Object.entries(AKIND_HE).filter(([k]) => k !== 'system')
     .map(([k, l]) => '<option value="' + k + '"' + (k === 'task' ? ' selected' : '') + '>' + l + '</option>').join('');
   const html =
     '<div id="tfErr"></div><div class="form-grid">' +
       '<label class="f">סוג<select id="t_kind">' + opts + '</select></label>' +
+      '<label class="f">מוקצה ל<select id="t_assigned_to"' + (canAssignOthers ? '' : ' disabled') + '>' + assignOpts + '</select></label>' +
       '<label class="f" id="t_due_at_label">תאריך יעד<input id="t_due_at" type="datetime-local" value="' + esc(c.due_at || '') + '" /></label>' +
       '<label class="f span2" style="flex-direction:row;align-items:center;gap:9px">' +
         '<input type="checkbox" id="t_already_done" style="width:17px;height:17px;accent-color:var(--gold)" />' +
@@ -3730,6 +3753,7 @@ function taskForm(ctx) {
         contact_id: c.contact_id || '', deal_id: c.deal_id || '', property_id: c.property_id || '',
         kind: $('t_kind').value, title: $('t_title').value.trim(),
         body: $('t_body').value.trim(),
+        assigned_to: $('t_assigned_to').value || '',
       };
       if (alreadyDone) {
         p.is_done = 'true';
