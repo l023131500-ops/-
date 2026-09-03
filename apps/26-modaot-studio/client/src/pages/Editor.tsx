@@ -268,10 +268,30 @@ export default function Editor() {
     queryKey: ["/api/backgrounds"],
   });
   const [libraryPreview, setLibraryPreview] = useState<BackgroundRow | null>(null);
+  const [deletingBackgroundId, setDeletingBackgroundId] = useState<number | null>(null);
   function applySavedBackground(bg: BackgroundRow) {
     updateDoc({ ...doc!, background: { type: "image", src: bg.dataUrl } });
     toast({ title: "הרקע מהספרייה הוחל" });
     setAiDialogOpen(false);
+  }
+  // מחיקת רקע מהספרייה — ה-endpoint (DELETE /api/backgrounds/:id) קיים בשרת מאז
+  // שנוספה השמירה האוטומטית, אך עד כה לא היה לו כפתור בממשק; הספרייה יכלה רק לגדול.
+  async function handleDeleteSavedBackground(bg: BackgroundRow) {
+    setDeletingBackgroundId(bg.id);
+    try {
+      await apiRequest("DELETE", `/api/backgrounds/${bg.id}`);
+      queryClient.invalidateQueries({ queryKey: ["/api/backgrounds"] });
+      if (libraryPreview?.id === bg.id) setLibraryPreview(null);
+      toast({ title: "הרקע נמחק מהספרייה" });
+    } catch (err: any) {
+      toast({
+        title: "מחיקת הרקע נכשלה",
+        description: String(err?.message ?? err).slice(0, 150),
+        variant: "destructive",
+      });
+    } finally {
+      setDeletingBackgroundId(null);
+    }
   }
 
   // אם נכנסים ישירות ל-/editor בלי בחירה (רענון) — חזרה לבית
@@ -1773,6 +1793,16 @@ export default function Editor() {
                       className="absolute right-1 top-1 rounded bg-black/60 p-1 opacity-0 transition-opacity group-hover:opacity-100"
                       testId={`button-library-bg-section-${bg.id}`}
                     />
+                    <button
+                      type="button"
+                      onClick={(e) => { e.stopPropagation(); handleDeleteSavedBackground(bg); }}
+                      disabled={deletingBackgroundId === bg.id}
+                      className="absolute bottom-1 left-1 rounded bg-black/60 p-1 opacity-0 transition-opacity hover:bg-red-500/70 group-hover:opacity-100 disabled:opacity-50"
+                      title="מחק מהספרייה"
+                      data-testid={`button-library-bg-delete-${bg.id}`}
+                    >
+                      <Trash2 className="h-3 w-3 text-white" />
+                    </button>
                   </div>
                 ))}
               </div>
@@ -1834,6 +1864,17 @@ export default function Editor() {
                   ))}
                 </DropdownMenuContent>
               </DropdownMenu>
+            )}
+            {libraryPreview && (
+              <Button
+                variant="outline"
+                className="gap-1.5 border-red-500/40 text-red-400 hover:bg-red-500/10 hover:text-red-300"
+                onClick={() => handleDeleteSavedBackground(libraryPreview)}
+                disabled={deletingBackgroundId === libraryPreview.id}
+                data-testid="button-library-preview-delete"
+              >
+                <Trash2 className="h-4 w-4" /> מחק מהספרייה
+              </Button>
             )}
           </DialogFooter>
         </DialogContent>
