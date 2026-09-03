@@ -189,3 +189,35 @@ narrowed. `featured_on_homepage`/`Home.tsx` intentionally left as a
 follow-up (same shape, different page) rather than widened in this round.
 Committed to `fix/01-torah-platform-materials-public-display-0903` — not
 merged, not pushed to main. Systems 15/32/35/36 untouched this round.
+
+## 2026-09-03, session (loop A) — closed the other half: featured_on_homepage now renders on Home.tsx
+
+core.build_tasks reconfirmed: 35/32/36/01 each have exactly one `todo` row
+left (the `DEPLOY LIVE` task, id 100/98/99/101), all re-verified still
+BLOCKED at the sandbox-environment level (no `vercel`/`railway` CLI or
+token in `env`, root `vercel.json` still has `git.deploymentEnabled:false`)
+— unchanged since the 2026-09-03 04:42 loop-A verification, not
+re-litigated further. 15 egod has 0 todo rows. Per OWNER ORDER
+2026-09-02b rule 2 ("no busywork/audit"), did not re-run that
+investigation a third time; instead picked up the one concrete, already
+-identified, non-audit feature gap the loop-B session above explicitly
+flagged as a follow-up: `featured_on_homepage` had a working moderator
+toggle (admin/Content.tsx) but no consumer anywhere in the app.
+
+Added a `materials` query to `src/pages/public/Home.tsx` (tenant_id +
+status=approved + featured_on_homepage=true, mirrors the existing
+`halacha_daily` query's tenant-scoping already on this page) and a new
+"חומרי לימוד מומלצים" section rendering the results as cards with a
+view-file link. Verified live via MCP against the real bkalut-production
+project (`bieebmnmkffwbqlsfozh`) in a rolled-back transaction: inserted one
+approved+featured row, one rejected+featured row, and one approved-but-
+not-featured row for a real active tenant, ran the exact query shape as
+the `anon` role, confirmed only the approved+featured row came back, then
+confirmed zero residue after the transaction auto-rolled back (no COMMIT
+issued). `npx esbuild` compiled the edited file clean (exit 0); brace/
+paren/bracket counts balanced. Purely additive — one new query, one new
+render block, two new lucide imports, nothing else touched.
+
+Committed+pushed to `fix/01-torah-platform-featured-homepage-materials-0903`
+(b2e9935a) — not merged, not pushed to main. Systems 15/32/35/36 untouched
+this round; no protected schema/app touched.
