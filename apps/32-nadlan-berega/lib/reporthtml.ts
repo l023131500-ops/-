@@ -305,6 +305,67 @@ function streetBlock(report: PropertyReport): string {
 }
 
 /**
+ * §4 · "דירות מוצעות כרגע" — זהה בנתונים ל-`Listings.tsx` (המסך). `report.listings`
+ * (`lib/apify.ts`, נמשך ב-`buildReport` לכל דוח שאינו חינמי ואינו קרקע) כבר
+ * מוצג במסך בקטגוריה `listings`/`rental`/`commercial` — אבל מעולם לא הגיע
+ * למייל, למרות שהוא נמשך בתשלום בכל דוח פרימיום/VIP ששולח `app/api/admin/
+ * requests` בפועל. כשהשכבה לא נמשכה (רמה חינמית/לא-מוגדר/קרקע) או שלא נמצאו
+ * מודעות — אין סעיף, בדיוק כמו ש-`nearbyPlansBlock` לא מציג כלום כשאין נתון.
+ */
+const LISTINGS_NOUN: Record<string, string> = {
+  residential: 'דירות שמוצעות למכירה',
+  rental: 'דירות שמוצעות להשכרה',
+  commercial: 'נכסים מסחריים המוצעים',
+  land: 'מגרשים המוצעים',
+};
+
+function listingsBlock(report: PropertyReport): string {
+  const listings = report.listings;
+  if (!report.listingsStatus?.configured || !listings || !listings.length) return '';
+
+  const noun = LISTINGS_NOUN[report.assetType] ?? LISTINGS_NOUN.residential;
+  const ils = (n: number) => n.toLocaleString('he-IL');
+
+  const rows = listings
+    .slice(0, 12)
+    .map(
+      (l) => `<tr>
+  <td style="padding:7px 10px;border-bottom:1px solid ${LINE};font-size:13px">${esc(l.address ?? 'כתובת לא צוינה')}</td>
+  <td style="padding:7px 10px;border-bottom:1px solid ${LINE};font-size:13px">${l.price ? ils(l.price) + ' ₪' : '—'}</td>
+  <td style="padding:7px 10px;border-bottom:1px solid ${LINE};font-size:13px">${l.pricePerSqm ? ils(l.pricePerSqm) + ' ₪' : '—'}</td>
+  <td style="padding:7px 10px;border-bottom:1px solid ${LINE};font-size:13px">${[l.rooms ? `${l.rooms} חד'` : null, l.areaSqm ? `${l.areaSqm} מ"ר` : null].filter(Boolean).join(' · ') || '—'}</td>
+  <td style="padding:7px 10px;border-bottom:1px solid ${LINE};font-size:13px">${l.daysListed != null ? (l.daysListed === 0 ? 'עלה היום' : `${l.daysListed} ימים באוויר`) : '—'}</td>
+  <td style="padding:7px 10px;border-bottom:1px solid ${LINE};font-size:12px;color:${MUTED}">${l.source === 'yad2' ? 'יד2' : 'מדלן'}</td>
+</tr>`,
+    )
+    .join('');
+
+  const sourceNames = report.listingsStatus.sourcesOk
+    .map((s) => (s === 'yad2' ? 'יד2' : 'מדלן'))
+    .join(' ומ');
+
+  return section(
+    noun,
+    `${listings.length} ${noun} כרגע באזור${sourceNames ? ` · מקור: ${esc(sourceNames)}` : ''}. אלה מחירי בקשה, לא מחירים שנסגרו בפועל.`,
+    `<table role="presentation" cellpadding="0" cellspacing="0" border="0" dir="rtl" style="width:100%;margin-top:10px;border-collapse:collapse;border:1px solid ${LINE}">
+  <tr style="background:#f8fafc">
+    <th style="padding:8px 10px;text-align:right;font-size:12px;color:${MUTED}">כתובת</th>
+    <th style="padding:8px 10px;text-align:right;font-size:12px;color:${MUTED}">מחיר</th>
+    <th style="padding:8px 10px;text-align:right;font-size:12px;color:${MUTED}">₪ למ״ר</th>
+    <th style="padding:8px 10px;text-align:right;font-size:12px;color:${MUTED}">חדרים/שטח</th>
+    <th style="padding:8px 10px;text-align:right;font-size:12px;color:${MUTED}">זמן באוויר</th>
+    <th style="padding:8px 10px;text-align:right;font-size:12px;color:${MUTED}">לוח</th>
+  </tr>
+  ${rows}
+</table>${
+      listings.length > 12
+        ? `<div style="margin-top:6px;font-size:11px;color:${MUTED}">מוצגות 12 מתוך ${listings.length} מודעות שנמצאו.</div>`
+        : ''
+    }`,
+  );
+}
+
+/**
  * §12 · "מה נבנה באזור?" — זהה בנתונים ל-`NearbyPlansPanel.tsx` (המסך).
  * `report.nearbyPlans` (lib/nearbyplans.ts) הוא `null` ברמה חינמית (השכבה
  * לא נשאלת כלל, בדיוק כמו במסך) ולכן אין צורך בבדיקת-רמה נוספת כאן — רק
@@ -678,6 +739,7 @@ export function reportEmailHtml(report: PropertyReport, opts: ReportEmailOptions
   ${backgroundBlock}
   ${valuationBlock(report)}
   ${streetBlock(report)}
+  ${listingsBlock(report)}
   ${nearbyPlansBlock(report.nearbyPlans)}
   ${feasibilityBlock(report.feasibility)}
   ${categories}
@@ -892,6 +954,29 @@ export function reportEmailText(report: PropertyReport): string {
           `    ${heDate(c.date)} | ${c.address ?? '—'} | ${c.parcelLabel ?? '—'} | ${c.price ? c.price.toLocaleString('he-IL') + ' ₪' : '—'} | ${c.areaSqm ?? '—'} מ"ר | ${c.pricePerSqm ? c.pricePerSqm.toLocaleString('he-IL') + ' ₪ למ"ר' : '—'} | ${c.proximityLabel}`,
         );
       }
+    }
+    lines.push('');
+  }
+
+  // ⚠️ אותו סעיף "דירות מוצעות כרגע" ש-HTML/המסך כבר מציגים (§4) — ראו `listingsBlock`.
+  if (report.listingsStatus?.configured && report.listings.length) {
+    const noun = LISTINGS_NOUN[report.assetType] ?? LISTINGS_NOUN.residential;
+    lines.push(`== ${noun} ==`);
+    lines.push(`${report.listings.length} ${noun} כרגע באזור. אלה מחירי בקשה, לא מחירים שנסגרו בפועל.`);
+    for (const l of report.listings.slice(0, 12)) {
+      lines.push(
+        [
+          l.address ?? 'כתובת לא צוינה',
+          l.price ? `${l.price.toLocaleString('he-IL')} ₪` : '—',
+          l.pricePerSqm ? `${l.pricePerSqm.toLocaleString('he-IL')} ₪ למ"ר` : '—',
+          [l.rooms ? `${l.rooms} חד'` : null, l.areaSqm ? `${l.areaSqm} מ"ר` : null].filter(Boolean).join(' · ') || '—',
+          l.daysListed != null ? (l.daysListed === 0 ? 'עלה היום' : `${l.daysListed} ימים באוויר`) : '—',
+          l.source === 'yad2' ? 'יד2' : 'מדלן',
+        ].join(' | '),
+      );
+    }
+    if (report.listings.length > 12) {
+      lines.push(`    מוצגות 12 מתוך ${report.listings.length} מודעות שנמצאו.`);
     }
     lines.push('');
   }
