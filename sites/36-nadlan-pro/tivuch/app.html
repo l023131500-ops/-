@@ -769,8 +769,11 @@ function wireBoard() {
       col.classList.remove('drop');
       const id = dragId || e.dataTransfer.getData('text/plain');
       if (!id) return;
+      const lostReason = col.dataset.stage === 'lost'
+        ? window.prompt('סיבת אי-מימוש (רשות):', '')
+        : null;
       try {
-        await rpc('np_deal_stage', { p_id: id, p_stage: col.dataset.stage });
+        await rpc('np_deal_stage', { p_id: id, p_stage: col.dataset.stage, p_lost_reason: lostReason || null });
         toast('העסקה הועברה ל״' + (STAGES.find((s) => s.key === col.dataset.stage) || {}).label + '״');
         renderBoard();
       } catch (err) {
@@ -2892,6 +2895,9 @@ async function openDeal(id) {
       '<div><p class="k">סגירה צפויה</p><p class="v">' + dt(dl.expected_close) + '</p></div>' +
       '<div><p class="k">נסגרה</p><p class="v">' + dt(dl.closed_at) + '</p></div>' +
     '</div>' +
+    (dl.stage === 'lost' && dl.lost_reason
+      ? '<p class="na" style="margin:-8px 0 14px">סיבת אי-מימוש: ' + esc(dl.lost_reason) + '</p>'
+      : '') +
     '<div class="controls" style="margin-bottom:22px">' +
       '<label class="f">שלב<select id="dStage">' + stageOpts + '</select></label>' +
       '<button class="btn btn-quiet btn-sm" id="dEdit" style="margin-bottom:1px">עריכת פרטים</button>' +
@@ -2956,8 +2962,11 @@ async function openDeal(id) {
          (d.property ? esc(d.property.address || '') : '') + ' · נפתחה ' + dt(dl.created_at),
          html, (close) => {
     $('dStage').addEventListener('change', async (e) => {
+      const lostReason = e.target.value === 'lost'
+        ? window.prompt('סיבת אי-מימוש (רשות):', dl.lost_reason || '')
+        : null;
       try {
-        await rpc('np_deal_stage', { p_id: dl.id, p_stage: e.target.value });
+        await rpc('np_deal_stage', { p_id: dl.id, p_stage: e.target.value, p_lost_reason: lostReason || null });
         toast('השלב עודכן');
         if (VIEW === 'board') renderBoard();
       } catch (err) { toast('עדכון נכשל: ' + err.message, true); }
