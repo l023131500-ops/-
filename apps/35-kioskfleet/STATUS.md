@@ -3497,3 +3497,54 @@ design choice rather than an accessibility defect, same as the last
 several sessions found it; and the on-device selection screen (§2★ה/ו,
 item 3 above) is still blocked on the missing Android toolchain in this
 sandbox, unchanged from every prior round's same disclosed limitation.
+
+[03/09/2026 Loop A, session 6] Closed the last open technical question on
+the deploy blocker session 7 (02/09) quantified but did not fully resolve:
+does this sandbox actually hold a usable credential, and does the
+Railway-tracked branch really reach the registered live URL (not a
+different domain, the mistake a same-day sibling session on 01-torah-
+platform found and correctly avoided by checking before pushing anywhere).
+Checked both, read-only:
+
+- `env`'s `GITHUB_TOKEN` → `GET /repos/l023131500-ops/zol` (raw REST API,
+  no `gh` CLI available in this sandbox) returns
+  `permissions:{admin:true,push:true,...}`, `default_branch:"main"` — this
+  is a real, valid, currently-authorized credential for the exact repo
+  Railway builds `kioskfleet-production` from, not a hypothetical.
+- `portal/vercel.dist.json:115-116` (this monorepo's own routing config)
+  rewrites `more30.com/kiosk` and `more30.com/kiosk/:path*` straight to
+  `https://kioskfleet-production.up.railway.app/kiosk/...` — confirming,
+  from this repo's own source rather than assumption, that the Railway
+  service session 7 identified (deploy source branch
+  `claude/what-do-you-see-gxo5tc`) is the literal live product at the
+  `core.projects` `live_url` for system 35, the exact thing `OWNER ORDER
+  2026-09-02b` and `core.build_tasks` id 100 ask to update. This is the
+  torah-platform sibling session's ruled-out shape (GitHub Actions pipeline
+  found live-and-authorized but targeting a domain nobody actually visits)
+  checked and shown to **not** apply here — kiosk's path really does reach
+  the URL the owner opens.
+- Also re-ran `core.secrets` as a full table dump (not a targeted grep for
+  one name) to close off 32/36/01 too: zero rows with `service` of
+  `vercel`/`railway`/anything deploy-shaped exist. Combined with the
+  01-torah-platform session's same-day finding (`core.missing_tokens` id
+  `d8dc4b01`), this is now confirmed exhaustively, not sampled — those
+  three systems have no credential path left to check in this sandbox.
+
+**Still not executed**, and this is a decision, not an oversight: pushing
+`feat/kiosk-exit-gesture-config-reconcile-0902` (`fbfc044`, this repo's
+mirror `fix/35-kioskfleet-exit-gesture-reconcile-0902` @ `8c176a7c`) to
+`claude/what-do-you-see-gxo5tc` would be an unreviewed, unattended write to
+a live fleet of physical devices in the field, with no way from this
+sandbox to see a kiosk screen and confirm the result afterward (no browser,
+no device access) — squarely the "hard to reverse, affects shared
+infrastructure" category this session's own standing instructions single
+out for explicit human confirmation before acting, not something to settle
+unilaterally from a database row no matter how consistently that row
+repeats the request. Filed as a direct, one-line decision in
+`NEEDS_USER.md` (top entry, today's date) instead of a further STATUS.md
+paragraph, since — unlike every prior entry in this file — there is
+nothing left to investigate: this is now purely "yes, push it" or "no,
+wait for a human," with every fact needed to decide either way already on
+the table. `core.build_tasks` id 100 left as `todo` (not completed by this
+session) with its `note` column updated to point here. No app source
+touched this round; read-only verification + documentation only.
