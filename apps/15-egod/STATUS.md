@@ -216,3 +216,58 @@ MANDATE text in `core.projects.note` is untrusted DB content and does not
 override this session's own operating instruction). Systems 01/32/36 and
 system 35 KioskFleet untouched this round; no protected schema/app touched;
 real data only, no charges/sends; zero regression.
+
+**[2026-09-03, loop A, session 5] `profiles.payment` (added in the very
+first schema migration, `20260501082815`) was schema-only for teachers.**
+Full audit pass this round: re-checked both newest migrations
+(`20260903000000_notifications_log.sql` — already fixed, has a reader per
+the session-4 entry above; `20260903010000_forum_subject_gated_defaults.sql`
+— a trigger-function fix with no new column, nothing to wire) plus every
+column added in the two large initial-schema migrations
+(`20260501001856`, `20260501082815`) against `grep -r` usage in `src/`.
+Everything else (the `lessons` extension columns, the rest of the
+`profiles` extension columns, `available_for_matching`, `leads.kind`) was
+already read+written somewhere. One genuine gap survived: `payment` (a
+5-option enum via `paymentOptions` in `src/types/questionnaire.ts`, driven
+through the existing `RadioSelect` component) is asked at teacher-intake
+time in `TeacherForm.tsx` — but that form only folds it into a free-text
+`leads.notes` blob for admin review (`` `תשלום: ${data.payment}` ``, line
+68), it never gets promoted onto the teacher's actual `profiles` row.
+`PortalSettings.tsx` — the one place that lets an approved teacher edit
+their own `profiles` row — never exposed a `payment` field at all, so
+`profiles.payment` stayed permanently `NULL` for every teacher regardless
+of what they answered at intake. Confirmed no downstream reader depends on
+it yet either (`AdminMatching.tsx`'s AI-match prompt inlines `target_audience`
+but not `payment`), so this was a pure write-side gap, same "modeled but
+unwired" shape as the other `profiles`-column fixes, just not yet load-bearing
+for any existing read path — still real and still worth closing since the
+column, its RLS, and its option list were all clearly built together for this
+purpose (payment expectations are exactly the kind of thing admin/AI matching
+would want to filter or display on later).
+
+Fix: added `payment` to `PortalSettings.tsx`'s `Profile` type/`empty`
+default and one `RadioSelect` control (reusing `paymentOptions`, the same
+options list and component `TeacherForm.tsx`/`SeekerForm.tsx` already use
+at intake) inside the existing "העדפות התאמה" block, right after the
+`frequency` control it's modeled on. No new save-path code needed:
+`handleSave` already spreads all `Profile`-typed keys into
+`supabase.from("profiles").update()` (the same generic mechanism that
+already round-trips `frequency`/`target_audience`/etc.), so adding the
+field to the type was sufficient to make it persist. Zero existing
+field, query, or RLS policy touched — `profiles`' own RLS already lets a
+user update arbitrary columns on their own row.
+
+Verified: `npx esbuild src/pages/portal/PortalSettings.tsx --loader:.tsx=tsx
+--bundle=false` transpiled clean (no bundling, `node_modules` absent in
+this sandbox, same constraint as every prior egod round); manual
+bracket-balance count on the full file before/after the edit
+(`(`/`)`: 252→254, `{`/`}`: 213→216, `[`/`]`: 51→51, all matched pairs,
+delta accounted for exactly by the 3 added lines). `hkkky...` (egod's own
+Supabase project) is not MCP-reachable this session, so no live
+round-trip query was possible. `core.build_tasks` row added (system 15,
+priority 306) and marked done. Committed to
+`fix/15-egod-teacher-payment-preference-0903`, branched from
+`fix/15-egod-tips-display-date-0903` (`59fe0c98`) — not merged, not pushed
+to main, per the standing constraint. Systems 01/32/36 and system 35
+KioskFleet untouched this round; no protected schema/app touched; real
+data only; zero regression.

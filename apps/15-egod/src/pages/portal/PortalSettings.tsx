@@ -13,6 +13,7 @@ import { buildRabbiUrl } from "@/lib/site";
 import {
   AGE_GROUPS, backgroundOptions, teachingStyleOptions, speakingStyleOptions,
   audienceOptions, locationOptions, frequencyOptions, dayOptions, hourOptions,
+  paymentOptions,
 } from "@/types/questionnaire";
 import MultiSelect from "@/components/questionnaire/MultiSelect";
 import RadioSelect from "@/components/questionnaire/RadioSelect";
@@ -32,7 +33,7 @@ type Profile = {
   years_teaching: string; gender: string;
   background: string[]; teaching_style: string[]; speaking_style: string[];
   target_audience: string[]; lesson_locations: string[]; frequency: string;
-  available_days: string[]; available_hours: string[];
+  available_days: string[]; available_hours: string[]; payment: string;
   public_token?: string;
 };
 
@@ -49,7 +50,7 @@ const empty: Profile = {
   years_teaching: "", gender: "",
   background: [], teaching_style: [], speaking_style: [],
   target_audience: [], lesson_locations: [], frequency: "",
-  available_days: [], available_hours: [],
+  available_days: [], available_hours: [], payment: "",
 };
 
 const emptySocial: SocialLinks = { facebook: "", instagram: "", youtube: "", telegram: "" };
@@ -229,6 +230,7 @@ const PortalSettings = () => {
                 <RadioSelect label="קביעות השיעור" options={frequencyOptions} selected={profile.frequency} onSelect={(v) => update("frequency", v)} />
                 <MultiSelect label="ימים מועדפים (ניתן לסמן כמה)" options={dayOptions} selected={profile.available_days} onToggle={(v) => toggleArr("available_days", v)} />
                 <MultiSelect label="שעות מועדפות (ניתן לסמן כמה)" options={hourOptions} selected={profile.available_hours} onToggle={(v) => toggleArr("available_hours", v)} />
+                <RadioSelect label="ציפיות לגבי תשלום" options={paymentOptions} selected={profile.payment} onSelect={(v) => update("payment", v)} />
               </div>
             </div>
           </TabsContent>
