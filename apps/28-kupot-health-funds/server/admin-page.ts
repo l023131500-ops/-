@@ -30,9 +30,10 @@ export function renderAdminPage(): string {
   th, td { padding:.5rem .7rem; text-align:right; border-bottom:1px solid #e6e9ec; font-size:.85rem; white-space:nowrap; }
   th { background:#eef1f4; position:sticky; top:0; }
   #app { display:none; }
-  #topbar { display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; }
+  #topbar { display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; gap:1rem; flex-wrap:wrap; }
   #count { color:#5a6672; font-size:.85rem; }
   #table-wrap { overflow-x:auto; }
+  #status-filter { padding:.35rem .5rem; border:1px solid #ccd3da; border-radius:6px; font-size:.85rem; background:#fff; }
 </style>
 </head>
 <body>
@@ -64,7 +65,17 @@ export function renderAdminPage(): string {
 <div id="app">
   <div id="topbar">
     <h1>פניות מעבר קופה — <span id="count"></span></h1>
-    <button id="logout-btn" type="button">יציאה</button>
+    <div style="display:flex; align-items:center; gap:.6rem;">
+      <label for="status-filter" style="font-size:.85rem; color:#5a6672;">סינון סטטוס</label>
+      <select id="status-filter">
+        <option value="">הכול</option>
+        <option value="new">new</option>
+        <option value="in_progress">in_progress</option>
+        <option value="done">done</option>
+        <option value="irrelevant">irrelevant</option>
+      </select>
+      <button id="logout-btn" type="button">יציאה</button>
+    </div>
   </div>
   <div id="table-wrap"></div>
 </div>
@@ -77,6 +88,8 @@ export function renderAdminPage(): string {
   var pwInput = document.getElementById("pw");
   var COLUMNS = ["id","created_at","topic","full_name","phone","email","id_number","city","current_fund","current_supplemental","target_fund","people_count","status","note"];
   var STATUSES = ["new","in_progress","done","irrelevant"];
+  var statusFilter = document.getElementById("status-filter");
+  var allLeads = [];
 
   function updateStatus(id, status, onDone) {
     fetch("switch-leads/" + id, {
@@ -130,8 +143,15 @@ export function renderAdminPage(): string {
             select.disabled = true;
             updateStatus(row.id, next, function (ok) {
               select.disabled = false;
-              if (!ok) select.value = prev;
-              else val = next;
+              if (!ok) {
+                select.value = prev;
+              } else {
+                val = next;
+                row.status = next;
+                // הפניה שעודכנה כבר לא תואמת סינון מלבד "הכול" -- מרעננים כדי
+                // שהיא תיעלם מהתצוגה, אחרת נשארת שורה עם סטטוס שלא תואם לפילטר.
+                if (statusFilter.value && statusFilter.value !== next) applyFilter();
+              }
             });
           });
           td.appendChild(select);
@@ -146,6 +166,12 @@ export function renderAdminPage(): string {
     wrap.appendChild(table);
   }
 
+  function applyFilter() {
+    var status = statusFilter.value;
+    var rows = status ? allLeads.filter(function (r) { return r.status === status; }) : allLeads;
+    renderTable(rows);
+  }
+
   function loadLeads() {
     fetch("switch-leads", { credentials: "include" })
       .then(function (r) {
@@ -155,12 +181,15 @@ export function renderAdminPage(): string {
       .then(function (rows) {
         loginBox.style.display = "none";
         app.style.display = "block";
-        renderTable(rows);
+        allLeads = rows;
+        applyFilter();
       })
       .catch(function () {
         // עוגייה לא תקפה/לא קיימת — נשארים במסך הכניסה.
       });
   }
+
+  statusFilter.addEventListener("change", applyFilter);
 
   document.getElementById("login-btn").addEventListener("click", function () {
     errorEl.textContent = "";
