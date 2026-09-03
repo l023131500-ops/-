@@ -1416,7 +1416,9 @@ function tabuHtml(p, requests, docs, actorName, deals) {
     } else if (r.status === 'fulfilled' && doc) {
       actions =
         '<button class="btn btn-quiet btn-sm" data-tabuopen="' + doc.id + '">פתיחת הנסח</button>' +
-        ' <button class="btn btn-quiet btn-sm" data-tabushare="' + doc.id + '" style="margin-inline-start:6px">🔗 העתקת קישור ללקוח</button>';
+        ' <button class="btn btn-quiet btn-sm" data-tabushare="' + doc.id + '" style="margin-inline-start:6px">🔗 העתקת קישור ללקוח</button>' +
+        (canManage ? ' <button class="btn btn-quiet btn-sm" data-tabureanalyze="' + doc.id + '" style="margin-inline-start:6px">' +
+          (doc.analysis ? '🔬 הרצת ניתוח AI מחדש' : '🔬 הרצת ניתוח AI') + '</button>' : '');
     }
     const analysisHtml = doc && doc.analysis ? tabuAnalysisHtml(doc.analysis)
       : doc && doc.analysis_error ? '<p class="na" style="margin-top:8px">ניתוח ה-AI נכשל: ' + esc(doc.analysis_error) + '</p>'
@@ -1436,6 +1438,26 @@ function tabuHtml(p, requests, docs, actorName, deals) {
   return (rows ? '<ul class="timeline">' + rows + '</ul>' : '<p class="na">אין עדיין בקשות נסח לנכס הזה.</p>') +
     '<p style="margin-top:10px"><button class="btn btn-quiet btn-sm" id="tabuAddBtn">+ בקשת נסח טאבו</button></p>' +
     '<div id="tabuAddBox"></div>';
+}
+
+// Shared by both the initial upload flow and the standalone "Research
+// report" re-run button (TABU workflow spec c: "a place to upload the nesach
+// AND a 'Research report' button that runs an extra AI research pass").
+// Never throws — analysis failure is a reportable outcome, not an exception,
+// so a caller mid-upload can still proceed to refresh the drawer.
+async function runTabuAiAnalysis(documentId) {
+  const { data: sess } = await sb.auth.getSession();
+  const res = await fetch(SUPABASE_URL + '/functions/v1/np-tabu-document-analyze', {
+    method: 'POST',
+    headers: {
+      apikey: SUPABASE_ANON,
+      Authorization: 'Bearer ' + sess.session.access_token,
+      'content-type': 'application/json',
+    },
+    body: JSON.stringify({ document_id: documentId }),
+  });
+  const out = await res.json();
+  return { ok: res.ok && out.ok !== false, error: out.error || null };
 }
 
 function wireTabu(p, requests, docs, deals) {
@@ -1475,21 +1497,24 @@ function wireTabu(p, requests, docs, deals) {
         // AI analysis runs through an Edge Function, never straight from the
         // browser: the Anthropic key lives in core.secrets and the storage
         // bucket is private. Same call shape as np-send-signature above.
-        const { data: sess } = await sb.auth.getSession();
-        const res = await fetch(SUPABASE_URL + '/functions/v1/np-tabu-document-analyze', {
-          method: 'POST',
-          headers: {
-            apikey: SUPABASE_ANON,
-            Authorization: 'Bearer ' + sess.session.access_token,
-            'content-type': 'application/json',
-          },
-          body: JSON.stringify({ document_id: docId }),
-        });
-        const out = await res.json();
-        if (!res.ok || out.ok === false) toast('הניתוח לא הושלם: ' + (out.error || 'שגיאה'), true);
+        const result = await runTabuAiAnalysis(docId);
+        if (!result.ok) toast('הניתוח לא הושלם: ' + (result.error || 'שגיאה'), true);
         else toast('הניתוח הושלם');
         openProperty(p.id);
       } catch (e) { toast('ההעלאה נכשלה: ' + e.message, true); b.disabled = false; }
+    });
+  }
+
+  for (const b of box.querySelectorAll('[data-tabureanalyze]')) {
+    b.addEventListener('click', async () => {
+      b.disabled = true;
+      toast('מריץ ניתוח AI…');
+      try {
+        const result = await runTabuAiAnalysis(b.dataset.tabureanalyze);
+        if (!result.ok) toast('הניתוח לא הושלם: ' + (result.error || 'שגיאה'), true);
+        else toast('הניתוח הושלם');
+        openProperty(p.id);
+      } catch (e) { toast('הניתוח נכשל: ' + e.message, true); b.disabled = false; }
     });
   }
 
