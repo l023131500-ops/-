@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { FileText, PlayCircle, Music, Download, User } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { formatDuration } from "@/lib/utils";
 
 type Material = {
   id: string;
@@ -11,6 +12,7 @@ type Material = {
   media_kind: string | null;
   file_url: string;
   uploader_id: string;
+  duration_seconds: number | null;
   profiles: { full_name: string } | null;
 };
 
@@ -19,7 +21,7 @@ const FeaturedMaterialsSection = () => {
 
   useEffect(() => {
     supabase.from("materials")
-      .select("id,title,description,media_kind,file_url,uploader_id,profiles(full_name)")
+      .select("id,title,description,media_kind,file_url,uploader_id,duration_seconds,profiles(full_name)")
       .eq("status", "approved").eq("featured_on_homepage", true)
       .order("created_at", { ascending: false }).limit(6)
       .then(({ data }) => { if (data) setMaterials(data as any); });
@@ -49,6 +51,9 @@ const FeaturedMaterialsSection = () => {
                   : m.media_kind === "audio" ? <Music className="w-4 h-4 text-secondary shrink-0" />
                   : <FileText className="w-4 h-4 text-secondary shrink-0" />}
                 <h3 className="font-heading font-bold text-foreground">{m.title}</h3>
+                {m.duration_seconds && m.duration_seconds > 0 && (
+                  <span className="text-xs text-muted-foreground shrink-0">{formatDuration(m.duration_seconds)}</span>
+                )}
               </div>
               {m.description && <p className="text-sm text-muted-foreground line-clamp-2">{m.description}</p>}
               {m.media_kind === "video" ? (

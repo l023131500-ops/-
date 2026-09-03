@@ -14,6 +14,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { MATERIAL_CATEGORIES } from "@/types/questionnaire";
+import { formatDuration } from "@/lib/utils";
 
 type TemplateKey = "flyer" | "siyum" | "recruit" | "greeting" | "summary";
 
@@ -24,6 +25,23 @@ const TEMPLATES: { key: TemplateKey; title: string; icon: string; description: s
   { key: "greeting", title: "כרטיס ברכה", icon: "💐", description: "כרטיס ברכה לחגים ואירועים" },
   { key: "summary", title: "סיכום שיעור", icon: "📝", description: "תבנית לסיכום נקודות השיעור" },
 ];
+
+const getMediaDuration = (file: File): Promise<number | null> => {
+  return new Promise(resolve => {
+    const isVideo = file.type.startsWith("video/");
+    const el = document.createElement(isVideo ? "video" : "audio");
+    const url = URL.createObjectURL(file);
+    const cleanup = () => URL.revokeObjectURL(url);
+    el.preload = "metadata";
+    el.onloadedmetadata = () => {
+      const seconds = Number.isFinite(el.duration) ? Math.round(el.duration) : null;
+      cleanup();
+      resolve(seconds);
+    };
+    el.onerror = () => { cleanup(); resolve(null); };
+    el.src = url;
+  });
+};
 
 const PALETTES = [
   { name: "זהב", from: "#fef3c7", to: "#fde68a", text: "#78350f", accent: "#b45309" },
@@ -104,6 +122,8 @@ const Materials = () => {
       const mediaKind = uploadForm.file.type.startsWith("video/") ? "video"
         : uploadForm.file.type.startsWith("audio/") ? "audio"
         : uploadForm.file.type.startsWith("image/") ? "image" : "document";
+      const durationSeconds = (mediaKind === "video" || mediaKind === "audio")
+        ? await getMediaDuration(uploadForm.file) : null;
       const { error: insErr } = await (supabase as any).from("materials").insert({
         uploader_id: profile.id,
         title: uploadForm.title,
@@ -114,6 +134,7 @@ const Materials = () => {
         file_type: ext || null,
         file_size: uploadForm.file.size,
         media_kind: mediaKind,
+        duration_seconds: durationSeconds,
         display_in_public_profile: uploadForm.display_in_public_profile,
         display_forum_category_id: uploadForm.display_forum_category_id || null,
         status: "pending",
@@ -255,6 +276,9 @@ const Materials = () => {
                           <div className="flex items-center gap-2 flex-wrap">
                             <p className="font-bold text-foreground">{m.title}</p>
                             <Badge variant="outline" className="text-xs">{m.category}{m.subcategory ? ` / ${m.subcategory}` : ""}</Badge>
+                            {m.duration_seconds > 0 && (
+                              <Badge variant="outline" className="text-xs">{formatDuration(m.duration_seconds)}</Badge>
+                            )}
                             {m.display_forum_category_id && (
                               <Badge variant="outline" className="text-xs">
                                 פורום: {forumCategories.find(c => c.id === m.display_forum_category_id)?.name || "—"}

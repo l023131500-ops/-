@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { BACKGROUND_PRESETS } from "@/types/portalDesign";
+import { formatDuration } from "@/lib/utils";
 
 function isSafeHttpsUrl(url: string | null | undefined): url is string {
   return !!url && /^https:\/\//i.test(url);
@@ -245,6 +246,9 @@ const RabbiPublic = () => {
                       : m.media_kind === "audio" ? <Music className="w-4 h-4 text-secondary shrink-0" />
                       : <FileText className="w-4 h-4 text-secondary shrink-0" />}
                     <h3 className="font-bold text-foreground">{m.title}</h3>
+                    {m.duration_seconds > 0 && (
+                      <span className="text-xs text-muted-foreground shrink-0">{formatDuration(m.duration_seconds)}</span>
+                    )}
                   </div>
                   {m.description && <p className="text-sm text-muted-foreground">{m.description}</p>}
                   {m.media_kind === "video" ? (

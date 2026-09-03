@@ -41,3 +41,30 @@ conflict between this session's "never push to main" instruction and
 `core.projects` note #33's 2026-09-02b mandate to merge reconciled tips
 to main and push. Not merged, not deployed, no app-source lines changed
 this round (verification-only: this file).
+
+**[2026-09-03, loop A] New real gap found + fixed: `materials.duration_seconds`
+was schema-only.** Column added in migration `20260504220643` alongside
+`media_kind` but never written on upload and never rendered anywhere —
+`Materials.tsx` (portal upload), `RabbiPublic.tsx` (public profile) and
+`FeaturedMaterialsSection.tsx` (homepage) all handled video/audio playback
+but the duration field stayed permanently `NULL`, same "modeled but
+unwired" pattern as the other 15+ fixes already closed for this system.
+Fix: capture duration client-side via a hidden `<video>`/`<audio>` element's
+`loadedmetadata` event before upload (`getMediaDuration` in
+`Materials.tsx`), store it as `duration_seconds` on insert, and render it
+as a `mm:ss`/`h:mm:ss` badge (new shared `formatDuration` in `src/lib/utils.ts`)
+next to the media title in all three read paths. Purely additive — no
+existing field, query, or RLS policy touched; `materials` RLS ("Uploaders
+manage own materials") already permits the uploader to set any column on
+their own insert, so no policy change was needed. Not committed to
+`core.build_tasks` as a pre-existing row (it wasn't one) — inserted as a
+new row and marked done in the same session; see commit for the id.
+15-egod's own Supabase project (`hkkkynyoigzlttpynoeo`) is not MCP-reachable
+from this session (per `CONNECTIONS.md`), so verification here is static:
+bracket-balance clean on all 4 changed files (Materials.tsx, RabbiPublic.tsx,
+FeaturedMaterialsSection.tsx, lib/utils.ts), the new state (`any[]`) and prop
+paths were traced end-to-end by hand, and the `select("*")`/explicit
+duration_seconds select on both read sites were confirmed to already or now
+include the column. No `npm install`/typecheck run (no `node_modules` in
+this sandbox, and installs are disallowed this session) — same limitation
+noted by every prior app.html/tsx-only round in this repo.
