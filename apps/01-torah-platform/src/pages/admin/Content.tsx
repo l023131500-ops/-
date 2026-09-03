@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { FileText, Download, CheckCircle2, XCircle, Clock, Trash2, Star, Globe } from "lucide-react";
+import { FileText, Download, CheckCircle2, XCircle, Clock, Trash2, Star, Globe, MessageSquare } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -10,6 +10,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { MATERIAL_CATEGORIES } from "@/types/questionnaire";
 
+type ForumCategoryOption = { id: string; tenant_id: string | null; name: string };
+
 const AdminContent = () => {
   const [materials, setMaterials] = useState<any[]>([]);
   const [profilesMap, setProfilesMap] = useState<Record<string, string>>({});
@@ -18,6 +20,7 @@ const AdminContent = () => {
   const [search, setSearch] = useState("");
   const [busyId, setBusyId] = useState<string | null>(null);
   const [categoryNames, setCategoryNames] = useState<string[]>(Object.keys(MATERIAL_CATEGORIES));
+  const [forumCategories, setForumCategories] = useState<ForumCategoryOption[]>([]);
 
   const load = async () => {
     const { data: ms, error } = await supabase.from("materials").select("*").order("created_at", { ascending: false });
@@ -45,6 +48,17 @@ const AdminContent = () => {
         .eq("is_active", true)
         .order("sort_order", { ascending: true });
       if (data && data.length > 0) setCategoryNames(data.map((c: any) => c.name));
+    })();
+  }, []);
+
+  useEffect(() => {
+    (async () => {
+      const { data } = await supabase
+        .from("forum_categories")
+        .select("id, tenant_id, name")
+        .eq("is_active", true)
+        .order("sort_order", { ascending: true });
+      setForumCategories((data || []) as ForumCategoryOption[]);
     })();
   }, []);
 
@@ -76,6 +90,21 @@ const AdminContent = () => {
     if (busyId) return;
     setBusyId(id);
     const { error } = await supabase.from("materials").update({ [field]: value }).eq("id", id);
+    setBusyId(null);
+    if (error) toast.error("שגיאה: " + error.message);
+    else { load(); }
+  };
+
+  // display_forum_category_id: present on `materials` since 20260519000002
+  // (references forum_categories, indexed by idx_materials_display_forum_cat)
+  // but no screen ever wrote it and no forum page ever read it — an approved
+  // material could never actually surface inside a forum category. Now
+  // column-protected as moderator-only by 20260903020000, same as the two
+  // flags above.
+  const setForumCategory = async (id: string, forumCategoryId: string | null) => {
+    if (busyId) return;
+    setBusyId(id);
+    const { error } = await supabase.from("materials").update({ display_forum_category_id: forumCategoryId }).eq("id", id);
     setBusyId(null);
     if (error) toast.error("שגיאה: " + error.message);
     else { load(); }
@@ -201,6 +230,22 @@ const AdminContent = () => {
                       <label htmlFor={`feat-${m.id}`} className="text-xs text-muted-foreground flex items-center gap-1">
                         <Star className="w-3 h-3" />הצג בדף הבית
                       </label>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <MessageSquare className="w-3 h-3 text-muted-foreground" />
+                      <Select
+                        value={m.display_forum_category_id || "none"}
+                        disabled={busyId === m.id}
+                        onValueChange={(v) => setForumCategory(m.id, v === "none" ? null : v)}
+                      >
+                        <SelectTrigger className="w-52 h-8 text-xs"><SelectValue placeholder="שיוך לקטגוריית פורום" /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="none">ללא שיוך לפורום</SelectItem>
+                          {forumCategories
+                            .filter((c) => c.tenant_id === null || c.tenant_id === m.tenant_id)
+                            .map((c) => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
+                        </SelectContent>
+                      </Select>
                     </div>
                   </div>
                 )}

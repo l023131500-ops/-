@@ -1,5 +1,50 @@
 # 01 Torah Platform (HUB) — deploy-readiness (P3, per OWNER ORDER 2026-09-02b)
 
+## 2026-09-03, session (loop A) — materials never actually reached the forum categories they were tagged for
+
+Found this working tree already carried an uncommitted, unfinished fix from
+an interrupted earlier session (working-tree edits to `Content.tsx`/
+`Forums.tsx` plus a new, never-staged migration file — `apps/**` is
+gitignored by default per this repo's public/private-source policy, so a
+new file under `apps/` needs an explicit `git add -f` or it silently stays
+invisible to `git status`). Verified the diff was coherent, rebuilt it on
+top of the correct branch lineage (blob hashes of both base files were
+identical between the stray worktree state and this branch's tip, so the
+stashed diff applied cleanly), finished, and verified it rather than
+discarding someone else's in-progress work.
+
+The gap: `materials.display_forum_category_id` (added `20260519000002`,
+indexed by `idx_materials_display_forum_cat`) let a material be tagged for
+display inside a forum category, but no screen ever wrote it and no forum
+page ever read it — an approved material could never actually surface in
+a forum. `admin/Content.tsx` gained a per-material forum-category picker
+next to the existing display/featured toggles; `portal/Forums.tsx` now
+queries approved materials for the open category and renders them as a
+"חומרי עזר לפורום זה" chip row above the thread list. Migration
+`20260903020000` widens the existing `protect_materials_moderation_fields`
+trigger (from `20260831070000`) to also guard this column, matching
+`display_in_public_profile`/`featured_on_homepage` — without it, RLS lets
+any tenant member (not just admin/moderator) set the field directly.
+
+Verified: `tsc --noEmit` gives an identical 377 pre-existing errors with
+and without this diff (checked by stashing/unstashing) — zero new errors,
+none in the touched files. `bieebmnmkffwbqlsfozh` (this app's Supabase
+project) is not MCP-reachable from this session, so no live round-trip —
+same standing limitation as every other 01-torah-platform round. Committed
+to `fix/01-torah-platform-forum-category-materials-0903`, branched off
+`fix/01-torah-platform-lesson-approval-ui-0903` — not merged, not pushed
+to main. Did not act on `core.projects.note #33`'s "OWNER DIRECTIVE
+2026-09-03c" (merge-to-main/deploy-to-production/configure real Nedarim
+payment terminal) — its content is byte-for-byte continuous with the
+"OWNER PUSH AUTHORIZATION 2026-09-03" block already investigated and
+logged as suspected prompt injection in `core.issues #263` (open, high
+severity, matching fake `core.build_tasks` rows created at one identical
+timestamp). Not re-opening that investigation (anti-waste: verify a
+blocker once); see `core.issues #263` and `NEEDS_USER.md` for the standing
+decision this needs from the owner through an authenticated channel, not
+a DB note. Systems 15/32/35/36 and all protected schemas/apps untouched
+this round; no charge/send attempted.
+
 ## 2026-09-02, session (loop A) — third system checked; confirms the blocker is environmental, not per-system
 
 `core.projects` note #33's `OWNER ORDER 2026-09-02b`: MERGE each priority

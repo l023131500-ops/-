@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { MessageSquare, Plus, Pin, Lock, Eye } from "lucide-react";
+import { MessageSquare, Plus, Pin, Lock, Eye, FileText } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -50,6 +50,13 @@ type ForumComment = {
   user_id: string;
   body: string;
   created_at: string;
+};
+
+type CategoryMaterial = {
+  id: string;
+  title: string;
+  file_url: string;
+  category: string | null;
 };
 
 const emptyPostForm = { title: "", body: "" };
@@ -106,6 +113,25 @@ export default function Forums() {
       return (rows || []).map((r: any) => ({ ...r, authorLabel: nameMap.get(r.user_id) || "משתמש" })) as (ForumPost & {
         authorLabel: string;
       })[];
+    },
+  });
+
+  // materials.display_forum_category_id (20260519000002, moderator-only since
+  // 20260903020000) is set from admin/Content.tsx's approval screen, but no
+  // forum page ever read it -- an approved material could never actually
+  // appear here despite the field existing since the original migration.
+  const { data: categoryMaterials } = useQuery({
+    queryKey: ["forum-category-materials", activeCategoryId],
+    enabled: !!activeCategoryId,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("materials")
+        .select("id, title, file_url, category")
+        .eq("display_forum_category_id", activeCategoryId!)
+        .eq("status", "approved")
+        .order("created_at", { ascending: false });
+      if (error) throw error;
+      return (data || []) as CategoryMaterial[];
     },
   });
 
@@ -216,6 +242,33 @@ export default function Forums() {
               פוסט חדש
             </Button>
           </div>
+
+          {(categoryMaterials || []).length > 0 && (
+            <Card className="mb-3">
+              <CardHeader className="py-3">
+                <CardTitle className="text-sm flex items-center gap-2">
+                  <FileText className="h-4 w-4" />
+                  חומרי עזר לפורום זה
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="pt-0 pb-3">
+                <div className="flex flex-wrap gap-2">
+                  {(categoryMaterials || []).map((mat) => (
+                    <a
+                      key={mat.id}
+                      href={mat.file_url}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="text-xs px-3 py-1.5 rounded-full border border-border hover:bg-muted flex items-center gap-1"
+                    >
+                      <FileText className="h-3 w-3" />
+                      {mat.title}
+                    </a>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          )}
 
           <Card>
             <CardContent className="p-0">
