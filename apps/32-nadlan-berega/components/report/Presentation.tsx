@@ -263,6 +263,40 @@ function buildSlides(d: PropertyReport): Slide[] {
     });
   }
 
+  // Building age (`d.buildingAge`, lib/buildingage.ts) is computed for every
+  // report regardless of tier, and already reaches the customer twice: as
+  // generic facts in the "building" category on-screen (ReportView.tsx's
+  // FactCard loop) and as an explicit paragraph in the emailed report
+  // (reporthtml.ts's `backgroundBlock`) — but the deck never had a slide for
+  // it, the same "screen+email but not deck" shape as every other gap
+  // already fixed in this file.
+  if (d.buildingAge) {
+    const ba = d.buildingAge;
+    const rows: { label: string; value: string; note?: string }[] = [];
+    if (ba.buildYear != null) {
+      rows.push({
+        label: ba.isLowerBound ? 'קיים לפחות משנת' : 'שנת בנייה משוערת',
+        value: String(ba.buildYear),
+      });
+    }
+    if (ba.redevelopmentYear != null) {
+      rows.push({
+        label: 'המגרש נמכר מחדש בשנת',
+        value: String(ba.redevelopmentYear),
+        note: ba.redevelopmentNature ?? undefined,
+      });
+    }
+    if (ba.homeSalesCount > 0) {
+      rows.push({ label: 'מכירות דירות בבניין', value: String(ba.homeSalesCount) });
+    }
+    s.push({
+      kicker: 'הבניין',
+      title: ba.headline,
+      subtitle: ba.basis,
+      rows: rows.length ? rows : undefined,
+    });
+  }
+
   if (d.background.population) {
     const p = d.background.population;
     s.push({
