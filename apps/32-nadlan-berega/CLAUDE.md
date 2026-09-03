@@ -1,5 +1,42 @@
 # CLAUDE.md — נדל"ן ברגע (קרא אותי בתחילת כל סשן)
 
+## עדכון — 03/09/2026, session 4 (Loop A — 36 nadlan-pro: כפתור "Research report" עצמאי לניתוח AI של נסח טאבו, `sites/36-nadlan-pro/tivuch/app.html`)
+המשך לאותה שרשרת ביקורת (03/09 session 1-3 למעלה): סעיף c של ה-TOP BUILD
+DIRECTIVE ל-TABU workflow מבטיח "a place to upload the nesach tabu file...
+and a 'Research report' button that runs an extra AI research pass on the
+nesach". ה-Edge Function `np-tabu-document-analyze` (session 25/08, id=11)
+כבר בנוי היטב וניתן להפעלה חוזרת (`np_tabu_document_for_analysis` בודק
+`manages_office()` בכל קריאה, `np_tabu_document_analysis_save` דורס את
+`analysis` בהצלחה כל פעם) — אבל `wireTabu()` היה קורא לו רק פעם אחת, מוטמע
+בתוך handler ה-`data-tabuupload` עצמו. לא היה שום כפתור עצמאי: מסמך שנותח
+בכישלון (`doc.analysis_error`, כבר מוצג ב-UI) נשאר תקוע לצמיתות בלי דרך
+לנסות שוב מלבד מחיקת השורה והעלאה מחדש של אותו קובץ.
+
+נוסף כפתור "🔬 הרצת ניתוח AI"/"הרצת ניתוח AI מחדש" (לפי אם כבר יש `analysis`)
+בכרטיס בקשה `fulfilled`, גדור ל-`canManage` (owner/manager) בצד הלקוח —
+תואם בדיוק את שער ה-RLS של השרת. חולצה פונקציית-עזר משותפת
+`runTabuAiAnalysis(documentId)` (משמשת גם את handler ה-upload הקיים וגם
+את הכפתור החדש) כדי ששני הנתיבים לא יסטו זה מזה.
+
+אומת חי ב-MCP בתוך `BEGIN/ROLLBACK` מול המשרד האמיתי "משרד בדיקה QA 18/08":
+נכס+מסמך-נסח זמניים עם `analysis` ישן → owner מאושר ע"י
+`np_tabu_document_for_analysis` (`true`) → זר-לא-חבר נחסם (`null`) →
+`np_tabu_document_analysis_save` על אותו מסמך דרס את ה-`analysis` לתוצאה
+חדשה + `analyzed_at` מעודכן — בדיוק ההתנהגות שכפתור "הרצה מחדש" צריך.
+`node --check` נקי על ה-`<script type="module">` שחולץ (198,495 תווים);
+בדיקת איזון-סוגריים על הקובץ המלא עברה (943/943, 3411/3411, 272/272).
+לוגיקת הצגת/תיוג הכפתור (RERUN מול RUN, מוסתר לסוכן-לא-מנהל, מוסתר כשאין
+עדיין מסמך) שוכפלה עצמאית ב-Node מול 6 תרחישים — כולם עברו; חוזה
+`runTabuAiAnalysis` (success/ok:false/502/403) נבדק בנפרד מול 4 תרחישים —
+כולם עברו. אפס שיוריות אחרי `ROLLBACK`. אין דפדפן חי בסנדבוקס הזה
+לקליק-דרך, אותה מגבלה כמו כל סבב `app.html`-בלבד קודם.
+
+אפס רגרסיה: פונקציית-עזר משותפת חדשה + כפתור/handler חדשים בלבד — handler
+ה-upload הקיים קורא לאותה פונקציה (אותה קריאת Edge Function, אותם toasts,
+אותו רענון) ומתנהג זהה לפני/אחרי. נדחף לענף
+`fix/36-nadlan-pro-tabu-research-rerun-0903` (35711095) — לא מוזג. System 35
+KioskFleet לא נגע, לפי ה-HARD STEERING.
+
 ## עדכון — 03/09/2026, session 3 (Loop A — 36 nadlan-pro: בקשות נסח/תיק-מידע לא נראות ברמת המשרד, `sites/36-nadlan-pro/tivuch/app.html` + מיגרציה 0161)
 המשך לאותה שרשרת ביקורת (03/09 session 1+2 למטה): ה-TOP BUILD DIRECTIVE של
 זרימת TABU (סעיף b) דורש שבקשה תיצור "משימה בניהול" — אבל
