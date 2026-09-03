@@ -5,6 +5,23 @@ import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
 import { formatILS } from "@/lib/utils";
 
+function ReceiptStatus({ donation }: { donation: any }) {
+  if (donation.payment_status !== "captured") return null;
+  if (!donation.receipt_number && !donation.receipt_url) {
+    return <div className="text-xs text-muted-foreground mt-1">קבלה: ממתינה</div>;
+  }
+  return (
+    <div className="text-xs text-muted-foreground mt-1">
+      קבלה {donation.receipt_number ? `#${donation.receipt_number}` : ""}
+      {donation.receipt_url ? (
+        <a href={donation.receipt_url} target="_blank" rel="noopener noreferrer" className="underline mr-1">
+          צפייה
+        </a>
+      ) : null}
+    </div>
+  );
+}
+
 export default function Commerce() {
   const { data: donations } = useQuery({
     queryKey: ["all-donations"],
@@ -34,6 +51,7 @@ export default function Commerce() {
               <div>
                 <div className="font-medium">{d.donor_name} · {formatILS(d.amount_ils)}</div>
                 <div className="text-sm text-muted-foreground">{d.tenants?.name} · {new Date(d.created_at).toLocaleDateString("he-IL")}</div>
+                <ReceiptStatus donation={d} />
               </div>
               <Badge variant={d.payment_status === "captured" ? "success" : "outline"}>{d.payment_status}</Badge>
             </CardContent></Card>

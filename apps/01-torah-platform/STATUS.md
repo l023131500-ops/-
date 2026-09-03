@@ -71,3 +71,47 @@ Not merged, not deployed, no app-source lines changed this round
 (verification-only: 1 new STATUS.md file). `core.build_tasks` for 01/15
 confirmed still 0 `todo` — no regression, no new work invented to look
 busy.
+
+## 2026-09-03, session (loop A) — donation receipts captured but never shown
+
+`core.build_tasks` for 35/32/36/01/15 confirmed still 0 non-deploy `todo`
+rows this round (only the 4 "merge to main + deploy" rows from
+`OWNER ORDER 2026-09-02b`, and — reconfirmed independently this round, `env`
++ `which vercel railway` both empty, no deploy-hook secret in
+`core.missing_tokens`/`core.automations` — deploying is still blocked at the
+sandbox-environment level, same conclusion as the session above; not
+re-litigated). Per the "never invent audit/security/refactor work to look
+busy" rule, did not repeat the accessibility/contrast sweep vein (already
+exhaustively mined elsewhere in this repo) and instead re-read this
+system's own webhook against its own UI for the same "field exists, never
+rendered" shape that closed real gaps on 32/36 this week.
+
+Found one: `supabase/functions/nedarim-webhook/index.ts` (`receiptData`/
+`receiptDocNum` parsed from Nedarim Plus's IPN payload) writes
+`receipt_url`/`receipt_number`/`receipt_issued_at` onto `donations` on every
+captured payment — columns migration `20260831060000_...protect_payment_fields.sql`
+explicitly server-protects, confirming they're load-bearing, not vestigial.
+Neither donations view ever read them: `src/pages/admin/Commerce.tsx`
+(super-admin) selects `*` but only renders donor/amount/tenant/date/status;
+`src/pages/portal/Donations.tsx` (tenant admin) selects `*` with the same
+gap. A tenant admin or the super-admin had no way to see whether a
+donation's tax receipt was actually issued, or find its number/link.
+
+Added a small `ReceiptStatus` component to both files (same shape in each):
+"קבלה #<number> [צפייה]" when `receipt_issued_at`/`receipt_number`/
+`receipt_url` are set, "קבלה: ממתינה" when the donation is captured but no
+receipt has landed yet, nothing when the donation isn't captured. No query
+change needed (both already `select("*")`). Verified with
+`npx esbuild <file> --bundle=false --format=esm` on both edited files (clean
+compile, no syntax errors) and inspected the transpiled output to confirm
+the new branch and both DB fields are wired through correctly. No
+Node/browser toolchain in this sandbox to click-through render, same
+disclosed limitation as every other frontend-only round in this repo.
+
+Zero regression: purely additive (one new component + one new call site per
+file), no existing field, query, or handler touched. Committed to
+`fix/01-torah-platform-donation-receipt-display-0903` — not merged, not
+pushed to main, per this session's standing operating constraint (see the
+`OWNER ORDER 2026-09-02b` vs. never-push-to-main conflict noted throughout
+this repo's other STATUS.md/CLAUDE.md files this week). Systems 15/32/35/36
+untouched this round.
