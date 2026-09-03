@@ -3151,7 +3151,11 @@ async function openContract(id) {
             '<input readonly value="' + esc(link) + '" data-copy="' + esc(link) + '" /></label>' +
             '<button class="btn btn-quiet btn-sm" data-copybtn="' + esc(link) + '">העתק קישור</button> ' +
             (s.email
-              ? '<button class="btn btn-sm" data-mail="' + esc(s.id) + '">שלח במייל</button>'
+              ? '<button class="btn btn-sm" data-mail="' + esc(s.id) + '" data-remind="' +
+                ((s.events || []).some((e) => e.event === 'emailed' || e.event === 'reminded') ? '1' : '0') +
+                '">' +
+                ((s.events || []).some((e) => e.event === 'emailed' || e.event === 'reminded')
+                  ? 'שלח תזכורת' : 'שלח במייל') + '</button>'
               : '<span class="na" style="font-size:12px">אין דוא״ל לחותם — אפשר רק להעתיק קישור</span>')) +
       (evs ? '<h3 style="font-size:13px;color:var(--gold);margin:14px 0 6px;font-family:\'Secular One\',sans-serif;font-weight:400">יומן ראיות</h3><ul class="timeline" style="font-size:13px">' + evs + '</ul>' : '') +
     '</div>';
@@ -3198,7 +3202,10 @@ async function openContract(id) {
               Authorization: 'Bearer ' + sess.session.access_token,
               'content-type': 'application/json',
             },
-            body: JSON.stringify({ contract_id: c.id, signature_id: b.dataset.mail }),
+            body: JSON.stringify({
+              contract_id: c.id, signature_id: b.dataset.mail,
+              reminder: b.dataset.remind === '1',
+            }),
           });
           const out = await res.json();
           if (!res.ok || !out.ok) throw new Error(out.error || ('שגיאה ' + res.status));
