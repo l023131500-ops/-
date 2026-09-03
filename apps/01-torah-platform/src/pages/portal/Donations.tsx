@@ -40,7 +40,11 @@ export default function Donations() {
           <Card key={d.id}><CardContent className="py-3 flex justify-between items-center">
             <div>
               <div className="font-medium">{d.donor_name} — {formatILS(d.amount_ils)}</div>
-              <div className="text-sm text-muted-foreground">{new Date(d.created_at).toLocaleDateString("he-IL")}{d.dedication_for_name ? ` · ${d.dedication_for_name}` : ""}</div>
+              <div className="text-sm text-muted-foreground">
+                {new Date(d.created_at).toLocaleDateString("he-IL")}
+                {d.dedication_for_name ? ` · ${d.dedication_for_name}${d.dedication_father_name ? ` בן ${d.dedication_father_name}` : ""}` : ""}
+                {(d.donor_city || d.donor_address) ? ` · ${[d.donor_address, d.donor_city].filter(Boolean).join(", ")}` : ""}
+              </div>
               <ReceiptStatus donation={d} />
             </div>
             <Badge variant={d.payment_status === "captured" ? "success" : "outline"}>{d.payment_status}</Badge>

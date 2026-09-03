@@ -35,8 +35,8 @@ export default function DonationPage() {
   const [customAmount, setCustomAmount] = useState("");
   const [paymentType, setPaymentType] = useState<"Ragil" | "HK">("Ragil");
   const [installments, setInstallments] = useState(1);
-  const [donor, setDonor] = useState({ name: "", phone: "", email: "" });
-  const [dedication, setDedication] = useState({ enabled: false, for_name: "", type: "" });
+  const [donor, setDonor] = useState({ name: "", phone: "", email: "", city: "", address: "" });
+  const [dedication, setDedication] = useState({ enabled: false, for_name: "", father_name: "", type: "" });
   const [iframeUrl, setIframeUrl] = useState<string | null>(null);
   const [pendingDonationId, setPendingDonationId] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -114,10 +114,13 @@ export default function DonationPage() {
           donor_name: donor.name,
           donor_phone: donor.phone,
           donor_email: donor.email || null,
+          donor_city: donor.city || null,
+          donor_address: donor.address || null,
           amount_ils: finalAmount,
           is_recurring: paymentType === "HK",
           recurring_months: paymentType === "HK" ? installments : null,
           dedication_for_name: dedication.enabled ? dedication.for_name : null,
+          dedication_father_name: dedication.enabled ? dedication.father_name || null : null,
           dedication_type: dedication.enabled ? dedication.type : null,
           user_id: user?.id || null,
           payment_status: "pending",
@@ -139,7 +142,13 @@ export default function DonationPage() {
           amount: finalAmount,
           payment_type: paymentType,
           recurring_months: paymentType === "HK" ? installments : undefined,
-          donor: { name: donor.name, phone: donor.phone, email: donor.email || undefined },
+          donor: {
+            name: donor.name,
+            phone: donor.phone,
+            email: donor.email || undefined,
+            address: donor.address || undefined,
+            city: donor.city || undefined,
+          },
           dedication: dedication.enabled
             ? { type: dedication.type, for_name: dedication.for_name }
             : undefined,
@@ -228,6 +237,10 @@ export default function DonationPage() {
             <div><Label>טלפון *</Label><Input type="tel" value={donor.phone} onChange={(e) => setDonor({ ...donor, phone: e.target.value })} /></div>
           </div>
           <div><Label>דוא״ל (לקבלת קבלה)</Label><Input type="email" value={donor.email} onChange={(e) => setDonor({ ...donor, email: e.target.value })} /></div>
+          <div className="grid sm:grid-cols-2 gap-3">
+            <div><Label>עיר (אופציונלי, לקבלה)</Label><Input value={donor.city} onChange={(e) => setDonor({ ...donor, city: e.target.value })} /></div>
+            <div><Label>כתובת (אופציונלי, לקבלה)</Label><Input value={donor.address} onChange={(e) => setDonor({ ...donor, address: e.target.value })} /></div>
+          </div>
 
           <div className="border-t pt-4 space-y-3">
             <div className="flex items-center gap-3">
@@ -244,6 +257,7 @@ export default function DonationPage() {
                   </Select>
                 </div>
                 <div><Label>שם פרטי</Label><Input value={dedication.for_name} onChange={(e) => setDedication({ ...dedication, for_name: e.target.value })} placeholder="לדוגמה: שרה בת רחל" /></div>
+                <div><Label>שם האב (אופציונלי)</Label><Input value={dedication.father_name} onChange={(e) => setDedication({ ...dedication, father_name: e.target.value })} placeholder="לדוגמה: יעקב" /></div>
               </div>
             )}
           </div>

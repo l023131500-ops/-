@@ -318,3 +318,50 @@ fixes this session. Committed to
 `fix/01-torah-platform-shop-featured-sale-price-0903` — not merged, not
 pushed to main. Systems 15/32/35/36 and all protected schemas/apps
 untouched this round; no charge/send attempted.
+
+## 2026-09-03, session (loop A) — donations.donor_city/donor_address/dedication_father_name were dead schema, and nedarim-create-payment already had a receipt-quality feature no form ever activated
+
+Deploy blocker unchanged (35 needs one human go/no-go, already filed top of
+`NEEDS_USER.md`; 32/36/01/15 have zero vercel/railway credential in
+`core.secrets`) — not re-litigated, per `OWNER ORDER 2026-09-02b` rule 2.
+`lessons.stream_url` (previous session, `47201208`) is the latest feature
+fix on this branch's tip.
+
+Dispatched an Explore agent to find one more instance of today's recurring
+"column exists, zero UI reader/writer" bug class in this app, distinct from
+donation receipts / materials visibility / shop featured-price already
+fixed above. It found `donations.donor_city`, `donations.donor_address` and
+`donations.dedication_father_name` — present since the original commerce
+migration (`20260519000003_commerce.sql` lines 159-160, 172) with zero
+references anywhere in `src/` or `supabase/functions/` outside generated
+`types.ts`. Verified myself before building (grep, not blind trust): `
+DonationPage.tsx`'s insert only ever wrote `donor_name/phone/email` and
+`dedication_for_name/type`. More interesting: `nedarim-create-payment`'s
+own `PaymentRequest.donor` interface (line 54-61) already declares
+`address?`/`city?` and uses them to populate Nedarim's `Street`/`City`
+receipt params (lines 226-227) — a real, already-built receipt-quality
+feature that the donation form never activated because it never collected
+or sent those fields.
+
+Fixed additively: added optional city/address inputs to `donor` state +
+the public donation form (near the email field), added a
+`dedication.father_name` input next to the existing "שם פרטי" dedication
+field, included all three new fields in the `donations` insert AND in the
+`donor: {...}` object sent to `nedarim-create-payment` (activating its
+existing but previously-dead `address`/`city` params), and surfaced
+city/address + dedication father-name on the portal `Donations.tsx` list
+(same display pattern as the existing `dedication_for_name` line).
+
+Verified: `npx esbuild` transpiled both changed files clean (`--bundle=false
+--format=esm`); brace/paren/bracket counts balanced on both. Live-verified
+via MCP against the real `bieebmnmkffwbqlsfozh` project in a rolled-back
+`BEGIN…INSERT…ROLLBACK`: all 4 fields (`donor_city`, `donor_address`,
+`dedication_for_name`, `dedication_father_name`) round-tripped exactly as
+inserted, then confirmed `count(*)=0` after rollback — zero residue. No
+RLS/trigger blocked the insert. Purely additive (22 insertions across 2
+files) — zero existing field, query, or behavior touched.
+`core.build_tasks` row added (system 01, priority 291) and marked done.
+Committed to `fix/01-torah-platform-donor-address-dedication-father-name-
+0903` — not merged, not pushed to main. Systems 15/32/35/36 and all
+protected schemas/apps untouched this round; no charge/send attempted
+(test-mode Nedarim iframe path unchanged).
