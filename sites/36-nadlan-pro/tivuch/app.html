@@ -3503,8 +3503,80 @@ async function invoicePanel(dealId, mountId) {
     return;
   }
 
+  // A connected provider means the office already has an account with an
+  // authorised issuer (iCount / חשבונית ירוקה / Morning) — but 0162 only ever
+  // recorded *that* a provider exists, and this branch (unreachable until
+  // then, since provider_connected could never be true) still just printed a
+  // sentence with no action. There is no real API integration here (that
+  // needs accreditation, per the module's header) — the honest additive step
+  // is what np_invoice_record already exists for: let the broker record the
+  // document/allocation number they obtained from the provider's own
+  // dashboard, so it lands in nadlan_pro.invoices with the same allocation-
+  // number guarantee the table constraint enforces either way.
   box.innerHTML = '<p class="sub">ספק מחובר: ' + esc(pre.provider) +
-    '. הפקה מתבצעת בצד השרת, ומספר ההקצאה נשמר עם המסמך.</p>';
+    '. הפיקו את החשבונית אצל הספק, ורשמו כאן את הפרטים שהתקבלו.</p>' +
+    (pre.needs_allocation
+      ? '<p class="sub" style="font-size:12px">עמלה של ' + cur.format(amt) + ' מעל הסף של ' +
+        cur.format(pre.threshold) + ' לפני מע״מ — מספר הקצאה חובה.</p>'
+      : '') +
+    '<p><button class="btn btn-sm" id="ivIssue">רישום חשבונית מס שהופקה</button> ' +
+    '<button class="btn btn-quiet btn-sm" id="ivReq2">הפק דרישת תשלום במקום</button></p>' +
+    '<div id="ivIssueBox"></div>';
+
+  const b2 = $('ivReq2');
+  if (b2) b2.addEventListener('click', async () => {
+    b2.disabled = true;
+    try {
+      await rpc('np_invoice_record', { p: {
+        office_id: OFFICE.id, deal_id: dealId, doc_type: 'payment_request',
+        status: 'issued', amount_before_vat: String(amt),
+        customer_name: pre.buyer_name || 'לקוח',
+        description: 'דמי תיווך',
+      } });
+      toast('דרישת תשלום נרשמה');
+      invoicePanel(dealId, mountId);
+    } catch (e) { toast('נכשל: ' + e.message, true); b2.disabled = false; }
+  });
+
+  const bIssue = $('ivIssue');
+  if (bIssue) bIssue.addEventListener('click', () => {
+    bIssue.style.display = 'none';
+    if (b2) b2.style.display = 'none';
+    $('ivIssueBox').innerHTML =
+      '<div id="ivErr"></div><div class="controls">' +
+        '<label class="f">מספר מסמך<input id="iv_docnum" /></label>' +
+        '<label class="f">מספר הקצאה' +
+          (pre.needs_allocation ? ' *' : ' (אם רלוונטי)') +
+          '<input id="iv_alloc" /></label>' +
+        '<label class="f">סכום לפני מע״מ<input id="iv_amount" type="number" step="0.01" value="' + amt + '" /></label>' +
+        '<label class="f">סכום מע״מ<input id="iv_vat" type="number" step="0.01" /></label>' +
+        '<label class="f">סה״כ<input id="iv_total" type="number" step="0.01" /></label>' +
+      '</div>' +
+      '<p style="margin-top:10px"><button class="btn btn-sm" id="ivSave">שמירה</button></p>';
+    $('ivSave').addEventListener('click', async () => {
+      $('ivSave').disabled = true;
+      try {
+        const docAmt = $('iv_amount').value.trim() || String(amt);
+        await rpc('np_invoice_record', { p: {
+          office_id: OFFICE.id, deal_id: dealId, doc_type: 'tax_invoice',
+          status: 'issued', provider: pre.provider,
+          document_number: $('iv_docnum').value.trim(),
+          allocation_number: $('iv_alloc').value.trim(),
+          amount_before_vat: docAmt,
+          vat_amount: $('iv_vat').value.trim(),
+          total_amount: $('iv_total').value.trim(),
+          customer_name: pre.buyer_name || 'לקוח',
+          customer_email: pre.buyer_email || null,
+          description: 'דמי תיווך',
+        } });
+        toast('החשבונית נרשמה');
+        invoicePanel(dealId, mountId);
+      } catch (e) {
+        $('ivErr').innerHTML = '<div class="err">' + esc(e.message) + '</div>';
+        $('ivSave').disabled = false;
+      }
+    });
+  });
 }
 
 /* ── tasks ───────────────────────────────────────────────────────────────── */
