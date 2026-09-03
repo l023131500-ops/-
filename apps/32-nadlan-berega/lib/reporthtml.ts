@@ -17,6 +17,7 @@ import { computeStreetStats } from './streetstats';
 import { hasValuation } from './valuation';
 import type { NearbyPlan } from './nearbyplans';
 import type { Feasibility } from './feasibility';
+import { calcPurchaseTax } from './purchasetax';
 
 const INK = '#141619';
 const MUTED = '#6b7280';
@@ -584,6 +585,49 @@ function priceTrendBlock(report: PropertyReport): string {
 }
 
 /**
+ * ✦ תוספות דוח VIP — זהה בכוונה ל`VipPanel.tsx` (המסך) *חלקית* בלבד: תשואת
+ * שכירות, מחשבון משכנתא, תזרים מזומנים ומס שבח דורשים קלט אישי (שכר דירה,
+ * תנאי מימון, תאריכי קנייה/מכירה) שאין לשרת שום דרך לדעת בזמן הפקת הדוח —
+ * לכן הם נשארים אינטראקטיביים-בלבד במסך, וזה תקין, לא פער. אבל מס רכישה
+ * תלוי רק במחיר, ומחיר (`report.valuation.mid`) כבר מחושב ומגיע בכל דוח
+ * VIP — כך שהאומדן הזה יכול להגיע גם למי שקורא רק את המייל/PDF, בדיוק כמו
+ * `valuationBlock` למעלה. לפני הרשומה הזו כל חמשת המחשבונים היו חסרים
+ * ממייל/מצגת/PDF לגמרי, בלי אף רמז שהם קיימים.
+ */
+function vipEstimatesBlock(report: PropertyReport, baseUrl: string): string {
+  if (report.tier !== 'vip') return '';
+  const v = report.valuation;
+  const ils = (n: number) => n.toLocaleString('he-IL');
+  const reportLink = `${baseUrl}/report?q=${encodeURIComponent(report.query)}&tier=vip`;
+
+  const taxPreview =
+    v && hasValuation(v)
+      ? (() => {
+          const tax = calcPurchaseTax(v.mid, 'single');
+          if (!tax) return '';
+          return `<div style="font-size:13.5px;font-weight:700;color:${NAVY}">מס רכישה משוער</div>
+<div style="margin-top:4px;font-size:24px;font-weight:800;color:${TEAL}">${ils(tax.totalTax)} ₪</div>
+<div style="margin-top:2px;font-size:13px;color:${MUTED}">לרוכש דירה יחידה, לפי אמצע טווח ההערכה (${ils(v.mid)} ₪). לרוכש דירה נוספת/משקיע, או במחיר עסקה בפועל — השתמש במחשבון החי בדוח באתר.</div>
+<div style="margin-top:8px;font-size:11.5px;line-height:1.7;color:${MUTED}">חישוב לפי מדרגות מס הרכישה הרשמיות (מוקפאות 15.1.2026–15.1.2028), ללא הנחות אישיות (עולה חדש/נכה/משפחה מרובת ילדים/רכישה מקבלן). אינו ייעוץ מס — יש לאמת מול הסימולטור הרשמי של רשות המסים לפני החלטה.</div>`;
+        })()
+      : '';
+
+  return section(
+    '✦ תוספות דוח VIP',
+    'מחשבונים אישיים',
+    `${taxPreview}
+<div style="margin-top:${taxPreview ? '14' : '4'}px;padding:14px;border:1px solid ${LINE};border-radius:8px;background:#fafafa">
+  <div style="font-size:13.5px;font-weight:700;color:${NAVY}">בדוח באתר — מחשבונים אינטראקטיביים נוספים</div>
+  <div style="margin-top:6px;font-size:12.5px;line-height:1.9;color:${MUTED}">
+    תשואת שכירות לפי שכר דירה שתזין · מחשבון משכנתא (החזר חודשי, ריבית, LTV) ·
+    תזרים מזומנים חודשי נטו · מס שבח לפי תאריכי קנייה/מכירה שלך.
+  </div>
+  <div style="margin-top:10px"><a href="${reportLink}" style="color:${TEAL};font-weight:700;text-decoration:none">פתיחת המחשבונים בדוח החי ←</a></div>
+</div>`,
+  );
+}
+
+/**
  * אילו עסקאות להציג בטבלה.
  *
  * ⚠️ חיתוך לפי קרבה בלבד ריק את הטבלה מכל עסקת השוואה באזור. נמצא בדוח אמיתי:
@@ -808,6 +852,7 @@ export function reportEmailHtml(report: PropertyReport, opts: ReportEmailOptions
   ${priceTrendBlock(report)}
   ${tabuBlock(opts.tabuDocs ?? [])}
   ${tikMeidaBlock(opts.tikMeidaDocs ?? [])}
+  ${vipEstimatesBlock(report, opts.baseUrl)}
 
   <div style="margin-top:26px;padding:14px;border:1px solid ${LINE};border-radius:8px;background:#fff;font-size:12px;line-height:1.8;color:${MUTED}">
     הדוח כולל ${filled} נתונים מתוך ${total} שנבדקו. הופק ב-${new Date(report.generatedAt).toLocaleString('he-IL')}.
@@ -1081,6 +1126,23 @@ export function reportEmailText(report: PropertyReport): string {
     for (const p of points.slice(-8)) {
       lines.push(`    ${p.period}: ${p.value.toLocaleString('he-IL')}`);
     }
+    lines.push('');
+  }
+
+  // ⚠️ אותו סעיף "תוספות דוח VIP" ש-HTML כבר מציג — ראו `vipEstimatesBlock`.
+  if (report.tier === 'vip') {
+    const v = report.valuation;
+    const tax = v && hasValuation(v) ? calcPurchaseTax(v.mid, 'single') : null;
+    lines.push('== תוספות דוח VIP ==');
+    if (tax) {
+      lines.push(
+        `מס רכישה משוער לרוכש דירה יחידה, לפי אמצע טווח ההערכה (${v!.mid.toLocaleString('he-IL')} ₪): ${tax.totalTax.toLocaleString('he-IL')} ₪.`,
+      );
+      lines.push('חישוב לפי מדרגות רשמיות, ללא הנחות אישיות — אינו ייעוץ מס.');
+    }
+    lines.push(
+      'בדוח באתר זמינים גם מחשבונים אינטראקטיביים: תשואת שכירות, מחשבון משכנתא, תזרים מזומנים חודשי ומס שבח — לפי הנתונים שלך.',
+    );
     lines.push('');
   }
 
