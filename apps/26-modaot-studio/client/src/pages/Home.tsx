@@ -309,6 +309,11 @@ export default function Home() {
                           {cat.label}
                         </Badge>
                       )}
+                      {!!t.builtin && (
+                        <Badge variant="outline" className="border-[#C9A227]/40 text-[10px] text-[#C9A227]/90">
+                          תבנית מערכת
+                        </Badge>
+                      )}
                     </div>
                   </CardContent>
                 </Card>
