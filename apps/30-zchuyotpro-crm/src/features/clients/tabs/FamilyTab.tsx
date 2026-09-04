@@ -64,13 +64,14 @@ export function FamilyTab({ clientId }: { clientId: string }) {
               <TableHead>שם</TableHead>
               <TableHead>ת.ז.</TableHead>
               <TableHead>תאריך לידה</TableHead>
+              <TableHead>מגדר</TableHead>
               <TableHead>קופ"ח</TableHead>
               <TableHead>סטטוס בריאות</TableHead>
               <TableHead></TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {family.length === 0 && <TableRow><TableCell colSpan={7} className="text-center text-muted-foreground py-6">אין בני משפחה רשומים</TableCell></TableRow>}
+            {family.length === 0 && <TableRow><TableCell colSpan={8} className="text-center text-muted-foreground py-6">אין בני משפחה רשומים</TableCell></TableRow>}
             {family.map((m) => (
               <Fragment key={m.id}>
                 <TableRow>
@@ -78,6 +79,7 @@ export function FamilyTab({ clientId }: { clientId: string }) {
                   <TableCell className="font-medium">{m.first_name} {m.last_name ?? ""}</TableCell>
                   <TableCell dir="ltr" className="text-start">{m.id_number ?? "—"}</TableCell>
                   <TableCell>{formatDateHe(m.birth_date)}</TableCell>
+                  <TableCell>{m.gender ? ((GENDER as Record<string, string>)[m.gender] ?? m.gender) : "—"}</TableCell>
                   <TableCell><HealthFundBadge fund={m.health_fund} /></TableCell>
                   <TableCell className="text-sm text-muted-foreground">{m.health_status ?? "—"}</TableCell>
                   <TableCell className="text-end">
@@ -101,7 +103,7 @@ export function FamilyTab({ clientId }: { clientId: string }) {
                 </TableRow>
                 {m.notes && (
                   <TableRow className="hover:bg-transparent">
-                    <TableCell colSpan={7} className="py-2 bg-muted/20">
+                    <TableCell colSpan={8} className="py-2 bg-muted/20">
                       <div className="text-xs">
                         <span className="text-muted-foreground">הערות: </span>
                         <span className="whitespace-pre-wrap">{m.notes}</span>
