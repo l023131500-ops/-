@@ -465,6 +465,7 @@ export default function FinancialCrmPage() {
                             <span>עדיפות: {t.priority}</span>
                             <span>סטטוס: {t.status}</span>
                             {t.createdBy && <span>נוצרה ע״י: {t.createdBy}</span>}
+                            {t.assigneeId && <span>משויכת ל: {(coaches ?? []).find((co) => co.id === t.assigneeId)?.fullName ?? t.assigneeId}</span>}
                           </div>
                         </div>
                         <div className="flex flex-col gap-1">
