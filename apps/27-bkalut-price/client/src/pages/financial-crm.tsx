@@ -30,6 +30,7 @@ export default function FinancialCrmPage() {
   const { data: coaches } = useQuery<any[]>({ queryKey: ["/api/financial/coaches"] });
 
   const client = useMemo(() => clients?.find((c) => c.id === selectedId) ?? null, [clients, selectedId]);
+  const clientCoach = useMemo(() => coaches?.find((co) => co.id === (client as any)?.coachId) ?? null, [coaches, client]);
 
   const { data: tasks } = useQuery<FinTask[]>({
     queryKey: [`/api/financial/clients/${selectedId}/tasks`],
@@ -383,6 +384,7 @@ export default function FinancialCrmPage() {
                     {client.monthlyIncome ? ` · הכנסה ${client.monthlyIncome}₪/חודש` : ""}
                     {client.familySize ? ` · ${client.familySize} נפשות` : ""}
                     {client.city ? ` · ${client.city}` : ""}
+                    {clientCoach ? ` · מאמן: ${clientCoach.fullName}` : ""}
                   </p>
                   {client.notes && <p className="text-xs text-muted-foreground mt-1">הערות: {client.notes}</p>}
                 </div>
