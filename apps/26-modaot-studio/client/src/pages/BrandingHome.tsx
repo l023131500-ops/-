@@ -17,6 +17,7 @@ interface BrandRow {
   brandName: string;
   logoPng: string | null;
   logoSvg: string | null;
+  createdAt: number;
   updatedAt: number;
 }
 
@@ -140,6 +141,9 @@ export default function BrandingHome() {
                       {b.logoSvg && <Badge variant="outline" className="mt-1 border-[#C9A227]/40 text-[10px] text-[#C9A227]">SVG וקטורי</Badge>}
                       <p className="mt-1 text-[10px] text-[#F5EEDD]/40" data-testid={`text-brand-updated-${b.id}`}>
                         עודכן לאחרונה {dateLabel(b.updatedAt)}
+                        {b.createdAt !== b.updatedAt && (
+                          <span className="text-[#F5EEDD]/25"> · נוצר {dateLabel(b.createdAt)}</span>
+                        )}
                       </p>
                     </div>
                     <button
