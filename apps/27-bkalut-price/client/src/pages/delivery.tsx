@@ -176,8 +176,9 @@ function DeliveryInner() {
                     {statusBadge(row.status)}
                     {row.statusDetail && <div className="text-[11px] text-muted-foreground mt-1">{row.statusDetail}</div>}
                   </td>
-                  <td className="py-2 px-3 text-xs text-muted-foreground" dir="ltr">
-                    {new Date(row.createdAt).toLocaleString("he-IL")}
+                  <td className="py-2 px-3 text-xs text-muted-foreground">
+                    <div dir="ltr">{new Date(row.createdAt).toLocaleString("he-IL")}</div>
+                    {row.createdBy && <div className="mt-0.5">נוצר ע״י: {row.createdBy}</div>}
                   </td>
                   <td className="py-2 px-3 text-left">
                     <div className="flex justify-end gap-1">
