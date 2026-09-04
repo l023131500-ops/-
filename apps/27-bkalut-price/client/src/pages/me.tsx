@@ -492,6 +492,7 @@ function AlertsTab({ data, onAck }: { data: DashboardPayload; onAck: (id: number
           <div className="flex-1">
             <div className="font-medium text-sm">{a.title}</div>
             {a.body && <div className="text-sm text-muted-foreground">{a.body}</div>}
+            {a.source && <div className="text-[11px] text-muted-foreground mt-1">מקור: {a.source}</div>}
           </div>
           <Button size="sm" variant="ghost" onClick={() => onAck(a.id)}>סומן</Button>
         </Card>
