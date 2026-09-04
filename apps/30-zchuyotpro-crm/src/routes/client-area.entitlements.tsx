@@ -51,6 +51,9 @@ function EntsPage() {
               {e.entitlement?.description && (
                 <p className="text-xs text-muted-foreground mt-1">{e.entitlement.description}</p>
               )}
+              {e.entitlement?.source && (
+                <p className="text-xs text-muted-foreground mt-1">מקור: {e.entitlement.source}</p>
+              )}
               {e.notes && <p className="text-xs mt-1"><span className="text-muted-foreground">הערות: </span>{e.notes}</p>}
               {e.status === "handled" && e.handled_at && (
                 <p className="text-xs text-muted-foreground mt-1">טופל בתאריך {new Date(e.handled_at).toLocaleDateString("he-IL")}</p>

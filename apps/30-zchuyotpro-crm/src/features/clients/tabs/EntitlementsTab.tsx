@@ -194,6 +194,7 @@ export function EntitlementsTab({ clientId }: { clientId: string }) {
                   {isOpen && (
                     <div className="mt-3 ps-9 pe-2 space-y-3 print:ps-0">
                       {e.description && <div className="text-sm whitespace-pre-wrap">{e.description}</div>}
+                      {e.source && <div className="text-xs text-muted-foreground">מקור: {e.source}</div>}
                       {e.eligible_criteria && Object.keys(e.eligible_criteria as object).length > 0 && (
                         <div className="text-xs bg-muted/50 rounded p-2"><pre className="whitespace-pre-wrap font-mono">{JSON.stringify(e.eligible_criteria, null, 2)}</pre></div>
                       )}
