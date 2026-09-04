@@ -1,0 +1,444 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>השוואת רשויות — כסף · שקיפות תקציבית</title>
+<meta name="description" content="השוואה שמית בין עד ארבע רשויות מקומיות — מדדי הדוח הכספי המבוקר זה מול זה, עם חציון ארצי כקו ייחוס." />
+<meta property="og:title" content="כסף — השוואת רשויות" />
+<meta property="og:description" content="רשות מול רשות, מספר מול מספר — מהדוחות הכספיים המבוקרים." />
+<meta property="og:type" content="website" />
+<meta property="og:locale" content="he_IL" />
+<link rel="canonical" href="https://more30.com/kesef/compare" />
+<meta name="theme-color" content="#0B0D2E" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<!-- Same off-the-paint-path trick as index.html: NetFree intermittently blocks
+     Google Fonts, and the fallback stack keeps the page readable regardless. -->
+<link href="https://fonts.googleapis.com/css2?family=Suez+One&family=Secular+One&family=Frank+Ruhl+Libre:wght@300;400&family=Heebo:wght@300;400;500;700&display=swap"
+      rel="stylesheet" media="print" onload="this.media='all'" />
+<noscript><link href="https://fonts.googleapis.com/css2?family=Suez+One&family=Secular+One&family=Frank+Ruhl+Libre:wght@300;400&family=Heebo:wght@300;400;500;700&display=swap" rel="stylesheet" /></noscript>
+<script src="https://more30.com/auth-button.js" defer></script>
+<style>
+/* Tokens shared with kesef/index.html + report.html. */
+:root{
+  color-scheme: dark;
+  --royal:#0B0D2E; --royal-2:#12153F; --violet:#241B54;
+  --gold:#C9A227; --gold-soft:#E3C765; --emerald:#14B88A; --coral:#E4604E;
+  --ink:#ECE9F5; --ink-2:#B9B6D6; --muted:#8E8BB2;
+  --line:rgba(201,162,39,.20); --line-2:rgba(236,233,245,.10);
+  --wrap:1180px; --ease:cubic-bezier(.22,.61,.36,1);
+}
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;background:var(--royal);color:var(--ink);
+  font-family:'Heebo',system-ui,-apple-system,'Segoe UI',sans-serif;font-weight:300;
+  -webkit-font-smoothing:antialiased;line-height:1.7}
+a{color:inherit;text-decoration:none}
+::selection{background:var(--gold);color:var(--royal)}
+.display{font-family:'Suez One','Heebo',system-ui,sans-serif;font-weight:400}
+.name{font-family:'Secular One','Heebo',sans-serif;font-weight:400}
+.wrap{max-width:var(--wrap);margin:0 auto;padding:0 28px}
+.eyebrow{font-size:12px;font-weight:500;letter-spacing:.24em;color:var(--gold)}
+.skip{position:absolute;inset-inline-start:-9999px;top:0;background:var(--gold);color:var(--royal);padding:12px 20px;z-index:100}
+.skip:focus{inset-inline-start:0}
+.btn{display:inline-flex;align-items:center;gap:8px;font-size:15px;font-weight:400;
+  padding:11px 24px;border:1px solid var(--gold);border-radius:2px;background:var(--gold);
+  color:var(--royal);cursor:pointer;transition:background .25s var(--ease),color .25s var(--ease)}
+.btn:hover{background:transparent;color:var(--gold-soft)}
+.btn:focus-visible{outline:3px solid var(--gold-soft);outline-offset:3px}
+.btn-quiet{background:transparent;color:var(--ink);border-color:var(--line-2)}
+.btn-quiet:hover{color:var(--gold-soft);border-color:var(--gold)}
+
+.nav{position:sticky;top:0;z-index:50;background:rgba(11,13,46,.86);backdrop-filter:blur(10px);border-bottom:1px solid var(--line-2)}
+.nav-in{max-width:var(--wrap);margin:0 auto;padding:14px 28px;display:flex;align-items:center;justify-content:space-between;gap:20px;
+  padding-inline-end:calc(28px + var(--more30-auth-inset, 112px))}
+.wordmark{font-family:'Secular One',sans-serif;font-size:17px}
+.wordmark span{color:var(--gold)}
+.nav-links{display:flex;gap:20px;align-items:center;font-size:14px}
+.nav-links a:hover{color:var(--gold-soft)}
+
+.head{padding:44px 0 26px}
+.headline{font-size:clamp(28px,4.6vw,46px);line-height:1.12;margin:8px 0 6px}
+.head-sub{color:var(--ink-2);font-size:15.5px;max-width:78ch;margin:0}
+
+.pickers{display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end;margin:22px 0 0}
+.pick{display:flex;flex-direction:column;gap:5px}
+.pick label{font-size:12.5px;color:var(--muted)}
+.pick .row{display:flex;gap:6px;align-items:center}
+.pick input{background:var(--royal-2);border:1px solid var(--line-2);border-radius:2px;
+  color:var(--ink);font-family:inherit;font-size:15px;padding:9px 13px;min-width:230px}
+.pick input:focus-visible{outline:2px solid var(--gold-soft);outline-offset:2px}
+.pick .rm{background:transparent;border:1px solid var(--line-2);border-radius:2px;color:var(--muted);
+  font-size:15px;line-height:1;padding:9px 11px;cursor:pointer}
+.pick .rm:hover{color:var(--coral);border-color:var(--coral)}
+.pick .rm:focus-visible{outline:2px solid var(--gold-soft);outline-offset:2px}
+
+.section{padding:38px 0;border-top:1px solid var(--line-2)}
+.sec-title{font-size:clamp(20px,3vw,28px);margin:6px 0 6px}
+.sec-sub{color:var(--ink-2);font-size:15px;margin:0 0 20px;max-width:82ch}
+
+.tblwrap{overflow-x:auto;background:rgba(236,233,245,.03);border:1px solid var(--line-2);border-radius:3px;padding:6px 14px 12px}
+table{width:100%;border-collapse:collapse;font-size:14.5px}
+th,td{padding:11px 12px;text-align:right;border-bottom:1px solid var(--line-2);vertical-align:top}
+thead th{font-weight:500;color:var(--ink-2);font-size:13.5px;border-bottom:1px solid var(--line)}
+thead th .name{font-size:16.5px;color:var(--ink);display:block}
+thead th a{color:var(--gold-soft);font-size:12px;text-decoration:underline}
+thead th .sub{display:block;font-size:12px;color:var(--muted);font-weight:300}
+th[scope=row]{font-weight:400;color:var(--ink-2);min-width:180px}
+th[scope=row] .why{display:block;font-size:11.5px;color:var(--muted);font-weight:300}
+td.num{font-variant-numeric:tabular-nums}
+td .val{font-family:'Suez One',serif;font-size:19px;line-height:1.2;color:var(--ink);white-space:nowrap}
+td.best .val{color:var(--emerald)}
+td.best .tag{display:inline-block;font-size:10.5px;color:var(--emerald);border:1px solid rgba(20,184,138,.45);
+  border-radius:2px;padding:0 6px;margin-inline-start:6px;vertical-align:2px}
+td .cbar{position:relative;height:5px;border-radius:3px;background:rgba(236,233,245,.10);margin-top:7px;max-width:150px}
+td .cbar i{position:absolute;top:0;inset-inline-start:0;height:100%;border-radius:3px;background:linear-gradient(90deg,var(--gold),var(--gold-soft))}
+td .cbar i.negfill{background:linear-gradient(90deg,#a33f31,var(--coral))}
+td.natcol,th.natcol{color:var(--muted);border-inline-start:1px solid var(--line-2)}
+td.natcol .val{font-family:inherit;font-size:14px;color:var(--muted)}
+tr.group th{padding-top:26px;border-bottom:none}
+tr.group .eyebrow{letter-spacing:.18em}
+
+.honesty{border:1px solid var(--line);border-radius:3px;padding:20px 24px;background:rgba(201,162,39,.05);font-size:14.5px;color:var(--ink-2)}
+.honesty b{color:var(--ink);font-weight:500}
+.honesty ul{margin:8px 0 0;padding-inline-start:20px}
+.state{padding:60px 0;text-align:center;color:var(--ink-2)}
+.footer{padding:44px 0;border-top:1px solid var(--line-2);text-align:center;color:var(--muted);font-size:14px}
+.footer a{text-decoration:underline}
+[hidden]{display:none !important}
+
+@media print{
+  :root{color-scheme:light}
+  body{background:#fff;color:#111}
+  .nav,.pickers,.btn,.skip,.footer,#printBtn{display:none !important}
+  .tblwrap,.honesty{border-color:#ccc;background:#fff}
+  thead th,th[scope=row],.sec-sub,.honesty,td.natcol{color:#333}
+  thead th .name,td .val{color:#111}
+  td.best .val{color:#0b7a5c}
+  .eyebrow{color:#8a6d1a}
+  .section{border-color:#ddd;padding:20px 0}
+  a{color:#111}
+  thead th a{display:none}
+  td .cbar{display:none}
+}
+</style>
+</head>
+<body>
+<a class="skip" href="#main">דילוג לתוכן הראשי</a>
+<nav class="nav" aria-label="ניווט ראשי">
+  <div class="nav-in">
+    <a class="wordmark" href="/kesef">כסף<span> · שקיפות תקציבית</span></a>
+    <div class="nav-links">
+      <a href="/kesef/report">דוח רשות</a>
+      <a href="/kesef/my">המעקב שלי</a>
+      <a class="btn btn-quiet" style="padding:8px 18px;font-size:14px" href="/kesef">אודות המערכת</a>
+    </div>
+  </div>
+</nav>
+
+<main id="main">
+<header class="head">
+  <div class="wrap">
+    <div class="eyebrow">השוואת רשויות · מהדוח הכספי המבוקר</div>
+    <h1 class="display headline">רשות מול רשות, מספר מול מספר</h1>
+    <p class="head-sub">
+      עד ארבע רשויות זו לצד זו — אותם מדדים, אותה שנת דוח, אותו מקור מבוקר.
+      המדדים באחוזים ולנפש מנטרלים הבדלי גודל; החציון הארצי משמש קו ייחוס משותף.
+    </p>
+    <div class="pickers" id="pickers" role="group" aria-label="בחירת רשויות להשוואה">
+      <!-- pickers are rendered by script -->
+    </div>
+    <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:14px">
+      <button class="btn btn-quiet" id="printBtn" type="button">הדפסת ההשוואה</button>
+    </div>
+  </div>
+</header>
+
+<div id="loading" class="state">טוען נתונים מהמסד…</div>
+<div id="errBox" class="state" hidden role="alert"></div>
+<div id="hint" class="state" hidden>בחרו רשות שנייה כדי להשוות — או פתחו את <a href="/kesef/report" style="text-decoration:underline;color:var(--gold-soft)">הדוח המלא</a> של רשות אחת.</div>
+
+<div id="cmp" hidden>
+<section class="section" aria-labelledby="hCmp">
+  <div class="wrap">
+    <div class="eyebrow">מדדי הדוח המבוקר · <span id="cmpYear"></span></div>
+    <h2 class="display sec-title" id="hCmp">ההשוואה</h2>
+    <p class="sec-sub">
+      סימון ״הטוב ביותר״ מופיע רק במדדים שבהם לכיוון יש משמעות עובדתית מוגנת
+      (גבייה — גבוה עדיף; גירעון ועומס חוב — נמוך עדיף). בשאר המדדים אין סימון,
+      כי ״יותר״ אינו בהכרח ״טוב יותר״.
+    </p>
+    <div class="tblwrap"><table id="cmpTbl" aria-label="טבלת השוואת מדדים בין הרשויות שנבחרו"></table></div>
+  </div>
+</section>
+
+<section class="section" aria-labelledby="hCtx">
+  <div class="wrap">
+    <div class="eyebrow">הקשר</div>
+    <h2 class="display sec-title" id="hCtx">מה חשוב לדעת על ההשוואה הזו</h2>
+    <div class="honesty" id="ctxNote"></div>
+  </div>
+</section>
+</div>
+</main>
+
+<footer class="footer">
+  <div class="wrap">
+    <p style="margin:0 0 6px">כסף · שקיפות תקציבית לרשויות מקומיות · עולם הסטארטאפים</p>
+    <p style="margin:0">חלק מ־<a href="https://more30.com">more30.com</a> · הנתונים: משרד הפנים, data.gov.il (CC-BY)</p>
+  </div>
+</footer>
+
+<script>
+'use strict';
+const SUPABASE_URL = 'https://uhnrgujbdxhhmoxcjria.supabase.co';
+const SUPABASE_ANON =
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVobnJndWpiZHhoaG1veGNqcmlhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODMzNjE3MjgsImV4cCI6MjA5ODkzNzcyOH0.nHuOhw-WQEU17lNa7XOlORnBhVAYbJBHudKafWkSHBw';
+
+const $ = (id) => document.getElementById(id);
+const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const nf = new Intl.NumberFormat('he-IL', { maximumFractionDigits: 0 });
+const nf1 = new Intl.NumberFormat('he-IL', { maximumFractionDigits: 1, minimumFractionDigits: 1 });
+
+async function rpc(fn, args) {
+  const res = await fetch(SUPABASE_URL + '/rest/v1/rpc/' + fn, {
+    method: 'POST',
+    headers: { apikey: SUPABASE_ANON, Authorization: 'Bearer ' + SUPABASE_ANON, 'Content-Type': 'application/json' },
+    body: JSON.stringify(args || {}),
+  });
+  if (!res.ok) throw new Error('שגיאת שרת (' + res.status + ')');
+  return res.json();
+}
+
+const STATUS_HE = { municipality: 'עירייה', local_council: 'מועצה מקומית', regional_council: 'מועצה אזורית' };
+
+const fmtPct = (v) => nf1.format(v * 100) + '%';
+const fmtIls = (v) => nf.format(v) + ' ₪';
+const fmtIls1 = (v) => nf1.format(v) + ' ₪';
+const fmtK = (v) => { // value in אלפי ש"ח
+  const abs = Math.abs(v);
+  if (abs >= 1000) return nf1.format(v / 1000) + ' מיליון ₪';
+  return nf.format(v) + ' אלף ₪';
+};
+
+/* Same 8 headline metrics as report.html (same keys, same labels, same
+   direction pledge), plus the 4 absolute-scale metrics the report keeps in
+   its tables. `good` marks the only metrics where "best" is factually
+   defensible; absolutes stay neutral — a bigger budget is not a virtue. */
+const RATIO_METRICS = [
+  { key: 'arnona_collection_pct',        label: 'גביית ארנונה מהחיוב השוטף', kind: 'pct',  good: 'high' },
+  { key: 'deficit_current_pct',          label: 'גירעון שוטף מן ההכנסה',      kind: 'pct',  good: 'low'  },
+  { key: 'deficit_accum_pct',            label: 'גירעון נצבר מן ההכנסה',      kind: 'pct',  good: 'low'  },
+  { key: 'debt_burden_pct',              label: 'עומס מלוות מן ההכנסה',       kind: 'pct',  good: 'low'  },
+  { key: 'liabilities_pct',              label: 'סך התחייבויות מן ההכנסה',    kind: 'pct',  good: 'low'  },
+  { key: 'collection_vs_total_debt_pct', label: 'גבייה מן החוב הכולל',        kind: 'pct',  good: 'high' },
+  { key: 'spend_per_capita_ils',         label: 'הוצאה ממוצעת לנפש',          kind: 'ils',  good: null   },
+  { key: 'arnona_res_per_m2_ils',        label: 'ארנונה ממוצעת למגורים למ״ר', kind: 'ils1', good: null   },
+];
+const ABS_METRICS = [
+  { key: 'total_revenue_kils',   label: 'סה״כ הכנסות (ביצוע)' },
+  { key: 'total_expense_kils',   label: 'סה״כ הוצאות (ביצוע)' },
+  { key: 'surplus_deficit_kils', label: 'עודף (גירעון) בתקציב הרגיל' },
+  { key: 'self_income_kils',     label: 'הכנסות עצמיות' },
+];
+const FMT = { pct: fmtPct, ils: fmtIls, ils1: fmtIls1 };
+
+/* ── selection state ──────────────────────────────────────────────────── */
+let AUTHORITIES = [];              // from kesef_authorities_list
+let chosen = [];                   // symbols in user order (max 4)
+const MAX = 4;
+
+function nameOf(sym) { const a = AUTHORITIES.find((x) => x.symbol === sym); return a ? a.name : String(sym); }
+
+function renderPickers() {
+  const box = $('pickers');
+  box.innerHTML = '';
+  const slots = Math.min(MAX, chosen.length + 1);
+  for (let i = 0; i < slots; i++) {
+    const sym = chosen[i];
+    const wrap = document.createElement('div');
+    wrap.className = 'pick';
+    const lbl = document.createElement('label');
+    lbl.htmlFor = 'pick' + i;
+    lbl.textContent = 'רשות ' + (i + 1) + (i === chosen.length ? ' (הוספה)' : '');
+    const row = document.createElement('div');
+    row.className = 'row';
+    const inp = document.createElement('input');
+    inp.id = 'pick' + i;
+    inp.setAttribute('list', 'authList');
+    inp.autocomplete = 'off';
+    inp.placeholder = 'הקלידו שם רשות…';
+    if (sym != null) inp.value = nameOf(sym);
+    inp.addEventListener('change', () => {
+      const hit = AUTHORITIES.find((x) => x.name === inp.value.trim());
+      if (!hit) return;
+      if (chosen.includes(hit.symbol) && chosen[i] !== hit.symbol) { inp.value = sym != null ? nameOf(sym) : ''; return; }
+      if (i < chosen.length) chosen[i] = hit.symbol; else chosen.push(hit.symbol);
+      refresh();
+    });
+    row.append(inp);
+    if (sym != null && chosen.length > 1) {
+      const rm = document.createElement('button');
+      rm.type = 'button';
+      rm.className = 'rm';
+      rm.setAttribute('aria-label', 'הסרת ' + nameOf(sym) + ' מההשוואה');
+      rm.textContent = '×';
+      rm.addEventListener('click', () => { chosen.splice(i, 1); refresh(); });
+      row.append(rm);
+    }
+    wrap.append(lbl, row);
+    box.append(wrap);
+  }
+  const dl = document.createElement('datalist');
+  dl.id = 'authList';
+  dl.innerHTML = AUTHORITIES.map((a) => '<option value="' + esc(a.name) + '"></option>').join('');
+  box.append(dl);
+}
+
+/* ── the comparison table ─────────────────────────────────────────────── */
+function bar(v, max, neg) {
+  if (max <= 0) return '';
+  const w = Math.max(2, (Math.abs(v) / max) * 100);
+  return '<div class="cbar" aria-hidden="true"><i class="' + (neg && v < 0 ? 'negfill' : '') + '" style="width:' + w.toFixed(0) + '%"></i></div>';
+}
+
+function metricRow(def, auths, isAbs) {
+  const fmt = isAbs ? fmtK : FMT[def.kind];
+  const entries = auths.map((a) => {
+    const m = a.metrics[def.key];
+    return m ? Number(m.value) : null;
+  });
+  const present = entries.filter((v) => v != null);
+  if (!present.length) return '';
+  const max = Math.max(...present.map(Math.abs), 1e-9);
+  // "best" only where direction is factually defensible, and only when there
+  // is an actual comparison (2+ authorities carrying the metric).
+  let bestVal = null;
+  if (!isAbs && def.good && present.length > 1) {
+    bestVal = def.good === 'high' ? Math.max(...present) : Math.min(...present);
+  }
+  const nat = auths.map((a) => a.metrics[def.key]).find((m) => m && m.national_median != null);
+  let html = '<tr><th scope="row">' + esc(def.label) +
+    (isAbs ? '<span class="why">אלפי ש״ח, ביצוע בפועל</span>' : '') + '</th>';
+  for (const v of entries) {
+    if (v == null) { html += '<td class="num"><span class="val" style="color:var(--muted)">—</span></td>'; continue; }
+    const best = bestVal != null && v === bestVal;
+    html += '<td class="num' + (best ? ' best' : '') + '"><span class="val">' + fmt(v) + '</span>' +
+      (best ? '<span class="tag">הטוב ביותר</span>' : '') +
+      bar(v, max, isAbs) + '</td>';
+  }
+  html += '<td class="num natcol"><span class="val">' + (nat ? fmt(Number(nat.national_median)) : '—') + '</span></td></tr>';
+  return html;
+}
+
+function identityRow(label, cells) {
+  let html = '<tr><th scope="row">' + esc(label) + '</th>';
+  for (const c of cells) html += '<td>' + c + '</td>';
+  return html + '<td class="natcol"></td></tr>';
+}
+
+function groupRow(title, cols) {
+  return '<tr class="group"><th colspan="' + cols + '"><span class="eyebrow">' + esc(title) + '</span></th></tr>';
+}
+
+function renderTable(auths) {
+  const cols = auths.length + 2; // label + authorities + national
+  let html = '<thead><tr><th scope="col">מדד</th>';
+  for (const a of auths) {
+    html += '<th scope="col"><span class="name">' + esc(a.name) + '</span>' +
+      '<span class="sub">' + esc(STATUS_HE[a.status] || a.status) +
+      (a.district ? ' · מחוז ' + esc(a.district) : '') + '</span>' +
+      '<a href="/kesef/report?symbol=' + a.symbol + '">לדוח המלא</a></th>';
+  }
+  html += '<th scope="col" class="natcol">חציון ארצי<span class="sub">כל הרשויות</span></th></tr></thead><tbody>';
+
+  html += identityRow('תושבים', auths.map((a) => a.population != null
+    ? '<span class="val" style="font-size:16px">' + nf.format(a.population) + '</span><span style="color:var(--muted);font-size:11.5px"> (' + a.population_year + ')</span>'
+    : '—'));
+  html += identityRow('אשכול חברתי-כלכלי', auths.map((a) => a.socio_cluster != null
+    ? '<span class="val" style="font-size:16px">' + a.socio_cluster + '</span>' : '—'));
+
+  html += groupRow('מדדים מנורמלים — אחוזים ולנפש', cols);
+  for (const def of RATIO_METRICS) html += metricRow(def, auths, false);
+
+  html += groupRow('סדרי גודל — התקציב הרגיל', cols);
+  for (const def of ABS_METRICS) html += metricRow(def, auths, true);
+
+  $('cmpTbl').innerHTML = html + '</tbody>';
+}
+
+function renderContext(auths, notFound) {
+  const notes = [];
+  const statuses = [...new Set(auths.map((a) => a.status))];
+  if (statuses.length > 1) {
+    notes.push('הרשויות שנבחרו אינן מאותו מעמד מוניציפלי (' +
+      statuses.map((s) => STATUS_HE[s] || s).join(' לעומת ') +
+      ') — סמכויות, מקורות הכנסה והיקפי שירות שונים בין המעמדות, וזה חלק מההסבר להבדלים.');
+  }
+  const clusters = auths.map((a) => a.socio_cluster).filter((c) => c != null);
+  if (clusters.length > 1 && Math.max(...clusters) - Math.min(...clusters) >= 2) {
+    notes.push('פער האשכולות החברתי-כלכליים בין הרשויות הוא ' +
+      (Math.max(...clusters) - Math.min(...clusters)) +
+      ' — המדדים באחוזים ולנפש מנטרלים גודל, אך לא הקשר חברתי-כלכלי.');
+  }
+  const pops = auths.map((a) => a.population).filter((p) => p != null);
+  if (pops.length > 1 && Math.max(...pops) / Math.min(...pops) >= 5) {
+    notes.push('יחס הגודל בין הרשויות הוא פי ' + nf.format(Math.max(...pops) / Math.min(...pops)) +
+      ' ומעלה בתושבים — בשורות ״סדרי הגודל״ ההשוואה המספרית הישירה מוגבלת מטבעה.');
+  }
+  if (notFound.length) {
+    notes.push('סמל רשות שביקשתם לא נמצא במערכת: ' + notFound.join(', ') + '.');
+  }
+  let html = '<b>ההשוואה הוגנת רק עם ההקשר שלה.</b> כל המספרים מאותה שנת דוח, מאותו מאגר מבוקר של משרד הפנים; ' +
+    'חציון קבוצת השווים של כל רשות (לפי מעמד ואשכול) מופיע בדוח המלא שלה.';
+  if (notes.length) html += '<ul>' + notes.map((n) => '<li>' + esc(n) + '</li>').join('') + '</ul>';
+  $('ctxNote').innerHTML = html;
+}
+
+/* ── load + wire ──────────────────────────────────────────────────────── */
+async function refresh() {
+  renderPickers();
+  const url = new URL(location.href);
+  if (chosen.length) url.searchParams.set('symbols', chosen.join(',')); else url.searchParams.delete('symbols');
+  url.searchParams.delete('symbol');
+  history.replaceState(null, '', url);
+
+  $('errBox').hidden = true;
+  if (chosen.length < 2) {
+    $('cmp').hidden = true; $('loading').hidden = true;
+    $('hint').hidden = false;
+    if (chosen.length === 1) document.title = 'השוואת רשויות — ' + nameOf(chosen[0]) + ' · כסף';
+    return;
+  }
+  $('hint').hidden = true; $('loading').hidden = false; $('cmp').hidden = true;
+  let d;
+  try { d = await rpc('kesef_authorities_compare', { p_symbols: chosen }); }
+  catch (e) { $('loading').hidden = true; $('errBox').hidden = false; $('errBox').textContent = e.message; return; }
+  $('loading').hidden = true;
+  const auths = d.authorities || [];
+  if (auths.length < 2) { $('errBox').hidden = false; $('errBox').textContent = 'לא נמצאו מספיק רשויות להשוואה.'; return; }
+
+  document.title = 'השוואה: ' + auths.map((a) => a.name).join(' · ') + ' — כסף';
+  const years = [...new Set(auths.flatMap((a) => Object.values(a.metrics).map((m) => m.fiscal_year)))].sort();
+  $('cmpYear').textContent = years.length ? 'שנת הדוח ' + years.join(', ') : '';
+  renderTable(auths);
+  renderContext(auths, d.not_found || []);
+  $('cmp').hidden = false;
+}
+
+(async function init() {
+  $('printBtn').addEventListener('click', () => window.print());
+  try { AUTHORITIES = await rpc('kesef_authorities_list'); }
+  catch (e) { $('loading').hidden = true; $('errBox').hidden = false; $('errBox').textContent = 'לא ניתן לטעון את רשימת הרשויות: ' + e.message; return; }
+
+  const q = new URLSearchParams(location.search);
+  const raw = (q.get('symbols') || q.get('symbol') || '').split(',')
+    .map((s) => parseInt(s.trim(), 10)).filter((n) => Number.isFinite(n));
+  chosen = [...new Set(raw)].filter((s) => AUTHORITIES.some((a) => a.symbol === s)).slice(0, MAX);
+  // default: the pilot alone, with the "add a second authority" hint
+  if (!chosen.length) chosen = [2034];
+  refresh();
+})();
+</script>
+</body>
+</html>

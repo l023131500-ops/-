@@ -80,9 +80,16 @@ a{color:inherit;text-decoration:none}
 
 .hero{padding:100px 0 76px;background:
   radial-gradient(1100px 480px at 80% -12%,rgba(36,27,84,.85),transparent 62%),var(--royal)}
+.hero-inner{display:grid;gap:48px;align-items:center}
+@media(min-width:900px){.hero-inner{grid-template-columns:1.15fr .85fr}}
 .hero h1{font-size:clamp(38px,6.4vw,72px);line-height:1.08;margin:18px 0 22px}
 .hero .lead{font-size:clamp(17px,2.1vw,21px);color:var(--ink-2);max-width:60ch;margin:0 0 34px}
 .actions{display:flex;gap:14px;flex-wrap:wrap}
+/* Decorative only — aria-hidden in markup — so it is never announced and
+   never competes with the actions row for keyboard focus. */
+.hero-visual{display:flex;justify-content:center}
+.hero-visual svg{width:100%;max-width:300px;height:auto}
+@media(max-width:899px){.hero-visual svg{max-width:220px}}
 
 .section{padding:84px 0;border-top:1px solid var(--line-2)}
 .section-alt{background:var(--violet)}
@@ -95,6 +102,8 @@ a{color:inherit;text-decoration:none}
 .card h3{font-family:'Secular One',sans-serif;font-weight:400;font-size:20px;margin:14px 0 10px}
 .card p{color:var(--ink-2);margin:0;font-size:15px}
 .card .num{font-family:'Suez One',serif;font-size:15px;color:var(--gold);letter-spacing:.18em}
+.card-icon{margin-bottom:16px}
+.card-icon svg{width:40px;height:40px;display:block}
 
 .steps{display:grid;gap:0;max-width:860px}
 .step{display:flex;gap:22px;padding:26px 0;border-bottom:1px solid var(--line-2)}
@@ -141,6 +150,9 @@ a{color:inherit;text-decoration:none}
   <div class="nav-in">
     <a class="wordmark" href="#top">כסף<span> · שקיפות תקציבית</span></a>
     <div class="nav-links">
+      <a href="/kesef/report">דוח רשות</a>
+      <a href="/kesef/compare">השוואת רשויות</a>
+      <a href="/kesef/my">המעקב שלי</a>
       <a href="#what">מה זה נותן</a>
       <a href="#how">איך זה עובד</a>
       <a href="#sources">מקורות</a>
@@ -153,15 +165,41 @@ a{color:inherit;text-decoration:none}
 <main id="main">
 <header class="hero" id="top">
   <div class="wrap">
-    <div class="eyebrow">עולם הסטארטאפים</div>
-    <h1 class="display">הכסף הציבורי<br/>שמגיע לרשות שלך</h1>
-    <p class="lead serif">
-      כמה תקציב אושר ליישוב שלך, כמה ממנו הגיע בפועל, ומה נתקע באמצע הדרך.
-      בלי פרשנות ובלי הערכות — כל מספר מקושר למסמך המקור שממנו נלקח.
-    </p>
-    <div class="actions">
-      <a class="btn" href="https://more30.com/login?from=https%3A%2F%2Fmore30.com%2Fkesef">כניסה למערכת</a>
-      <a class="btn btn-quiet" href="#what">מה המערכת עושה</a>
+    <div class="hero-inner">
+      <div class="hero-text">
+        <div class="eyebrow">עולם הסטארטאפים</div>
+        <h1 class="display">הכסף הציבורי<br/>שמגיע לרשות שלך</h1>
+        <p class="lead serif">
+          כמה תקציב אושר ליישוב שלך, כמה ממנו הגיע בפועל, ומה נתקע באמצע הדרך.
+          בלי פרשנות ובלי הערכות — כל מספר מקושר למסמך המקור שממנו נלקח.
+        </p>
+        <div class="actions">
+          <a class="btn" href="/kesef/report">לדוח של הרשות שלך</a>
+          <a class="btn btn-quiet" href="https://more30.com/login?from=https%3A%2F%2Fmore30.com%2Fkesef">כניסה למערכת</a>
+          <a class="btn btn-quiet" href="#what">מה המערכת עושה</a>
+        </div>
+      </div>
+      <!-- Decorative: a document with a verified source (magnifier + checkmark)
+           and coins flowing into it — the whole product in one image: public
+           money, traced to a record, confirmed against its source. -->
+      <div class="hero-visual">
+        <svg viewBox="0 0 320 320" fill="none" aria-hidden="true" focusable="false">
+          <circle cx="160" cy="160" r="150" fill="rgba(36,27,84,.35)"/>
+          <rect x="86" y="64" width="150" height="196" rx="10" fill="#12153F" stroke="#C9A227" stroke-width="2"/>
+          <rect x="108" y="96" width="106" height="8" rx="4" fill="#B9B6D6"/>
+          <rect x="108" y="120" width="90" height="8" rx="4" fill="#8E8BB2"/>
+          <rect x="108" y="144" width="106" height="8" rx="4" fill="#8E8BB2"/>
+          <rect x="108" y="168" width="70" height="8" rx="4" fill="#8E8BB2"/>
+          <rect x="108" y="200" width="106" height="10" rx="5" fill="rgba(201,162,39,.18)"/>
+          <rect x="108" y="200" width="60" height="10" rx="5" fill="#C9A227"/>
+          <circle cx="70" cy="56" r="12" fill="#C9A227"/>
+          <circle cx="52" cy="90" r="9" fill="#E3C765"/>
+          <circle cx="66" cy="122" r="7" fill="#C9A227"/>
+          <circle cx="214" cy="214" r="40" fill="#0B0D2E" stroke="#14B88A" stroke-width="6"/>
+          <path d="M242 242 L268 268" stroke="#14B88A" stroke-width="8" stroke-linecap="round"/>
+          <path d="M198 214 L210 226 L232 200" stroke="#14B88A" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
     </div>
   </div>
 </header>
@@ -178,6 +216,14 @@ a{color:inherit;text-decoration:none}
     </div>
     <div class="cards">
       <div class="card">
+        <div class="card-icon" aria-hidden="true">
+          <svg viewBox="0 0 44 44" fill="none" focusable="false">
+            <rect x="4" y="22" width="9" height="18" rx="2" fill="#8E8BB2"/>
+            <rect x="17.5" y="10" width="9" height="30" rx="2" fill="#C9A227"/>
+            <rect x="31" y="16" width="9" height="24" rx="2" fill="#14B88A"/>
+            <line x1="2" y1="40" x2="42" y2="40" stroke="#B9B6D6" stroke-width="1.5"/>
+          </svg>
+        </div>
         <div class="num">01</div>
         <h3>השוואה לקבוצת שווים</h3>
         <p>
@@ -186,6 +232,14 @@ a{color:inherit;text-decoration:none}
         </p>
       </div>
       <div class="card">
+        <div class="card-icon" aria-hidden="true">
+          <svg viewBox="0 0 44 44" fill="none" focusable="false">
+            <path d="M22 6c-6 0-10 4.6-10 11v6l-3 6h26l-3-6v-6c0-6.4-4-11-10-11Z" fill="#12153F" stroke="#C9A227" stroke-width="2" stroke-linejoin="round"/>
+            <path d="M18 33a4 4 0 0 0 8 0" stroke="#C9A227" stroke-width="2" stroke-linecap="round"/>
+            <circle cx="33" cy="10" r="6" fill="#14B88A"/>
+            <path d="M30.5 10 L32.3 11.8 L35.5 8" stroke="#0B0D2E" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
         <div class="num">02</div>
         <h3>התראות על קולות קוראים</h3>
         <p>
@@ -194,6 +248,14 @@ a{color:inherit;text-decoration:none}
         </p>
       </div>
       <div class="card">
+        <div class="card-icon" aria-hidden="true">
+          <svg viewBox="0 0 44 44" fill="none" focusable="false">
+            <rect x="5" y="15" width="34" height="22" rx="3" fill="#12153F" stroke="#C9A227" stroke-width="2"/>
+            <path d="M16 15v-3a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v3" stroke="#C9A227" stroke-width="2" stroke-linecap="round"/>
+            <line x1="5" y1="24" x2="39" y2="24" stroke="#8E8BB2" stroke-width="1.5"/>
+            <rect x="19" y="21" width="6" height="6" rx="1.5" fill="#14B88A"/>
+          </svg>
+        </div>
         <div class="num">03</div>
         <h3>תיק לפגישה עם ראש הרשות</h3>
         <p>
@@ -288,16 +350,27 @@ a{color:inherit;text-decoration:none}
       <div>
         <h3>איפה זה עומד עכשיו</h3>
         <p>
-          <b>המערכת בהקמה.</b> מבנה הנתונים בנוי ופעיל — כולל אכיפת מסמך המקור
-          לכל ערך — והפיילוט הראשון הוא <b>חצור הגלילית</b>. טעינת הנתונים
-          הראשונית טרם הושלמה, ולכן המסכים עדיין אינם פתוחים לציבור.
+          <b>דוח הרשות פתוח לציבור.</b> נטענו הדוחות הכספיים המבוקרים של
+          <b>258 רשויות מקומיות</b> ממאגר משרד הפנים ב-data.gov.il — חמש שנות
+          דוחות (2018, 2019, 2022, 2023, 2024) עם מגמה רב-שנתית והיסטוריית
+          מדדים כמעט לכל רשות; רשות שחסרה בשנה מסוימת במקור — חסרה גם כאן,
+          ולא מושלמת בניחוש. כל ערך במסך נושא
+          הפניה למסמך המקור שממנו נלקח, עם חתימת תוכן (SHA-256) על השורות שנקלטו.
+          אפשר גם <a href="/kesef/compare" style="text-decoration:underline">להשוות עד ארבע רשויות זו מול זו</a> —
+          אותם מדדים, אותה שנת דוח, חציון ארצי כקו ייחוס.
         </p>
         <p>
-          אפשר להיכנס כבר עכשיו עם חשבון more30 — אותו חשבון שמשמש את כל
-          המערכות בפלטפורמה — ולקבל עדכון ברגע שהיישוב שלך נטען.
+          הדוח פתוח בלי הרשמה — אלה נתונים ציבוריים. חשבון more30 — אותו חשבון
+          שמשמש את כל המערכות בפלטפורמה — כבר עובד כאן:
+          <a href="/kesef/my" style="text-decoration:underline">״המעקב שלי״</a>
+          שומר רשויות שבחרת, ומציג לצדן התראות מדדים שנגזרות מהדוחות
+          המבוקרים לפי <a href="/kesef/my#rules" style="text-decoration:underline">כללים מוצהרים</a>
+          (במסך בלבד — שום דבר לא נשלח בדוא״ל). התראות על קולות קוראים —
+          בהמשך.
         </p>
         <p style="margin-top:16px">
-          <a class="btn" href="https://more30.com/login?from=https%3A%2F%2Fmore30.com%2Fkesef">כניסה עם חשבון more30</a>
+          <a class="btn" href="/kesef/report">לדוח של הרשות שלך</a>
+          <a class="btn btn-quiet" style="margin-inline-start:10px" href="/kesef/my">המעקב שלי</a>
         </p>
       </div>
     </div>
