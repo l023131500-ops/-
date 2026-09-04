@@ -177,7 +177,7 @@ export default function Home() {
                   className="text-xl font-extrabold text-foreground sm:text-2xl"
                   data-testid="text-site-title"
                 >
-                  השוואת קופות חולים
+                  {meta?.title ?? "השוואת קופות חולים"}
                 </h1>
                 <p className="text-sm text-muted-foreground">מבית בקלות</p>
               </div>
