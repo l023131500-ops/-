@@ -14,7 +14,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
-import { getArchetype, AAKER_DIMENSIONS, contrastRatio, type BrandKit, type ColorSpec } from "@shared/branding";
+import { getArchetype, AAKER_DIMENSIONS, ALL_QUESTIONS, contrastRatio, type BrandKit, type ColorSpec } from "@shared/branding";
 import { buildBrandBookHtml } from "@/lib/brandBook";
 
 interface BrandRow {
@@ -39,6 +39,18 @@ export default function BrandKitPage() {
     if (!brand?.kitJson) return null;
     try { return JSON.parse(brand.kitJson); } catch { return null; }
   }, [brand]);
+
+  const briefAnswers: Record<string, string | string[]> | null = useMemo(() => {
+    if (!brand?.briefJson) return null;
+    try { return JSON.parse(brand.briefJson); } catch { return null; }
+  }, [brand]);
+  const answeredQuestions = useMemo(() => {
+    if (!briefAnswers) return [];
+    return ALL_QUESTIONS.filter((q) => {
+      const v = briefAnswers[q.id];
+      return Array.isArray(v) ? v.length > 0 : !!v;
+    });
+  }, [briefAnswers]);
 
   const [logoStyle, setLogoStyle] = useState("");
   const [concepts, setConcepts] = useState<LogoConcept[]>([]);
@@ -205,6 +217,19 @@ export default function BrandKitPage() {
             </div>
           </div>
         </Section>
+
+        {/* תשובות הבריף */}
+        {answeredQuestions.length > 0 && (
+          <Section icon={FileText} title="תשובות הבריף" subtitle={`${answeredQuestions.length} מתוך ${ALL_QUESTIONS.length} שאלות נענו`}>
+            <div className="grid gap-4 sm:grid-cols-2">
+              {answeredQuestions.map((q) => {
+                const v = briefAnswers![q.id];
+                const text = Array.isArray(v) ? v.join(", ") : v;
+                return <Field key={q.id} label={q.q} value={text as string} />;
+              })}
+            </div>
+          </Section>
+        )}
 
         {/* פלטת צבע */}
         <Section icon={PaletteIcon} title="מערכת הצבע" subtitle={`יחסי שימוש: ${kit.colors.usageRatio}`}>
