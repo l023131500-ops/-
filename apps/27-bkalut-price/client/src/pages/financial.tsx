@@ -502,6 +502,7 @@ function RecurringTab({ client }: { client: FinClient }) {
               <div>
                 <p className="font-semibold">{r.title}</p>
                 <p className="text-xs text-muted-foreground">תאריך בא: {r.nextDate} · {r.cadence} · {r.kind}</p>
+                {r.description && <p className="text-xs text-muted-foreground mt-0.5">{r.description}</p>}
               </div>
               <div className="flex items-center gap-3">
                 {r.amount ? <span className="tabular-nums">{ils(r.amount)}</span> : null}
