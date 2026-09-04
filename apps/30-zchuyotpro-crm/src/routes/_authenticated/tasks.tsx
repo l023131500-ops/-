@@ -69,7 +69,8 @@ function TasksPage() {
                 {(tasks ?? []).map((t) => {
                   const overdue = t.status === "open" && t.due_date && new Date(t.due_date).getTime() < now;
                   const client = (t as { client?: { id: string; first_name: string; last_name: string } | null }).client;
-                  const assignee = (t as { assignee?: { full_name: string } | null }).assignee;
+                  const assignee = (t as { assignee?: { id: string; full_name: string } | null }).assignee;
+                  const creator = (t as { creator?: { id: string; full_name: string } | null }).creator;
                   return (
                     <TableRow key={t.id}>
                       <TableCell className="font-medium">
@@ -91,7 +92,12 @@ function TasksPage() {
                       </TableCell>
                       <TableCell><Badge className={TASK_PRIORITY_COLOR[t.priority]}>{TASK_PRIORITY[t.priority]}</Badge></TableCell>
                       <TableCell>{TASK_STATUS[t.status]}</TableCell>
-                      <TableCell>{assignee?.full_name ?? "—"}</TableCell>
+                      <TableCell>
+                        {assignee?.full_name ?? "—"}
+                        {creator?.full_name && creator.id !== assignee?.id && (
+                          <div className="text-xs text-muted-foreground font-normal mt-0.5">נוצרה ע"י {creator.full_name}</div>
+                        )}
+                      </TableCell>
                     </TableRow>
                   );
                 })}

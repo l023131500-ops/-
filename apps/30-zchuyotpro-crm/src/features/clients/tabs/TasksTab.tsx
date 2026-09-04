@@ -161,6 +161,13 @@ export function TasksTab({ clientId }: { clientId: string }) {
                     {(t as { assignee?: { full_name: string } | null }).assignee?.full_name && (
                       <span>{(t as { assignee?: { full_name: string } | null }).assignee?.full_name}</span>
                     )}
+                    {(() => {
+                      const creator = (t as { creator?: { id: string; full_name: string } | null }).creator;
+                      const assignee = (t as { assignee?: { id: string; full_name: string } | null }).assignee;
+                      return creator?.full_name && creator.id !== assignee?.id ? (
+                        <span>נוצרה ע"י {creator.full_name}</span>
+                      ) : null;
+                    })()}
                   </div>
                 </div>
                 <Button size="icon" variant="ghost" onClick={() => remove.mutate(t.id)}>

@@ -18,7 +18,7 @@ export const clientTasksQuery = (clientId: string) =>
     queryFn: async () => {
       const { data, error } = await supabase
         .from("tasks")
-        .select("*, assignee:profiles!tasks_assigned_to_fkey(id, full_name)")
+        .select("*, assignee:profiles!tasks_assigned_to_fkey(id, full_name), creator:profiles!tasks_created_by_fkey(id, full_name)")
         .eq("client_id", clientId)
         .order("status")
         .order("due_date", { ascending: true, nullsFirst: false });
@@ -33,7 +33,7 @@ export const allTasksQuery = (filters: { status?: string; mine?: boolean; myId?:
     queryFn: async () => {
       let q = supabase
         .from("tasks")
-        .select("*, assignee:profiles!tasks_assigned_to_fkey(id, full_name), client:clients(id, first_name, last_name, file_number)")
+        .select("*, assignee:profiles!tasks_assigned_to_fkey(id, full_name), creator:profiles!tasks_created_by_fkey(id, full_name), client:clients(id, first_name, last_name, file_number)")
         .order("status")
         .order("due_date", { ascending: true, nullsFirst: false })
         .limit(500);
