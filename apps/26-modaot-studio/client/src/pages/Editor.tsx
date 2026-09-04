@@ -1005,6 +1005,14 @@ export default function Editor() {
           </Select>
           <Badge
             variant="outline"
+            title={`יחס רוחב-גובה ${format.ratio} — ${format.width}×${format.height}px`}
+            className="border-[#C9A227]/30 text-[10px] text-[#F5EEDD]/70"
+            data-testid="badge-ratio"
+          >
+            {format.ratio}
+          </Badge>
+          <Badge
+            variant="outline"
             title={format.colorSpace === "CMYK" ? "פורמט הדפסה — מיוצא במרחב הצבע CMYK" : "פורמט דיגיטלי — מיוצא במרחב הצבע RGB"}
             className="border-[#C9A227]/30 text-[10px] text-[#F5EEDD]/70"
             data-testid="badge-color-space"
