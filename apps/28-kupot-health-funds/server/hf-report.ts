@@ -70,9 +70,13 @@ export function renderHfReportHtml(opts: {
     ? `<tr><td colspan="4" class="empty">לא נמצאו נושאים מתאימים לסינון הנוכחי.</td></tr>`
     : opts.rows.map((t) => {
         const bestLabel = t.bestFund ? esc(t.bestFund) : "טעון השוואה פרטנית";
+        // rangeText חסר ב-113 מ-515 הנושאים; publicSiteText הוא הטקסט הציבורי
+        // שהוכן בדיוק בשביל המקרה הזה (ר' TopicCard.tsx / shared/schema.ts)
+        // ולא נבדק כאן — הנפילה הייתה מדלגת ישר ל"—" בעוד לכל 113 יש חלופה.
+        const value = t.rangeText || t.publicSiteText || "—";
         return `<tr>
           <td class="name">${esc(t.topic)}<div class="muted">${esc([t.category, t.audience].filter(Boolean).join(" · "))}</div></td>
-          <td>${esc(t.rangeText || "—")}</td>
+          <td>${esc(value)}</td>
           <td class="best">${bestLabel}</td>
           <td class="muted small">${esc(t.benefitSummary || "—")}</td>
         </tr>`;
