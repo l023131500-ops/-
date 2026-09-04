@@ -285,7 +285,10 @@ function BudgetsTab({ data }: { data: DashboardPayload }) {
               const ratio = Math.min(100, Math.round((used / Math.max(b.monthlyLimit, 1)) * 100));
               return (
                 <tr key={b.id} className="border-t border-border">
-                  <td className="py-2 px-3">{categoryName(data, b.categoryId)}</td>
+                  <td className="py-2 px-3">
+                    {categoryName(data, b.categoryId)}
+                    {b.note && <div className="text-xs text-muted-foreground">{b.note}</div>}
+                  </td>
                   <td className="py-2 px-3">{ils(b.monthlyLimit)}</td>
                   <td className="py-2 px-3">{ils(used)}</td>
                   <td className="py-2 px-3 w-1/3">
