@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { queryOptions } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { MessageSquare, FileText, ScrollText, Send, CheckSquare, Loader2, UserPlus } from "lucide-react";
+import { MessageSquare, FileText, ScrollText, Send, CheckSquare, Loader2, UserPlus, Phone } from "lucide-react";
 import { formatDateTimeHe } from "@/lib/format";
 
 type Event = {
@@ -18,13 +18,14 @@ const clientTimelineQuery = (clientId: string) =>
   queryOptions({
     queryKey: ["timeline", clientId],
     queryFn: async () => {
-      const [client, messages, docs, entitlements, refs, tasks] = await Promise.all([
+      const [client, messages, docs, entitlements, refs, tasks, calls] = await Promise.all([
         supabase.from("clients").select("created_at, first_name, last_name").eq("id", clientId).maybeSingle(),
         supabase.from("messages").select("id, channel, direction, content, created_at, sender:profiles!messages_sent_by_fkey(full_name)").eq("client_id", clientId).order("created_at", { ascending: false }).limit(100),
         supabase.from("documents").select("id, file_name, created_at, uploader:profiles!documents_uploaded_by_fkey(full_name)").eq("client_id", clientId).order("created_at", { ascending: false }).limit(100),
         supabase.from("client_entitlements").select("id, status, updated_at, handler:profiles!client_entitlements_handled_by_fkey(full_name), entitlement:entitlements(title)").eq("client_id", clientId).order("updated_at", { ascending: false }).limit(100),
         supabase.from("partner_referrals").select("id, status, sent_at, partner:partners(company_name), referrer:profiles!partner_referrals_referred_by_fkey(full_name)").eq("client_id", clientId).order("sent_at", { ascending: false }).limit(100),
         supabase.from("tasks").select("id, title, status, completed_at, created_at, assignee:profiles!tasks_assigned_to_fkey(full_name)").eq("client_id", clientId).order("created_at", { ascending: false }).limit(100),
+        supabase.from("call_transcripts").select("id, direction, duration_seconds, summary, call_at, recorder:profiles!call_transcripts_recorded_by_fkey(full_name)").eq("client_id", clientId).order("call_at", { ascending: false }).limit(100),
       ]);
 
       const events: Event[] = [];
@@ -97,6 +98,19 @@ const clientTimelineQuery = (clientId: string) =>
           icon: CheckSquare,
           text: `משימה נוצרה: ${t.title}`,
           agent: (t as { assignee?: { full_name: string } | null }).assignee?.full_name ?? null,
+        });
+      });
+
+      (calls.data ?? []).forEach((c) => {
+        const dir = c.direction === "outbound" ? "יוצאת" : "נכנסת";
+        const duration = c.duration_seconds != null ? ` (${Math.round(c.duration_seconds / 60)} דק')` : "";
+        events.push({
+          id: `c-${c.id}`,
+          when: c.call_at,
+          kind: "call",
+          icon: Phone,
+          text: `שיחה ${dir}${duration}${c.summary ? `: ${c.summary}` : ""}`,
+          agent: (c as { recorder?: { full_name: string } | null }).recorder?.full_name ?? null,
         });
       });
 
