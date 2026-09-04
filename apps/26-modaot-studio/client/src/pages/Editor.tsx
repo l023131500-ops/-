@@ -1680,11 +1680,23 @@ export default function Editor() {
                   </div>
                 )}
                 {category.symbols.length > 0 && (
-                  <div>
+                  <div className="mb-2">
                     <p className="mb-1 text-[11px] text-[#F5EEDD]/50">סמלים מתאימים:</p>
                     <div className="flex flex-wrap gap-1">
                       {category.symbols.map((s) => (
                         <Badge key={s} variant="outline" className="border-[#F5EEDD]/20 text-[10px] text-[#F5EEDD]/70">
+                          {s}
+                        </Badge>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                {category.sensitivity.length > 0 && (
+                  <div>
+                    <p className="mb-1 text-[11px] text-[#F5EEDD]/50">רגישויות לקטגוריה:</p>
+                    <div className="flex flex-wrap gap-1">
+                      {category.sensitivity.map((s) => (
+                        <Badge key={s} variant="outline" className="border-red-400/30 text-[10px] text-red-300" data-testid={`badge-sensitivity-${s}`}>
                           {s}
                         </Badge>
                       ))}
