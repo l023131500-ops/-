@@ -136,6 +136,7 @@ function PartnerEditPage() {
               <Input dir="ltr" placeholder="UUID של חשבון השותף במערכת" value={form.auth_user_id} onChange={(e) => setForm({ ...form, auth_user_id: e.target.value })} />
               <p className="text-xs text-muted-foreground">לאחר שהשותף נרשם, הדבק כאן את ה-UUID שלו כדי להעניק לו גישה לפורטל.</p>
             </div>
+            <p className="text-xs text-muted-foreground">שותף במערכת מתאריך {formatDateHe(partner.created_at)}</p>
           </CardContent>
         </Card>
 
