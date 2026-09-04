@@ -187,6 +187,11 @@ export function TopicCard({ topic, meta }: { topic: HfTopic; meta?: HfMeta }) {
                                     <span className="text-sm font-medium text-foreground">
                                       {p.plan}
                                     </span>
+                                    {p.code && (
+                                      <span className="text-xs text-muted-foreground">
+                                        {p.code}
+                                      </span>
+                                    )}
                                     {p.rate && <Fact>שיעור {p.rate}</Fact>}
                                     {p.amount && <Fact>עד {p.amount}</Fact>}
                                     {p.waiting && <Fact>המתנה {p.waiting}</Fact>}
