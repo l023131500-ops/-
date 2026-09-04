@@ -40,7 +40,7 @@ interface DashboardPayload {
   alerts: Array<{ id: number; level: string; title: string; body?: string; source?: string }>;
   plans: Array<{ id: number; title: string; summary?: string; status: string; premium: number; stepsJson: string }>;
   notes: Array<{ id: number; title?: string; body: string; authorRole: string; createdAt: string }>;
-  opportunities: Array<{ id: number; title: string; status: string; estimatedYearlyValue?: number | null; recommendation?: string }>;
+  opportunities: Array<{ id: number; title: string; status: string; estimatedYearlyValue?: number | null; recommendation?: string; topic?: string; category?: string }>;
   tips: Array<{ id: number; title: string; body: string; tag?: string }>;
   reports: Array<{ id: number; periodMonth: string; title: string; status: string; summary?: string | null; url?: string | null; sentAt?: string | null }>;
   premiumActive: boolean;
@@ -408,6 +408,9 @@ function OpportunitiesTab({ data }: { data: DashboardPayload }) {
             <h4 className="font-semibold">{o.title}</h4>
             <Badge variant="outline" className="text-[11px]">{o.status}</Badge>
           </div>
+          {(o.category || o.topic) && (
+            <p className="text-xs text-muted-foreground">{[o.category, o.topic].filter(Boolean).join(" · ")}</p>
+          )}
           {o.recommendation && <p className="text-sm text-muted-foreground">{o.recommendation}</p>}
           {o.estimatedYearlyValue && <p className="text-xs text-emerald-700">פוטנציאל שנתי: {ils(o.estimatedYearlyValue)}</p>}
         </Card>
