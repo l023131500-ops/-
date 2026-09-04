@@ -102,7 +102,7 @@ export function ReferralsTab({ clientId }: { clientId: string }) {
           <TableBody>
             {referrals.length === 0 && <TableRow><TableCell colSpan={6} className="text-center text-muted-foreground py-6">אין הפניות</TableCell></TableRow>}
             {referrals.map((r) => {
-              const hasDetails = r.notes || r.partner_notes || r.rejection_reason;
+              const hasDetails = r.notes || r.partner_notes || r.rejection_reason || r.completed_at;
               return (
                 <Fragment key={r.id}>
                   <TableRow>
@@ -122,6 +122,7 @@ export function ReferralsTab({ clientId }: { clientId: string }) {
                     <TableRow className="hover:bg-transparent">
                       <TableCell colSpan={6} className="py-2 bg-muted/20">
                         <div className="space-y-1.5 text-xs">
+                          {r.completed_at && <div><span className="text-muted-foreground">הושלם: </span><span>{formatDateHe(r.completed_at)}</span></div>}
                           {r.notes && <div><span className="text-muted-foreground">הערות פנימיות: </span><span className="whitespace-pre-wrap">{r.notes}</span></div>}
                           {r.partner_notes && <div><span className="text-muted-foreground">הערות השותף: </span><span className="whitespace-pre-wrap">{r.partner_notes}</span></div>}
                           {r.rejection_reason && <div className="text-red-700 dark:text-red-400"><span className="text-muted-foreground">סיבת דחייה: </span><span className="whitespace-pre-wrap">{r.rejection_reason}</span></div>}
