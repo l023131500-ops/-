@@ -78,11 +78,15 @@ export function renderHfReportHtml(opts: {
         // הדוח כאן הרכיב את שורת התיאור רק מ-category+audience — subCategory
         // (מאוכלס ב-80 מתוך 515 נושאים, בעיקר ממשלה/עמותות) נשמט בשקט.
         const subLine = [t.category, t.subCategory, t.audience].filter(Boolean).join(" · ");
+        // sourceName מוצג ליד "מקור:" ב-TopicCard.tsx (מאוכלס ב-515/515 נושאים
+        // — ר' hf_data_export.json) אך נשמט מהדוח המודפס: מי שמדפיס/שומר את
+        // הדוח יוצא בלי לדעת על סמך אילו מקורות (תקנון השב"ן, ביטוח לאומי,
+        // משרד הבריאות וכו') נבנתה כל שורה.
         return `<tr>
           <td class="name">${esc(t.topic)}<div class="muted">${esc(subLine)}</div></td>
           <td>${esc(value)}</td>
           <td class="best">${bestLabel}</td>
-          <td class="muted small">${esc(t.benefitSummary || "—")}</td>
+          <td class="muted small">${esc(t.benefitSummary || "—")}${t.sourceName ? `<div class="muted">מקור: ${esc(t.sourceName)}</div>` : ""}</td>
         </tr>`;
       }).join("\n");
 
