@@ -213,7 +213,12 @@ export default function Projects() {
                       <span dir="ltr" className="text-[10px] text-[#F5EEDD]/40">{p.width}×{p.height}</span>
                     </div>
                     <div className="flex items-center justify-between">
-                      <span className="text-[11px] text-[#F5EEDD]/50">עודכן {dateLabel(p.updatedAt)}</span>
+                      <span className="text-[11px] text-[#F5EEDD]/50" data-testid={`text-project-updated-${p.id}`}>
+                        עודכן {dateLabel(p.updatedAt)}
+                        {p.createdAt !== p.updatedAt && (
+                          <span className="text-[#F5EEDD]/35"> · נוצר {dateLabel(p.createdAt)}</span>
+                        )}
+                      </span>
                       <button
                         className="text-[#F5EEDD]/40 transition hover:text-red-400 disabled:opacity-40"
                         disabled={busyId === p.id}
