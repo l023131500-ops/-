@@ -92,13 +92,14 @@ function ClientsList() {
                 <TableHead>שם</TableHead>
                 <TableHead>טלפון</TableHead>
                 <TableHead>אימייל</TableHead>
+                <TableHead>סוכן מטפל</TableHead>
                 <TableHead>סטטוס</TableHead>
                 <TableHead>נוצר</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {clients.length === 0 && (
-                <TableRow><TableCell colSpan={6} className="text-center text-muted-foreground py-8">אין לקוחות להצגה</TableCell></TableRow>
+                <TableRow><TableCell colSpan={7} className="text-center text-muted-foreground py-8">אין לקוחות להצגה</TableCell></TableRow>
               )}
               {clients.map((c) => (
                 <TableRow
@@ -114,6 +115,7 @@ function ClientsList() {
                   <TableCell className="font-medium">{c.first_name} {c.last_name}</TableCell>
                   <TableCell dir="ltr" className="text-start">{c.phone ?? "—"}</TableCell>
                   <TableCell dir="ltr" className="text-start text-muted-foreground">{c.email ?? "—"}</TableCell>
+                  <TableCell className="text-muted-foreground">{c.assigned_agent?.full_name ?? "—"}</TableCell>
                   <TableCell><StatusBadge status={c.status} /></TableCell>
                   <TableCell className="text-muted-foreground text-sm">{formatDateHe(c.created_at)}</TableCell>
                 </TableRow>

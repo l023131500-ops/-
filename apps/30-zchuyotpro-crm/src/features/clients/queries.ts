@@ -53,7 +53,7 @@ export const clientsListQuery = (filters: { search?: string; status?: string }) 
     queryFn: async () => {
       let q = supabase
         .from("clients")
-        .select("id, file_number, first_name, last_name, phone, email, status, assigned_agent_id, created_at")
+        .select("id, file_number, first_name, last_name, phone, email, status, assigned_agent_id, created_at, assigned_agent:profiles!clients_assigned_agent_id_fkey(id, full_name)")
         .order("created_at", { ascending: false })
         .limit(500);
       if (filters.status && filters.status !== "all") q = q.eq("status", filters.status);
