@@ -303,7 +303,12 @@ export default function Home() {
                       <ArrowLeft className="h-4 w-4 text-[#C9A227] opacity-0 transition group-hover:opacity-100" />
                     </div>
                     <div className="flex flex-wrap items-center gap-2">
-                      <Badge variant="outline" className="border-[#C9A227]/30 text-[10px] text-[#C9A227]">
+                      <Badge
+                        variant="outline"
+                        title={style.description}
+                        className="border-[#C9A227]/30 text-[10px] text-[#C9A227]"
+                        data-testid={`badge-style-${t.id}`}
+                      >
                         {style.label}
                       </Badge>
                       {cat && (
