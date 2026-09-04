@@ -2493,6 +2493,17 @@ function BackgroundControls({
               onValueChange={([v]) => onChange({ type: "gradient", gradient: { ...grad, angle: v } })}
             />
           </div>
+          <div className="flex items-center justify-between">
+            <Label className="text-xs text-[#F5EEDD]/70" htmlFor="bg-vignette-switch">
+              וינייטה (הכהיה בקצוות) <code className="font-mono text-[10px] text-[#C9A227]/70">vignette</code>
+            </Label>
+            <Switch
+              id="bg-vignette-switch"
+              checked={background.pattern === "vignette"}
+              onCheckedChange={(v) => onChange({ ...background, pattern: v ? "vignette" : "none" })}
+              data-testid="switch-bg-vignette"
+            />
+          </div>
         </div>
       )}
 
