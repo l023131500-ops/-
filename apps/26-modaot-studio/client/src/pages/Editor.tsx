@@ -1146,6 +1146,22 @@ export default function Editor() {
               {selectedLayer && (
                 <div className="mb-3">
                   <Label className="mb-1 block text-xs text-[#F5EEDD]/70">
+                    סיבוב <code className="font-mono text-[10px] text-[#C9A227]/70">rotation</code>: {selectedLayer.rotation ?? 0}°
+                  </Label>
+                  <Slider
+                    value={[selectedLayer.rotation ?? 0]}
+                    min={-180}
+                    max={180}
+                    step={1}
+                    onValueChange={([v]) => handleChangeLayer(selectedLayer.id, { rotation: v })}
+                    data-testid="slider-layer-rotation"
+                  />
+                </div>
+              )}
+
+              {selectedLayer && (
+                <div className="mb-3">
+                  <Label className="mb-1 block text-xs text-[#F5EEDD]/70">
                     מיזוג <code className="font-mono text-[10px] text-[#C9A227]/70">blend</code>
                   </Label>
                   <Select
