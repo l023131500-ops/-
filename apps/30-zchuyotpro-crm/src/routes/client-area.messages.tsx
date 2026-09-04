@@ -4,7 +4,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { Loader2, Send } from "lucide-react";
+import { Loader2, Send, FileText } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { queryOptions } from "@tanstack/react-query";
@@ -67,16 +67,39 @@ function MessagesPage() {
           ) : (messages ?? []).length === 0 ? (
             <p className="text-sm text-muted-foreground text-center py-6">אין הודעות עדיין</p>
           ) : (
-            (messages ?? []).map((m) => (
-              <div key={m.id} className={`flex ${m.direction === "inbound" ? "justify-end" : "justify-start"}`}>
-                <div className={`max-w-[80%] p-2 rounded-lg text-sm ${
-                  m.direction === "inbound" ? "bg-primary text-primary-foreground" : "bg-muted"
-                }`}>
-                  <div>{m.content}</div>
-                  <div className="text-[10px] opacity-70 mt-1">{new Date(m.created_at).toLocaleString("he-IL")}</div>
+            (messages ?? []).map((m) => {
+              const attachments = Array.isArray(m.attachments)
+                ? (m.attachments as { name: string; size: number; path: string; mime: string }[])
+                : [];
+              return (
+                <div key={m.id} className={`flex ${m.direction === "inbound" ? "justify-end" : "justify-start"}`}>
+                  <div className={`max-w-[80%] p-2 rounded-lg text-sm ${
+                    m.direction === "inbound" ? "bg-primary text-primary-foreground" : "bg-muted"
+                  }`}>
+                    {m.content && <div>{m.content}</div>}
+                    {attachments.length > 0 && (
+                      <div className="mt-1 space-y-1">
+                        {attachments.map((a, i) => (
+                          <button
+                            key={i}
+                            type="button"
+                            className="flex items-center gap-1.5 text-xs underline opacity-90 hover:opacity-100"
+                            onClick={async () => {
+                              const { data } = await supabase.storage.from("client-documents").createSignedUrl(a.path, 60);
+                              if (data?.signedUrl) window.open(data.signedUrl, "_blank");
+                            }}
+                          >
+                            <FileText className="h-3 w-3 shrink-0" />
+                            <span className="truncate">{a.name}</span>
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                    <div className="text-[10px] opacity-70 mt-1">{new Date(m.created_at).toLocaleString("he-IL")}</div>
+                  </div>
                 </div>
-              </div>
-            ))
+              );
+            })
           )}
         </CardContent>
       </Card>
