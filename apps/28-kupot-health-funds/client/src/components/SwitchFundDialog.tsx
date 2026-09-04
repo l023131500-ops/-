@@ -327,6 +327,7 @@ export function SwitchFundDialog({
                 <ReviewRow label="טלפון" value={form.getValues("phone") || "—"} />
                 <ReviewRow label="ביטוח משלים נוכחי" value={form.getValues("currentSupplemental") || "—"} />
                 <ReviewRow label="מספר נפשות" value={form.getValues("peopleCount") || "—"} />
+                <ReviewRow label="יישוב מגורים" value={form.getValues("city") || "—"} />
               </div>
 
               <p className="text-xs text-muted-foreground">
