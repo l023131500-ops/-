@@ -101,6 +101,13 @@ function UsersInner() {
   const [creating, setCreating] = useState(false);
 
   const usersQuery = useQuery<AppUser[]>({ queryKey: ["/api/admin/users"] });
+  const finClientsQuery = useQuery<FinClient[]>({ queryKey: ["/api/financial/clients"] });
+
+  const finClientsById = useMemo(() => {
+    const map = new Map<number, FinClient>();
+    for (const c of finClientsQuery.data ?? []) map.set(c.id, c);
+    return map;
+  }, [finClientsQuery.data]);
 
   const filtered = useMemo(() => {
     const list = usersQuery.data ?? [];
@@ -163,17 +170,18 @@ function UsersInner() {
               <th className="py-2 px-3 font-medium">תפקיד</th>
               <th className="py-2 px-3 font-medium">סטטוס</th>
               <th className="py-2 px-3 font-medium">גישה למוצרים</th>
+              <th className="py-2 px-3 font-medium">לקוח פיננסי מקושר</th>
               <th className="py-2 px-3 font-medium w-32 text-left">פעולות</th>
             </tr>
           </thead>
           <tbody>
             {usersQuery.isLoading ? (
               <tr>
-                <td colSpan={6} className="py-8 text-center text-muted-foreground">טוען...</td>
+                <td colSpan={7} className="py-8 text-center text-muted-foreground">טוען...</td>
               </tr>
             ) : filtered.length === 0 ? (
               <tr>
-                <td colSpan={6} className="py-8 text-center text-muted-foreground">לא נמצאו משתמשים. אפשר להוסיף משתמש חדש.</td>
+                <td colSpan={7} className="py-8 text-center text-muted-foreground">לא נמצאו משתמשים. אפשר להוסיף משתמש חדש.</td>
               </tr>
             ) : (
               filtered.map((u) => (
@@ -199,6 +207,9 @@ function UsersInner() {
                           ))
                         : <span className="text-muted-foreground text-xs">—</span>}
                     </div>
+                  </td>
+                  <td className="py-2 px-3 text-muted-foreground">
+                    {u.finClientId ? (finClientsById.get(u.finClientId)?.fullName ?? `#${u.finClientId}`) : "—"}
                   </td>
                   <td className="py-2 px-3 text-left">
                     <Dialog open={editing?.id === u.id} onOpenChange={(open) => setEditing(open ? u : null)}>
