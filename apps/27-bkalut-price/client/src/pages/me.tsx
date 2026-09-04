@@ -1,8 +1,8 @@
 /**
  * Personal financial dashboard for an authenticated user.
- * Shows their own client's data only (transactions, budgets, debts, goals,
- * documents, alerts, plans, notes, opportunities). Allows them to add
- * transactions, ack alerts, request premium upgrade.
+ * Shows their own client's data only (transactions, budgets, recurring
+ * reminders, debts, goals, documents, alerts, plans, notes, opportunities).
+ * Allows them to add transactions, ack alerts, request premium upgrade.
  */
 import { useMemo, useState } from "react";
 import { useLocation, Link } from "wouter";
@@ -19,7 +19,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import {
   Wallet, TrendingUp, TrendingDown, Bell, Sparkles, LogOut, BadgeCheck,
-  Target, Banknote, ListChecks, FileDown, Lightbulb, AlertTriangle, BarChart3, FileText,
+  Target, Banknote, ListChecks, FileDown, Lightbulb, AlertTriangle, BarChart3, FileText, Repeat,
 } from "lucide-react";
 
 function ils(n: number | null | undefined) {
@@ -34,7 +34,7 @@ interface DashboardPayload {
   categories: Array<{ id: number; name: string; kind: string; icon?: string }>;
   transactions: Array<{ id: number; categoryId: number | null; kind: string; amount: number; description?: string; occurredOn: string }>;
   budgets: Array<{ id: number; categoryId: number; monthlyLimit: number; note?: string }>;
-  recurring: Array<{ id: number; title: string; amount?: number | null; cadence: string; nextDate: string; kind: string }>;
+  recurring: Array<{ id: number; title: string; amount?: number | null; cadence: string; nextDate: string; kind: string; description?: string | null; active?: number }>;
   debts: Array<{ id: number; creditor: string; kind: string; currentBalance: number; monthlyPayment?: number | null; interestRate?: number | null; endDate?: string | null; status: string }>;
   goals: Array<{ id: number; title: string; targetAmount: number; savedAmount: number; targetDate?: string; monthlyContribution?: number | null; category?: string | null; status: string }>;
   documents: Array<{ id: number; title: string; docType: string; status: string; url?: string | null; notes?: string | null; createdAt: string }>;
@@ -132,6 +132,7 @@ function DashboardContent({ data, premiumRequests, premiumActive }: { data: Dash
         <TabsTrigger value="overview">סקירה</TabsTrigger>
         <TabsTrigger value="transactions">הוצאות והכנסות</TabsTrigger>
         <TabsTrigger value="budgets">תקציב</TabsTrigger>
+        <TabsTrigger value="recurring">תזכורות</TabsTrigger>
         <TabsTrigger value="debts">חובות</TabsTrigger>
         <TabsTrigger value="goals">מטרות</TabsTrigger>
         <TabsTrigger value="documents">מסמכים</TabsTrigger>
@@ -175,6 +176,9 @@ function DashboardContent({ data, premiumRequests, premiumActive }: { data: Dash
       </TabsContent>
       <TabsContent value="budgets">
         <BudgetsTab data={data} />
+      </TabsContent>
+      <TabsContent value="recurring">
+        <RecurringTab data={data} />
       </TabsContent>
       <TabsContent value="debts">
         <DebtsTab data={data} />
@@ -296,6 +300,28 @@ function BudgetsTab({ data }: { data: DashboardPayload }) {
         </tbody>
       </table>
     </Card>
+  );
+}
+
+const recurringKindLabel: Record<string, string> = { reminder: "תזכורת כללית", bill: "חשבון/חיוב", tax: "תשלום מס", task: "משימה משרדית" };
+const recurringCadenceLabel: Record<string, string> = { monthly: "חודשי", bimonthly: "דו־חודשי", quarterly: "רבעוני", yearly: "שנתי", once: "חד פעמי" };
+
+function RecurringTab({ data }: { data: DashboardPayload }) {
+  const active = data.recurring.filter((r) => r.active !== 0);
+  return (
+    <div className="space-y-3">
+      {active.length === 0 && <Card className="p-6 text-muted-foreground text-sm">אין תזכורות או משימות חוזרות פעילות.</Card>}
+      {active.map((r) => (
+        <Card key={r.id} className="p-4 space-y-1">
+          <div className="flex items-center justify-between">
+            <h4 className="font-semibold flex items-center gap-2"><Repeat className="w-4 h-4" /> {r.title}</h4>
+            {r.amount ? <span className="text-sm font-medium tabular-nums">{ils(r.amount)}</span> : null}
+          </div>
+          <p className="text-xs text-muted-foreground">תאריך בא: {r.nextDate} · {recurringCadenceLabel[r.cadence] ?? r.cadence} · {recurringKindLabel[r.kind] ?? r.kind}</p>
+          {r.description && <p className="text-sm text-muted-foreground">{r.description}</p>}
+        </Card>
+      ))}
+    </div>
   );
 }
 
