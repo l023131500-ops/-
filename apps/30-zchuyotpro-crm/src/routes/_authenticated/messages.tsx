@@ -50,7 +50,7 @@ type MessageRow = {
   attachments: unknown; created_at: string; sent_by: string | null;
 };
 type Contact = {
-  kind: ContactKind; id: string; name: string; phone: string | null; email: string | null;
+  kind: ContactKind; id: string; name: string; contactName?: string | null; phone: string | null; email: string | null;
   lastMessage: MessageRow | null; channels: Set<string>; unread: number;
 };
 
@@ -114,7 +114,7 @@ function Page() {
       map.set(`client:${c.id}`, { kind: "client", id: c.id, name, phone: c.phone, email: c.email, lastMessage: null, channels: new Set(), unread: 0 });
     }
     for (const p of partners) {
-      map.set(`partner:${p.id}`, { kind: "partner", id: p.id, name: p.company_name, phone: p.phone, email: p.email, lastMessage: null, channels: new Set(), unread: 0 });
+      map.set(`partner:${p.id}`, { kind: "partner", id: p.id, name: p.company_name, contactName: p.contact_name, phone: p.phone, email: p.email, lastMessage: null, channels: new Set(), unread: 0 });
     }
     for (const m of messages) {
       const k = m.client_id ? `client:${m.client_id}` : m.partner_id ? `partner:${m.partner_id}` : null;
@@ -294,7 +294,10 @@ function ChatPane({ contact, messages, tenantId, senderId, onSent }: {
       <div className="p-4 border-b flex items-center gap-3">
         <div className="h-10 w-10 rounded-full bg-primary/10 text-primary flex items-center justify-center font-semibold text-sm">{initials(contact.name)}</div>
         <div className="flex-1">
-          <div className="font-semibold flex items-center gap-2">{contact.name} <KindIcon className="h-4 w-4 text-muted-foreground" /></div>
+          <div className="font-semibold flex items-center gap-2">
+            {contact.name} <KindIcon className="h-4 w-4 text-muted-foreground" />
+            {contact.contactName && <span className="text-xs font-normal text-muted-foreground">· איש קשר: {contact.contactName}</span>}
+          </div>
           <div className="text-xs text-muted-foreground"><span dir="ltr">{contact.phone ?? "—"}</span> · <span dir="ltr">{contact.email ?? "—"}</span></div>
         </div>
       </div>
