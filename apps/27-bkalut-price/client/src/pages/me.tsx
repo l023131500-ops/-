@@ -9,7 +9,7 @@ import { useLocation, Link } from "wouter";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useUserAuth } from "@/lib/user-auth";
-import { localDateStr } from "@/lib/utils";
+import { localDateStr, safeUrl } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -19,7 +19,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import {
   Wallet, TrendingUp, TrendingDown, Bell, Sparkles, LogOut, BadgeCheck,
-  Target, Banknote, ListChecks, FileDown, Lightbulb, AlertTriangle,
+  Target, Banknote, ListChecks, FileDown, Lightbulb, AlertTriangle, BarChart3,
 } from "lucide-react";
 
 function ils(n: number | null | undefined) {
@@ -42,6 +42,7 @@ interface DashboardPayload {
   notes: Array<{ id: number; title?: string; body: string; authorRole: string; createdAt: string }>;
   opportunities: Array<{ id: number; title: string; status: string; estimatedYearlyValue?: number | null; recommendation?: string }>;
   tips: Array<{ id: number; title: string; body: string; tag?: string }>;
+  reports: Array<{ id: number; periodMonth: string; title: string; status: string; summary?: string | null; url?: string | null; sentAt?: string | null }>;
   premiumActive: boolean;
 }
 
@@ -132,6 +133,7 @@ function DashboardContent({ data, premiumRequests, premiumActive }: { data: Dash
         <TabsTrigger value="budgets">תקציב</TabsTrigger>
         <TabsTrigger value="debts">חובות</TabsTrigger>
         <TabsTrigger value="goals">מטרות</TabsTrigger>
+        <TabsTrigger value="reports">דוחות חודשיים</TabsTrigger>
         <TabsTrigger value="plans">תכניות צוות</TabsTrigger>
         <TabsTrigger value="opportunities">זכויות</TabsTrigger>
         <TabsTrigger value="alerts">התראות</TabsTrigger>
@@ -177,6 +179,9 @@ function DashboardContent({ data, premiumRequests, premiumActive }: { data: Dash
       </TabsContent>
       <TabsContent value="goals">
         <GoalsTab data={data} />
+      </TabsContent>
+      <TabsContent value="reports">
+        <ReportsTab data={data} />
       </TabsContent>
       <TabsContent value="plans">
         <PlansTab data={data} premiumActive={premiumActive} />
@@ -336,6 +341,30 @@ function GoalsTab({ data }: { data: DashboardPayload }) {
           </Card>
         );
       })}
+    </div>
+  );
+}
+
+function ReportsTab({ data }: { data: DashboardPayload }) {
+  const statusLabel: Record<string, string> = { sent: "נשלח", archived: "בארכיון" };
+  return (
+    <div className="space-y-3">
+      {data.reports.length === 0 && <Card className="p-6 text-muted-foreground text-sm">עדיין לא נשלחו דוחות חודשיים.</Card>}
+      {data.reports.map((r) => (
+        <Card key={r.id} className="p-4 space-y-2">
+          <div className="flex items-center justify-between">
+            <h4 className="font-semibold flex items-center gap-2"><BarChart3 className="w-4 h-4" /> {r.title}</h4>
+            <Badge variant="outline" className="text-[11px]">{statusLabel[r.status] ?? r.status}</Badge>
+          </div>
+          <div className="text-xs text-muted-foreground">תקופה: {r.periodMonth}{r.sentAt && <span> · נשלח בתאריך {r.sentAt.slice(0, 10)}</span>}</div>
+          {r.summary && <p className="text-sm whitespace-pre-wrap">{r.summary}</p>}
+          {safeUrl(r.url) && (
+            <a href={safeUrl(r.url)} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-sm text-primary hover:underline">
+              <FileDown className="w-4 h-4" /> צפייה בדוח המלא
+            </a>
+          )}
+        </Card>
+      ))}
     </div>
   );
 }

@@ -707,6 +707,7 @@ export function registerFinancialRoutes(app: Express) {
       notes: finStorage.listNotes(clientId, /*visibleToUser*/ true),
       opportunities: finStorage.listOpportunities(clientId),
       tips: finStorage.listTips().filter((t) => t.active).slice(0, 6),
+      reports: finStorage.listReports(clientId).filter((r) => r.status !== "draft"),
       premiumActive: user.plan === "premium",
     });
   });
