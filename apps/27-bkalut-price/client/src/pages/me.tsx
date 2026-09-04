@@ -35,7 +35,7 @@ interface DashboardPayload {
   transactions: Array<{ id: number; categoryId: number | null; kind: string; amount: number; description?: string; occurredOn: string }>;
   budgets: Array<{ id: number; categoryId: number; monthlyLimit: number; note?: string }>;
   recurring: Array<{ id: number; title: string; amount?: number | null; cadence: string; nextDate: string; kind: string; description?: string | null; active?: number }>;
-  debts: Array<{ id: number; creditor: string; kind: string; currentBalance: number; monthlyPayment?: number | null; interestRate?: number | null; endDate?: string | null; status: string }>;
+  debts: Array<{ id: number; creditor: string; kind: string; originalAmount?: number | null; currentBalance: number; monthlyPayment?: number | null; interestRate?: number | null; startDate?: string | null; endDate?: string | null; status: string }>;
   goals: Array<{ id: number; title: string; targetAmount: number; savedAmount: number; targetDate?: string; monthlyContribution?: number | null; category?: string | null; status: string }>;
   documents: Array<{ id: number; title: string; docType: string; status: string; url?: string | null; notes?: string | null; createdAt: string }>;
   alerts: Array<{ id: number; level: string; title: string; body?: string; source?: string }>;
@@ -332,16 +332,18 @@ function DebtsTab({ data }: { data: DashboardPayload }) {
       <Card className="p-4 flex items-center gap-3"><Banknote className="w-5 h-5 text-rose-600" /><div><div className="text-xs text-muted-foreground">סך כל החובות הפעילים</div><div className="text-xl font-bold">{ils(total)}</div></div></Card>
       <Card className="overflow-x-auto">
         <table className="w-full text-sm">
-          <thead className="bg-muted/40 text-right"><tr><th className="py-2 px-3">נושה</th><th className="py-2 px-3">סוג</th><th className="py-2 px-3">יתרה</th><th className="py-2 px-3">תשלום חודשי</th><th className="py-2 px-3">ריבית</th><th className="py-2 px-3">תאריך סיום</th><th className="py-2 px-3">סטטוס</th></tr></thead>
+          <thead className="bg-muted/40 text-right"><tr><th className="py-2 px-3">נושה</th><th className="py-2 px-3">סוג</th><th className="py-2 px-3">סכום מקורי</th><th className="py-2 px-3">יתרה</th><th className="py-2 px-3">תשלום חודשי</th><th className="py-2 px-3">ריבית</th><th className="py-2 px-3">תאריך התחלה</th><th className="py-2 px-3">תאריך סיום</th><th className="py-2 px-3">סטטוס</th></tr></thead>
           <tbody>
-            {data.debts.length === 0 ? <tr><td colSpan={7} className="py-6 text-center text-muted-foreground">אין חובות רשומים.</td></tr> :
+            {data.debts.length === 0 ? <tr><td colSpan={9} className="py-6 text-center text-muted-foreground">אין חובות רשומים.</td></tr> :
               data.debts.map((d) => (
                 <tr key={d.id} className="border-t border-border">
                   <td className="py-2 px-3">{d.creditor}</td>
                   <td className="py-2 px-3">{d.kind}</td>
+                  <td className="py-2 px-3">{d.originalAmount != null ? ils(d.originalAmount) : "—"}</td>
                   <td className="py-2 px-3 font-medium">{ils(d.currentBalance)}</td>
                   <td className="py-2 px-3">{d.monthlyPayment ? ils(d.monthlyPayment) : "—"}</td>
                   <td className="py-2 px-3">{d.interestRate != null ? `${(d.interestRate / 100).toFixed(2)}%` : "—"}</td>
+                  <td className="py-2 px-3">{d.startDate || "—"}</td>
                   <td className="py-2 px-3">{d.endDate || "—"}</td>
                   <td className="py-2 px-3">{d.status}</td>
                 </tr>
