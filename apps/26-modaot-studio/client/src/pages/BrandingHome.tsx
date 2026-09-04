@@ -180,6 +180,7 @@ export default function BrandingHome() {
                       <h5 className="text-sm font-bold">{a.name}</h5>
                     </div>
                     <p className="text-xs leading-relaxed text-[#F5EEDD]/60">{a.desc}</p>
+                    <p className="mt-2 text-[10px] text-[#F5EEDD]/40">דוגמאות: {a.brands}</p>
                   </div>
                 ))}
               </div>
