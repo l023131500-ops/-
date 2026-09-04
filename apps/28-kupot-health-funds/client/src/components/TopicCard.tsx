@@ -25,7 +25,11 @@ import {
 
 export function TopicCard({ topic, meta }: { topic: HfTopic; meta?: HfMeta }) {
   const [open, setOpen] = useState(false);
-  const value = topic.rangeText || topic.benefitSummary;
+  // rangeText חסר בכ-150 מ-435 הנושאים (ריק במאגר); publicSiteText הוא הטקסט
+  // הציבורי שהוכן בדיוק בשביל המקרה הזה (ר' shared/schema.ts) אך מעולם לא
+  // נקרא בלקוח — הנפילה הייתה מדלגת ישר ל-benefitSummary, ניסוח פנימי גנרי
+  // בלי מספרים ("הטבת שב"ן בנושא X"), במקום המשפט הציבורי המנוסח כהלכה.
+  const value = topic.rangeText || topic.publicSiteText || topic.benefitSummary;
   const winnerKey = bestFundKey(topic.bestFund);
 
   // הפירוט נטען רק כשנפתח הכרטיס — הוא ~1.1MB לכל הנושאים יחד, ולכן אינו
