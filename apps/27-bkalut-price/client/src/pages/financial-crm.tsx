@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useRoute, useLocation } from "wouter";
-import type { FinClient, FinTask, FinMessage, FinDocument, FinReminder, FinReport, FinActivityLog, FinGoal } from "@shared/schema";
+import type { FinClient, FinTask, FinMessage, FinDocument, FinReminder, FinReport, FinActivityLog, FinGoal, FinAlert } from "@shared/schema";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -12,9 +12,10 @@ import { safeUrl } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
 import {
   Briefcase, CheckSquare, Mail, FileText, Bell, BarChart3, Clock, Plus, Send, Trash2, Users, ChevronLeft, Target,
+  AlertTriangle, Check,
 } from "lucide-react";
 
-type Tab = "tasks" | "messages" | "documents" | "reminders" | "reports" | "goals" | "activity";
+type Tab = "tasks" | "messages" | "documents" | "reminders" | "reports" | "goals" | "alerts" | "activity";
 
 export default function FinancialCrmPage() {
   const { toast } = useToast();
@@ -58,6 +59,10 @@ export default function FinancialCrmPage() {
     queryKey: [`/api/financial/clients/${selectedId}/activity`],
     enabled: Boolean(selectedId),
   });
+  const { data: alerts } = useQuery<FinAlert[]>({
+    queryKey: [`/api/financial/clients/${selectedId}/alerts`],
+    enabled: Boolean(selectedId),
+  });
 
   function refreshFor(kind: string) {
     queryClient.invalidateQueries({ queryKey: [`/api/financial/clients/${selectedId}/${kind}`] });
@@ -71,6 +76,7 @@ export default function FinancialCrmPage() {
   const [newReminder, setNewReminder] = useState({ title: "", body: "", dueAt: "", channel: "internal" });
   const [newReport, setNewReport] = useState({ title: "", periodMonth: new Date().toISOString().slice(0, 7), summary: "", status: "draft" });
   const [newGoal, setNewGoal] = useState({ title: "", targetAmount: "", targetDate: "", monthlyContribution: "" });
+  const [newAlert, setNewAlert] = useState({ title: "", body: "", level: "info" });
 
   const createTask = useMutation({
     mutationFn: async () => {
@@ -228,6 +234,37 @@ export default function FinancialCrmPage() {
     onError: () => toast({ title: "שגיאה במחיקת המטרה", variant: "destructive" }),
   });
 
+  const createAlert = useMutation({
+    mutationFn: async () => {
+      const r = await apiRequest("POST", "/api/financial/alerts", {
+        clientId: selectedId,
+        title: newAlert.title,
+        body: newAlert.body,
+        level: newAlert.level,
+        source: "manual",
+      });
+      return r.json();
+    },
+    onSuccess: () => {
+      refreshFor("alerts");
+      setNewAlert({ title: "", body: "", level: "info" });
+      toast({ title: "ההתראה נוספה" });
+    },
+    onError: () => toast({ title: "שגיאה בהוספת ההתראה", variant: "destructive" }),
+  });
+
+  const ackAlert = useMutation({
+    mutationFn: async (id: number) => (await apiRequest("POST", `/api/financial/alerts/${id}/ack`)).json(),
+    onSuccess: () => refreshFor("alerts"),
+    onError: () => toast({ title: "שגיאה באישור ההתראה", variant: "destructive" }),
+  });
+
+  const deleteAlert = useMutation({
+    mutationFn: async (id: number) => apiRequest("DELETE", `/api/financial/alerts/${id}`),
+    onSuccess: () => refreshFor("alerts"),
+    onError: () => toast({ title: "שגיאה במחיקת ההתראה", variant: "destructive" }),
+  });
+
   const TABS: Array<{ key: Tab; label: string; icon: React.ComponentType<{ className?: string }> }> = [
     { key: "tasks", label: "משימות", icon: CheckSquare },
     { key: "messages", label: "הודעות", icon: Mail },
@@ -235,6 +272,7 @@ export default function FinancialCrmPage() {
     { key: "reminders", label: "תזכורות", icon: Bell },
     { key: "reports", label: "דוחות חודשיים", icon: BarChart3 },
     { key: "goals", label: "מטרות", icon: Target },
+    { key: "alerts", label: "התראות", icon: AlertTriangle },
     { key: "activity", label: "פעילות", icon: Clock },
   ];
 
@@ -597,6 +635,55 @@ export default function FinancialCrmPage() {
                             <option value="paused">מושהית</option>
                           </select>
                           <Button size="sm" variant="ghost" onClick={() => deleteGoal.mutate(g.id)}><Trash2 className="w-3.5 h-3.5" /></Button>
+                        </div>
+                      </div>
+                    ))
+                  )}
+                </div>
+              </Card>
+            )}
+
+            {/* ALERTS */}
+            {tab === "alerts" && (
+              <Card className="p-4 border border-card-border bg-card space-y-3" data-testid="crm-alerts-panel">
+                <h3 className="text-sm font-bold">התראה חדשה</h3>
+                <div className="grid md:grid-cols-2 gap-2">
+                  <Input placeholder="כותרת" value={newAlert.title} onChange={(e) => setNewAlert({ ...newAlert, title: e.target.value })} data-testid="input-new-alert-title" />
+                  <select className="rounded-md border border-input bg-background px-3 py-2 text-sm" value={newAlert.level} onChange={(e) => setNewAlert({ ...newAlert, level: e.target.value })}>
+                    <option value="info">מידע</option>
+                    <option value="warning">אזהרה</option>
+                    <option value="critical">קריטי</option>
+                  </select>
+                </div>
+                <Textarea placeholder="תוכן (אופציונלי)" value={newAlert.body} onChange={(e) => setNewAlert({ ...newAlert, body: e.target.value })} aria-label="תוכן ההתראה" className="min-h-14" />
+                <Button onClick={() => createAlert.mutate()} disabled={!newAlert.title || createAlert.isPending} data-testid="button-create-alert">
+                  <Plus className="w-4 h-4 ml-1" />
+                  הוספת התראה
+                </Button>
+
+                <div className="border-t pt-3 space-y-2">
+                  {(alerts ?? []).length === 0 ? (
+                    <p className="text-xs text-muted-foreground">אין התראות ללקוח זה.</p>
+                  ) : (
+                    (alerts ?? []).map((a) => (
+                      <div key={a.id} className="rounded-md border p-3 flex items-start gap-3" data-testid={`alert-row-${a.id}`}>
+                        <AlertTriangle className={`w-4 h-4 mt-0.5 shrink-0 ${a.level === "critical" ? "text-rose-600" : a.level === "warning" ? "text-amber-600" : "text-muted-foreground"}`} />
+                        <div className="flex-1 min-w-0">
+                          <p className="font-semibold text-sm">{a.title}</p>
+                          {a.body && <p className="text-xs text-muted-foreground mt-0.5">{a.body}</p>}
+                          <div className="text-[11px] text-muted-foreground mt-1 flex flex-wrap gap-2">
+                            <span>{new Date(a.createdAt).toLocaleString("he-IL")}</span>
+                            {a.source && <span>מקור: {a.source}</span>}
+                            <span>{a.acknowledged ? "אושר" : "פתוח"}</span>
+                          </div>
+                        </div>
+                        <div className="flex flex-col gap-1">
+                          {!a.acknowledged && (
+                            <Button size="sm" variant="ghost" onClick={() => ackAlert.mutate(a.id)} data-testid={`button-ack-alert-${a.id}`}>
+                              <Check className="w-3.5 h-3.5" />
+                            </Button>
+                          )}
+                          <Button size="sm" variant="ghost" onClick={() => deleteAlert.mutate(a.id)}><Trash2 className="w-3.5 h-3.5" /></Button>
                         </div>
                       </div>
                     ))

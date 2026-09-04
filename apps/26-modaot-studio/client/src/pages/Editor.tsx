@@ -1210,6 +1210,62 @@ export default function Editor() {
                 </div>
               )}
 
+              {selectedLayer && selectedLayer.type === "shape" && (
+                <div className="mb-3 space-y-2">
+                  <div className="grid grid-cols-2 gap-2">
+                    <div>
+                      <Label className="mb-1 block text-xs text-[#F5EEDD]/70">
+                        צבע מילוי <code className="font-mono text-[10px] text-[#C9A227]/70">fill</code>
+                      </Label>
+                      <ColorPicker
+                        value={(selectedLayer as ShapeLayer).fill ?? "#C9A227"}
+                        onChange={(c) => handleChangeLayer(selectedLayer.id, { fill: c })}
+                        presets={Object.values(style.palette)}
+                        compact
+                        label="צבע מילוי"
+                      />
+                    </div>
+                    <div>
+                      <Label className="mb-1 block text-xs text-[#F5EEDD]/70">
+                        צבע מתאר <code className="font-mono text-[10px] text-[#C9A227]/70">stroke</code>
+                      </Label>
+                      <ColorPicker
+                        value={(selectedLayer as ShapeLayer).stroke ?? "#000000"}
+                        onChange={(c) => handleChangeLayer(selectedLayer.id, { stroke: c })}
+                        presets={Object.values(style.palette)}
+                        compact
+                        label="צבע מתאר"
+                      />
+                    </div>
+                  </div>
+                  <div>
+                    <Label className="mb-1 block text-xs text-[#F5EEDD]/70">
+                      עובי מתאר <code className="font-mono text-[10px] text-[#C9A227]/70">strokeWidth</code>:{" "}
+                      {(selectedLayer as ShapeLayer).strokeWidth ?? 0}
+                    </Label>
+                    <Slider
+                      value={[(selectedLayer as ShapeLayer).strokeWidth ?? 0]}
+                      min={0}
+                      max={20}
+                      step={0.5}
+                      onValueChange={([v]) => handleChangeLayer(selectedLayer.id, { strokeWidth: v })}
+                      data-testid="slider-layer-shape-stroke-width"
+                    />
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <Label className="text-xs text-[#F5EEDD]/70" htmlFor="layer-shape-dash-switch">
+                      קו מקווקו <code className="font-mono text-[10px] text-[#C9A227]/70">dash</code>
+                    </Label>
+                    <Switch
+                      id="layer-shape-dash-switch"
+                      checked={!!(selectedLayer as ShapeLayer).dash?.length}
+                      onCheckedChange={(v) => handleChangeLayer(selectedLayer.id, { dash: v ? [10, 6] : undefined })}
+                      data-testid="switch-layer-shape-dash"
+                    />
+                  </div>
+                </div>
+              )}
+
               {!selectedLayer && (
                 <p className="text-xs text-[#F5EEDD]/40">בחר שכבה מהרשימה או מהקנבאס לעריכה, או הוסף שכבת טקסט חדשה</p>
               )}

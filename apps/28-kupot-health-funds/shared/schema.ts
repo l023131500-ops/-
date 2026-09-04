@@ -62,6 +62,11 @@ export const insertSwitchLeadSchema = createInsertSchema(hfSwitchLeads)
       .min(9, "נא להזין מספר טלפון תקין")
       .regex(/^[0-9\-+\s]{9,15}$/, "מספר הטלפון אינו תקין"),
     email: z.string().email("כתובת דוא\"ל אינה תקינה").optional().or(z.literal("")),
+    idNumber: z
+      .string()
+      .regex(/^[0-9]{5,9}$/, "תעודת הזהות צריכה להכיל 5 עד 9 ספרות")
+      .optional()
+      .or(z.literal("")),
   });
 
 export type InsertSwitchLead = z.infer<typeof insertSwitchLeadSchema>;
