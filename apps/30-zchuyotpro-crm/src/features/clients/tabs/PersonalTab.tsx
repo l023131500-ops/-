@@ -34,6 +34,8 @@ export function PersonalTab({ clientId }: { clientId: string }) {
     assigned_agent_id: client.assigned_agent_id ?? "",
     tags: client.tags ?? [],
     notes: client.notes ?? "",
+    nedarim_id: client.nedarim_id ?? "",
+    imot_id: client.imot_id ?? "",
   });
 
   useEffect(() => {
@@ -53,6 +55,8 @@ export function PersonalTab({ clientId }: { clientId: string }) {
       assigned_agent_id: client.assigned_agent_id ?? "",
       tags: client.tags ?? [],
       notes: client.notes ?? "",
+      nedarim_id: client.nedarim_id ?? "",
+      imot_id: client.imot_id ?? "",
     });
   }, [client]);
 
@@ -71,6 +75,8 @@ export function PersonalTab({ clientId }: { clientId: string }) {
         postal_code: form.postal_code || null,
         assigned_agent_id: form.assigned_agent_id || null,
         notes: form.notes || null,
+        nedarim_id: form.nedarim_id || null,
+        imot_id: form.imot_id || null,
       };
       const { error } = await supabase.from("clients").update(payload).eq("id", clientId);
       if (error) throw error;
@@ -107,6 +113,12 @@ export function PersonalTab({ clientId }: { clientId: string }) {
         </Field>
         <Field label="תעודת זהות">
           <Input value={form.id_number} onChange={(e) => field("id_number", e.target.value)} dir="ltr" />
+        </Field>
+        <Field label="מזהה נדרים פלוס">
+          <Input value={form.nedarim_id} onChange={(e) => field("nedarim_id", e.target.value)} dir="ltr" />
+        </Field>
+        <Field label="מזהה עמותה (Imot)">
+          <Input value={form.imot_id} onChange={(e) => field("imot_id", e.target.value)} dir="ltr" />
         </Field>
         <Field label="תאריך לידה">
           <Input type="date" value={form.birth_date} onChange={(e) => field("birth_date", e.target.value)} />
