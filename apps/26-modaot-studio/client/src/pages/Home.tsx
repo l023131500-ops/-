@@ -23,6 +23,7 @@ import { Badge } from "@/components/ui/badge";
 import CanvasStage from "@/components/CanvasStage";
 import { getStyle } from "@shared/styles";
 import { getCategory, GROUPS } from "@shared/knowledge";
+import { getFormat } from "@shared/formats";
 import { getTemplateDef } from "@shared/templates";
 import { applyCategoryDefaults } from "@/lib/copyEngine";
 import { useTemplateContext } from "@/lib/templateContext";
@@ -277,6 +278,7 @@ export default function Home() {
               if (!t.doc) return null;
               const style = getStyle(t.style);
               const cat = getCategory(t.category);
+              const fmt = getFormat(t.format);
               return (
                 <Card
                   key={t.id}
@@ -307,6 +309,16 @@ export default function Home() {
                       {cat && (
                         <Badge variant="outline" className="border-[#F5EEDD]/20 text-[10px] text-[#F5EEDD]/70">
                           {cat.label}
+                        </Badge>
+                      )}
+                      {fmt && (
+                        <Badge
+                          variant="outline"
+                          title={`${fmt.width}×${fmt.height}px · יחס ${fmt.ratio}`}
+                          className="border-[#F5EEDD]/20 text-[10px] text-[#F5EEDD]/70"
+                          data-testid={`badge-format-${t.id}`}
+                        >
+                          {fmt.label}
                         </Badge>
                       )}
                       {!!t.builtin && (

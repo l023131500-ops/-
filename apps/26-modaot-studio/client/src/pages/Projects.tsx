@@ -26,6 +26,7 @@ import CanvasStage from "@/components/CanvasStage";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { getStyle } from "@shared/styles";
 import { getCategory } from "@shared/knowledge";
+import { getFormat } from "@shared/formats";
 import { useTemplateContext } from "@/lib/templateContext";
 import type { TemplateDoc } from "@shared/layers";
 
@@ -176,6 +177,7 @@ export default function Projects() {
               const doc = docOf(p);
               const style = getStyle(p.style);
               const category = getCategory(p.category);
+              const fmt = getFormat(p.format);
               const clientNotes = clientNotesOf(p);
               return (
                 <Card
@@ -208,6 +210,16 @@ export default function Projects() {
                       {category && (
                         <Badge variant="outline" className="border-[#C9A227]/20 text-[10px] text-[#F5EEDD]/70">
                           {category.label}
+                        </Badge>
+                      )}
+                      {fmt && (
+                        <Badge
+                          variant="outline"
+                          title={`${fmt.width}×${fmt.height}px · יחס ${fmt.ratio}`}
+                          className="border-[#C9A227]/20 text-[10px] text-[#F5EEDD]/70"
+                          data-testid={`badge-format-${p.id}`}
+                        >
+                          {fmt.label}
                         </Badge>
                       )}
                       {/* dir="ltr": בתוך פסקה RTL הדפדפן היה מסדר 1080×1350 כ-1350×1080 */}
