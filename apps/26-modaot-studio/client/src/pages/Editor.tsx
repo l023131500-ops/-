@@ -131,7 +131,7 @@ function SectionBgMenu({
   testId?: string;
 }) {
   return (
-    <DropdownMenu>
+    <DropdownMenu dir="rtl">
       <DropdownMenuTrigger asChild>
         <button
           type="button"
@@ -143,7 +143,7 @@ function SectionBgMenu({
           <SquareStack className="h-3 w-3 text-white" />
         </button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" dir="rtl" className="border-[#C9A227]/30 bg-[#0E1830] text-[#F5EEDD]">
+      <DropdownMenuContent align="end" className="border-[#C9A227]/30 bg-[#0E1830] text-[#F5EEDD]">
         <DropdownMenuLabel className="text-[#F5EEDD]/70">הוסף כרקע לקטע</DropdownMenuLabel>
         {SECTION_PRESETS.map((p) => (
           <DropdownMenuItem
@@ -1849,7 +1849,7 @@ export default function Editor() {
               החל כרקע כללי
             </Button>
             {libraryPreview && (
-              <DropdownMenu>
+              <DropdownMenu dir="rtl">
                 <DropdownMenuTrigger asChild>
                   <Button
                     variant="outline"
@@ -1859,7 +1859,7 @@ export default function Editor() {
                     <SquareStack className="h-4 w-4" /> הוסף כרקע לקטע
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="start" dir="rtl" className="border-[#C9A227]/30 bg-[#0E1830] text-[#F5EEDD]">
+                <DropdownMenuContent align="start" className="border-[#C9A227]/30 bg-[#0E1830] text-[#F5EEDD]">
                   <DropdownMenuLabel className="text-[#F5EEDD]/70">בחר מיקום בעמוד</DropdownMenuLabel>
                   {SECTION_PRESETS.map((p) => (
                     <DropdownMenuItem
