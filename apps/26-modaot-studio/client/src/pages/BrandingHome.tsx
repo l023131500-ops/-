@@ -20,6 +20,9 @@ interface BrandRow {
   updatedAt: number;
 }
 
+const dateLabel = (seconds: number) =>
+  new Date(seconds * 1000).toLocaleDateString("he-IL", { day: "numeric", month: "long", year: "numeric" });
+
 const STEPS = [
   { icon: Compass, title: "בריף אסטרטגי", desc: "שאלון עומק בן 35 שאלות (או 12 שאלות ליבה) שממפה זהות, קהל, מסרים והעדפות חזותיות" },
   { icon: Sparkles, title: "אסטרטגיה + ארכיטיפ", desc: "מנוע Claude בוחר ארכיטיפ מותג (יונג), מנסח מיצוב, ערכים וקול המותג" },
@@ -135,6 +138,9 @@ export default function BrandingHome() {
                     <div>
                       <h4 className="text-sm font-bold" data-testid={`text-brand-name-${b.id}`}>{b.brandName}</h4>
                       {b.logoSvg && <Badge variant="outline" className="mt-1 border-[#C9A227]/40 text-[10px] text-[#C9A227]">SVG וקטורי</Badge>}
+                      <p className="mt-1 text-[10px] text-[#F5EEDD]/40" data-testid={`text-brand-updated-${b.id}`}>
+                        עודכן לאחרונה {dateLabel(b.updatedAt)}
+                      </p>
                     </div>
                     <button
                       className="text-[#F5EEDD]/40 hover:text-red-400 disabled:cursor-not-allowed disabled:opacity-50"
