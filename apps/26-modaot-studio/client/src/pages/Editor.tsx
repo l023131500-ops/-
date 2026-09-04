@@ -19,6 +19,9 @@ import {
   AlignRight,
   AlignCenter,
   AlignLeft,
+  AlignVerticalJustifyStart,
+  AlignVerticalJustifyCenter,
+  AlignVerticalJustifyEnd,
   Lightbulb,
   Plus,
   Trash2,
@@ -2300,6 +2303,41 @@ function TextLayerControls({
             onClick={() => onChange({ align: "left" })}
           >
             <AlignLeft className="h-4 w-4" />
+          </Button>
+        </div>
+      </div>
+
+      <div>
+        <Label className="mb-1 block text-xs text-[#F5EEDD]/70">
+          יישור אנכי <code className="font-mono text-[10px] text-[#C9A227]/70">verticalAlign</code>
+        </Label>
+        <div className="flex gap-1.5">
+          <Button
+            size="sm"
+            variant={(layer.verticalAlign ?? "top") === "top" ? "default" : "outline"}
+            className={(layer.verticalAlign ?? "top") === "top" ? "flex-1 bg-[#C9A227] text-[#0B1220]" : "flex-1 border-[#C9A227]/30"}
+            onClick={() => onChange({ verticalAlign: "top" })}
+            data-testid="button-layer-valign-top"
+          >
+            <AlignVerticalJustifyStart className="h-4 w-4" />
+          </Button>
+          <Button
+            size="sm"
+            variant={layer.verticalAlign === "middle" ? "default" : "outline"}
+            className={layer.verticalAlign === "middle" ? "flex-1 bg-[#C9A227] text-[#0B1220]" : "flex-1 border-[#C9A227]/30"}
+            onClick={() => onChange({ verticalAlign: "middle" })}
+            data-testid="button-layer-valign-middle"
+          >
+            <AlignVerticalJustifyCenter className="h-4 w-4" />
+          </Button>
+          <Button
+            size="sm"
+            variant={layer.verticalAlign === "bottom" ? "default" : "outline"}
+            className={layer.verticalAlign === "bottom" ? "flex-1 bg-[#C9A227] text-[#0B1220]" : "flex-1 border-[#C9A227]/30"}
+            onClick={() => onChange({ verticalAlign: "bottom" })}
+            data-testid="button-layer-valign-bottom"
+          >
+            <AlignVerticalJustifyEnd className="h-4 w-4" />
           </Button>
         </div>
       </div>
