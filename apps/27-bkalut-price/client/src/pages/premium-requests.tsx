@@ -69,7 +69,7 @@ function PremiumRequestsInner() {
                 <Badge variant={r.status === "approved" ? "default" : r.status === "rejected" ? "destructive" : "secondary"} className="text-[11px]">{r.status}</Badge>
               </div>
               <p className="text-sm">{r.message || <span className="text-muted-foreground italic">(ללא הודעה)</span>}</p>
-              <div className="text-[11px] text-muted-foreground" dir="ltr">{r.createdAt}</div>
+              <div className="text-[11px] text-muted-foreground" dir="ltr">{r.createdAt}{r.decidedAt ? ` · הוחלט: ${r.decidedAt}` : ""}</div>
               {r.status === "pending" ? (
                 <>
                   <Textarea placeholder="הערת אדמין (תועבר ללקוח)" value={notes[r.id] || ""} onChange={(e) => setNotes((p) => ({ ...p, [r.id]: e.target.value }))} aria-label="הערת אדמין" rows={2} />
