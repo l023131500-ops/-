@@ -158,6 +158,7 @@ export function TasksTab({ clientId }: { clientId: string }) {
                   {t.description && <p className="text-sm text-muted-foreground mt-1">{t.description}</p>}
                   <div className="flex items-center gap-3 text-xs text-muted-foreground mt-1">
                     {t.due_date && <span>יעד: {formatDateTimeHe(t.due_date)}</span>}
+                    {done && t.completed_at && <span>הושלם: {formatDateTimeHe(t.completed_at)}</span>}
                     {(t as { assignee?: { full_name: string } | null }).assignee?.full_name && (
                       <span>{(t as { assignee?: { full_name: string } | null }).assignee?.full_name}</span>
                     )}
