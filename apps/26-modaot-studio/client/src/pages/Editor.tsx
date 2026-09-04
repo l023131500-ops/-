@@ -986,6 +986,14 @@ export default function Editor() {
               ))}
             </SelectContent>
           </Select>
+          <Badge
+            variant="outline"
+            title={format.colorSpace === "CMYK" ? "פורמט הדפסה — מיוצא במרחב הצבע CMYK" : "פורמט דיגיטלי — מיוצא במרחב הצבע RGB"}
+            className="border-[#C9A227]/30 text-[10px] text-[#F5EEDD]/70"
+            data-testid="badge-color-space"
+          >
+            {format.colorSpace}
+          </Badge>
 
           <Button variant="outline" size="sm" className="gap-1.5 border-[#C9A227]/40 text-[#C9A227]" onClick={handleDownloadPNG}>
             <FileImage className="h-4 w-4" /> הורד PNG
