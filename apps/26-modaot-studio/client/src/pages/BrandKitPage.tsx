@@ -188,7 +188,16 @@ export default function BrandKitPage() {
                   <div className="flex flex-wrap gap-1">
                     {kit.strategy.aaker.map((k) => {
                       const d = AAKER_DIMENSIONS.find((x) => x.key === k);
-                      return <Badge key={k} variant="outline" className="border-[#C9A227]/40 text-[10px] text-[#C9A227]">{d?.name || k}</Badge>;
+                      return (
+                        <Badge
+                          key={k}
+                          variant="outline"
+                          className="border-[#C9A227]/40 text-[10px] text-[#C9A227]"
+                          title={d ? `${d.desc} · דוגמאות: ${d.brands}` : undefined}
+                        >
+                          {d?.name || k}
+                        </Badge>
+                      );
                     })}
                   </div>
                 </div>
