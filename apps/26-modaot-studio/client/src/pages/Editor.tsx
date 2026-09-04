@@ -2277,6 +2277,20 @@ function TextLayerControls({
         />
       </div>
 
+      <div className="flex items-center justify-between">
+        <Label className="text-xs text-[#F5EEDD]/70" htmlFor="layer-italic-switch">
+          נטוי (איטליק) <code className="font-mono text-[10px] text-[#C9A227]/70">fontStyle</code>
+        </Label>
+        <Switch
+          id="layer-italic-switch"
+          checked={!!layer.fontStyle?.includes("italic")}
+          onCheckedChange={(v) =>
+            onChange({ fontStyle: v ? ((layer.fontWeight ?? 400) >= 700 ? "bold italic" : "italic") : "normal" })
+          }
+          data-testid="switch-layer-italic"
+        />
+      </div>
+
       <div>
         <Label className="mb-1 block text-xs text-[#F5EEDD]/70">יישור</Label>
         <div className="flex gap-1.5">

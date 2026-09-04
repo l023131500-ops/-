@@ -96,7 +96,8 @@ function TextNode({ layer, onSelect, onChange, onEdit, selected, interactive }: 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [layer.text, layer.fontFamily, layer.fontSize, layer.width, layer.height, layer.maxFontSize, layer.minFontSize, bold, layer.lineHeight, layer.letterSpacing]);
 
-  const fontStyle = bold ? "bold" : "normal";
+  const italic = !!layer.fontStyle?.includes("italic");
+  const fontStyle = bold && italic ? "italic bold" : bold ? "bold" : italic ? "italic" : "normal";
   return (
     <Text
       id={layer.id}
