@@ -2340,6 +2340,34 @@ function TextLayerControls({
           />
         </div>
       </div>
+
+      {/* היסט צל (כיוון/מרחק הצל) */}
+      <div className="grid grid-cols-2 gap-2">
+        <div>
+          <Label className="mb-1 block text-xs text-[#F5EEDD]/70">
+            היסט צל אופקי <code className="font-mono text-[10px] text-[#C9A227]/70">shadowOffsetX</code>: {layer.shadowOffsetX ?? 0}
+          </Label>
+          <Slider
+            value={[layer.shadowOffsetX ?? 0]}
+            min={-30}
+            max={30}
+            step={1}
+            onValueChange={([v]) => onChange({ shadowOffsetX: v })}
+          />
+        </div>
+        <div>
+          <Label className="mb-1 block text-xs text-[#F5EEDD]/70">
+            היסט צל אנכי <code className="font-mono text-[10px] text-[#C9A227]/70">shadowOffsetY</code>: {layer.shadowOffsetY ?? 0}
+          </Label>
+          <Slider
+            value={[layer.shadowOffsetY ?? 0]}
+            min={-30}
+            max={30}
+            step={1}
+            onValueChange={([v]) => onChange({ shadowOffsetY: v })}
+          />
+        </div>
+      </div>
     </div>
   );
 }
