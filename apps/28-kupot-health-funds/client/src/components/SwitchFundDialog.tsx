@@ -261,7 +261,7 @@ export function SwitchFundDialog({
               </Field>
 
               <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                <Field id="email" label="דוא&quot;ל" error={form.formState.errors.email?.message}>
+                <Field id="email" label="דוא״ל" error={form.formState.errors.email?.message}>
                   <Input
                     {...form.register("email")}
                     type="email"
@@ -325,6 +325,8 @@ export function SwitchFundDialog({
                 } />
                 <ReviewRow label="שם" value={form.getValues("fullName") || "—"} />
                 <ReviewRow label="טלפון" value={form.getValues("phone") || "—"} />
+                <ReviewRow label="דוא״ל" value={form.getValues("email") || "—"} />
+                <ReviewRow label="תעודת זהות" value={form.getValues("idNumber") || "—"} />
                 <ReviewRow label="ביטוח משלים נוכחי" value={form.getValues("currentSupplemental") || "—"} />
                 <ReviewRow label="מספר נפשות" value={form.getValues("peopleCount") || "—"} />
                 <ReviewRow label="יישוב מגורים" value={form.getValues("city") || "—"} />
