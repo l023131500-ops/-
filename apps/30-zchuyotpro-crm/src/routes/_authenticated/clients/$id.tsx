@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
@@ -65,6 +65,12 @@ function ClientProfilePage() {
               {client.phone && <span dir="ltr">{client.phone}</span>}
               {client.email && <span dir="ltr">{client.email}</span>}
               {client.city && <span>{client.city}</span>}
+              {client.assigned_agent && (
+                <span className="flex items-center gap-1">
+                  <User className="h-3.5 w-3.5" />
+                  {client.assigned_agent.full_name}
+                </span>
+              )}
             </div>
           </div>
           <StatusBadge status={client.status} />
