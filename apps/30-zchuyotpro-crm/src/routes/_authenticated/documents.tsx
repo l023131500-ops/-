@@ -8,7 +8,7 @@ import {
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { meProfileQuery } from "@/features/clients/queries";
-import { formatDateHe } from "@/lib/format";
+import { formatDateHe, formatDateTimeHe } from "@/lib/format";
 import { triggerN8nWebhook } from "@/lib/n8n";
 import { authedFetch } from "@/lib/authed-fetch";
 import { Card, CardContent } from "@/components/ui/card";
@@ -297,6 +297,9 @@ function Page() {
                   {processingBadge(d.processing_status)}
                   {d.requires_signature && sigBadge(d.signature_status)}
                 </div>
+                {d.signed_at && (
+                  <div className="text-xs text-muted-foreground">נחתם: {formatDateTimeHe(d.signed_at)}</div>
+                )}
                 <div className="flex gap-1 justify-end pt-1 flex-wrap">
                   {d.file_type === "pay_stub" && d.client_id && (
                     <Button size="sm" variant="outline" onClick={() => analyze.mutate(d)} disabled={analyze.isPending}>
