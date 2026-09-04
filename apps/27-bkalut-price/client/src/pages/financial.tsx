@@ -383,6 +383,7 @@ function TransactionsTab({ client }: { client: FinClient }) {
                   <span className="text-muted-foreground">{t.occurredOn}</span>
                   <span className="mr-3">{cat?.icon} {cat?.name || "ללא קטגוריה"}</span>
                   <span className="mr-3 text-muted-foreground">{t.description}</span>
+                  {t.source === "user" && <Badge variant="outline" className="text-[10px] mr-2">דווח ע״י הלקוח</Badge>}
                 </div>
                 <div className="flex items-center gap-3">
                   <span className={`font-semibold tabular-nums ${t.kind === "income" ? "text-emerald-600" : "text-foreground"}`}>{t.kind === "income" ? "+" : "-"}{ils(t.amount)}</span>
