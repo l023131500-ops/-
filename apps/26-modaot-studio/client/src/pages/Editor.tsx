@@ -317,6 +317,8 @@ export default function Editor() {
   const fields = getCategoryFields(selected.category);
   const copyExamples = getCategoryCopy(selected.category);
   const format = getFormat(selected.format);
+  // הנחיית bleed (אזור חיתוך בטוח) בפיקסלים — קיים רק בפורמטי דפוס (bleedMm), ממיר לפי ה-DPI של הפורמט
+  const bleedPx = format.bleedMm ? Math.round((format.bleedMm / 25.4) * format.dpi) : 0;
 
   const selectedLayer = useMemo(
     () => doc.layers.find((l) => l.id === selectedId) ?? null,
@@ -1045,6 +1047,7 @@ export default function Editor() {
               maxDisplayWidth={CANVAS_MAX_WIDTH}
               stageRef={stageRef}
               interactive={true}
+              bleedPx={bleedPx}
             />
             {editingLayer && (
               <textarea

@@ -22,6 +22,7 @@ interface Props {
   stageRef?: React.MutableRefObject<Konva.Stage | null>;
   interactive?: boolean;
   editingId?: string | null; // שכבת טקסט שנמצאת כרגע בעריכה inline על הקנבס — מוסתרת כאן, ה-textarea של Editor.tsx מציגה אותה במקומה
+  bleedPx?: number; // הנחיה ויזואלית בלבד (bleedMm בפורמט, ממיר לפיקסלים) — לא משפיע על הייצוא, רק קו מקווקו שמסמן את אזור החיתוך הבטוח בפורמטי דפוס
 }
 
 // רקע: solid / gradient / pattern / image
@@ -244,7 +245,7 @@ function DecorationNode({ layer }: { layer: DecorationLayer }) {
   );
 }
 
-export default function CanvasStage({ doc, selectedId, onSelect, onChangeLayer, onChangeBackground, onEditText, maxDisplayWidth = 520, stageRef, interactive = true, editingId = null }: Props) {
+export default function CanvasStage({ doc, selectedId, onSelect, onChangeLayer, onChangeBackground, onEditText, maxDisplayWidth = 520, stageRef, interactive = true, editingId = null, bleedPx = 0 }: Props) {
   const localRef = useRef<Konva.Stage | null>(null);
   const setRef = (n: Konva.Stage | null) => { localRef.current = n; if (stageRef) stageRef.current = n; };
   const scale = Math.min(1, maxDisplayWidth / doc.width);
@@ -269,6 +270,19 @@ export default function CanvasStage({ doc, selectedId, onSelect, onChangeLayer, 
     >
       <Layer>
         <Background doc={doc} interactive={interactive} onSelect={() => onSelect?.(null)} onChangeBackground={onChangeBackground} />
+        {/* קו הנחיה ל-bleed (אזור חיתוך בטוח בפורמטי דפוס) — ויזואלי בלבד, לא מיוצא */}
+        {interactive && bleedPx > 0 && (
+          <Rect
+            x={bleedPx}
+            y={bleedPx}
+            width={doc.width - bleedPx * 2}
+            height={doc.height - bleedPx * 2}
+            stroke="#ef4444"
+            strokeWidth={1 / scale}
+            dash={[8, 6]}
+            listening={false}
+          />
+        )}
         {sorted.map((l) => {
           if (l.visible === false) return null;
           if (l.id === editingId) return null; // שכבה בעריכה inline — ה-textarea השקופה של Editor.tsx מציגה אותה במקום ה-Text של Konva
