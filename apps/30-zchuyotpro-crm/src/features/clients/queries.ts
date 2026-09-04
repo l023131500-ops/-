@@ -218,7 +218,7 @@ export const documentsQuery = (clientId: string) =>
     queryFn: async () => {
       const { data, error } = await supabase
         .from("documents")
-        .select("*")
+        .select("*, uploader:profiles!documents_uploaded_by_fkey(full_name)")
         .eq("client_id", clientId)
         .order("created_at", { ascending: false });
       if (error) throw error;
