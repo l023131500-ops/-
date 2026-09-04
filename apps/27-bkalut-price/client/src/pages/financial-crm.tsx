@@ -796,7 +796,7 @@ export default function FinancialCrmPage() {
                       <div key={a.id} className="text-xs flex items-start gap-2 border-b border-border/60 pb-1.5">
                         <span className="font-mono text-[10px] text-muted-foreground shrink-0 w-24">{new Date(a.createdAt).toLocaleString("he-IL")}</span>
                         <span className="rounded bg-primary/10 text-primary text-[10px] px-1.5 py-0.5 shrink-0">{a.kind}</span>
-                        <span>{a.title}{a.actorRole ? ` · ${a.actorRole}` : ""}{a.detail ? ` — ${a.detail}` : ""}</span>
+                        <span>{a.title}{a.actorRole ? ` · ${a.actorRole}` : ""}{a.actorName ? ` (${a.actorName})` : ""}{a.detail ? ` — ${a.detail}` : ""}</span>
                       </div>
                     ))}
                   </div>
