@@ -705,7 +705,7 @@ function LeadsTab() {
             <div className="flex flex-wrap justify-between items-center gap-2">
               <div>
                 <p className="font-semibold">{l.fullName} · <span dir="ltr">{l.phone}</span></p>
-                <p className="text-xs text-muted-foreground">{l.email || "—"} · {l.mode === "business" ? "עסק" : "משק בית"} · {l.createdAt.slice(0, 16).replace("T", " ")}</p>
+                <p className="text-xs text-muted-foreground">{l.email || "—"} · {l.mode === "business" ? "עסק" : "משק בית"}{l.source ? ` · מקור: ${l.source}` : ""} · {l.createdAt.slice(0, 16).replace("T", " ")}</p>
               </div>
               <div className="flex items-center gap-2">
                 <Badge variant={l.webhookStatus === "sent" ? "default" : l.webhookStatus === "failed" ? "destructive" : "outline"}>וובהוק: {l.webhookStatus}</Badge>
