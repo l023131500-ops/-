@@ -330,6 +330,7 @@ export function SwitchFundDialog({
                 <ReviewRow label="ביטוח משלים נוכחי" value={form.getValues("currentSupplemental") || "—"} />
                 <ReviewRow label="מספר נפשות" value={form.getValues("peopleCount") || "—"} />
                 <ReviewRow label="יישוב מגורים" value={form.getValues("city") || "—"} />
+                <ReviewRow label="הערה" value={form.watch("note") || "—"} />
               </div>
 
               <p className="text-xs text-muted-foreground">
