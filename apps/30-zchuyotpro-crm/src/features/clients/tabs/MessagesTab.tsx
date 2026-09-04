@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useSuspenseQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { Send, MessageSquare, Mail, Phone, MessageCircle, FileText, Loader2 } from "lucide-react";
+import { Send, MessageSquare, Mail, Phone, MessageCircle, FileText, Loader2, Check, CheckCheck, AlertCircle } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { messagesQuery, clientQuery, meProfileQuery } from "@/features/clients/queries";
 import { CHANNEL } from "@/features/clients/constants";
@@ -76,6 +76,7 @@ export function MessagesTab({ clientId }: { clientId: string }) {
           {messages.map((m) => {
             const Icon = channelIcon[m.channel] ?? MessageSquare;
             const outbound = m.direction === "outbound";
+            const StatusIcon = m.status === "read" ? CheckCheck : m.status === "delivered" ? CheckCheck : m.status === "failed" ? AlertCircle : Check;
             return (
               <div key={m.id} className={cn("flex", outbound ? "justify-start" : "justify-end")}>
                 <div className={cn("max-w-[75%] rounded-lg p-3 border", outbound ? "bg-primary text-primary-foreground border-primary" : "bg-card")}>
@@ -84,6 +85,7 @@ export function MessagesTab({ clientId }: { clientId: string }) {
                     <span>{(CHANNEL as Record<string, string>)[m.channel] ?? m.channel}</span>
                     <span>·</span>
                     <span>{formatDateTimeHe(m.created_at)}</span>
+                    {outbound && <StatusIcon className="h-3 w-3" />}
                   </div>
                   <div className="text-sm whitespace-pre-wrap">{m.content}</div>
                 </div>

@@ -156,6 +156,7 @@ export interface IStorage {
   getTopic(id: number): HfTopic | undefined;
   createSwitchLead(lead: InsertSwitchLead): SwitchLead;
   listSwitchLeads(): SwitchLead[];
+  updateSwitchLeadStatus(id: number, status: string): SwitchLead | undefined;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -191,6 +192,15 @@ export class DatabaseStorage implements IStorage {
       .from(hfSwitchLeads)
       .orderBy(sql`created_at desc`)
       .all();
+  }
+
+  updateSwitchLeadStatus(id: number, status: string): SwitchLead | undefined {
+    return db
+      .update(hfSwitchLeads)
+      .set({ status })
+      .where(eq(hfSwitchLeads.id, id))
+      .returning()
+      .get();
   }
 }
 
