@@ -63,7 +63,7 @@ export const allReferralsQuery = (filters: {
     queryFn: async () => {
       let q = supabase
         .from("partner_referrals")
-        .select("*, partner:partners(id, company_name, category), client:clients(id, file_number, first_name, last_name)")
+        .select("*, partner:partners(id, company_name, category), client:clients(id, file_number, first_name, last_name), referrer:profiles!partner_referrals_referred_by_fkey(full_name)")
         .order("sent_at", { ascending: false })
         .limit(500);
       if (filters.partnerId && filters.partnerId !== "all") q = q.eq("partner_id", filters.partnerId);

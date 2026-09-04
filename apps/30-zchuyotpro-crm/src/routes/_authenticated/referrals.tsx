@@ -145,6 +145,7 @@ function ReferralsDashboardPage() {
               <div className="space-y-1"><div className="text-muted-foreground text-xs">שותף</div>
                 {selectedRow.partner && <Link to="/partners/$id" params={{ id: selectedRow.partner.id }} className="text-primary hover:underline">{selectedRow.partner.company_name}</Link>}
               </div>
+              {selectedRow.referrer && <div className="space-y-1"><div className="text-muted-foreground text-xs">הופנה ע"י</div><div>{selectedRow.referrer.full_name}</div></div>}
               <div className="grid grid-cols-2 gap-3">
                 <div><div className="text-muted-foreground text-xs">נשלח</div><div>{formatDateHe(selectedRow.sent_at)}</div></div>
                 <div><div className="text-muted-foreground text-xs">עודכן</div><div>{formatDateHe(selectedRow.updated_at)}</div></div>
