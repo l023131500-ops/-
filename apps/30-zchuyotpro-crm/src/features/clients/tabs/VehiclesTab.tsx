@@ -61,18 +61,20 @@ export function VehiclesTab({ clientId }: { clientId: string }) {
               <TableHead>לוחית רישוי</TableHead>
               <TableHead>יצרן/דגם</TableHead>
               <TableHead>שנה</TableHead>
+              <TableHead>סוג רכב</TableHead>
               <TableHead>תג נכה</TableHead>
               <TableHead>תוקף ביטוח</TableHead>
               <TableHead></TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {vehicles.length === 0 && <TableRow><TableCell colSpan={6} className="text-center text-muted-foreground py-6">אין רכבים רשומים</TableCell></TableRow>}
+            {vehicles.length === 0 && <TableRow><TableCell colSpan={7} className="text-center text-muted-foreground py-6">אין רכבים רשומים</TableCell></TableRow>}
             {vehicles.map((v) => (
               <TableRow key={v.id}>
                 <TableCell dir="ltr" className="text-start font-mono">{v.license_plate ?? "—"}</TableCell>
                 <TableCell>{[v.make, v.model].filter(Boolean).join(" ") || "—"}</TableCell>
                 <TableCell>{v.year ?? "—"}</TableCell>
+                <TableCell>{v.vehicle_type ?? "—"}</TableCell>
                 <TableCell>{v.disability_badge ? <Badge className="bg-accent text-accent-foreground border-0">תג נכה</Badge> : "—"}</TableCell>
                 <TableCell>{formatDateHe(v.insurance_expiry)}</TableCell>
                 <TableCell className="text-end">
