@@ -702,6 +702,7 @@ export function registerFinancialRoutes(app: Express) {
       recurring: finStorage.listRecurring(clientId),
       debts: finStorage.listDebts(clientId),
       goals: finStorage.listGoals(clientId),
+      documents: finStorage.listDocuments(clientId),
       alerts: finStorage.listAlerts(clientId).filter((a) => !a.acknowledged),
       plans: finStorage.listPlans(clientId).filter((p) => !p.premium || user.plan === "premium"),
       notes: finStorage.listNotes(clientId, /*visibleToUser*/ true),

@@ -1,8 +1,8 @@
 /**
  * Personal financial dashboard for an authenticated user.
  * Shows their own client's data only (transactions, budgets, debts, goals,
- * alerts, plans, notes, opportunities). Allows them to add transactions, ack
- * alerts, request premium upgrade.
+ * documents, alerts, plans, notes, opportunities). Allows them to add
+ * transactions, ack alerts, request premium upgrade.
  */
 import { useMemo, useState } from "react";
 import { useLocation, Link } from "wouter";
@@ -19,7 +19,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import {
   Wallet, TrendingUp, TrendingDown, Bell, Sparkles, LogOut, BadgeCheck,
-  Target, Banknote, ListChecks, FileDown, Lightbulb, AlertTriangle, BarChart3,
+  Target, Banknote, ListChecks, FileDown, Lightbulb, AlertTriangle, BarChart3, FileText,
 } from "lucide-react";
 
 function ils(n: number | null | undefined) {
@@ -37,6 +37,7 @@ interface DashboardPayload {
   recurring: Array<{ id: number; title: string; amount?: number | null; cadence: string; nextDate: string; kind: string }>;
   debts: Array<{ id: number; creditor: string; kind: string; currentBalance: number; monthlyPayment?: number | null; interestRate?: number | null; endDate?: string | null; status: string }>;
   goals: Array<{ id: number; title: string; targetAmount: number; savedAmount: number; targetDate?: string; monthlyContribution?: number | null; category?: string | null; status: string }>;
+  documents: Array<{ id: number; title: string; docType: string; status: string; url?: string | null; notes?: string | null; createdAt: string }>;
   alerts: Array<{ id: number; level: string; title: string; body?: string; source?: string }>;
   plans: Array<{ id: number; title: string; summary?: string; status: string; premium: number; stepsJson: string }>;
   notes: Array<{ id: number; title?: string; body: string; authorRole: string; createdAt: string }>;
@@ -133,6 +134,7 @@ function DashboardContent({ data, premiumRequests, premiumActive }: { data: Dash
         <TabsTrigger value="budgets">תקציב</TabsTrigger>
         <TabsTrigger value="debts">חובות</TabsTrigger>
         <TabsTrigger value="goals">מטרות</TabsTrigger>
+        <TabsTrigger value="documents">מסמכים</TabsTrigger>
         <TabsTrigger value="reports">דוחות חודשיים</TabsTrigger>
         <TabsTrigger value="plans">תכניות צוות</TabsTrigger>
         <TabsTrigger value="opportunities">זכויות</TabsTrigger>
@@ -179,6 +181,9 @@ function DashboardContent({ data, premiumRequests, premiumActive }: { data: Dash
       </TabsContent>
       <TabsContent value="goals">
         <GoalsTab data={data} />
+      </TabsContent>
+      <TabsContent value="documents">
+        <DocumentsTab data={data} />
       </TabsContent>
       <TabsContent value="reports">
         <ReportsTab data={data} />
@@ -344,6 +349,32 @@ function GoalsTab({ data }: { data: DashboardPayload }) {
           </Card>
         );
       })}
+    </div>
+  );
+}
+
+const docTypeLabel: Record<string, string> = { consent: "הסכמה / הצהרה", poa: "ייפוי כוח", id: "תעודת זהות", bank: "פרטי בנק", invoice: "חשבונית", report: "דוח", other: "אחר" };
+const docStatusLabel: Record<string, string> = { pending: "ממתין", received: "התקבל", reviewed: "נבדק", rejected: "נדחה" };
+
+function DocumentsTab({ data }: { data: DashboardPayload }) {
+  return (
+    <div className="space-y-3">
+      {data.documents.length === 0 && <Card className="p-6 text-muted-foreground text-sm">אין מסמכים רשומים.</Card>}
+      {data.documents.map((d) => (
+        <Card key={d.id} className="p-4 space-y-2">
+          <div className="flex items-center justify-between">
+            <h4 className="font-semibold flex items-center gap-2"><FileText className="w-4 h-4" /> {d.title}</h4>
+            <Badge variant={d.status === "rejected" ? "destructive" : d.status === "reviewed" || d.status === "received" ? "default" : "secondary"} className="text-[11px]">{docStatusLabel[d.status] ?? d.status}</Badge>
+          </div>
+          <p className="text-xs text-muted-foreground">{docTypeLabel[d.docType] ?? d.docType}</p>
+          {d.notes && <p className="text-sm text-muted-foreground">{d.notes}</p>}
+          {safeUrl(d.url) && (
+            <a href={safeUrl(d.url)} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-sm text-primary hover:underline">
+              <FileDown className="w-4 h-4" /> צפייה במסמך
+            </a>
+          )}
+        </Card>
+      ))}
     </div>
   );
 }
