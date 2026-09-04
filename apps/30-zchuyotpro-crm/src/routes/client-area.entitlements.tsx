@@ -7,6 +7,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { queryOptions } from "@tanstack/react-query";
 import { meClientQuery } from "@/routes/client-area";
 import { ENTITLEMENT_STATUS, ENTITLEMENT_STATUS_COLOR } from "@/features/clients/constants";
+import { EntitlementCategoryBadge } from "@/features/clients/components/badges";
 
 const myEntsQuery = (clientId: string | undefined) =>
   queryOptions({
@@ -44,9 +45,12 @@ function EntsPage() {
             <div key={e.id} className="border-b last:border-0 py-2">
               <div className="flex items-center justify-between gap-2">
                 <div className="font-medium text-sm">{e.entitlement?.title}</div>
-                <Badge className={ENTITLEMENT_STATUS_COLOR[e.status] ?? ""}>
-                  {ENTITLEMENT_STATUS[e.status as keyof typeof ENTITLEMENT_STATUS] ?? e.status}
-                </Badge>
+                <div className="flex items-center gap-2">
+                  <EntitlementCategoryBadge category={e.entitlement?.category ?? null} />
+                  <Badge className={ENTITLEMENT_STATUS_COLOR[e.status] ?? ""}>
+                    {ENTITLEMENT_STATUS[e.status as keyof typeof ENTITLEMENT_STATUS] ?? e.status}
+                  </Badge>
+                </div>
               </div>
               {e.entitlement?.description && (
                 <p className="text-xs text-muted-foreground mt-1">{e.entitlement.description}</p>
