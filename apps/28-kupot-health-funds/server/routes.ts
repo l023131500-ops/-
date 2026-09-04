@@ -257,6 +257,11 @@ export async function registerRoutes(
     const context = [
       `נושא: ${topic.topic}`,
       topic.category ? `קטגוריה: ${topic.category}` : "",
+      // subCategory מוצג כתג נפרד ב-TopicCard.tsx ונכלל בשורת התיאור בדוח
+      // המודפס (hf-report.ts, ר' commit 3027632d) אך נשמט כאן — היועץ החכם
+      // ראה רק category, בעוד subCategory (בעיקר ממשלה/עמותות) מוסיף בדיוק
+      // את הפירוט שמבדיל בין נושאים תחת אותה קטגוריה רחבה.
+      topic.subCategory ? `תת-קטגוריה: ${topic.subCategory}` : "",
       topic.audience ? `למי מיועד: ${topic.audience}` : "",
       topic.rangeText ? `מה ניתן לקבל (כללי): ${topic.rangeText}` : "",
       decided
