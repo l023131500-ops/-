@@ -2,11 +2,23 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { FileText, Download, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { queryOptions } from "@tanstack/react-query";
 import { meClientQuery } from "@/routes/client-area";
+
+function sigBadge(status: string | null) {
+  const map: Record<string, { label: string; cls: string }> = {
+    pending: { label: "ממתין לחתימה", cls: "bg-yellow-100 text-yellow-900" },
+    signed: { label: "נחתם", cls: "bg-green-100 text-green-900" },
+    rejected: { label: "נדחה", cls: "bg-red-100 text-red-900" },
+  };
+  if (!status) return null;
+  const v = map[status];
+  return v ? <Badge className={`${v.cls} border-0`} variant="secondary">{v.label}</Badge> : null;
+}
 
 const myDocsQuery = (clientId: string | undefined) =>
   queryOptions({
@@ -57,6 +69,7 @@ function DocsPage() {
                 <div className="min-w-0">
                   <div className="text-sm font-medium truncate">{d.file_name}</div>
                   <div className="text-xs text-muted-foreground">{new Date(d.created_at).toLocaleDateString("he-IL")}</div>
+                  {d.requires_signature && <div className="mt-1">{sigBadge(d.signature_status)}</div>}
                 </div>
               </div>
               <Button size="sm" variant="outline" onClick={() => download(d.storage_path, d.file_name)}>
