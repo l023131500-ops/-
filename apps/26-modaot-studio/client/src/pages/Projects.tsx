@@ -18,7 +18,7 @@
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { useLocation } from "wouter";
 import { useQuery } from "@tanstack/react-query";
-import { ArrowLeft, Crown, FolderOpen, Home as HomeIcon, PenLine, Trash2 } from "lucide-react";
+import { ArrowLeft, Crown, FolderOpen, Home as HomeIcon, MessageSquare, PenLine, Trash2 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -176,6 +176,7 @@ export default function Projects() {
               const doc = docOf(p);
               const style = getStyle(p.style);
               const category = getCategory(p.category);
+              const clientNotes = clientNotesOf(p);
               return (
                 <Card
                   key={p.id}
@@ -211,6 +212,11 @@ export default function Projects() {
                       )}
                       {/* dir="ltr": בתוך פסקה RTL הדפדפן היה מסדר 1080×1350 כ-1350×1080 */}
                       <span dir="ltr" className="text-[10px] text-[#F5EEDD]/40">{p.width}×{p.height}</span>
+                      {clientNotes && (
+                        <span title={clientNotes} data-testid={`badge-client-notes-${p.id}`}>
+                          <MessageSquare className="h-3 w-3 text-[#C9A227]/70" />
+                        </span>
+                      )}
                     </div>
                     <div className="flex items-center justify-between">
                       <span className="text-[11px] text-[#F5EEDD]/50" data-testid={`text-project-updated-${p.id}`}>
