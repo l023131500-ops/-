@@ -463,6 +463,7 @@ export default function FinancialCrmPage() {
                             {t.dueDate && <span>📅 {t.dueDate}</span>}
                             <span>עדיפות: {t.priority}</span>
                             <span>סטטוס: {t.status}</span>
+                            {t.createdBy && <span>נוצרה ע״י: {t.createdBy}</span>}
                           </div>
                         </div>
                         <div className="flex flex-col gap-1">
