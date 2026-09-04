@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { meClientQuery } from "@/routes/client-area";
+import { formatDateHe } from "@/lib/format";
 
 export const Route = createFileRoute("/client-area/")({
   head: () => ({ meta: [{ title: "פרופיל אישי | זכויות פרו" }] }),
@@ -24,6 +25,7 @@ function ProfilePage() {
         <Row l="מספר תיק" v={c.file_number} />
         <Row l="שם" v={`${c.first_name} ${c.last_name}`} />
         <Row l="ת.ז" v={c.id_number} />
+        <Row l="תאריך לידה" v={c.birth_date ? formatDateHe(c.birth_date) : null} />
         <Row l="טלפון" v={c.phone} />
         <Row l="אימייל" v={c.email} />
         <Row l="כתובת" v={[c.address, c.city].filter(Boolean).join(", ") || null} />
