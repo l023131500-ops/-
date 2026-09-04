@@ -103,7 +103,7 @@ export function DocumentsTab({ clientId }: { clientId: string }) {
                   <FileText className="h-8 w-8 text-primary flex-shrink-0 mt-0.5" />
                   <div className="flex-1 min-w-0">
                     <div className="font-medium truncate">{d.file_name}</div>
-                    <div className="text-xs text-muted-foreground">{formatDateTimeHe(d.created_at)}</div>
+                    <div className="text-xs text-muted-foreground">{formatDateTimeHe(d.created_at)}{d.file_size_bytes ? ` · ${(d.file_size_bytes / 1024).toFixed(0)} KB` : ""}</div>
                   </div>
                 </div>
                 {(d.requires_signature || d.processing_status !== "pending") && (
