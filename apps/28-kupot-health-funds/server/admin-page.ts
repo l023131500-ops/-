@@ -86,7 +86,10 @@ export function renderAdminPage(): string {
   var app = document.getElementById("app");
   var errorEl = document.getElementById("error");
   var pwInput = document.getElementById("pw");
-  var COLUMNS = ["id","created_at","topic","full_name","phone","email","id_number","city","current_fund","current_supplemental","target_fund","people_count","status","note"];
+  // topic_id (hf_switch_leads.topic_id) מגיע בכל שורה מ-Supabase לצד topic
+  // (שם הנושא בטקסט חופשי) אך לא הוצג — מזהה הנושא המדויק דרוש כדי לאתר את
+  // הנושא במאגר כשכמה נושאים חולקים שם דומה, בעוד topic לבדו עלול להיות דו-משמעי.
+  var COLUMNS = ["id","created_at","topic_id","topic","full_name","phone","email","id_number","city","current_fund","current_supplemental","target_fund","people_count","status","note"];
   var STATUSES = ["new","in_progress","done","irrelevant"];
   var statusFilter = document.getElementById("status-filter");
   var allLeads = [];
