@@ -74,8 +74,12 @@ export function renderHfReportHtml(opts: {
         // שהוכן בדיוק בשביל המקרה הזה (ר' TopicCard.tsx / shared/schema.ts)
         // ולא נבדק כאן — הנפילה הייתה מדלגת ישר ל"—" בעוד לכל 113 יש חלופה.
         const value = t.rangeText || t.publicSiteText || "—";
+        // subCategory מוצג כתג נפרד ב-TopicCard.tsx (ר' commit 0ab8e968) אך
+        // הדוח כאן הרכיב את שורת התיאור רק מ-category+audience — subCategory
+        // (מאוכלס ב-80 מתוך 515 נושאים, בעיקר ממשלה/עמותות) נשמט בשקט.
+        const subLine = [t.category, t.subCategory, t.audience].filter(Boolean).join(" · ");
         return `<tr>
-          <td class="name">${esc(t.topic)}<div class="muted">${esc([t.category, t.audience].filter(Boolean).join(" · "))}</div></td>
+          <td class="name">${esc(t.topic)}<div class="muted">${esc(subLine)}</div></td>
           <td>${esc(value)}</td>
           <td class="best">${bestLabel}</td>
           <td class="muted small">${esc(t.benefitSummary || "—")}</td>
