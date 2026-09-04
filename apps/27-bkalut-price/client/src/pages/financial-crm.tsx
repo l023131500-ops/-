@@ -627,8 +627,13 @@ export default function FinancialCrmPage() {
                     (reports ?? []).map((r) => (
                       <div key={r.id} className="rounded-md border p-3">
                         <p className="font-semibold text-sm">{r.title}</p>
-                        <p className="text-[11px] text-muted-foreground">{r.periodMonth} · {r.status}</p>
+                        <p className="text-[11px] text-muted-foreground">{r.periodMonth} · {r.status}{r.sentAt && <span> · נשלח בתאריך {r.sentAt.slice(0, 10)}</span>}</p>
                         {r.summary && <p className="text-xs text-muted-foreground mt-1 whitespace-pre-wrap">{r.summary}</p>}
+                        {safeUrl(r.url) && (
+                          <a href={safeUrl(r.url)} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-xs text-primary hover:underline mt-1">
+                            קישור לדוח המלא
+                          </a>
+                        )}
                       </div>
                     ))
                   )}
