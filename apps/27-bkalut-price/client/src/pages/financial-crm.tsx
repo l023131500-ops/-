@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useRoute, useLocation } from "wouter";
-import type { FinClient, FinTask, FinMessage, FinDocument, FinReminder, FinReport, FinActivityLog, FinGoal, FinAlert } from "@shared/schema";
+import type { FinClient, FinTask, FinMessage, FinDocument, FinReminder, FinReport, FinActivityLog, FinGoal, FinAlert, FinNote } from "@shared/schema";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -12,10 +12,10 @@ import { safeUrl } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
 import {
   Briefcase, CheckSquare, Mail, FileText, Bell, BarChart3, Clock, Plus, Send, Trash2, Users, ChevronLeft, Target,
-  AlertTriangle, Check,
+  AlertTriangle, Check, StickyNote,
 } from "lucide-react";
 
-type Tab = "tasks" | "messages" | "documents" | "reminders" | "reports" | "goals" | "alerts" | "activity";
+type Tab = "tasks" | "messages" | "documents" | "reminders" | "reports" | "goals" | "alerts" | "notes" | "activity";
 
 export default function FinancialCrmPage() {
   const { toast } = useToast();
@@ -63,6 +63,10 @@ export default function FinancialCrmPage() {
     queryKey: [`/api/financial/clients/${selectedId}/alerts`],
     enabled: Boolean(selectedId),
   });
+  const { data: notes } = useQuery<FinNote[]>({
+    queryKey: [`/api/financial/clients/${selectedId}/notes`],
+    enabled: Boolean(selectedId),
+  });
 
   function refreshFor(kind: string) {
     queryClient.invalidateQueries({ queryKey: [`/api/financial/clients/${selectedId}/${kind}`] });
@@ -77,6 +81,7 @@ export default function FinancialCrmPage() {
   const [newReport, setNewReport] = useState({ title: "", periodMonth: new Date().toISOString().slice(0, 7), summary: "", status: "draft" });
   const [newGoal, setNewGoal] = useState({ title: "", targetAmount: "", targetDate: "", monthlyContribution: "" });
   const [newAlert, setNewAlert] = useState({ title: "", body: "", level: "info" });
+  const [newNote, setNewNote] = useState({ title: "", body: "", visibility: "both" });
 
   const createTask = useMutation({
     mutationFn: async () => {
@@ -265,6 +270,31 @@ export default function FinancialCrmPage() {
     onError: () => toast({ title: "שגיאה במחיקת ההתראה", variant: "destructive" }),
   });
 
+  const createNote = useMutation({
+    mutationFn: async () => {
+      const r = await apiRequest("POST", "/api/financial/notes", {
+        clientId: selectedId,
+        title: newNote.title,
+        body: newNote.body,
+        visibility: newNote.visibility,
+        authorRole: "admin",
+      });
+      return r.json();
+    },
+    onSuccess: () => {
+      refreshFor("notes");
+      setNewNote({ title: "", body: "", visibility: "both" });
+      toast({ title: "ההערה נשמרה" });
+    },
+    onError: () => toast({ title: "שגיאה בשמירת ההערה", variant: "destructive" }),
+  });
+
+  const deleteNote = useMutation({
+    mutationFn: async (id: number) => apiRequest("DELETE", `/api/financial/notes/${id}`),
+    onSuccess: () => refreshFor("notes"),
+    onError: () => toast({ title: "שגיאה במחיקת ההערה", variant: "destructive" }),
+  });
+
   const TABS: Array<{ key: Tab; label: string; icon: React.ComponentType<{ className?: string }> }> = [
     { key: "tasks", label: "משימות", icon: CheckSquare },
     { key: "messages", label: "הודעות", icon: Mail },
@@ -273,6 +303,7 @@ export default function FinancialCrmPage() {
     { key: "reports", label: "דוחות חודשיים", icon: BarChart3 },
     { key: "goals", label: "מטרות", icon: Target },
     { key: "alerts", label: "התראות", icon: AlertTriangle },
+    { key: "notes", label: "הערות", icon: StickyNote },
     { key: "activity", label: "פעילות", icon: Clock },
   ];
 
@@ -685,6 +716,47 @@ export default function FinancialCrmPage() {
                           )}
                           <Button size="sm" variant="ghost" onClick={() => deleteAlert.mutate(a.id)}><Trash2 className="w-3.5 h-3.5" /></Button>
                         </div>
+                      </div>
+                    ))
+                  )}
+                </div>
+              </Card>
+            )}
+
+            {/* NOTES */}
+            {tab === "notes" && (
+              <Card className="p-4 border border-card-border bg-card space-y-3" data-testid="crm-notes-panel">
+                <h3 className="text-sm font-bold">הערה חדשה</h3>
+                <Input placeholder="כותרת (אופציונלי)" value={newNote.title} onChange={(e) => setNewNote({ ...newNote, title: e.target.value })} data-testid="input-new-note-title" />
+                <Textarea placeholder="תוכן ההערה" value={newNote.body} onChange={(e) => setNewNote({ ...newNote, body: e.target.value })} aria-label="תוכן ההערה" className="min-h-20" data-testid="input-new-note-body" />
+                <select className="rounded-md border border-input bg-background px-3 py-2 text-sm" value={newNote.visibility} onChange={(e) => setNewNote({ ...newNote, visibility: e.target.value })}>
+                  <option value="both">גלוי ללקוח וצוות</option>
+                  <option value="admin_only">פנימי לצוות בלבד</option>
+                  <option value="user_only">גלוי ללקוח בלבד</option>
+                </select>
+                <Button onClick={() => createNote.mutate()} disabled={!newNote.body || createNote.isPending} data-testid="button-create-note">
+                  <Plus className="w-4 h-4 ml-1" />
+                  הוספת הערה
+                </Button>
+
+                <div className="border-t pt-3 space-y-2">
+                  {(notes ?? []).length === 0 ? (
+                    <p className="text-xs text-muted-foreground">אין הערות ללקוח זה.</p>
+                  ) : (
+                    (notes ?? []).map((n) => (
+                      <div key={n.id} className="rounded-md border p-3 flex items-start gap-3" data-testid={`note-row-${n.id}`}>
+                        <div className="flex-1 min-w-0">
+                          {n.title && <p className="font-semibold text-sm">{n.title}</p>}
+                          <p className="text-sm mt-0.5 whitespace-pre-wrap">{n.body}</p>
+                          <div className="text-[11px] text-muted-foreground mt-1 flex flex-wrap gap-2">
+                            <span>{new Date(n.createdAt).toLocaleString("he-IL")}</span>
+                            <span>{n.authorRole}</span>
+                            <span>
+                              {n.visibility === "admin_only" ? "פנימי לצוות בלבד" : n.visibility === "user_only" ? "גלוי ללקוח בלבד" : "גלוי ללקוח וצוות"}
+                            </span>
+                          </div>
+                        </div>
+                        <Button size="sm" variant="ghost" onClick={() => deleteNote.mutate(n.id)}><Trash2 className="w-3.5 h-3.5" /></Button>
                       </div>
                     ))
                   )}
