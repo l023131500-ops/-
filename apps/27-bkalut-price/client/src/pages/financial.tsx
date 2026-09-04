@@ -469,6 +469,11 @@ function RecurringTab({ client }: { client: FinClient }) {
     onSuccess: () => queryClient.invalidateQueries({ queryKey: [`/api/financial/clients/${client.id}/recurring`] }),
     onError: () => toast({ title: "מחיקת התזכורת נכשלה", variant: "destructive" }),
   });
+  const update = useMutation({
+    mutationFn: async ({ id, patch }: { id: number; patch: any }) => apiRequest("PATCH", `/api/financial/recurring/${id}`, patch),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: [`/api/financial/clients/${client.id}/recurring`] }),
+    onError: () => toast({ title: "עדכון התזכורת נכשל", variant: "destructive" }),
+  });
   return (
     <div className="space-y-4">
       <Card className="p-5 space-y-3">
@@ -498,7 +503,7 @@ function RecurringTab({ client }: { client: FinClient }) {
         <h3 className="font-semibold mb-3">תזכורות פעילות</h3>
         <div className="space-y-2">
           {list.map((r) => (
-            <div key={r.id} className="flex items-center justify-between border-b border-border py-2 text-sm">
+            <div key={r.id} className={`flex items-center justify-between border-b border-border py-2 text-sm ${!r.active ? "opacity-50" : ""}`}>
               <div>
                 <p className="font-semibold">{r.title}</p>
                 <p className="text-xs text-muted-foreground">תאריך בא: {r.nextDate} · {r.cadence} · {r.kind}</p>
@@ -506,6 +511,10 @@ function RecurringTab({ client }: { client: FinClient }) {
               </div>
               <div className="flex items-center gap-3">
                 {r.amount ? <span className="tabular-nums">{ils(r.amount)}</span> : null}
+                <label className="text-xs flex items-center gap-1">
+                  <input type="checkbox" checked={Boolean(r.active)} onChange={(e) => update.mutate({ id: r.id, patch: { active: e.target.checked ? 1 : 0 } })} />
+                  פעיל
+                </label>
                 <Button size="sm" variant="ghost" onClick={() => { if (!confirm(`למחוק את התזכורת "${r.title}"?`)) return; del.mutate(r.id); }}><Trash2 className="w-4 h-4 text-destructive" /></Button>
               </div>
             </div>
