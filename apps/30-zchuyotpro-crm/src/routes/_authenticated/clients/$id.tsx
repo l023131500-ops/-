@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { ArrowRight, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { clientQuery } from "@/features/clients/queries";
@@ -76,6 +77,13 @@ function ClientProfilePage() {
             {client.updated_at && (
               <div className="text-xs text-muted-foreground mt-1">
                 עודכן לאחרונה: {formatDateTimeHe(client.updated_at)}
+              </div>
+            )}
+            {client.tags && client.tags.length > 0 && (
+              <div className="flex flex-wrap gap-1 mt-2">
+                {client.tags.map((t) => (
+                  <Badge key={t} variant="secondary">{t}</Badge>
+                ))}
               </div>
             )}
           </div>
