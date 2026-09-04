@@ -72,7 +72,12 @@ function TasksPage() {
                   const assignee = (t as { assignee?: { full_name: string } | null }).assignee;
                   return (
                     <TableRow key={t.id}>
-                      <TableCell className="font-medium">{t.title}</TableCell>
+                      <TableCell className="font-medium">
+                        {t.title}
+                        {t.description && (
+                          <div className="text-xs text-muted-foreground font-normal mt-0.5 line-clamp-1">{t.description}</div>
+                        )}
+                      </TableCell>
                       <TableCell>
                         {client ? (
                           <Link to="/clients/$id" params={{ id: client.id }} className="text-primary hover:underline">
