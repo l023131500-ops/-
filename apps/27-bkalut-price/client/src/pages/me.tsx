@@ -36,7 +36,7 @@ interface DashboardPayload {
   budgets: Array<{ id: number; categoryId: number; monthlyLimit: number; note?: string }>;
   recurring: Array<{ id: number; title: string; amount?: number | null; cadence: string; nextDate: string; kind: string }>;
   debts: Array<{ id: number; creditor: string; kind: string; currentBalance: number; monthlyPayment?: number | null; interestRate?: number | null; status: string }>;
-  goals: Array<{ id: number; title: string; targetAmount: number; savedAmount: number; targetDate?: string; monthlyContribution?: number | null; status: string }>;
+  goals: Array<{ id: number; title: string; targetAmount: number; savedAmount: number; targetDate?: string; monthlyContribution?: number | null; category?: string | null; status: string }>;
   alerts: Array<{ id: number; level: string; title: string; body?: string; source?: string }>;
   plans: Array<{ id: number; title: string; summary?: string; status: string; premium: number; stepsJson: string }>;
   notes: Array<{ id: number; title?: string; body: string; authorRole: string; createdAt: string }>;
@@ -339,6 +339,7 @@ function GoalsTab({ data }: { data: DashboardPayload }) {
             </div>
             {g.targetDate && <div className="text-xs text-muted-foreground">יעד: {g.targetDate}</div>}
             {g.monthlyContribution != null && <div className="text-xs text-muted-foreground">הפקדה חודשית: {ils(g.monthlyContribution)}</div>}
+            {g.category && <div className="text-xs text-muted-foreground">קטגוריה: {g.category}</div>}
           </Card>
         );
       })}
