@@ -600,6 +600,7 @@ export default function PotentialAdminPage() {
                 {s.contactConsent && s.contact && (
                   <div className="mt-1 text-sm">
                     {s.contact.fullName} · {s.contact.phone} · {s.contact.email}
+                    {s.contact.idNumber && <> · ת.ז. {s.contact.idNumber}</>}
                   </div>
                 )}
                 <div className="mt-2 text-xs">
