@@ -6,6 +6,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { clientQuery } from "@/features/clients/queries";
 import { StatusBadge } from "@/features/clients/components/badges";
+import { formatDateTimeHe } from "@/lib/format";
 import { PersonalTab } from "@/features/clients/tabs/PersonalTab";
 import { FamilyTab } from "@/features/clients/tabs/FamilyTab";
 import { FinancialTab } from "@/features/clients/tabs/FinancialTab";
@@ -72,6 +73,11 @@ function ClientProfilePage() {
                 </span>
               )}
             </div>
+            {client.updated_at && (
+              <div className="text-xs text-muted-foreground mt-1">
+                עודכן לאחרונה: {formatDateTimeHe(client.updated_at)}
+              </div>
+            )}
           </div>
           <StatusBadge status={client.status} />
         </CardContent>
