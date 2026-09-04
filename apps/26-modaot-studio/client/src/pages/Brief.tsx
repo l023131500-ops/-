@@ -386,7 +386,12 @@ export default function Brief() {
                   <CardContent className="flex gap-4 p-6">
                     <Lightbulb className="mt-1 h-6 w-6 flex-shrink-0 text-[#C9A227]" />
                     <div>
-                      <h3 className="mb-1 text-sm font-bold text-[#C9A227]">הבנת הרעיון</h3>
+                      <div className="mb-1 flex items-center gap-2">
+                        <h3 className="text-sm font-bold text-[#C9A227]">הבנת הרעיון</h3>
+                        <Badge variant="outline" className="border-[#C9A227]/30 text-[10px] text-[#F5EEDD]/60" data-testid="badge-concept-source">
+                          {resp.source === "ai" ? "מנותח ב-AI" : "דירוג מקומי"}
+                        </Badge>
+                      </div>
                       <p className="text-sm leading-relaxed text-[#F5EEDD]/90" data-testid="text-understanding">
                         {resp.understanding}
                       </p>
