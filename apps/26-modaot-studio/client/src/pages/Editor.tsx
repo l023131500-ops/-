@@ -110,6 +110,15 @@ interface BackgroundRow {
   createdAt: number;
 }
 
+// תווית תצוגה למנוע היצירה (bg.engine) של רקע שמור — השדה מגיע מהשרת ונשמר לכל
+// רקע (ר' shared/schema.ts, backgrounds.engine) אך עד כה לא הוצג בספריית הרקעים,
+// רק זמנית בבחירת האפשרויות הטריות (aiVariants) שאינן נשמרות לקריאה חוזרת.
+function engineLabel(engine: string): string {
+  if (engine === "recraft") return "Recraft";
+  if (engine === "gemini") return "Gemini";
+  return engine;
+}
+
 // פריסות "קטע" — היכן על הקנבס תמוקם תמונת-רקע נוספת שאינה הרקע הכללי (פריט 54,
 // "הוספת רקעים נוספים לקטעים בעמוד"). כל פריסה היא פונקציה טהורה של מידות הקנבס.
 type SectionKey = "top" | "bottom" | "right" | "left";
@@ -1835,6 +1844,12 @@ export default function Editor() {
                     >
                       <img src={bg.dataUrl} alt={bg.prompt} className="h-16 w-full object-cover" />
                     </button>
+                    <span
+                      className="pointer-events-none absolute bottom-1 right-1 rounded bg-black/60 px-1 py-0.5 text-[9px] leading-none text-white/90"
+                      data-testid={`badge-library-bg-engine-${bg.id}`}
+                    >
+                      {engineLabel(bg.engine)}
+                    </span>
                     <button
                       type="button"
                       onClick={(e) => { e.stopPropagation(); setLibraryPreview(bg); }}
@@ -1872,7 +1887,14 @@ export default function Editor() {
       <Dialog open={!!libraryPreview} onOpenChange={(o) => !o && setLibraryPreview(null)}>
         <DialogContent className="max-w-2xl border-[#C9A227]/30 bg-[#0E1830] text-[#F5EEDD]" dir="rtl">
           <DialogHeader>
-            <DialogTitle className="text-[#F5EEDD]">רקע מהספרייה</DialogTitle>
+            <DialogTitle className="text-[#F5EEDD]">
+              רקע מהספרייה
+              {libraryPreview && (
+                <span className="mr-2 rounded bg-[#C9A227]/15 px-1.5 py-0.5 align-middle text-[10px] font-normal text-[#C9A227]" data-testid="badge-library-preview-engine">
+                  {engineLabel(libraryPreview.engine)}
+                </span>
+              )}
+            </DialogTitle>
             {libraryPreview?.prompt && <DialogDescription>{libraryPreview.prompt}</DialogDescription>}
           </DialogHeader>
           {libraryPreview && (
