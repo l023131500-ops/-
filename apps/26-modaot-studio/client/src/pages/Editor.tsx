@@ -1622,7 +1622,7 @@ export default function Editor() {
                           type="button"
                           onClick={() => openBrandInNewTab(b.id)}
                           className="flex min-w-0 flex-1 items-center gap-2 text-right"
-                          title="פתיחה במחלקת המיתוג (כרטיסייה חדשה)"
+                          title={`פתיחה במחלקת המיתוג (כרטיסייה חדשה) · עודכן ${bgDateLabel(b.updatedAt)}`}
                           data-testid={`button-open-brand-${b.id}`}
                         >
                           {b.logoPng ? (
