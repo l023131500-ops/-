@@ -1011,6 +1011,14 @@ export default function Editor() {
           >
             {format.colorSpace}
           </Badge>
+          <Badge
+            variant="outline"
+            title={format.dpi >= 300 ? "פורמט הדפסה — רזולוציית ייצוא של 300DPI" : "פורמט דיגיטלי — רזולוציית ייצוא של 72DPI"}
+            className="border-[#C9A227]/30 text-[10px] text-[#F5EEDD]/70"
+            data-testid="badge-dpi"
+          >
+            {format.dpi} DPI
+          </Badge>
           {format.note && (
             <span title={format.note} data-testid="hint-format-note" className="text-[#F5EEDD]/50">
               <Info className="h-3.5 w-3.5" />
