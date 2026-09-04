@@ -24,6 +24,7 @@ interface LogRow {
   responseText: string | null;
   attempts: number;
   lastAttemptAt: string | null;
+  nextRetryAt?: string | null;
   createdAt: string;
   payload?: any;
   payloadJson: string;
@@ -105,6 +106,7 @@ function WebhookLogInner() {
                       <div className="space-y-2 text-xs">
                         <div><strong>Endpoint:</strong> <span dir="ltr">{r.endpointUrl}</span></div>
                         {r.lastAttemptAt && <div><strong>ניסיון אחרון:</strong> <span dir="ltr">{r.lastAttemptAt}</span></div>}
+                        {r.nextRetryAt && <div><strong>ניסיון הבא מתוזמן:</strong> <span dir="ltr">{r.nextRetryAt}</span></div>}
                         {r.responseText && <div><strong>תגובת השרת:</strong> <pre className="bg-background border rounded p-2 overflow-x-auto whitespace-pre-wrap" dir="ltr">{r.responseText}</pre></div>}
                         <div><strong>Payload:</strong>
                           <pre className="bg-background border rounded p-2 overflow-x-auto whitespace-pre-wrap" dir="ltr">{JSON.stringify(r.payload ?? safeParse(r.payloadJson), null, 2)}</pre>
