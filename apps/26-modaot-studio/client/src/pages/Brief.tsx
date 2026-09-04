@@ -531,6 +531,11 @@ function ConceptCard({ concept, loading, onOpen }: { concept: Concept; loading: 
               <span className="text-[#C9A227]/80">צבעוניות: </span>{concept.palette}
             </p>
           )}
+          {concept.copyHint && (
+            <p className="mt-1 text-[11px] text-[#F5EEDD]/50" data-testid={`text-copyhint-${key}`}>
+              <span className="text-[#C9A227]/80">רמז לקופי: </span>{concept.copyHint}
+            </p>
+          )}
           <div className="mt-3 flex items-center gap-1 text-xs font-semibold text-[#C9A227] opacity-0 transition group-hover:opacity-100">
             פתח בעורך <ArrowLeft className="h-4 w-4" />
           </div>
