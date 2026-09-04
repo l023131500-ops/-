@@ -1721,13 +1721,17 @@ export default function Editor() {
               <p className="text-sm text-[#F5EEDD]/60">אין דוגמאות קופי לקטגוריה זו כרגע</p>
             )}
             {copyExamples.map((ex, i) => (
-              <button
-                key={i}
-                onClick={() => applyCopyExample(ex.text)}
-                className="block w-full rounded-lg border border-[#C9A227]/20 bg-[#101B32] p-3 text-right text-sm leading-relaxed transition hover:border-[#C9A227]/60"
-              >
-                {ex.text}
-              </button>
+              <div key={i} className="overflow-hidden rounded-lg border border-[#C9A227]/20 bg-[#101B32]">
+                <button
+                  onClick={() => applyCopyExample(ex.text)}
+                  className="block w-full p-3 text-right text-sm leading-relaxed transition hover:bg-[#C9A227]/5"
+                >
+                  {ex.text}
+                </button>
+                <p className="truncate border-t border-[#C9A227]/10 px-3 py-1 text-[10px] text-[#F5EEDD]/40" title={ex.source}>
+                  מקור: {ex.source}
+                </p>
+              </div>
             ))}
           </div>
         </DialogContent>
