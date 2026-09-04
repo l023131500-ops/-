@@ -79,7 +79,7 @@ export default function FinancialCrmPage() {
   const [newDoc, setNewDoc] = useState({ title: "", docType: "consent", status: "pending", url: "", notes: "" });
   const [newReminder, setNewReminder] = useState({ title: "", body: "", dueAt: "", channel: "internal" });
   const [newReport, setNewReport] = useState({ title: "", periodMonth: new Date().toISOString().slice(0, 7), summary: "", status: "draft" });
-  const [newGoal, setNewGoal] = useState({ title: "", targetAmount: "", targetDate: "", monthlyContribution: "" });
+  const [newGoal, setNewGoal] = useState({ title: "", targetAmount: "", targetDate: "", monthlyContribution: "", category: "", notes: "" });
   const [newAlert, setNewAlert] = useState({ title: "", body: "", level: "info" });
   const [newNote, setNewNote] = useState({ title: "", body: "", visibility: "both" });
 
@@ -213,12 +213,14 @@ export default function FinancialCrmPage() {
         targetAmount: Number(newGoal.targetAmount) || 0,
         targetDate: newGoal.targetDate || null,
         monthlyContribution: newGoal.monthlyContribution ? Number(newGoal.monthlyContribution) : null,
+        category: newGoal.category || null,
+        notes: newGoal.notes || null,
       });
       return r.json();
     },
     onSuccess: () => {
       refreshFor("goals");
-      setNewGoal({ title: "", targetAmount: "", targetDate: "", monthlyContribution: "" });
+      setNewGoal({ title: "", targetAmount: "", targetDate: "", monthlyContribution: "", category: "", notes: "" });
       toast({ title: "המטרה נוספה" });
     },
     onError: () => toast({ title: "שגיאה ביצירת המטרה", variant: "destructive" }),
@@ -640,6 +642,16 @@ export default function FinancialCrmPage() {
                   <Input type="date" value={newGoal.targetDate} onChange={(e) => setNewGoal({ ...newGoal, targetDate: e.target.value })} />
                   <Input type="number" placeholder="הפקדה חודשית (₪, אופציונלי)" value={newGoal.monthlyContribution} onChange={(e) => setNewGoal({ ...newGoal, monthlyContribution: e.target.value })} />
                 </div>
+                <select className="rounded-md border border-input bg-background px-3 py-2 text-sm" value={newGoal.category} onChange={(e) => setNewGoal({ ...newGoal, category: e.target.value })}>
+                  <option value="">קטגוריה (אופציונלי)</option>
+                  <option value="emergency">קרן חירום</option>
+                  <option value="education">חינוך</option>
+                  <option value="wedding">חתונה</option>
+                  <option value="home">דיור</option>
+                  <option value="retirement">פרישה</option>
+                  <option value="other">אחר</option>
+                </select>
+                <Textarea placeholder="הערות (אופציונלי)" value={newGoal.notes} onChange={(e) => setNewGoal({ ...newGoal, notes: e.target.value })} aria-label="הערות למטרה" className="min-h-14" />
                 <Button onClick={() => createGoal.mutate()} disabled={!newGoal.title || !newGoal.targetAmount || createGoal.isPending} data-testid="button-create-goal">
                   <Plus className="w-4 h-4 ml-1" />
                   הוספת מטרה
@@ -657,7 +669,9 @@ export default function FinancialCrmPage() {
                             <span>{g.savedAmount}₪ / {g.targetAmount}₪</span>
                             {g.targetDate && <span>📅 {g.targetDate}</span>}
                             {g.monthlyContribution != null && <span>הפקדה: {g.monthlyContribution}₪/חודש</span>}
+                            {g.category && <span>קטגוריה: {g.category}</span>}
                           </div>
+                          {g.notes && <p className="text-xs text-muted-foreground mt-1 whitespace-pre-wrap">{g.notes}</p>}
                         </div>
                         <div className="flex flex-col gap-1">
                           <select value={g.status} onChange={(e) => updateGoalStatus.mutate({ id: g.id, status: e.target.value })} className="text-xs rounded-md border border-input bg-background px-2 py-1">
