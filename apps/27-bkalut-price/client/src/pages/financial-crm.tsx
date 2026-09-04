@@ -382,7 +382,9 @@ export default function FinancialCrmPage() {
                     {client.email ? ` · ${client.email}` : ""}
                     {client.monthlyIncome ? ` · הכנסה ${client.monthlyIncome}₪/חודש` : ""}
                     {client.familySize ? ` · ${client.familySize} נפשות` : ""}
+                    {client.city ? ` · ${client.city}` : ""}
                   </p>
+                  {client.notes && <p className="text-xs text-muted-foreground mt-1">הערות: {client.notes}</p>}
                 </div>
                 <div className="flex items-center gap-4 text-xs">
                   <div className="text-center">
