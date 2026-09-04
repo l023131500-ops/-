@@ -90,6 +90,13 @@ a{color:inherit;text-decoration:none}
 .mhist .hcol.negcol{background:rgba(228,96,78,.6)}
 .mhist .hy{font-size:10px;color:var(--muted)}
 .mhist-lbl{font-size:11px;color:var(--muted);margin-top:4px}
+.mformula{margin-top:10px;font-size:12px}
+.mformula summary{cursor:pointer;color:var(--muted);list-style:none}
+.mformula summary::-webkit-details-marker{display:none}
+.mformula summary:hover{color:var(--gold-soft)}
+.mformula summary::before{content:'איך זה מחושב ▾ ';}
+.mformula[open] summary::before{content:'איך זה מחושב ▴ '}
+.mformula p{margin:6px 0 0;color:var(--ink-2);line-height:1.5}
 
 table{width:100%;border-collapse:collapse;font-size:14.5px}
 th,td{padding:9px 10px;text-align:right;border-bottom:1px solid var(--line-2)}
@@ -348,9 +355,14 @@ function metricCard(def, m, hist) {
       '<span class="hy">' + h.y + '</span></div>').join('') +
       '</div><div class="mhist-lbl">' + hist[0].y + '–' + hist[hist.length - 1].y + ' · השנים שנטענו בלבד</div>';
   }
+  // מקור החישוב מוצמד לכל מדד ע"י kesef_authority_report (mv.formula) — מוצג
+  // מקופל כדי לא לעמוס את הכרטיס, בהתאם לרוח השקיפות של שאר הדף.
+  const formulaHtml = m.formula
+    ? '<details class="mformula"><summary></summary><p>' + esc(m.formula) + '</p></details>'
+    : '';
   return '<div class="mcard"><h3>' + esc(def.label) + '</h3>' +
     '<div class="mval">' + fmt(v) + badge + '</div>' +
-    '<div class="mpeer">' + peerLine + '</div>' + range + histHtml + '</div>';
+    '<div class="mpeer">' + peerLine + '</div>' + range + histHtml + formulaHtml + '</div>';
 }
 
 /* citizen_report rows → lookup by (row, col) for a given year.
