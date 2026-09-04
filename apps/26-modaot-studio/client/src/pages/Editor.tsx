@@ -43,6 +43,7 @@ import {
   Mic,
   Video,
   SquareStack,
+  Info,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -1010,6 +1011,11 @@ export default function Editor() {
           >
             {format.colorSpace}
           </Badge>
+          {format.note && (
+            <span title={format.note} data-testid="hint-format-note" className="text-[#F5EEDD]/50">
+              <Info className="h-3.5 w-3.5" />
+            </span>
+          )}
 
           <Button variant="outline" size="sm" className="gap-1.5 border-[#C9A227]/40 text-[#C9A227]" onClick={handleDownloadPNG}>
             <FileImage className="h-4 w-4" /> הורד PNG
