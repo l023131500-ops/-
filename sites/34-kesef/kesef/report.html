@@ -491,11 +491,17 @@ async function show(symbol) {
   const a = d.authority;
   document.title = 'דוח רשות — ' + a.name + ' · כסף';
   $('authName').textContent = a.name;
+  // שנות הדוח שנטענו לרשות זו — מגיע כבר עם kesef_authorities_list (נטען
+  // פעם אחת לכל הרשימה), פשוט לא הוצג עד כה. תואם את הצהרת השקיפות של הדף:
+  // "שנה שחסרה במקור — חסרה גם כאן", כאן זה נגלה כבר בכותרת ולא רק בגרף המגמה.
+  const listed = AUTHORITIES.find((x) => x.symbol === symbol);
+  const loadedYears = listed && listed.years;
   $('authMeta').innerHTML =
     '<span>' + esc(STATUS_HE[a.status] || a.status) + '</span>' +
     (a.district ? '<span>מחוז <b>' + esc(a.district) + '</b></span>' : '') +
     (a.population != null ? '<span><b>' + nf.format(a.population) + '</b> תושבים (' + a.population_year + ')</span>' : '') +
-    (a.socio_cluster != null ? '<span>אשכול חברתי-כלכלי <b>' + a.socio_cluster + '</b></span>' : '');
+    (a.socio_cluster != null ? '<span>אשכול חברתי-כלכלי <b>' + a.socio_cluster + '</b></span>' : '') +
+    (loadedYears && loadedYears.length ? '<span>שנות דוח שנטענו: <b>' + loadedYears.join(', ') + '</b></span>' : '');
 
   // metrics — multi-year since the 2018–2023 backfill: group by key, card shows
   // the latest loaded year, the strip below it shows the loaded history
