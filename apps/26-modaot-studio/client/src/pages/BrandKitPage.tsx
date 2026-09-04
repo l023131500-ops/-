@@ -320,7 +320,7 @@ export default function BrandKitPage() {
                         </div>
                       )}
                     </div>
-                    <p className="border-t border-black/5 bg-white py-2 text-center text-xs font-bold text-[#0B1220]">{c.label}</p>
+                    <p className="border-t border-black/5 bg-white py-2 text-center text-xs font-bold text-[#0B1220]" title={c.prompt}>{c.label}</p>
                   </button>
                 ))}
               </div>
