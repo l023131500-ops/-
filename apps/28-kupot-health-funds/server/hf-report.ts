@@ -82,8 +82,11 @@ export function renderHfReportHtml(opts: {
         // — ר' hf_data_export.json) אך נשמט מהדוח המודפס: מי שמדפיס/שומר את
         // הדוח יוצא בלי לדעת על סמך אילו מקורות (תקנון השב"ן, ביטוח לאומי,
         // משרד הבריאות וכו') נבנתה כל שורה.
+        // catalogNo מוצג כ-"#<מספר>" ליד שם הנושא ב-TopicCard.tsx (מאוכלס ב-435
+        // מתוך 435 נושאי קופות חולים) אך נשמט מהדוח המודפס — אין דרך לאתר את
+        // הנושא המקורי במאגר מתוך הדוח המיוצא בלבד.
         return `<tr>
-          <td class="name">${esc(t.topic)}<div class="muted">${esc(subLine)}</div></td>
+          <td class="name">${esc(t.topic)}${t.catalogNo != null ? ` <span class="muted">#${esc(t.catalogNo)}</span>` : ""}<div class="muted">${esc(subLine)}</div></td>
           <td>${esc(value)}</td>
           <td class="best">${bestLabel}</td>
           <td class="muted small">${esc(t.benefitSummary || "—")}${t.sourceName ? `<div class="muted">מקור: ${esc(t.sourceName)}</div>` : ""}</td>
