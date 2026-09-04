@@ -268,7 +268,12 @@ function Page() {
               {!isLoading && filtered.length === 0 && <TableRow><TableCell colSpan={6} className="text-center text-muted-foreground py-6">אין נתונים</TableCell></TableRow>}
               {filtered.map((r) => (
                 <TableRow key={r.id}>
-                  <TableCell className="font-medium">{r.title}</TableCell>
+                  <TableCell className="font-medium">
+                    {r.title}
+                    {r.description && (
+                      <div className="text-xs text-muted-foreground font-normal mt-0.5 line-clamp-1">{r.description}</div>
+                    )}
+                  </TableCell>
                   <TableCell><EntitlementCategoryBadge category={r.category} /></TableCell>
                   <TableCell>{r.year ?? "—"}</TableCell>
                   <TableCell className="text-sm text-muted-foreground">{r.source ?? "—"}</TableCell>
