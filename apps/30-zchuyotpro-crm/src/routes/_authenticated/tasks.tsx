@@ -91,7 +91,12 @@ function TasksPage() {
                         {overdue && <Badge variant="destructive" className="ms-1">באיחור</Badge>}
                       </TableCell>
                       <TableCell><Badge className={TASK_PRIORITY_COLOR[t.priority]}>{TASK_PRIORITY[t.priority]}</Badge></TableCell>
-                      <TableCell>{TASK_STATUS[t.status]}</TableCell>
+                      <TableCell>
+                        {TASK_STATUS[t.status]}
+                        {t.status === "done" && t.completed_at && (
+                          <div className="text-xs text-muted-foreground font-normal mt-0.5">{formatDateTimeHe(t.completed_at)}</div>
+                        )}
+                      </TableCell>
                       <TableCell>
                         {assignee?.full_name ?? "—"}
                         {creator?.full_name && creator.id !== assignee?.id && (
