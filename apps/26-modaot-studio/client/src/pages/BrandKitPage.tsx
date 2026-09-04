@@ -114,6 +114,12 @@ export default function BrandKitPage() {
     URL.revokeObjectURL(url);
   }
 
+  function downloadPng() {
+    if (!brand!.logoPng) return;
+    const a = document.createElement("a");
+    a.href = brand!.logoPng; a.download = `${brand!.brandName}-logo.png`; a.click();
+  }
+
   function exportPdf() {
     const html = buildBrandBookHtml({ brand: brand!, kit: kit!, arch, archSec });
     const w = window.open("", "_blank");
@@ -263,11 +269,16 @@ export default function BrandKitPage() {
           {brand.logoPng && (
             <div className="mb-6 flex flex-col items-center gap-3 rounded-lg border border-[#C9A227]/25 bg-white/95 p-6">
               <img src={brand.logoSvg ? `data:image/svg+xml;utf8,${encodeURIComponent(brand.logoSvg)}` : brand.logoPng} alt="לוגו" className="max-h-48 object-contain" data-testid="img-saved-logo" />
-              {brand.logoSvg && (
-                <Button variant="outline" className="gap-2 border-[#0B1220]/30 text-[#0B1220] hover:bg-[#0B1220]/5" onClick={downloadSvg} data-testid="button-download-svg">
-                  <Download className="h-4 w-4" /> הורד SVG וקטורי
+              <div className="flex flex-wrap justify-center gap-2">
+                <Button variant="outline" className="gap-2 border-[#0B1220]/30 text-[#0B1220] hover:bg-[#0B1220]/5" onClick={downloadPng} data-testid="button-download-png">
+                  <Download className="h-4 w-4" /> הורד PNG
                 </Button>
-              )}
+                {brand.logoSvg && (
+                  <Button variant="outline" className="gap-2 border-[#0B1220]/30 text-[#0B1220] hover:bg-[#0B1220]/5" onClick={downloadSvg} data-testid="button-download-svg">
+                    <Download className="h-4 w-4" /> הורד SVG וקטורי
+                  </Button>
+                )}
+              </div>
             </div>
           )}
 
