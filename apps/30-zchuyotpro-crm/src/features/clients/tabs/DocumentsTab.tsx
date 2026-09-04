@@ -112,6 +112,9 @@ export function DocumentsTab({ clientId }: { clientId: string }) {
                     {d.processing_status !== "pending" && processingBadge(d.processing_status)}
                   </div>
                 )}
+                {d.signed_at && (
+                  <div className="text-xs text-muted-foreground">נחתם: {formatDateTimeHe(d.signed_at)}</div>
+                )}
                 <div className="flex gap-1 justify-end pt-1">
                   <Button variant="ghost" size="icon" onClick={() => openDoc(d.storage_path)}><Download className="h-4 w-4" /></Button>
                   <AlertDialog>
