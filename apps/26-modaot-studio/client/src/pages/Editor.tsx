@@ -119,6 +119,11 @@ function engineLabel(engine: string): string {
   return engine;
 }
 
+// תאריך יצירה של רקע שמור (bg.createdAt, unixepoch מהשרת) — לתצוגה בספריית הרקעים
+function bgDateLabel(seconds: number): string {
+  return new Date(seconds * 1000).toLocaleDateString("he-IL", { day: "numeric", month: "long", year: "numeric" });
+}
+
 // פריסות "קטע" — היכן על הקנבס תמוקם תמונת-רקע נוספת שאינה הרקע הכללי (פריט 54,
 // "הוספת רקעים נוספים לקטעים בעמוד"). כל פריסה היא פונקציה טהורה של מידות הקנבס.
 type SectionKey = "top" | "bottom" | "right" | "left";
@@ -1839,7 +1844,7 @@ export default function Editor() {
                       type="button"
                       onClick={() => applySavedBackground(bg)}
                       className="block h-16 w-full"
-                      title={bg.prompt}
+                      title={`${bg.prompt} · ${bgDateLabel(bg.createdAt)}`}
                       data-testid={`button-library-bg-${bg.id}`}
                     >
                       <img src={bg.dataUrl} alt={bg.prompt} className="h-16 w-full object-cover" />
@@ -1892,6 +1897,11 @@ export default function Editor() {
               {libraryPreview && (
                 <span className="mr-2 rounded bg-[#C9A227]/15 px-1.5 py-0.5 align-middle text-[10px] font-normal text-[#C9A227]" data-testid="badge-library-preview-engine">
                   {engineLabel(libraryPreview.engine)}
+                </span>
+              )}
+              {libraryPreview && (
+                <span className="mr-2 align-middle text-[11px] font-normal text-[#F5EEDD]/50" data-testid="text-library-preview-date">
+                  {bgDateLabel(libraryPreview.createdAt)}
                 </span>
               )}
             </DialogTitle>
