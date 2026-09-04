@@ -320,7 +320,7 @@ function ClientsTab({ clients, activeId, onSelect }: { clients: FinClient[]; act
             <div key={c.id} className={`flex items-center justify-between rounded-lg border p-3 ${activeId === c.id ? "border-primary bg-primary/5" : "border-border bg-muted/20"}`}>
               <button type="button" className="text-right flex-1" onClick={() => onSelect(c.id)} aria-pressed={activeId === c.id} data-testid={`client-row-${c.id}`}>
                 <p className="font-semibold">{c.fullName} <Badge variant="outline" className="text-[10px] mr-2">{c.mode === "business" ? "עסק" : "משק בית"}</Badge></p>
-                <p className="text-xs text-muted-foreground"><span dir="ltr">{c.phone}</span> · {c.email || "—"} · {c.city || ""}</p>
+                <p className="text-xs text-muted-foreground"><span dir="ltr">{c.phone}</span> · {c.email || "—"} · {c.city || ""}{c.monthlyIncome ? ` · הכנסה ${ils(c.monthlyIncome)}/חודש` : ""}</p>
               </button>
               <Button variant="ghost" size="sm" onClick={() => { if (!confirm(`למחוק את הלקוח "${c.fullName}"? כל התנועות, התקציבים והתזכורות שלו יימחקו יחד איתו.`)) return; del.mutate(c.id); }}><Trash2 className="w-4 h-4 text-destructive" /></Button>
             </div>
