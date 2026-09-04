@@ -203,7 +203,7 @@ export const messagesQuery = (clientId: string) =>
     queryFn: async () => {
       const { data, error } = await supabase
         .from("messages")
-        .select("*")
+        .select("*, sender:profiles!messages_sent_by_fkey(full_name)")
         .eq("client_id", clientId)
         .order("created_at", { ascending: true });
       if (error) throw error;
