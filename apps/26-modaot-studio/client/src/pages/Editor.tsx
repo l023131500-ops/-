@@ -86,7 +86,7 @@ import { downloadPNG, downloadPDF, downloadSVG } from "@/lib/exporter";
 import { downloadIDML } from "@/lib/idmlExporter";
 import { apiRequest, hasAuthSession, queryClient } from "@/lib/queryClient";
 import { nextId } from "@shared/layers";
-import type { TemplateDoc, TextLayer, ImageLayer, ShapeLayer, AnyLayer, TemplateBackground } from "@shared/layers";
+import type { TemplateDoc, TextLayer, ImageLayer, ShapeLayer, DecorationLayer, AnyLayer, TemplateBackground } from "@shared/layers";
 import { fitText } from "@/lib/autofit";
 
 // שורת מותג כפי שהשרת מחזיר מ-/api/brands (ר' shared/schema.ts) — קריאה בלבד כאן
@@ -1484,6 +1484,37 @@ export default function Editor() {
                       checked={!!(selectedLayer as ShapeLayer).dash?.length}
                       onCheckedChange={(v) => handleChangeLayer(selectedLayer.id, { dash: v ? [10, 6] : undefined })}
                       data-testid="switch-layer-shape-dash"
+                    />
+                  </div>
+                </div>
+              )}
+
+              {selectedLayer && selectedLayer.type === "decoration" && (
+                <div className="mb-3 space-y-2">
+                  <div>
+                    <Label className="mb-1 block text-xs text-[#F5EEDD]/70">
+                      צבע עיטור <code className="font-mono text-[10px] text-[#C9A227]/70">fill</code>
+                    </Label>
+                    <ColorPicker
+                      value={(selectedLayer as DecorationLayer).fill ?? "#C9A227"}
+                      onChange={(c) => handleChangeLayer(selectedLayer.id, { fill: c })}
+                      presets={Object.values(style.palette)}
+                      compact
+                      label="צבע עיטור"
+                    />
+                  </div>
+                  <div>
+                    <Label className="mb-1 block text-xs text-[#F5EEDD]/70">
+                      עובי קו <code className="font-mono text-[10px] text-[#C9A227]/70">strokeWidth</code>:{" "}
+                      {(selectedLayer as DecorationLayer).strokeWidth ?? 2}
+                    </Label>
+                    <Slider
+                      value={[(selectedLayer as DecorationLayer).strokeWidth ?? 2]}
+                      min={1}
+                      max={20}
+                      step={0.5}
+                      onValueChange={([v]) => handleChangeLayer(selectedLayer.id, { strokeWidth: v })}
+                      data-testid="slider-layer-decoration-stroke-width"
                     />
                   </div>
                 </div>
