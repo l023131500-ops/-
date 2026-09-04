@@ -546,7 +546,9 @@ async function show(symbol) {
   $('srcList').innerHTML = d.sources.map((s) =>
     '<div class="srcrow"><span><b>' + s.fiscal_year + '</b></span>' +
     '<a href="' + esc(s.url) + '" target="_blank" rel="noopener">' + esc(s.title) + '</a>' +
-    '<span style="color:var(--muted)">רישיון ' + esc((s.license || '').toUpperCase()) + ' · נמשך ' + new Date(s.fetched_at).toLocaleDateString('he-IL') + '</span>' +
+    '<span style="color:var(--muted)">רישיון ' + esc((s.license || '').toUpperCase()) +
+      (s.published_at ? ' · פורסם ' + new Date(s.published_at).toLocaleDateString('he-IL') : '') +
+      ' · נמשך ' + new Date(s.fetched_at).toLocaleDateString('he-IL') + '</span>' +
     '<span class="sha">SHA-256: ' + esc(s.sha256) + '</span></div>').join('');
   $('syncNote').innerHTML = d.last_sync
     ? '<b>מתי הנתונים נטענו:</b> ' + new Date(d.last_sync.finished_at).toLocaleString('he-IL') +
