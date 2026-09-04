@@ -276,7 +276,8 @@ function watchCard(w) {
     '<div class="ameta"><span>' + esc(STATUS_HE[w.status] || w.status) + '</span>' +
     (w.district ? '<span>מחוז <b>' + esc(w.district) + '</b></span>' : '') +
     (w.population != null ? '<span><b>' + nf.format(w.population) + '</b> תושבים</span>' : '') +
-    (w.socio_cluster != null ? '<span>אשכול <b>' + w.socio_cluster + '</b></span>' : '') + '</div>';
+    (w.socio_cluster != null ? '<span>אשכול <b>' + w.socio_cluster + '</b></span>' : '') +
+    (w.watched_at ? '<span>במעקב מ-' + new Date(w.watched_at).toLocaleDateString('he-IL') + '</span>' : '') + '</div>';
 
   let mrows = '';
   for (const def of CARD_METRICS) {
