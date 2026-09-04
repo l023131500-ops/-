@@ -1,0 +1,378 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>המעקב שלי — כסף · שקיפות תקציבית</title>
+<meta name="description" content="הרשויות שבחרת לעקוב אחריהן: המדדים האחרונים שלהן והתראות שנגזרות מהדוחות המבוקרים לפי כללים מוצהרים." />
+<meta property="og:title" content="כסף — המעקב שלי" />
+<meta property="og:description" content="מעקב אישי אחרי רשויות מקומיות, עם התראות מדדים מהדוחות המבוקרים." />
+<meta property="og:type" content="website" />
+<meta property="og:locale" content="he_IL" />
+<link rel="canonical" href="https://more30.com/kesef/my" />
+<meta name="theme-color" content="#0B0D2E" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<!-- Same off-the-paint-path trick as the other kesef pages: NetFree intermittently
+     blocks Google Fonts, and the declared fallback stack keeps the page readable. -->
+<link href="https://fonts.googleapis.com/css2?family=Suez+One&family=Secular+One&family=Frank+Ruhl+Libre:wght@300;400&family=Heebo:wght@300;400;500;700&display=swap"
+      rel="stylesheet" media="print" onload="this.media='all'" />
+<noscript><link href="https://fonts.googleapis.com/css2?family=Suez+One&family=Secular+One&family=Frank+Ruhl+Libre:wght@300;400&family=Heebo:wght@300;400;500;700&display=swap" rel="stylesheet" /></noscript>
+<script src="https://more30.com/auth-button.js" defer></script>
+<style>
+/* Tokens shared with kesef/index.html (which lifts them from portal/src/styles.css). */
+:root{
+  color-scheme: dark;
+  --royal:#0B0D2E; --royal-2:#12153F; --violet:#241B54;
+  --gold:#C9A227; --gold-soft:#E3C765; --emerald:#14B88A; --coral:#E4604E;
+  --ink:#ECE9F5; --ink-2:#B9B6D6; --muted:#8E8BB2;
+  --line:rgba(201,162,39,.20); --line-2:rgba(236,233,245,.10);
+  --wrap:1180px; --ease:cubic-bezier(.22,.61,.36,1);
+}
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;background:var(--royal);color:var(--ink);
+  font-family:'Heebo',system-ui,-apple-system,'Segoe UI',sans-serif;font-weight:300;
+  -webkit-font-smoothing:antialiased;line-height:1.7}
+a{color:inherit;text-decoration:none}
+::selection{background:var(--gold);color:var(--royal)}
+.display{font-family:'Suez One','Heebo',system-ui,sans-serif;font-weight:400}
+.name{font-family:'Secular One','Heebo',sans-serif;font-weight:400}
+.wrap{max-width:var(--wrap);margin:0 auto;padding:0 28px}
+.eyebrow{font-size:12px;font-weight:500;letter-spacing:.24em;color:var(--gold)}
+.skip{position:absolute;inset-inline-start:-9999px;top:0;background:var(--gold);color:var(--royal);padding:12px 20px;z-index:100}
+.skip:focus{inset-inline-start:0}
+.btn{display:inline-flex;align-items:center;gap:8px;font-size:15px;font-weight:400;
+  padding:11px 24px;border:1px solid var(--gold);border-radius:2px;background:var(--gold);
+  color:var(--royal);cursor:pointer;transition:background .25s var(--ease),color .25s var(--ease)}
+.btn:hover{background:transparent;color:var(--gold-soft)}
+.btn:focus-visible{outline:3px solid var(--gold-soft);outline-offset:3px}
+.btn-quiet{background:transparent;color:var(--ink);border-color:var(--line-2)}
+.btn-quiet:hover{color:var(--gold-soft);border-color:var(--gold)}
+.btn[disabled]{opacity:.55;cursor:default}
+
+.nav{position:sticky;top:0;z-index:50;background:rgba(11,13,46,.86);backdrop-filter:blur(10px);border-bottom:1px solid var(--line-2)}
+.nav-in{max-width:var(--wrap);margin:0 auto;padding:14px 28px;display:flex;align-items:center;justify-content:space-between;gap:20px;
+  padding-inline-end:calc(28px + var(--more30-auth-inset, 112px))}
+.wordmark{font-family:'Secular One',sans-serif;font-size:17px}
+.wordmark span{color:var(--gold)}
+.nav-links{display:flex;gap:20px;align-items:center;font-size:14px}
+.nav-links a:hover{color:var(--gold-soft)}
+
+.head{padding:44px 0 26px}
+.head h1{font-size:clamp(30px,5vw,52px);line-height:1.1;margin:8px 0 10px}
+.head .sub{color:var(--ink-2);font-size:16px;max-width:72ch;margin:0}
+
+.state{padding:60px 0;text-align:center;color:var(--ink-2)}
+.panel{border:1px solid var(--line);border-radius:3px;padding:30px 32px;background:rgba(201,162,39,.05);max-width:760px}
+.panel h2{font-family:'Secular One',sans-serif;font-weight:400;font-size:21px;margin:0 0 10px}
+.panel p{margin:0 0 12px;color:var(--ink-2);font-size:15px}
+
+.toolbar{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin:24px 0 8px}
+.toolbar label{font-size:14px;color:var(--ink-2)}
+.toolbar input{background:var(--royal-2);border:1px solid var(--line-2);border-radius:2px;
+  color:var(--ink);font-family:inherit;font-size:16px;padding:10px 14px;min-width:260px}
+.toolbar input:focus-visible{outline:2px solid var(--gold-soft);outline-offset:2px}
+.toolbar .note{font-size:13px;color:var(--muted)}
+
+.grid{display:grid;gap:18px;grid-template-columns:repeat(auto-fit,minmax(330px,1fr));margin:22px 0 8px}
+.wcard{background:rgba(236,233,245,.035);border:1px solid var(--line-2);border-radius:3px;padding:22px 24px;display:flex;flex-direction:column;gap:14px}
+.wcard .aname{font-family:'Secular One',sans-serif;font-size:21px;margin:0}
+.wcard .aname a:hover{color:var(--gold-soft)}
+.ameta{color:var(--muted);font-size:13.5px;display:flex;gap:12px;flex-wrap:wrap}
+.ameta b{color:var(--ink-2);font-weight:500}
+.mrow{display:grid;grid-template-columns:1fr auto;gap:4px 14px;font-size:14px;border-top:1px solid var(--line-2);padding-top:12px}
+.mrow .lbl{color:var(--ink-2)}
+.mrow .val{font-variant-numeric:tabular-nums;direction:ltr;text-align:left;color:var(--ink)}
+.mrow .val small{color:var(--muted);font-size:11.5px}
+.alist{display:grid;gap:8px}
+.alert{border:1px solid var(--line);border-radius:3px;padding:10px 14px;font-size:13.5px;color:var(--ink-2);background:rgba(228,96,78,.06)}
+.alert .chip{display:inline-block;font-size:11px;font-weight:500;letter-spacing:.06em;border-radius:2px;
+  padding:1px 8px;margin-inline-end:8px;background:rgba(201,162,39,.18);color:var(--gold-soft)}
+.noalert{font-size:13.5px;color:var(--muted)}
+.wacts{display:flex;gap:10px;flex-wrap:wrap;margin-top:auto}
+.wacts .btn{padding:8px 16px;font-size:13.5px}
+
+.section{padding:44px 0;border-top:1px solid var(--line-2)}
+.sec-title{font-size:clamp(21px,3vw,30px);margin:6px 0 6px}
+.rules{display:grid;gap:0;max-width:860px}
+.rule{display:flex;gap:18px;padding:18px 0;border-bottom:1px solid var(--line-2);font-size:14.5px}
+.rule:last-child{border-bottom:0}
+.rule .k{font-family:'Suez One',serif;color:var(--gold);flex:none;width:30px;font-size:16px}
+.rule h3{font-family:'Secular One',sans-serif;font-weight:400;font-size:16px;margin:0 0 4px}
+.rule p{margin:0;color:var(--ink-2)}
+.honesty{border:1px solid var(--line);border-radius:3px;padding:20px 24px;background:rgba(201,162,39,.05);font-size:14.5px;color:var(--ink-2);max-width:860px;margin-top:18px}
+.honesty b{color:var(--ink);font-weight:500}
+
+.footer{padding:44px 0;border-top:1px solid var(--line-2);text-align:center;color:var(--muted);font-size:14px}
+.footer a{text-decoration:underline}
+[hidden]{display:none !important}
+</style>
+</head>
+<body>
+<a class="skip" href="#main">דילוג לתוכן הראשי</a>
+<nav class="nav" aria-label="ניווט ראשי">
+  <div class="nav-in">
+    <a class="wordmark" href="/kesef">כסף<span> · שקיפות תקציבית</span></a>
+    <div class="nav-links">
+      <a href="/kesef/report">דוח רשות</a>
+      <a href="/kesef/compare">השוואת רשויות</a>
+      <a class="btn btn-quiet" style="padding:8px 18px;font-size:14px" href="/kesef">אודות המערכת</a>
+    </div>
+  </div>
+</nav>
+
+<main id="main">
+<header class="head">
+  <div class="wrap">
+    <div class="eyebrow">אזור אישי · חשבון more30</div>
+    <h1 class="display">המעקב שלי</h1>
+    <p class="sub">
+      הרשויות שבחרת לעקוב אחריהן, המדדים האחרונים שלהן, והתראות שנגזרות
+      מהדוחות המבוקרים לפי <a href="#rules" style="text-decoration:underline">כללים מוצהרים</a>.
+      ההתראות מוצגות כאן במסך — שום דבר לא נשלח בדוא״ל.
+    </p>
+  </div>
+</header>
+
+<div id="loading" class="state">בודק התחברות…</div>
+<div id="errBox" class="state" hidden role="alert"></div>
+
+<!-- Signed out: the page says exactly what signing in gives, and sends the user
+     back here after login instead of dropping them on the home page. -->
+<div id="signedOut" hidden>
+  <div class="wrap" style="padding:20px 28px 40px">
+    <div class="panel">
+      <h2>מעקב אישי מתחיל בכניסה</h2>
+      <p>
+        חשבון more30 — אותו חשבון שמשמש את כל מערכות הפלטפורמה — שומר כאן את
+        רשימת הרשויות שלך. אחרי הכניסה אפשר להוסיף רשות למעקב מכל דוח,
+        ולראות במקום אחד את המדדים וההתראות של כולן.
+      </p>
+      <p>
+        <a class="btn" href="https://more30.com/login?from=https%3A%2F%2Fmore30.com%2Fkesef%2Fmy">כניסה עם חשבון more30</a>
+        <a class="btn btn-quiet" style="margin-inline-start:10px" href="/kesef/report">בינתיים — לדוח פתוח לציבור</a>
+      </p>
+    </div>
+  </div>
+</div>
+
+<div id="content" hidden>
+  <div class="wrap">
+    <div class="toolbar">
+      <label for="addPick">הוספת רשות למעקב:</label>
+      <input id="addPick" list="authList" placeholder="הקלידו שם רשות…" autocomplete="off" />
+      <datalist id="authList"></datalist>
+      <a class="btn btn-quiet" id="cmpAll" hidden>השוואת הרשויות שבמעקב</a>
+      <span class="note" id="cmpNote" hidden></span>
+    </div>
+    <!-- Empty state: not an error, a starting point. -->
+    <div id="empty" class="panel" hidden style="margin-top:14px">
+      <h2>עדיין אין רשויות במעקב</h2>
+      <p>
+        אפשר להוסיף רשות מהשדה שלמעלה, או מכפתור ״הוספה למעקב״ שבראש כל
+        <a href="/kesef/report" style="text-decoration:underline">דוח רשות</a>.
+      </p>
+    </div>
+    <div class="grid" id="cards"></div>
+  </div>
+
+  <section class="section" id="rules" aria-labelledby="hRules">
+    <div class="wrap">
+      <div class="eyebrow">שקיפות של השקיפות</div>
+      <h2 class="display sec-title" id="hRules">הכללים שמאחורי ההתראות</h2>
+      <p style="color:var(--ink-2);font-size:15px;max-width:78ch;margin:0 0 18px">
+        התראה אינה פרשנות: היא משפט עובדתי שמחושב אוטומטית מהמדדים שבדוח
+        המבוקר, לפי הכללים הבאים — אותם כיוונים שעמוד הדוח כבר מסמן כמותרים
+        לשיפוט עובדתי (גבייה: גבוה עדיף; גירעון וחוב: נמוך עדיף). מדדים
+        נייטרליים אינם מייצרים התראה.
+      </p>
+      <div class="rules">
+        <div class="rule"><div class="k">01</div><div>
+          <h3>ירידה בגביית הארנונה</h3>
+          <p>גביית הארנונה מהחיוב השוטף ירדה ב-3 נקודות אחוז או יותר לעומת שנת הדוח הקודמת שנטענה.</p>
+        </div></div>
+        <div class="rule"><div class="k">02</div><div>
+          <h3>עלייה בעומס המלוות</h3>
+          <p>עומס המלוות מן ההכנסה עלה ב-5 נקודות אחוז או יותר לעומת שנת הדוח הקודמת שנטענה.</p>
+        </div></div>
+        <div class="rule"><div class="k">03</div><div>
+          <h3>גירעון שוטף גבוה</h3>
+          <p>הגירעון השוטף בשנת הדוח האחרונה עמד על 5% או יותר מן ההכנסה השנתית.</p>
+        </div></div>
+        <div class="rule"><div class="k">04</div><div>
+          <h3>גירעון נצבר גבוה</h3>
+          <p>הגירעון הנצבר בשנת הדוח האחרונה עמד על 25% או יותר מן ההכנסה השנתית.</p>
+        </div></div>
+      </div>
+      <div class="honesty">
+        <b>זכות תגובה, אכופה במסד:</b> ממצא ברמת חומרה גבוהה אינו מתפרסם —
+        כאן או בעמוד הדוח — לפני שהרשות קיבלה הודעה וחלפו 14 יום להגיב.
+        מאחר שהליך היידוע טרם הופעל, ממצאים כאלה נשמרים במערכת ואינם מוצגים
+        עדיין. מה שמוצג: ממצאים ברמת ״לתשומת לב״, שכל אחד מהם נושא את השנים
+        והערכים שמהם חושב. כל המספרים לקוחים מהדוחות הכספיים המבוקרים
+        שמפרסם משרד הפנים (data.gov.il, רישיון CC-BY) — אותם נתונים שמוצגים
+        לציבור בעמוד הדוח.
+      </div>
+    </div>
+  </section>
+</div>
+</main>
+
+<footer class="footer">
+  <div class="wrap">
+    <p style="margin:0 0 6px">כסף · שקיפות תקציבית לרשויות מקומיות · עולם הסטארטאפים</p>
+    <p style="margin:0">חלק מ־<a href="https://more30.com">more30.com</a> · הנתונים: משרד הפנים, data.gov.il (CC-BY)</p>
+  </div>
+</footer>
+
+<script>
+'use strict';
+const SUPABASE_URL = 'https://uhnrgujbdxhhmoxcjria.supabase.co';
+const SUPABASE_ANON =
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVobnJndWpiZHhoaG1veGNqcmlhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODMzNjE3MjgsImV4cCI6MjA5ODkzNzcyOH0.nHuOhw-WQEU17lNa7XOlORnBhVAYbJBHudKafWkSHBw';
+
+const $ = (id) => document.getElementById(id);
+const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const nf = new Intl.NumberFormat('he-IL', { maximumFractionDigits: 0 });
+const nf1 = new Intl.NumberFormat('he-IL', { maximumFractionDigits: 1, minimumFractionDigits: 1 });
+const fmtPct = (v) => nf1.format(v * 100) + '%';
+
+// אותו מפתח סשן שכפתור הכניסה המשותף (auth-button.js) קורא: כל המערכות
+// מוגשות תחת more30.com, ולכן הסשן שנוצר ב-/login נגיש כאן כמו שהוא.
+const SESSION_KEY = 'more30-auth';
+function readSession() {
+  try {
+    const raw = localStorage.getItem(SESSION_KEY);
+    if (!raw) return null;
+    const s = JSON.parse(raw);
+    if (!s || !s.user || !s.access_token) return null;
+    if (s.expires_at && s.expires_at * 1000 <= Date.now()) return null;
+    return s;
+  } catch (e) { return null; }
+}
+
+async function rpc(fn, args, token) {
+  const res = await fetch(SUPABASE_URL + '/rest/v1/rpc/' + fn, {
+    method: 'POST',
+    headers: { apikey: SUPABASE_ANON, Authorization: 'Bearer ' + (token || SUPABASE_ANON), 'Content-Type': 'application/json' },
+    body: JSON.stringify(args || {}),
+  });
+  if (!res.ok) throw new Error('שגיאת שרת (' + res.status + ')');
+  return res.json();
+}
+
+const STATUS_HE = { municipality: 'עירייה', local_council: 'מועצה מקומית', regional_council: 'מועצה אזורית' };
+// תת-הקבוצה שמוצגת בכרטיס: המדדים שמהם נגזרות ההתראות. הדוח המלא מציג את כולם.
+const CARD_METRICS = [
+  { key: 'arnona_collection_pct', label: 'גביית ארנונה מהשוטף' },
+  { key: 'deficit_current_pct',   label: 'גירעון שוטף מן ההכנסה' },
+  { key: 'deficit_accum_pct',     label: 'גירעון נצבר מן ההכנסה' },
+  { key: 'debt_burden_pct',       label: 'עומס מלוות מן ההכנסה' },
+];
+const SEV_HE = { info: 'מידע', notice: 'לתשומת לב', high: 'חומרה גבוהה' };
+
+function watchCard(w) {
+  const meta =
+    '<div class="ameta"><span>' + esc(STATUS_HE[w.status] || w.status) + '</span>' +
+    (w.district ? '<span>מחוז <b>' + esc(w.district) + '</b></span>' : '') +
+    (w.population != null ? '<span><b>' + nf.format(w.population) + '</b> תושבים</span>' : '') +
+    (w.socio_cluster != null ? '<span>אשכול <b>' + w.socio_cluster + '</b></span>' : '') + '</div>';
+
+  let mrows = '';
+  for (const def of CARD_METRICS) {
+    const m = w.metrics && w.metrics[def.key];
+    if (!m) continue;
+    mrows += '<span class="lbl">' + esc(def.label) + ' <small style="color:var(--muted)">(' + m.fiscal_year + ')</small></span>' +
+      '<span class="val">' + fmtPct(Number(m.value)) +
+      (m.peer_median != null ? ' <small>חציון שווים ' + fmtPct(Number(m.peer_median)) + '</small>' : '') + '</span>';
+  }
+
+  const alerts = (w.alerts || []);
+  const ahtml = alerts.length
+    ? '<div class="alist">' + alerts.map((a) =>
+        '<div class="alert"><span class="chip">' + esc(SEV_HE[a.severity] || a.severity) + ' · ' + a.fiscal_year + '</span>' +
+        esc(a.statement_he) + '</div>').join('') + '</div>'
+    : '<div class="noalert">אין ממצאים לפי הכללים המוצהרים — לפי הנתונים שנטענו.</div>';
+
+  return '<article class="wcard" data-symbol="' + w.symbol + '">' +
+    '<h2 class="aname"><a href="/kesef/report?symbol=' + w.symbol + '">' + esc(w.name) + '</a></h2>' +
+    meta +
+    '<div class="mrow">' + (mrows || '<span class="noalert">אין מדדים מחושבים לרשות זו.</span>') + '</div>' +
+    ahtml +
+    '<div class="wacts">' +
+    '<a class="btn btn-quiet" href="/kesef/report?symbol=' + w.symbol + '">לדוח המלא</a>' +
+    '<button class="btn btn-quiet" type="button" data-remove="' + w.symbol + '">הסרה מהמעקב</button>' +
+    '</div></article>';
+}
+
+function renderList(data) {
+  const watches = data.watches || [];
+  $('cards').innerHTML = watches.map(watchCard).join('');
+  $('empty').hidden = watches.length > 0;
+  // compare carries the first four — the compare screen's declared cap.
+  const syms = watches.map((w) => w.symbol);
+  $('cmpAll').hidden = syms.length < 2;
+  $('cmpAll').href = '/kesef/compare?symbols=' + syms.slice(0, 4).join(',');
+  $('cmpNote').hidden = syms.length <= 4;
+  if (syms.length > 4) $('cmpNote').textContent = 'ההשוואה מוגבלת ל-4 רשויות — יוצגו 4 הראשונות.';
+}
+
+let TOKEN = null;
+let AUTHORITIES = [];
+
+async function refresh() {
+  const data = await rpc('kesef_my_watchlist', {}, TOKEN);
+  if (data && data.error === 'not_authenticated') { showSignedOut(); return; }
+  renderList(data);
+}
+
+function showSignedOut() {
+  $('loading').hidden = true; $('content').hidden = true; $('signedOut').hidden = false;
+}
+
+(async function init() {
+  const s = readSession();
+  if (!s) { showSignedOut(); return; }
+  TOKEN = s.access_token;
+  try {
+    const [data, list] = await Promise.all([
+      rpc('kesef_my_watchlist', {}, TOKEN),
+      rpc('kesef_authorities_list'),
+    ]);
+    if (data && data.error === 'not_authenticated') { showSignedOut(); return; }
+    AUTHORITIES = list;
+    $('authList').innerHTML = list.map((a) => '<option value="' + esc(a.name) + '"></option>').join('');
+    renderList(data);
+    $('loading').hidden = true; $('content').hidden = false;
+  } catch (e) {
+    $('loading').hidden = true; $('errBox').hidden = false;
+    $('errBox').textContent = 'לא ניתן לטעון את המעקב: ' + e.message;
+    return;
+  }
+
+  $('addPick').addEventListener('change', async () => {
+    const name = $('addPick').value.trim();
+    const hit = AUTHORITIES.find((x) => x.name === name);
+    if (!hit) return;
+    $('addPick').value = '';
+    try {
+      const r = await rpc('kesef_watch_toggle', { p_symbol: hit.symbol }, TOKEN);
+      if (r && r.error === 'not_authenticated') { showSignedOut(); return; }
+      await refresh();
+    } catch (e) { alert('הפעולה נכשלה: ' + e.message); }
+  });
+
+  $('cards').addEventListener('click', async (ev) => {
+    const btn = ev.target.closest('[data-remove]');
+    if (!btn) return;
+    btn.disabled = true;
+    try {
+      const r = await rpc('kesef_watch_toggle', { p_symbol: Number(btn.dataset.remove) }, TOKEN);
+      if (r && r.error === 'not_authenticated') { showSignedOut(); return; }
+      await refresh();
+    } catch (e) { btn.disabled = false; alert('הפעולה נכשלה: ' + e.message); }
+  });
+})();
+</script>
+</body>
+</html>
