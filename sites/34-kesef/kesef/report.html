@@ -499,6 +499,13 @@ async function renderAlerts(symbol) {
       (a.delta_pct != null
         ? '<div style="margin-top:4px;font-size:12px;color:var(--muted)">פער: ' + nf1.format(Number(a.delta_pct)) + ' נקודות אחוז</div>'
         : '') +
+      // שנת ההשוואה בפועל (evidence.years[0].year): כבר מגיע עם כל ממצא מ-
+      // kesef_authority_alerts, פשוט לא הוצג עד כה. ברוב הממצאים זו השנה
+      // שמייד לפני שנת הדוח, אבל לא תמיד — יש רשויות שאצלן ההשוואה קופצת
+      // מ-2019 ל-2024 כי השנים שביניהן לא נטענו לה, וזה נתון אמיתי ולא קבוע.
+      (a.evidence && Array.isArray(a.evidence.years) && a.evidence.years.length === 2
+        ? '<div style="margin-top:4px;font-size:12px;color:var(--muted)">הושווה מול שנת ' + esc(a.evidence.years[0].year) + '</div>'
+        : '') +
       (mLabel
         ? '<div style="margin-top:4px;font-size:12px"><a href="#mc-' + esc(mKey) + '" style="text-decoration:underline;color:var(--gold-soft)">המדד בכרטיס: ' + esc(mLabel) + '</a></div>'
         : '') +

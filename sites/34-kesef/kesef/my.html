@@ -308,6 +308,13 @@ function watchCard(w) {
         (ruleLabel
           ? '<div style="margin-top:4px;font-size:12px"><a href="/kesef/my#rule-' + esc(a.rule_key) + '" style="text-decoration:underline;color:var(--gold-soft)">הכלל שהופעל: ' + esc(ruleLabel) + '</a></div>'
           : '') +
+        // שנת ההשוואה בפועל (evidence.years[0].year): כבר מגיע עם כל התראה
+        // מ-kesef_my_watchlist (אותו שדה שדף הדוח המלא כבר מציג ליד כל ממצא),
+        // פשוט לא הוצג עד כה כאן — לא תמיד שנה קודמת ברצף, יש רשויות שאצלן
+        // ההשוואה קופצת על שנים שלא נטענו להן.
+        (a.evidence && Array.isArray(a.evidence.years) && a.evidence.years.length === 2
+          ? '<div style="margin-top:4px;font-size:12px;color:var(--muted)">הושווה מול שנת ' + esc(a.evidence.years[0].year) + '</div>'
+          : '') +
         '</div>';
       }).join('') + '</div>'
     : '<div class="noalert">אין ממצאים לפי הכללים המוצהרים — לפי הנתונים שנטענו.</div>';
