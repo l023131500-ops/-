@@ -207,6 +207,7 @@ tr.total td{font-weight:500;color:var(--gold-soft);border-top:1px solid var(--li
     <p class="sec-sub" id="staffLine" style="margin-top:-14px"></p>
     <p class="sec-sub" id="householdsLine" style="margin-top:-14px"></p>
     <p class="sec-sub" id="areaLine" style="margin-top:-14px"></p>
+    <p class="sec-sub" id="popPrevLine" style="margin-top:-14px"></p>
     <div style="display:grid;gap:22px;grid-template-columns:repeat(auto-fit,minmax(320px,1fr))">
       <div>
         <h3 class="name" style="font-size:17px;margin:0 0 10px">הכנסות</h3>
@@ -566,6 +567,13 @@ async function show(symbol) {
     // בין הרשויות (מועצות אזוריות לעומת עיריות קטנות), לא קבוע ולא placeholder.
     const area = map.get('שטח שיפוט (דונם)  - שנה נוכחית|שנה נוכחית');
     $('areaLine').textContent = area != null ? 'שטח שיפוט: ' + nf.format(area) + ' דונם' : '';
+    // מספר תושבים בשנה הקודמת: כבר מגיע עם citizen_report (אותו גיליון "נתונים
+    // כלליים"), פשוט לא הוצג עד כה — נתון אוכלוסייה ממשי, שונה מרשות לרשות ומשנה
+    // לשנה, ומאפשר להשוות מול אוכלוסיית שנת הדוח הנוכחית (a.population) שכבר מוצגת בכותרת.
+    const popPrev = map.get('מספר תושבים - שנה קודמת|שנה קודמת');
+    $('popPrevLine').textContent = popPrev != null
+      ? 'מספר תושבים בשנה הקודמת: ' + nf.format(popPrev) + (a.population != null ? ' (לעומת ' + nf.format(a.population) + ' בשנת הדוח)' : '')
+      : '';
   }
 
   // multi-year trend — only for authorities with more than one loaded year
