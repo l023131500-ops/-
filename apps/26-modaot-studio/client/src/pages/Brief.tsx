@@ -24,7 +24,7 @@ import type { TemplateDoc } from "@shared/layers";
 
 interface Meta {
   moods: string[];
-  audiences: { key: string; label: string }[];
+  audiences: { key: string; label: string; moodBias?: string[] }[];
   knowledge: { key: string; label: string; group: string }[];
   groups: { key: string; label: string }[];
   categoryTemplateKeys: string[];
@@ -263,6 +263,7 @@ export default function Brief() {
                     key={a.key}
                     onClick={() => setAudience(audience === a.key ? "" : a.key)}
                     data-testid={`select-audience-${a.key}`}
+                    title={a.moodBias?.length ? `אווירה מוטה: ${a.moodBias.join(", ")}` : undefined}
                     className={`rounded-full border px-3.5 py-1.5 text-sm transition ${
                       audience === a.key
                         ? "border-[#C9A227] bg-[#C9A227] text-[#0B1220]"
