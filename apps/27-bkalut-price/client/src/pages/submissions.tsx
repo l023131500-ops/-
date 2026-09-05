@@ -55,6 +55,22 @@ function parseAdditionalTopics(json: string): Array<{ id: number; topic: string;
   }
 }
 
+const KNOWN_DETAIL_KEYS = new Set(["full_name", "phone", "email", "id_number", "birth_date", "family_status", "city"]);
+
+function parseExtraDetails(json: string): Array<[string, string]> {
+  if (!json) return [];
+  try {
+    const parsed = JSON.parse(json);
+    if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) return [];
+    return Object.entries(parsed as Record<string, unknown>).filter(
+      (entry): entry is [string, string] =>
+        !KNOWN_DETAIL_KEYS.has(entry[0]) && typeof entry[1] === "string" && entry[1].trim().length > 0,
+    );
+  } catch {
+    return [];
+  }
+}
+
 function toCsv(rows: SubmissionRow[]) {
   const headers = [
     "מספר פנייה",
@@ -202,6 +218,12 @@ export default function SubmissionsPage() {
                   <div className="rounded-md bg-muted/30 p-2 md:col-span-3" data-testid={`row-additional-topics-${row.id}`}>
                     <span className="text-muted-foreground">נושאים נוספים שנבדקו באותה פנייה: </span>
                     {parseAdditionalTopics(row.additionalTopicsJson).map((t) => t.topic).filter(Boolean).join(", ")}
+                  </div>
+                )}
+                {parseExtraDetails(row.detailsJson).length > 0 && (
+                  <div className="rounded-md bg-muted/30 p-2 md:col-span-3" data-testid={`row-extra-details-${row.id}`}>
+                    <span className="text-muted-foreground">פרטים נוספים מהשאלון: </span>
+                    {parseExtraDetails(row.detailsJson).map(([key, value]) => `${key}: ${value}`).join(" · ")}
                   </div>
                 )}
               </div>
