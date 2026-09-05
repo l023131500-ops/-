@@ -20,6 +20,15 @@ function sigBadge(status: string | null) {
   return v ? <Badge className={`${v.cls} border-0`} variant="secondary">{v.label}</Badge> : null;
 }
 
+const FILE_TAGS: Record<string, string> = {
+  pay_stub: "תלוש שכר",
+  id_card: "תעודת זהות",
+  contract: "חוזה",
+  medical: "מסמך רפואי",
+  bank: "דף חשבון",
+  other: "אחר",
+};
+
 const myDocsQuery = (clientId: string | undefined) =>
   queryOptions({
     queryKey: ["my-docs", clientId],
@@ -69,7 +78,12 @@ function DocsPage() {
                 <div className="min-w-0">
                   <div className="text-sm font-medium truncate">{d.file_name}</div>
                   <div className="text-xs text-muted-foreground">{new Date(d.created_at).toLocaleDateString("he-IL")}</div>
-                  {d.requires_signature && <div className="mt-1">{sigBadge(d.signature_status)}</div>}
+                  {((d.file_type && FILE_TAGS[d.file_type]) || d.requires_signature) && (
+                    <div className="flex flex-wrap gap-1.5 mt-1">
+                      {d.file_type && FILE_TAGS[d.file_type] && <Badge variant="outline">{FILE_TAGS[d.file_type]}</Badge>}
+                      {d.requires_signature && sigBadge(d.signature_status)}
+                    </div>
+                  )}
                 </div>
               </div>
               <Button size="sm" variant="outline" onClick={() => download(d.storage_path, d.file_name)}>
