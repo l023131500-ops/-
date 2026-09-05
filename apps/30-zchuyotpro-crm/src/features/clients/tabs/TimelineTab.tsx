@@ -12,6 +12,7 @@ type Event = {
   icon: React.ComponentType<{ className?: string }>;
   text: string;
   agent?: string | null;
+  detail?: string | null;
 };
 
 const clientTimelineQuery = (clientId: string) =>
@@ -25,7 +26,7 @@ const clientTimelineQuery = (clientId: string) =>
         supabase.from("client_entitlements").select("id, status, updated_at, handler:profiles!client_entitlements_handled_by_fkey(full_name), entitlement:entitlements(title)").eq("client_id", clientId).order("updated_at", { ascending: false }).limit(100),
         supabase.from("partner_referrals").select("id, status, sent_at, partner:partners(company_name), referrer:profiles!partner_referrals_referred_by_fkey(full_name)").eq("client_id", clientId).order("sent_at", { ascending: false }).limit(100),
         supabase.from("tasks").select("id, title, status, completed_at, created_at, assignee:profiles!tasks_assigned_to_fkey(full_name)").eq("client_id", clientId).order("created_at", { ascending: false }).limit(100),
-        supabase.from("call_transcripts").select("id, direction, duration_seconds, summary, call_at, recorder:profiles!call_transcripts_recorded_by_fkey(full_name)").eq("client_id", clientId).order("call_at", { ascending: false }).limit(100),
+        supabase.from("call_transcripts").select("id, direction, duration_seconds, summary, transcript, call_at, recorder:profiles!call_transcripts_recorded_by_fkey(full_name)").eq("client_id", clientId).order("call_at", { ascending: false }).limit(100),
       ]);
 
       const events: Event[] = [];
@@ -111,6 +112,7 @@ const clientTimelineQuery = (clientId: string) =>
           icon: Phone,
           text: `שיחה ${dir}${duration}${c.summary ? `: ${c.summary}` : ""}`,
           agent: (c as { recorder?: { full_name: string } | null }).recorder?.full_name ?? null,
+          detail: c.transcript ?? null,
         });
       });
 
@@ -142,6 +144,11 @@ export function TimelineTab({ clientId }: { clientId: string }) {
                   <span className="text-xs text-muted-foreground">
                     {formatDateTimeHe(e.when)}{e.agent ? ` · ${e.agent}` : ""}
                   </span>
+                  {e.detail && (
+                    <span className="text-xs text-muted-foreground mt-1 whitespace-pre-wrap line-clamp-3">
+                      {e.detail}
+                    </span>
+                  )}
                 </div>
               </div>
             ))}
