@@ -709,6 +709,7 @@ function LeadsTab() {
               </div>
               <div className="flex items-center gap-2">
                 <Badge variant={l.webhookStatus === "sent" ? "default" : l.webhookStatus === "failed" ? "destructive" : "outline"}>וובהוק: {l.webhookStatus}</Badge>
+                {l.webhookSentAt && <span className="text-xs text-muted-foreground">נשלח ב-{l.webhookSentAt.slice(0, 16).replace("T", " ")}</span>}
                 <select className="rounded-md border border-input bg-background px-2 py-1 text-xs" value={l.status} disabled={update.isPending} onChange={(e) => update.mutate({ id: l.id, status: e.target.value })}>
                   <option value="new">חדש</option>
                   <option value="contacted">יצרנו קשר</option>
