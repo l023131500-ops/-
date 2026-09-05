@@ -123,7 +123,12 @@ function UsersTab() {
   return (
     <Card>
       <CardHeader className="flex flex-row items-center justify-between">
-        <CardTitle className="text-base">משתמשי הארגון</CardTitle>
+        <div>
+          <CardTitle className="text-base">משתמשי הארגון</CardTitle>
+          {tenant?.name && (
+            <div className="text-xs text-muted-foreground mt-1">{tenant.name}</div>
+          )}
+        </div>
         <Button size="sm" onClick={() => setOpen(!open)}>{open ? "ביטול" : "+ הוסף משתמש"}</Button>
       </CardHeader>
       <CardContent className="space-y-4">
