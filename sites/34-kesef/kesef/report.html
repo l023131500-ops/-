@@ -205,6 +205,7 @@ tr.total td{font-weight:500;color:var(--gold-soft);border-top:1px solid var(--li
     <h2 class="display sec-title" id="hBudget">מה אושר, מה בוצע</h2>
     <p class="sec-sub">כל הסכומים באלפי ש״ח, כפי שדווחו בגיליון ״דוח לתושב״ של הדוח הכספי השנתי המבוקר.</p>
     <p class="sec-sub" id="staffLine" style="margin-top:-14px"></p>
+    <p class="sec-sub" id="householdsLine" style="margin-top:-14px"></p>
     <div style="display:grid;gap:22px;grid-template-columns:repeat(auto-fit,minmax(320px,1fr))">
       <div>
         <h3 class="name" style="font-size:17px;margin:0 0 10px">הכנסות</h3>
@@ -552,6 +553,10 @@ async function show(symbol) {
     $('staffLine').textContent = staffCur != null
       ? 'מספר משרות ממוצע: ' + nf1.format(staffCur) + (staffPrev != null ? ' (לעומת ' + nf1.format(staffPrev) + ' בשנה הקודמת)' : '')
       : '';
+    // מספר משקי בית: כבר מגיע עם citizen_report (גיליון "נתונים כלליים", כלול
+    // באותה שאילתת RPC), פשוט לא הוצג עד כה — נתון זהות ממשי, שונה מרשות לרשות.
+    const households = map.get('מספר משקי בית|שנה נוכחית');
+    $('householdsLine').textContent = households != null ? 'מספר משקי בית: ' + nf.format(households) : '';
   }
 
   // multi-year trend — only for authorities with more than one loaded year
