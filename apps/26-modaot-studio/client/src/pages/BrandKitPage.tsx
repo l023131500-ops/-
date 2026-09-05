@@ -14,7 +14,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
-import { getArchetype, AAKER_DIMENSIONS, ALL_QUESTIONS, contrastRatio, type BrandKit, type ColorSpec } from "@shared/branding";
+import { getArchetype, AAKER_DIMENSIONS, ALL_QUESTIONS, HEBREW_FONTS, contrastRatio, type BrandKit, type ColorSpec } from "@shared/branding";
 import { buildBrandBookHtml } from "@/lib/brandBook";
 
 interface BrandRow {
@@ -272,10 +272,20 @@ export default function BrandKitPage() {
             <div className="rounded-lg border border-[#C9A227]/15 bg-[#101B32] p-4">
               <p className="text-xs text-[#F5EEDD]/60">גופן כותרות</p>
               <p className="text-lg font-bold text-[#C9A227]">{kit.typography.headline}</p>
+              {HEBREW_FONTS.find((f) => f.name === kit.typography.headline) && (
+                <p className="mt-1 text-xs leading-relaxed text-[#F5EEDD]/60">
+                  {HEBREW_FONTS.find((f) => f.name === kit.typography.headline)!.desc}
+                </p>
+              )}
             </div>
             <div className="rounded-lg border border-[#C9A227]/15 bg-[#101B32] p-4">
               <p className="text-xs text-[#F5EEDD]/60">גופן גוף</p>
               <p className="text-lg font-bold text-[#C9A227]">{kit.typography.body}</p>
+              {HEBREW_FONTS.find((f) => f.name === kit.typography.body) && (
+                <p className="mt-1 text-xs leading-relaxed text-[#F5EEDD]/60">
+                  {HEBREW_FONTS.find((f) => f.name === kit.typography.body)!.desc}
+                </p>
+              )}
             </div>
           </div>
           <div className="space-y-2">
