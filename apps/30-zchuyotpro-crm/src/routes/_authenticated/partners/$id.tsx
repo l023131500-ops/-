@@ -168,7 +168,12 @@ function PartnerEditPage() {
                   <TableCell className="font-mono text-xs">{r.client?.file_number ?? "—"}</TableCell>
                   <TableCell>{r.client ? <Link to="/clients/$id" params={{ id: r.client.id }} className="hover:underline">{r.client.first_name} {r.client.last_name}</Link> : "—"}</TableCell>
                   <TableCell>{formatDateHe(r.sent_at)}</TableCell>
-                  <TableCell><ReferralStatusBadge status={r.status} /></TableCell>
+                  <TableCell>
+                    <ReferralStatusBadge status={r.status} />
+                    {r.completed_at && <div className="text-xs text-muted-foreground mt-1">הושלם {formatDateHe(r.completed_at)}</div>}
+                    {r.partner_notes && <div className="text-xs text-muted-foreground mt-1">הערות שותף: {r.partner_notes}</div>}
+                    {r.rejection_reason && <div className="text-xs text-red-700 dark:text-red-400 mt-1">סיבת דחייה: {r.rejection_reason}</div>}
+                  </TableCell>
                 </TableRow>
               ))}
             </TableBody>
