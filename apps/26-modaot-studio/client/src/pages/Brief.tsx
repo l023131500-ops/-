@@ -520,9 +520,16 @@ function ConceptCard({ concept, loading, onOpen }: { concept: Concept; loading: 
             {loading && <Loader2 className="h-4 w-4 animate-spin text-[#C9A227]" />}
           </div>
           {concept.preset && (
-            <Badge variant="outline" className="mb-2 border-[#C9A227]/40 text-[10px] text-[#C9A227]">
-              {concept.preset.studio}
-            </Badge>
+            <div className="mb-2 flex flex-wrap items-center gap-1.5">
+              <Badge variant="outline" className="border-[#C9A227]/40 text-[10px] text-[#C9A227]">
+                {concept.preset.studio}
+              </Badge>
+              {concept.preset.mood.map((m) => (
+                <Badge key={m} variant="outline" className="border-[#F5EEDD]/20 text-[10px] text-[#F5EEDD]/60" data-testid={`badge-concept-mood-${key}-${m}`}>
+                  {m}
+                </Badge>
+              ))}
+            </div>
           )}
           {concept.angle && <p className="mb-2 text-xs leading-relaxed text-[#F5EEDD]/70">{concept.angle}</p>}
           {concept.why && (
