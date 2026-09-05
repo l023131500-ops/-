@@ -320,13 +320,26 @@ function metricRow(def, auths, isAbs) {
   const nat = auths.map((a) => a.metrics[def.key]).find((m) => m && m.national_median != null);
   let html = '<tr><th scope="row">' + esc(def.label) +
     (isAbs ? '<span class="why">אלפי ש״ח, ביצוע בפועל</span>' : '') + '</th>';
-  for (const v of entries) {
-    if (v == null) { html += '<td class="num"><span class="val" style="color:var(--muted)">—</span></td>'; continue; }
+  auths.forEach((a, i) => {
+    const v = entries[i];
+    if (v == null) { html += '<td class="num"><span class="val" style="color:var(--muted)">—</span></td>'; return; }
     const best = bestVal != null && v === bestVal;
+    // מרחק מחציון קבוצת השווים (delta_vs_peer_pct) כבר מגיע עם כל מדד מ-
+    // kesef_authorities_compare — עמוד הדוח המלא כבר מציג את אותו תג
+    // (report.html metricCard), כאן הוצג עד כה רק הערך והתג ״הטוב ביותר״.
+    let delta = '';
+    const dv = a.metrics[def.key] && a.metrics[def.key].delta_vs_peer_pct;
+    if (!isAbs && def.good && dv != null) {
+      const d = Number(dv);
+      const better = def.good === 'high' ? d >= 0 : d <= 0;
+      const word = d >= 0 ? 'מעל ' : 'מתחת ל';
+      delta = '<span style="display:block;font-size:11px;color:' + (better ? 'var(--emerald)' : 'var(--coral)') + '">' +
+        nf1.format(Math.abs(d)) + '% ' + word + 'חציון השווים שלה</span>';
+    }
     html += '<td class="num' + (best ? ' best' : '') + '"><span class="val">' + fmt(v) + '</span>' +
-      (best ? '<span class="tag">הטוב ביותר</span>' : '') +
+      (best ? '<span class="tag">הטוב ביותר</span>' : '') + delta +
       bar(v, max, isAbs) + '</td>';
-  }
+  });
   html += '<td class="num natcol"><span class="val">' + (nat ? fmt(Number(nat.national_median)) : '—') + '</span></td></tr>';
   return html;
 }
