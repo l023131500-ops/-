@@ -45,6 +45,16 @@ function formatDate(value: string) {
   return new Intl.DateTimeFormat("he-IL", { dateStyle: "short", timeStyle: "short" }).format(new Date(value));
 }
 
+function parseAdditionalTopics(json: string): Array<{ id: number; topic: string; category: string }> {
+  if (!json) return [];
+  try {
+    const parsed = JSON.parse(json);
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
+}
+
 function toCsv(rows: SubmissionRow[]) {
   const headers = [
     "מספר פנייה",
@@ -188,6 +198,12 @@ export default function SubmissionsPage() {
                   <span className="text-muted-foreground">אוטומציה: </span>
                   {row.webhookStatus === "sent" ? `נשלח ל-n8n ${row.webhookSentAt ? `ב-${formatDate(row.webhookSentAt)}` : ""}` : row.webhookResponse || "טרם נשלח"}
                 </div>
+                {parseAdditionalTopics(row.additionalTopicsJson).length > 0 && (
+                  <div className="rounded-md bg-muted/30 p-2 md:col-span-3" data-testid={`row-additional-topics-${row.id}`}>
+                    <span className="text-muted-foreground">נושאים נוספים שנבדקו באותה פנייה: </span>
+                    {parseAdditionalTopics(row.additionalTopicsJson).map((t) => t.topic).filter(Boolean).join(", ")}
+                  </div>
+                )}
               </div>
             </Card>
           ))}
