@@ -367,9 +367,15 @@ function renderTable(auths) {
   const cols = auths.length + 2; // label + authorities + national
   let html = '<thead><tr><th scope="col">מדד</th>';
   for (const a of auths) {
+    // שנות הדוח שנטענו לרשות זו: כבר מגיע עם kesef_authorities_list (נטען פעם
+    // אחת ב-init, אותו שדה שדף הדוח המלא כבר מציג בכותרת) — לא כל רשות טענה
+    // את כל חמש השנים, וזה חלק מההקשר שמסביר למה שורת מגמה קצרה יותר אצל אחת מהן.
+    const listed = AUTHORITIES.find((x) => x.symbol === a.symbol);
+    const years = listed && listed.years;
     html += '<th scope="col"><span class="name">' + esc(a.name) + '</span>' +
       '<span class="sub">' + esc(STATUS_HE[a.status] || a.status) +
       (a.district ? ' · מחוז ' + esc(a.district) : '') + '</span>' +
+      (years && years.length ? '<span class="sub">שנות דוח: ' + years.join(', ') + '</span>' : '') +
       '<a href="/kesef/report?symbol=' + a.symbol + '">לדוח המלא</a></th>';
   }
   html += '<th scope="col" class="natcol">חציון ארצי<span class="sub">כל הרשויות</span></th></tr></thead><tbody>';
