@@ -204,6 +204,7 @@ tr.total td{font-weight:500;color:var(--gold-soft);border-top:1px solid var(--li
     <div class="eyebrow">התקציב הרגיל · <span id="budgetYear"></span></div>
     <h2 class="display sec-title" id="hBudget">מה אושר, מה בוצע</h2>
     <p class="sec-sub">כל הסכומים באלפי ש״ח, כפי שדווחו בגיליון ״דוח לתושב״ של הדוח הכספי השנתי המבוקר.</p>
+    <p class="sec-sub" id="staffLine" style="margin-top:-14px"></p>
     <div style="display:grid;gap:22px;grid-template-columns:repeat(auto-fit,minmax(320px,1fr))">
       <div>
         <h3 class="name" style="font-size:17px;margin:0 0 10px">הכנסות</h3>
@@ -544,6 +545,13 @@ async function show(symbol) {
     budgetTable($('incomeTbl'), map, INCOME_ROWS, 'סהכ הכנסות');
     budgetTable($('expenseTbl'), map, EXPENSE_ROWS, 'סהכ הוצאות');
     arnonaTable($('arnonaTbl'), map);
+    // מספר משרות ממוצע: כבר מגיע עם citizen_report (גיליון "דוח לתושב") לצד
+    // הכנסות/הוצאות, פשוט לא הוצג עד כה — נתון תקינה ממשי, שונה מרשות לרשות.
+    const staffCur = map.get('מספר משרות ממוצע|שנה נוכחית');
+    const staffPrev = map.get('מספר משרות ממוצע|שנה קודמת');
+    $('staffLine').textContent = staffCur != null
+      ? 'מספר משרות ממוצע: ' + nf1.format(staffCur) + (staffPrev != null ? ' (לעומת ' + nf1.format(staffPrev) + ' בשנה הקודמת)' : '')
+      : '';
   }
 
   // multi-year trend — only for authorities with more than one loaded year
