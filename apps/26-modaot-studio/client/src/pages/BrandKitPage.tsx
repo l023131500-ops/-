@@ -205,6 +205,7 @@ export default function BrandKitPage() {
                 <div className="rounded-lg border border-[#C9A227]/15 bg-[#101B32] p-3">
                   <p className="text-xs text-[#F5EEDD]/60">ארכיטיפ משני</p>
                   <p className="text-sm font-bold">{archSec.name}</p>
+                  <p className="mt-1 text-xs leading-relaxed text-[#F5EEDD]/70">{archSec.desc}</p>
                 </div>
               )}
               {kit.strategy.aaker.length > 0 && (
