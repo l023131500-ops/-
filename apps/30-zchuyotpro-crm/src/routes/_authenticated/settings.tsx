@@ -167,6 +167,7 @@ function UsersTab() {
               <TableRow>
                 <TableHead>שם</TableHead>
                 <TableHead>תפקיד</TableHead>
+                <TableHead>מזהה משתמש</TableHead>
                 <TableHead>הצטרף</TableHead>
               </TableRow>
             </TableHeader>
@@ -184,13 +185,16 @@ function UsersTab() {
                       </SelectContent>
                     </Select>
                   </TableCell>
+                  <TableCell dir="ltr" className="font-mono text-xs text-muted-foreground">
+                    {p.auth_user_id ?? "—"}
+                  </TableCell>
                   <TableCell className="text-xs text-muted-foreground">
                     {new Date(p.created_at).toLocaleDateString("he-IL")}
                   </TableCell>
                 </TableRow>
               ))}
               {(profiles ?? []).length === 0 && (
-                <TableRow><TableCell colSpan={3} className="text-center text-sm text-muted-foreground py-6">אין משתמשים</TableCell></TableRow>
+                <TableRow><TableCell colSpan={4} className="text-center text-sm text-muted-foreground py-6">אין משתמשים</TableCell></TableRow>
               )}
             </TableBody>
           </Table>
