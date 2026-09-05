@@ -32,7 +32,7 @@ interface DashboardPayload {
   month: string;
   summary: { income: number; expense: number; net: number; txCount: number; byCategory: Array<{ categoryId: number; kind: string; total: number }> };
   categories: Array<{ id: number; name: string; kind: string; icon?: string }>;
-  transactions: Array<{ id: number; categoryId: number | null; kind: string; amount: number; description?: string; occurredOn: string }>;
+  transactions: Array<{ id: number; categoryId: number | null; kind: string; amount: number; description?: string; occurredOn: string; source?: string | null }>;
   budgets: Array<{ id: number; categoryId: number; monthlyLimit: number; note?: string }>;
   recurring: Array<{ id: number; title: string; amount?: number | null; cadence: string; nextDate: string; kind: string; description?: string | null; active?: number }>;
   debts: Array<{ id: number; creditor: string; kind: string; originalAmount?: number | null; currentBalance: number; monthlyPayment?: number | null; interestRate?: number | null; startDate?: string | null; endDate?: string | null; status: string; notes?: string | null }>;
@@ -216,6 +216,8 @@ function categoryName(data: DashboardPayload, id: number | null) {
   return data.categories.find((c) => c.id === id)?.name || `קטגוריה ${id}`;
 }
 
+const txSourceLabel: Record<string, string> = { recurring: "אוטומטי", import: "ייבוא", manual: "הוזן ע״י הצוות" };
+
 function TransactionsTab({ data, onCreate }: { data: DashboardPayload; onCreate: (b: any) => void }) {
   const [kind, setKind] = useState<"income" | "expense">("expense");
   const [amount, setAmount] = useState("");
@@ -263,7 +265,12 @@ function TransactionsTab({ data, onCreate }: { data: DashboardPayload; onCreate:
                 <td className="py-2 px-3">{categoryName(data, t.categoryId)}</td>
                 <td className="py-2 px-3">{t.kind === "income" ? "הכנסה" : "הוצאה"}</td>
                 <td className={`py-2 px-3 font-medium ${t.kind === "income" ? "text-emerald-700" : "text-rose-700"}`}>{ils(t.amount)}</td>
-                <td className="py-2 px-3 text-muted-foreground">{t.description}</td>
+                <td className="py-2 px-3 text-muted-foreground">
+                  {t.description}
+                  {t.source && t.source !== "user" && (
+                    <Badge variant="outline" className="text-[10px] mr-2">{txSourceLabel[t.source] ?? t.source}</Badge>
+                  )}
+                </td>
               </tr>
             ))}
           </tbody>
