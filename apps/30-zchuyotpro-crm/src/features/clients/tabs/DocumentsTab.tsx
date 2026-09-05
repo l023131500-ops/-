@@ -31,6 +31,15 @@ function processingBadge(status: string) {
   return v ? <Badge variant="secondary" className={`${v.cls} border-0`}>{v.label}</Badge> : null;
 }
 
+const FILE_TAGS: Record<string, string> = {
+  pay_stub: "תלוש שכר",
+  id_card: "תעודת זהות",
+  contract: "חוזה",
+  medical: "מסמך רפואי",
+  bank: "דף חשבון",
+  other: "אחר",
+};
+
 export function DocumentsTab({ clientId }: { clientId: string }) {
   const { data: client } = useSuspenseQuery(clientQuery(clientId));
   const { data: me } = useSuspenseQuery(meProfileQuery());
@@ -109,8 +118,9 @@ export function DocumentsTab({ clientId }: { clientId: string }) {
                     )}
                   </div>
                 </div>
-                {(d.requires_signature || d.processing_status !== "pending") && (
+                {(d.requires_signature || d.processing_status !== "pending" || (d.file_type && FILE_TAGS[d.file_type])) && (
                   <div className="flex flex-wrap gap-1.5">
+                    {d.file_type && FILE_TAGS[d.file_type] && <Badge variant="outline">{FILE_TAGS[d.file_type]}</Badge>}
                     {d.requires_signature && sigBadge(d.signature_status)}
                     {d.processing_status !== "pending" && processingBadge(d.processing_status)}
                   </div>
