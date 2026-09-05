@@ -559,6 +559,7 @@ export default function FinancialCrmPage() {
                           <p className="font-semibold text-sm">{d.title}</p>
                           <p className="text-[11px] text-muted-foreground">{d.docType}{d.url ? ` · ` : ""}{safeUrl(d.url) && <a href={safeUrl(d.url)} target="_blank" rel="noreferrer" className="underline text-primary">קישור</a>}</p>
                           {d.uploadedBy && <p className="text-[11px] text-muted-foreground mt-0.5">הועלה ע״י: {d.uploadedBy}</p>}
+                          {d.sizeBytes != null && <p className="text-[11px] text-muted-foreground mt-0.5">גודל קובץ: {(d.sizeBytes / 1024).toFixed(1)} KB</p>}
                           {d.notes && <p className="text-xs text-muted-foreground mt-1">{d.notes}</p>}
                         </div>
                         <div className="flex flex-col gap-1">
