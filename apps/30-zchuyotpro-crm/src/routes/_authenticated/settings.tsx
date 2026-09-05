@@ -124,7 +124,12 @@ function UsersTab() {
     <Card>
       <CardHeader className="flex flex-row items-center justify-between">
         <div>
-          <CardTitle className="text-base">משתמשי הארגון</CardTitle>
+          <CardTitle className="text-base flex items-center gap-2">
+            משתמשי הארגון
+            {tenant?.plan && (
+              <Badge variant="secondary" className="font-normal">{tenant.plan}</Badge>
+            )}
+          </CardTitle>
           {tenant?.name && (
             <div className="text-xs text-muted-foreground mt-1">{tenant.name}</div>
           )}
