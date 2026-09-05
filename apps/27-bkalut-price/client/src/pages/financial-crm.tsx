@@ -602,7 +602,7 @@ export default function FinancialCrmPage() {
                       <div key={r.id} className="rounded-md border p-3 flex items-start gap-3">
                         <div className="flex-1">
                           <p className="font-semibold text-sm">{r.title}</p>
-                          <p className="text-[11px] text-muted-foreground">{new Date(r.dueAt).toLocaleString("he-IL")} · {r.channel} · {r.status}</p>
+                          <p className="text-[11px] text-muted-foreground">{new Date(r.dueAt).toLocaleString("he-IL")} · {r.channel} · {r.status}{r.sentAt && <span> · נשלח בתאריך {r.sentAt.slice(0, 10)}</span>}</p>
                           {r.body && <p className="text-xs mt-1">{r.body}</p>}
                         </div>
                         <Button size="sm" variant="ghost" onClick={() => deleteReminder.mutate(r.id)}><Trash2 className="w-3.5 h-3.5" /></Button>
