@@ -471,14 +471,27 @@ async function renderAlerts(symbol) {
     // kesef_authority_alerts) — הכרטיס שלו כבר מוצג למעלה עם טווח קבוצת השווים
     // והנוסחה; קישור ישיר אליו חוסך מהקורא לחפש אותו בין שמונת הכרטיסים.
     const metricLabel = (k) => { const def = METRICS.find((m) => m.key === k); return def && def.label; };
+    // שם הכלל שהופעל: rule_key כבר מגיע עם כל ממצא מ-kesef_authority_alerts
+    // (אותו שדה ש-/kesef/my כבר ממפה לשם קריא ומקשר ל-#rules), פשוט לא הוצג עד
+    // כה כאן — הפאנל הציג רק את התנאי הגולמי (evidence.rule), לא את שם הכלל.
+    const RULE_LABEL = {
+      arnona_collection_drop: 'ירידה בגביית הארנונה',
+      debt_burden_rise: 'עלייה בעומס המלוות',
+      deficit_current_high: 'גירעון שוטף גבוה',
+      deficit_accum_high: 'גירעון נצבר גבוה',
+    };
     $('alertsList').innerHTML = alerts.map((a) => {
       const mKey = a.evidence && a.evidence.metric_key;
       const mLabel = mKey && metricLabel(mKey);
+      const ruleLabel = RULE_LABEL[a.rule_key];
       return '<div style="border:1px solid var(--line);border-radius:3px;padding:9px 13px;font-size:13.5px">' +
       '<span style="display:inline-block;font-size:11px;font-weight:500;border-radius:2px;padding:1px 8px;' +
       'margin-inline-end:8px;background:rgba(201,162,39,.18);color:var(--gold-soft)">' +
       esc(SEV_HE[a.severity] || a.severity) + ' · ' + a.fiscal_year + '</span>' +
       esc(a.statement_he) +
+      (ruleLabel
+        ? '<div style="margin-top:6px;font-size:12px"><a href="/kesef/my#rule-' + esc(a.rule_key) + '" style="text-decoration:underline;color:var(--gold-soft)">הכלל שהופעל: ' + esc(ruleLabel) + '</a></div>'
+        : '') +
       (a.evidence && a.evidence.rule
         ? '<div style="margin-top:6px;font-size:12px;color:var(--muted)">התנאי שהופעל: ' + esc(a.evidence.rule) + '</div>'
         : '') +
