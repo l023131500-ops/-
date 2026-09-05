@@ -119,6 +119,7 @@ const mySrc = inlineScript(myHtml);
   ck('my: alert chip says לתשומת לב with the fiscal year', cards.includes('לתשומת לב · 2024'));
   ck('my: metric rows carry year and peer median', cards.includes('(2024)') && cards.includes('חציון שווים'));
   ck('my: card shows the watched-since date', cards.includes('במעקב מ-') && cards.includes(new Date(myPayload.watches[0].watched_at).toLocaleDateString('he-IL')));
+  ck('my: alert links to its declared rule by rule_key', cards.includes('/kesef/my#rule-arnona_collection_drop') && cards.includes('הכלל שהופעל: ירידה בגביית הארנונה'));
   ck('my: remove button carries the symbol', cards.includes('data-remove="510"'));
   ck('my: datalist filled from live authorities list', els.get('authList').innerHTML.split('<option').length - 1 === authList.length);
   ck('my: empty panel hidden, compare hidden below 2 watches', els.get('empty').hidden === true && els.get('cmpAll').hidden === true);
