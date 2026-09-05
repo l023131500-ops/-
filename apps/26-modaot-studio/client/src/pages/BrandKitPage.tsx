@@ -199,6 +199,15 @@ export default function BrandKitPage() {
                   <p className="text-lg font-bold text-[#C9A227]">{arch.name}</p>
                   <p className="mt-1 text-xs leading-relaxed text-[#F5EEDD]/70">{arch.desc}</p>
                   <p className="mt-2 text-[10px] text-[#F5EEDD]/50">דוגמאות: {arch.brands}</p>
+                  {arch.keywords.length > 0 && (
+                    <div className="mt-2 flex flex-wrap gap-1">
+                      {arch.keywords.map((k, i) => (
+                        <Badge key={i} variant="outline" className="border-[#C9A227]/30 text-[9px] text-[#F5EEDD]/60">
+                          {k}
+                        </Badge>
+                      ))}
+                    </div>
+                  )}
                 </div>
               )}
               {archSec && (
