@@ -233,7 +233,7 @@ export const referralsQuery = (clientId: string) =>
     queryFn: async () => {
       const { data, error } = await supabase
         .from("partner_referrals")
-        .select("*, partner:partners(id, company_name, category)")
+        .select("*, partner:partners(id, company_name, category), referrer:profiles!partner_referrals_referred_by_fkey(full_name)")
         .eq("client_id", clientId)
         .order("sent_at", { ascending: false });
       if (error) throw error;
