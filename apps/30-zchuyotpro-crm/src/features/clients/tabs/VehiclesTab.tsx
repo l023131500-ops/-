@@ -65,11 +65,12 @@ export function VehiclesTab({ clientId }: { clientId: string }) {
               <TableHead>תג נכה</TableHead>
               <TableHead>ביטוח</TableHead>
               <TableHead>תוקף ביטוח</TableHead>
+              <TableHead>נוסף בתאריך</TableHead>
               <TableHead></TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {vehicles.length === 0 && <TableRow><TableCell colSpan={8} className="text-center text-muted-foreground py-6">אין רכבים רשומים</TableCell></TableRow>}
+            {vehicles.length === 0 && <TableRow><TableCell colSpan={9} className="text-center text-muted-foreground py-6">אין רכבים רשומים</TableCell></TableRow>}
             {vehicles.map((v) => (
               <TableRow key={v.id}>
                 <TableCell dir="ltr" className="text-start font-mono">{v.license_plate ?? "—"}</TableCell>
@@ -79,6 +80,7 @@ export function VehiclesTab({ clientId }: { clientId: string }) {
                 <TableCell>{v.disability_badge ? <Badge className="bg-accent text-accent-foreground border-0">תג נכה</Badge> : "—"}</TableCell>
                 <TableCell>{v.has_insurance ? <Badge className="bg-accent text-accent-foreground border-0">מבוטח</Badge> : "—"}</TableCell>
                 <TableCell>{formatDateHe(v.insurance_expiry)}</TableCell>
+                <TableCell className="text-xs text-muted-foreground">{formatDateHe(v.created_at)}</TableCell>
                 <TableCell className="text-end">
                   <Button variant="ghost" size="icon" onClick={() => setEditing(v as Draft)}><Pencil className="h-4 w-4" /></Button>
                   <AlertDialog>
