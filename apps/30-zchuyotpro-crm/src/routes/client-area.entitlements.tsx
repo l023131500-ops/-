@@ -44,7 +44,10 @@ function EntsPage() {
           (ents ?? []).map((e) => (
             <div key={e.id} className="border-b last:border-0 py-2">
               <div className="flex items-center justify-between gap-2">
-                <div className="font-medium text-sm">{e.entitlement?.title}</div>
+                <div className="font-medium text-sm">
+                  {e.entitlement?.title}
+                  {e.entitlement?.year && <span className="text-xs text-muted-foreground font-normal ms-1">({e.entitlement.year})</span>}
+                </div>
                 <div className="flex items-center gap-2">
                   <EntitlementCategoryBadge category={e.entitlement?.category ?? null} />
                   <Badge className={ENTITLEMENT_STATUS_COLOR[e.status] ?? ""}>
