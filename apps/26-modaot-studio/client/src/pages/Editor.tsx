@@ -1041,6 +1041,14 @@ export default function Editor() {
           >
             {format.dpi} DPI
           </Badge>
+          <Badge
+            variant="outline"
+            title={format.group === "print" ? "פורמט הדפסה" : "פורמט דיגיטלי"}
+            className="border-[#C9A227]/30 text-[10px] text-[#F5EEDD]/70"
+            data-testid="badge-format-group"
+          >
+            {format.group === "print" ? "הדפסה" : "דיגיטלי"}
+          </Badge>
           {format.note && (
             <span title={format.note} data-testid="hint-format-note" className="text-[#F5EEDD]/50">
               <Info className="h-3.5 w-3.5" />
