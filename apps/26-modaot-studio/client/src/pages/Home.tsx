@@ -21,7 +21,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import CanvasStage from "@/components/CanvasStage";
-import { getStyle } from "@shared/styles";
+import { getStyle, ORNAMENT_LEVEL_LABELS } from "@shared/styles";
 import { getCategory, GROUPS } from "@shared/knowledge";
 import { getFormat } from "@shared/formats";
 import { getTemplateDef } from "@shared/templates";
@@ -310,6 +310,14 @@ export default function Home() {
                         data-testid={`badge-style-${t.id}`}
                       >
                         {style.label}
+                      </Badge>
+                      <Badge
+                        variant="outline"
+                        title="רמת עיטור — כמות הקישוט העיצובי האופיינית לסגנון זה"
+                        className="border-[#F5EEDD]/15 text-[10px] text-[#F5EEDD]/60"
+                        data-testid={`badge-ornament-${t.id}`}
+                      >
+                        עיטור: {ORNAMENT_LEVEL_LABELS[style.ornamentLevel]}
                       </Badge>
                       {cat && (
                         <Badge variant="outline" className="border-[#F5EEDD]/20 text-[10px] text-[#F5EEDD]/70">

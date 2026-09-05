@@ -100,6 +100,14 @@ export const STYLES: DesignStyle[] = [
 
 export const getStyle = (key: string) => STYLES.find((s) => s.key === key) || STYLES[1];
 
+// תוויות עבריות לרמת העיטור — לתצוגה ליד תגית הסגנון (galleries/עורך).
+export const ORNAMENT_LEVEL_LABELS: Record<DesignStyle["ornamentLevel"], string> = {
+  high: "עשיר",
+  medium: "בינוני",
+  low: "מינימלי",
+  none: "ללא",
+};
+
 // פונטים זמינים לבחירה בעורך
 // ── רשימת הפונטים העברית המורחבת ──
 // category: serif=סריף מסורתי, sans=ללא-תגים מודרני, display=כותרתי, rashi=כתב רש"י
