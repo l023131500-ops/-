@@ -174,6 +174,7 @@ function DeliveryInner() {
                   </td>
                   <td className="py-2 px-3">
                     {statusBadge(row.status)}
+                    {row.attempts > 0 && <div className="text-[11px] text-muted-foreground mt-1">ניסיונות שליחה: {row.attempts}</div>}
                     {row.statusDetail && <div className="text-[11px] text-muted-foreground mt-1">{row.statusDetail}</div>}
                   </td>
                   <td className="py-2 px-3 text-xs text-muted-foreground">
