@@ -265,7 +265,7 @@ function PresetCard({ preset, loading, onOpen }: { preset: PresetMeta; loading: 
           <Badge variant="outline" className="border-[#C9A227]/40 text-[10px] text-[#C9A227]">
             {preset.studio}
           </Badge>
-          {preset.mood.slice(0, 3).map((m) => (
+          {preset.mood.map((m) => (
             <Badge key={m} variant="outline" className="border-[#F5EEDD]/20 text-[10px] text-[#F5EEDD]/70">
               {m}
             </Badge>
