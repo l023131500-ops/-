@@ -291,9 +291,12 @@ function watchCard(w) {
   for (const def of CARD_METRICS) {
     const m = w.metrics && w.metrics[def.key];
     if (!m) continue;
+    // חציון ארצי כבר מגיע עם כל מדד מ-kesef_my_watchlist (כמו peer_median) —
+    // עמוד הדוח המלא כבר מציג את שניהם זה לצד זה, כאן הוצג עד כה רק חציון השווים.
     mrows += '<span class="lbl">' + esc(def.label) + ' <small style="color:var(--muted)">(' + m.fiscal_year + ')</small></span>' +
       '<span class="val">' + fmtPct(Number(m.value)) +
-      (m.peer_median != null ? ' <small>חציון שווים ' + fmtPct(Number(m.peer_median)) + '</small>' : '') + '</span>';
+      (m.peer_median != null ? ' <small>חציון שווים ' + fmtPct(Number(m.peer_median)) + '</small>' : '') +
+      (m.national_median != null ? ' <small>ארצי ' + fmtPct(Number(m.national_median)) + '</small>' : '') + '</span>';
   }
 
   const alerts = (w.alerts || []);
