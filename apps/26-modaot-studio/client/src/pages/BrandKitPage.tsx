@@ -24,7 +24,12 @@ interface BrandRow {
   kitJson: string | null;
   logoPng: string | null;
   logoSvg: string | null;
+  createdAt: number;
+  updatedAt: number;
 }
+
+const dateLabel = (seconds: number) =>
+  new Date(seconds * 1000).toLocaleDateString("he-IL", { day: "numeric", month: "long", year: "numeric" });
 interface LogoConcept { dataUrl: string; base64: string; mimeType: string; label: string; prompt: string; }
 
 export default function BrandKitPage() {
@@ -149,7 +154,15 @@ export default function BrandKitPage() {
         <div className="mx-auto flex max-w-5xl items-center justify-between px-6 py-5">
           <div className="flex items-center gap-3">
             <ScrollText className="h-6 w-6 text-[#C9A227]" />
-            <h1 className="text-xl font-bold">{brand.brandName} <span className="text-[#C9A227]">·</span> ערכת מותג</h1>
+            <div>
+              <h1 className="text-xl font-bold">{brand.brandName} <span className="text-[#C9A227]">·</span> ערכת מותג</h1>
+              <p className="text-[11px] text-[#F5EEDD]/50" data-testid="text-brand-updated">
+                עודכן לאחרונה {dateLabel(brand.updatedAt)}
+                {brand.createdAt !== brand.updatedAt && (
+                  <span className="text-[#F5EEDD]/35"> · נוצר {dateLabel(brand.createdAt)}</span>
+                )}
+              </p>
+            </div>
           </div>
           <div className="flex gap-2">
             <Button variant="outline" className="gap-2 border-[#C9A227]/40 text-[#C9A227] hover:bg-[#C9A227]/10" onClick={exportPdf} data-testid="button-export-pdf">
