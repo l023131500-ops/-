@@ -128,6 +128,16 @@ export function DocumentsTab({ clientId }: { clientId: string }) {
                 {d.signed_at && (
                   <div className="text-xs text-muted-foreground">נחתם: {formatDateTimeHe(d.signed_at)}</div>
                 )}
+                {!!d.analysis_result && (() => {
+                  const r = d.analysis_result as Record<string, unknown>;
+                  const employer = r.employer ? String(r.employer) : null;
+                  const net = r.net_salary != null ? Number(r.net_salary) : null;
+                  return (
+                    <div className="text-xs text-muted-foreground">
+                      תוצאות ניתוח{employer ? ` · ${employer}` : ""}{net != null ? ` · נטו ₪${net.toLocaleString("he-IL")}` : ""}
+                    </div>
+                  );
+                })()}
                 <div className="flex gap-1 justify-end pt-1">
                   <Button variant="ghost" size="icon" onClick={() => openDoc(d.storage_path)}><Download className="h-4 w-4" /></Button>
                   <AlertDialog>
