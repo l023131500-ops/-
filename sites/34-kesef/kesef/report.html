@@ -208,6 +208,7 @@ tr.total td{font-weight:500;color:var(--gold-soft);border-top:1px solid var(--li
     <p class="sec-sub" id="householdsLine" style="margin-top:-14px"></p>
     <p class="sec-sub" id="areaLine" style="margin-top:-14px"></p>
     <p class="sec-sub" id="popPrevLine" style="margin-top:-14px"></p>
+    <p class="sec-sub" id="assetsLine" style="margin-top:-14px"></p>
     <div style="display:grid;gap:22px;grid-template-columns:repeat(auto-fit,minmax(320px,1fr))">
       <div>
         <h3 class="name" style="font-size:17px;margin:0 0 10px">הכנסות</h3>
@@ -586,6 +587,15 @@ async function show(symbol) {
     const popPrev = map.get('מספר תושבים - שנה קודמת|שנה קודמת');
     $('popPrevLine').textContent = popPrev != null
       ? 'מספר תושבים בשנה הקודמת: ' + nf.format(popPrev) + (a.population != null ? ' (לעומת ' + nf.format(a.population) + ' בשנת הדוח)' : '')
+      : '';
+    // סה"כ נכסים: כבר מגיע עם citizen_report (אותו גיליון "דוח לתושב" שממנו
+    // נלקחות טבלאות ההכנסות/הוצאות למעלה), פשוט לא הוצג עד כה — שורת המאזן
+    // הכללית של הרשות, נתון אמיתי ומשתנה (עשרות אלפי ₪ ועד מאות מיליוני ₪
+    // בין הרשויות ובין השנים), לא קבוע ולא placeholder.
+    const assetsCur = map.get('סהכ נכסים|שנה נוכחית');
+    const assetsPrev = map.get('סהכ נכסים|שנה קודמת');
+    $('assetsLine').textContent = assetsCur != null
+      ? 'סה״כ נכסים (מאזן): ' + fmtK(assetsCur) + (assetsPrev != null ? ' (לעומת ' + fmtK(assetsPrev) + ' בשנה הקודמת)' : '')
       : '';
   }
 
