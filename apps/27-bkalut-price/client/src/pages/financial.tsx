@@ -569,6 +569,7 @@ function OpportunitiesTab({ client }: { client: FinClient | null }) {
                 <div>
                   <p className="font-semibold text-sm">{o.title}</p>
                   <p className="text-xs text-muted-foreground">{o.category} · {o.topic}</p>
+                  {!!o.estimatedYearlyValue && <p className="text-xs text-emerald-700">פוטנציאל שנתי: {ils(o.estimatedYearlyValue)}</p>}
                 </div>
                 <div className="flex items-center gap-2">
                   <Badge variant={o.status === "done" ? "default" : "secondary"}>{statusLabel(o.status)}</Badge>
