@@ -382,6 +382,7 @@ function TransactionsTab({ client }: { client: FinClient }) {
                 <div>
                   <span className="text-muted-foreground">{t.occurredOn}</span>
                   <span className="mr-3">{cat?.icon} {cat?.name || "ללא קטגוריה"}</span>
+                  {cat && !cat.isSystem && <Badge variant="outline" className="text-[10px] mr-2">קטגוריה מותאמת אישית</Badge>}
                   <span className="mr-3 text-muted-foreground">{t.description}</span>
                   {t.source === "user" && <Badge variant="outline" className="text-[10px] mr-2">דווח ע״י הלקוח</Badge>}
                 </div>
