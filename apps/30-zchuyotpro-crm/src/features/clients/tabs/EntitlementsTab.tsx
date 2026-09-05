@@ -198,6 +198,7 @@ export function EntitlementsTab({ clientId }: { clientId: string }) {
                       {e.eligible_criteria && Object.keys(e.eligible_criteria as object).length > 0 && (
                         <div className="text-xs bg-muted/50 rounded p-2"><pre className="whitespace-pre-wrap font-mono">{JSON.stringify(e.eligible_criteria, null, 2)}</pre></div>
                       )}
+                      {a?.created_at && <div className="text-xs text-muted-foreground">במעקב מתאריך {new Date(a.created_at).toLocaleDateString("he-IL")}</div>}
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 print:hidden">
                         <div>
                           <label className="text-xs text-muted-foreground">הערות</label>
