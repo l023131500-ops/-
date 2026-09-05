@@ -336,8 +336,17 @@ function metricRow(def, auths, isAbs) {
       delta = '<span style="display:block;font-size:11px;color:' + (better ? 'var(--emerald)' : 'var(--coral)') + '">' +
         nf1.format(Math.abs(d)) + '% ' + word + 'חציון השווים שלה</span>';
     }
+    // טווח קבוצת השווים (רבעון 25–75) כבר מגיע עם כל מדד מ-kesef_authorities_compare
+    // (peer_p25/peer_p75, אותם שדות שעמוד הדוח המלא כבר מצייר כפס iqr) — כאן הוצג
+    // עד כה רק החציון (delta_vs_peer_pct), בלי טווח הפיזור שמאחוריו.
+    let iqr = '';
+    const mv = a.metrics[def.key];
+    if (!isAbs && mv && mv.peer_p25 != null && mv.peer_p75 != null) {
+      iqr = '<span style="display:block;font-size:11px;color:var(--muted)">טווח שווים 25–75: ' +
+        fmt(Number(mv.peer_p25)) + '–' + fmt(Number(mv.peer_p75)) + '</span>';
+    }
     html += '<td class="num' + (best ? ' best' : '') + '"><span class="val">' + fmt(v) + '</span>' +
-      (best ? '<span class="tag">הטוב ביותר</span>' : '') + delta +
+      (best ? '<span class="tag">הטוב ביותר</span>' : '') + delta + iqr +
       bar(v, max, isAbs) + '</td>';
   });
   html += '<td class="num natcol"><span class="val">' + (nat ? fmt(Number(nat.national_median)) : '—') + '</span></td></tr>';
