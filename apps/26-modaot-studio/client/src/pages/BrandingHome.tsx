@@ -10,16 +10,22 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { apiRequest, queryClient } from "@/lib/queryClient";
-import { ARCHETYPES, ARCHETYPE_GROUPS } from "@shared/branding";
+import { ARCHETYPES, ARCHETYPE_GROUPS, getArchetype } from "@shared/branding";
 
 interface BrandRow {
   id: number;
   brandName: string;
+  kitJson: string | null;
   logoPng: string | null;
   logoSvg: string | null;
   createdAt: number;
   updatedAt: number;
 }
+
+const archetypeName = (kitJson: string | null) => {
+  if (!kitJson) return null;
+  try { return getArchetype(JSON.parse(kitJson)?.strategy?.archetypePrimary)?.name ?? null; } catch { return null; }
+};
 
 const dateLabel = (seconds: number) =>
   new Date(seconds * 1000).toLocaleDateString("he-IL", { day: "numeric", month: "long", year: "numeric" });
@@ -138,6 +144,11 @@ export default function BrandingHome() {
                   <CardContent className="flex items-center justify-between p-4">
                     <div>
                       <h4 className="text-sm font-bold" data-testid={`text-brand-name-${b.id}`}>{b.brandName}</h4>
+                      {archetypeName(b.kitJson) && (
+                        <Badge variant="outline" className="mt-1 ml-1 border-[#C9A227]/40 text-[10px] text-[#C9A227]" data-testid={`text-brand-archetype-${b.id}`}>
+                          ארכיטיפ: {archetypeName(b.kitJson)}
+                        </Badge>
+                      )}
                       {b.logoSvg && <Badge variant="outline" className="mt-1 border-[#C9A227]/40 text-[10px] text-[#C9A227]">SVG וקטורי</Badge>}
                       <p className="mt-1 text-[10px] text-[#F5EEDD]/40" data-testid={`text-brand-updated-${b.id}`}>
                         עודכן לאחרונה {dateLabel(b.updatedAt)}
