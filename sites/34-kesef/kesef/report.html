@@ -481,6 +481,9 @@ async function renderAlerts(symbol) {
       (a.evidence && a.evidence.rule
         ? '<div style="margin-top:6px;font-size:12px;color:var(--muted)">התנאי שהופעל: ' + esc(a.evidence.rule) + '</div>'
         : '') +
+      (a.delta_pct != null
+        ? '<div style="margin-top:4px;font-size:12px;color:var(--muted)">פער: ' + nf1.format(Number(a.delta_pct)) + ' נקודות אחוז</div>'
+        : '') +
       (mLabel
         ? '<div style="margin-top:4px;font-size:12px"><a href="#mc-' + esc(mKey) + '" style="text-decoration:underline;color:var(--gold-soft)">המדד בכרטיס: ' + esc(mLabel) + '</a></div>'
         : '') +
