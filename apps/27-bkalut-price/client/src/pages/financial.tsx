@@ -31,7 +31,7 @@ interface FinTransaction { id: number; clientId: number; categoryId: number | nu
 interface FinBudget { id: number; clientId: number; categoryId: number; monthlyLimit: number; note?: string }
 interface FinRecurring { id: number; clientId: number; title: string; amount?: number | null; kind: string; categoryId?: number | null; cadence: string; nextDate: string; active: number; description?: string }
 interface FinOpportunity { id: number; clientId: number | null; title: string; topic?: string; category?: string; rightId?: number | null; estimatedYearlyValue?: number | null; status: string; recommendation?: string }
-interface FinLead { id: number; fullName: string; phone: string; email?: string; mode?: string; message?: string; source?: string; status: string; webhookStatus: string; webhookSentAt?: string | null; createdAt: string }
+interface FinLead { id: number; fullName: string; phone: string; email?: string; mode?: string; message?: string; source?: string; status: string; webhookStatus: string; webhookResponse?: string | null; webhookSentAt?: string | null; createdAt: string }
 interface FinTip { id: number; title: string; body: string; tag?: string; active: number }
 
 function ils(n: number | null | undefined) {
@@ -716,6 +716,7 @@ function LeadsTab() {
               <div className="flex items-center gap-2">
                 <Badge variant={l.webhookStatus === "sent" ? "default" : l.webhookStatus === "failed" ? "destructive" : "outline"}>וובהוק: {l.webhookStatus}</Badge>
                 {l.webhookSentAt && <span className="text-xs text-muted-foreground">נשלח ב-{l.webhookSentAt.slice(0, 16).replace("T", " ")}</span>}
+                {l.webhookStatus === "failed" && l.webhookResponse && <span className="text-xs text-destructive" title={l.webhookResponse}>{l.webhookResponse}</span>}
                 <select className="rounded-md border border-input bg-background px-2 py-1 text-xs" value={l.status} disabled={update.isPending} onChange={(e) => update.mutate({ id: l.id, status: e.target.value })}>
                   <option value="new">חדש</option>
                   <option value="contacted">יצרנו קשר</option>
