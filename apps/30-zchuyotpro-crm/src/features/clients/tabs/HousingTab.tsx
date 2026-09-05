@@ -5,6 +5,7 @@ import { Loader2, Save, Plus, X } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { housingQuery, useInvalidateClient, clientQuery } from "@/features/clients/queries";
 import { HOUSING_TYPE } from "@/features/clients/constants";
+import { formatDateTimeHe } from "@/lib/format";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -67,7 +68,14 @@ export function HousingTab({ clientId }: { clientId: string }) {
   return (
     <Card>
       <CardHeader className="flex flex-row items-center justify-between">
-        <CardTitle>דיור וחשבונות</CardTitle>
+        <div>
+          <CardTitle>דיור וחשבונות</CardTitle>
+          {existing?.updated_at && (
+            <div className="text-xs text-muted-foreground mt-1">
+              עודכן לאחרונה: {formatDateTimeHe(existing.updated_at)}
+            </div>
+          )}
+        </div>
         <Button onClick={() => save.mutate()} disabled={save.isPending}>
           {save.isPending ? <Loader2 className="h-4 w-4 animate-spin ms-2" /> : <Save className="h-4 w-4 ms-2" />}
           שמור
