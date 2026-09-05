@@ -593,9 +593,13 @@ async function show(symbol) {
   }
 
   // sources
+  // סוג הקובץ שממנו נקלטו הנתונים (CSV/XLSX): כבר מגיע עם kesef_authority_report
+  // (source_document.meta.format), פשוט לא הוצג עד כה — נתון אמיתי ולא קבוע:
+  // משרד הפנים פרסם 2018/2019/2022 כ-CSV ו-2023/2024 כ-XLSX.
   $('srcList').innerHTML = d.sources.map((s) =>
     '<div class="srcrow"><span><b>' + s.fiscal_year + '</b></span>' +
     '<a href="' + esc(s.url) + '" target="_blank" rel="noopener">' + esc(s.title) + '</a>' +
+    (s.format ? '<span style="color:var(--muted)">קובץ ' + esc(s.format) + '</span>' : '') +
     '<span style="color:var(--muted)">רישיון ' + esc((s.license || '').toUpperCase()) +
       (s.published_at ? ' · פורסם ' + new Date(s.published_at).toLocaleDateString('he-IL') : '') +
       ' · נמשך ' + new Date(s.fetched_at).toLocaleDateString('he-IL') + '</span>' +
