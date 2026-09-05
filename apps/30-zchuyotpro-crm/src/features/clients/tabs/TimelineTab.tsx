@@ -26,7 +26,7 @@ const clientTimelineQuery = (clientId: string) =>
         supabase.from("client_entitlements").select("id, status, updated_at, handler:profiles!client_entitlements_handled_by_fkey(full_name), entitlement:entitlements(title)").eq("client_id", clientId).order("updated_at", { ascending: false }).limit(100),
         supabase.from("partner_referrals").select("id, status, sent_at, partner:partners(company_name), referrer:profiles!partner_referrals_referred_by_fkey(full_name)").eq("client_id", clientId).order("sent_at", { ascending: false }).limit(100),
         supabase.from("tasks").select("id, title, status, completed_at, created_at, assignee:profiles!tasks_assigned_to_fkey(full_name)").eq("client_id", clientId).order("created_at", { ascending: false }).limit(100),
-        supabase.from("call_transcripts").select("id, direction, duration_seconds, summary, transcript, call_at, recorder:profiles!call_transcripts_recorded_by_fkey(full_name)").eq("client_id", clientId).order("call_at", { ascending: false }).limit(100),
+        supabase.from("call_transcripts").select("id, direction, duration_seconds, summary, transcript, call_at, from_number, to_number, recorder:profiles!call_transcripts_recorded_by_fkey(full_name)").eq("client_id", clientId).order("call_at", { ascending: false }).limit(100),
       ]);
 
       const events: Event[] = [];
@@ -105,12 +105,13 @@ const clientTimelineQuery = (clientId: string) =>
       (calls.data ?? []).forEach((c) => {
         const dir = c.direction === "outbound" ? "יוצאת" : "נכנסת";
         const duration = c.duration_seconds != null ? ` (${Math.round(c.duration_seconds / 60)} דק')` : "";
+        const number = c.direction === "outbound" ? c.to_number : c.from_number;
         events.push({
           id: `c-${c.id}`,
           when: c.call_at,
           kind: "call",
           icon: Phone,
-          text: `שיחה ${dir}${duration}${c.summary ? `: ${c.summary}` : ""}`,
+          text: `שיחה ${dir}${duration}${number ? ` · ${number}` : ""}${c.summary ? `: ${c.summary}` : ""}`,
           agent: (c as { recorder?: { full_name: string } | null }).recorder?.full_name ?? null,
           detail: c.transcript ?? null,
         });
