@@ -161,6 +161,7 @@ export default function BrandingHome() {
                       className="text-[#F5EEDD]/40 hover:text-red-400 disabled:cursor-not-allowed disabled:opacity-50"
                       onClick={(e) => { e.stopPropagation(); del(b.id); }}
                       disabled={busyId === b.id}
+                      aria-label={`מחיקת ${b.brandName}`}
                       data-testid={`button-delete-brand-${b.id}`}
                     >
                       <Trash2 className="h-4 w-4" />
