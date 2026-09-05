@@ -458,6 +458,7 @@ function BudgetsTab({ client }: { client: FinClient }) {
 function RecurringTab({ client }: { client: FinClient }) {
   const { toast } = useToast();
   const { data: list = [] } = useQuery<FinRecurring[]>({ queryKey: [`/api/financial/clients/${client.id}/recurring`] });
+  const { data: cats = [] } = useQuery<FinCategory[]>({ queryKey: ["/api/financial/categories"] });
   const [form, setForm] = useState({ title: "", amount: "", kind: "reminder", cadence: "monthly", nextDate: localDateStr(), description: "" });
   const amountValid = form.amount.trim() === "" || (Number.isFinite(Number(form.amount)) && Number(form.amount) > 0);
   const create = useMutation({
@@ -503,11 +504,14 @@ function RecurringTab({ client }: { client: FinClient }) {
       <Card className="p-5">
         <h3 className="font-semibold mb-3">תזכורות פעילות</h3>
         <div className="space-y-2">
-          {list.map((r) => (
+          {list.map((r) => {
+            const cat = cats.find((c) => c.id === r.categoryId);
+            return (
             <div key={r.id} className={`flex items-center justify-between border-b border-border py-2 text-sm ${!r.active ? "opacity-50" : ""}`}>
               <div>
                 <p className="font-semibold">{r.title}</p>
                 <p className="text-xs text-muted-foreground">תאריך בא: {r.nextDate} · {r.cadence} · {r.kind}</p>
+                {cat && <p className="text-xs text-muted-foreground mt-0.5">{cat.icon} {cat.name}</p>}
                 {r.description && <p className="text-xs text-muted-foreground mt-0.5">{r.description}</p>}
               </div>
               <div className="flex items-center gap-3">
@@ -519,7 +523,8 @@ function RecurringTab({ client }: { client: FinClient }) {
                 <Button size="sm" variant="ghost" onClick={() => { if (!confirm(`למחוק את התזכורת "${r.title}"?`)) return; del.mutate(r.id); }}><Trash2 className="w-4 h-4 text-destructive" /></Button>
               </div>
             </div>
-          ))}
+            );
+          })}
           {list.length === 0 && <p className="text-sm text-muted-foreground">אין תזכורות עדיין.</p>}
         </div>
       </Card>
