@@ -190,6 +190,7 @@ function UsersInner() {
                   <td className="py-2 px-3 text-muted-foreground" dir="ltr">
                     <div>{u.email || "—"}</div>
                     <div className="text-xs">{u.phone || ""}</div>
+                    {u.username && <div className="text-xs">@{u.username}</div>}
                   </td>
                   <td className="py-2 px-3">{ROLES.find((r) => r.value === u.role)?.label ?? u.role}</td>
                   <td className="py-2 px-3">
