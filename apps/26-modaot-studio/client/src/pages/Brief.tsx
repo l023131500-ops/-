@@ -18,6 +18,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import CanvasStage from "@/components/CanvasStage";
+import { getStyle } from "@shared/styles";
 import { useTemplateContext } from "@/lib/templateContext";
 import { useToast } from "@/hooks/use-toast";
 import type { TemplateDoc } from "@shared/layers";
@@ -25,7 +26,7 @@ import type { TemplateDoc } from "@shared/layers";
 interface Meta {
   moods: string[];
   audiences: { key: string; label: string; moodBias?: string[] }[];
-  knowledge: { key: string; label: string; group: string }[];
+  knowledge: { key: string; label: string; group: string; defaultStyle?: string }[];
   groups: { key: string; label: string }[];
   categoryTemplateKeys: string[];
 }
@@ -214,6 +215,7 @@ export default function Brief() {
                     key={c.key}
                     onClick={() => setCategory(c.key)}
                     data-testid={`select-category-${c.key}`}
+                    title={c.defaultStyle ? `סגנון מומלץ: ${getStyle(c.defaultStyle).label}` : undefined}
                     className={`rounded-full border px-3.5 py-1.5 text-sm transition ${
                       category === c.key
                         ? "border-[#C9A227] bg-[#C9A227] text-[#0B1220]"
