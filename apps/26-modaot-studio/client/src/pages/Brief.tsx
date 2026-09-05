@@ -50,6 +50,7 @@ interface Concept {
   why?: string;
   palette?: string;
   copyHint?: string;
+  score?: number;
 }
 interface ConceptResp {
   understanding: string;
@@ -520,7 +521,18 @@ function ConceptCard({ concept, loading, onOpen }: { concept: Concept; loading: 
         <CardContent className="flex-1 p-5">
           <div className="mb-2 flex items-center justify-between gap-2">
             <h4 className="text-base font-bold text-[#F5EEDD]">{concept.title}</h4>
-            {loading && <Loader2 className="h-4 w-4 animate-spin text-[#C9A227]" />}
+            <div className="flex items-center gap-2">
+              {typeof concept.score === "number" && concept.score > 0 && (
+                <Badge
+                  variant="outline"
+                  className="border-[#C9A227]/40 text-[10px] text-[#C9A227]/80"
+                  data-testid={`badge-concept-score-${key}`}
+                >
+                  התאמה {Math.min(100, Math.round(concept.score * 10))}%
+                </Badge>
+              )}
+              {loading && <Loader2 className="h-4 w-4 animate-spin text-[#C9A227]" />}
+            </div>
           </div>
           {concept.preset && (
             <div className="mb-2 flex flex-wrap items-center gap-1.5">
