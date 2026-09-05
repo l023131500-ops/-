@@ -11,6 +11,7 @@ import { STYLES } from "@shared/styles";
 import { FORMATS } from "@shared/formats";
 import { KNOWLEDGE_BASE, GROUPS } from "@shared/knowledge";
 import { PRESETS, STUDIOS, MOODS, getPreset, renderPreset } from "@shared/presetCatalog";
+import { getOrnamentSet } from "@shared/designTokens";
 import { matchPresets, conceptUnderstanding, AUDIENCES, type Brief } from "@shared/brief";
 import { getCategoryTemplates, listCategoryTemplateKeys, renderCategoryTemplate } from "@shared/categoryTemplates";
 
@@ -45,7 +46,7 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
       const s = q.trim();
       list = list.filter((p) => p.name.includes(s) || p.studio.includes(s) || p.mood.some((m) => m.includes(s)));
     }
-    res.json(list.map((p) => ({ key: p.key, name: p.name, studio: p.studio, mood: p.mood })));
+    res.json(list.map((p) => ({ key: p.key, name: p.name, studio: p.studio, mood: p.mood, ornamentLevel: getOrnamentSet(p.spec.ornaments).level })));
   });
 
   // render של פריסט בודד למסמך עריכה (TemplateDoc). מקבל שדות טקסט אופציונליים.
@@ -56,7 +57,7 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
     if (!preset) return res.status(404).json({ error: "פריסט לא נמצא" });
     const doc = renderPreset(key, Number(width) || 1080, Number(height) || 1350, fields, withPhoto !== false);
     if (!doc) return res.status(500).json({ error: "כשל ביצירת המסמך" });
-    res.json({ preset: { key: preset.key, name: preset.name, studio: preset.studio, mood: preset.mood }, doc });
+    res.json({ preset: { key: preset.key, name: preset.name, studio: preset.studio, mood: preset.mood, ornamentLevel: getOrnamentSet(preset.spec.ornaments).level }, doc });
   });
 
   // ═══════════════════ תבניות מומלצות לפי קטגוריה ("כמו שמקובל") ═══════════════════

@@ -15,12 +15,14 @@ import CanvasStage from "@/components/CanvasStage";
 import { useTemplateContext } from "@/lib/templateContext";
 import { useToast } from "@/hooks/use-toast";
 import type { TemplateDoc } from "@shared/layers";
+import { ORNAMENT_LEVEL_LABELS } from "@shared/styles";
 
 interface PresetMeta {
   key: string;
   name: string;
   studio: string;
   mood: string[];
+  ornamentLevel: "high" | "medium" | "low" | "none";
 }
 interface Meta {
   studios: string[];
@@ -264,6 +266,9 @@ function PresetCard({ preset, loading, onOpen }: { preset: PresetMeta; loading: 
         <div className="flex flex-wrap items-center gap-1.5">
           <Badge variant="outline" className="border-[#C9A227]/40 text-[10px] text-[#C9A227]">
             {preset.studio}
+          </Badge>
+          <Badge variant="outline" className="border-[#F5EEDD]/20 text-[10px] text-[#F5EEDD]/70">
+            עיטור: {ORNAMENT_LEVEL_LABELS[preset.ornamentLevel]}
           </Badge>
           {preset.mood.map((m) => (
             <Badge key={m} variant="outline" className="border-[#F5EEDD]/20 text-[10px] text-[#F5EEDD]/70">
