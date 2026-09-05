@@ -125,6 +125,20 @@ function bgDateLabel(seconds: number): string {
   return new Date(seconds * 1000).toLocaleDateString("he-IL", { day: "numeric", month: "long", year: "numeric" });
 }
 
+// תווית תצוגה לתפקיד שכבת הטקסט (TextLayer.role, ר' shared/layers.ts) — קבוע בכל
+// שכבה, נקרא פנימית למיפוי שדות (fields.find((f) => f.role === ...)) ולתקציר
+// ה-AI, אך מעולם לא הוצג למשתמש עצמו ברשימת השכבות בעורך.
+const ROLE_LABELS: Record<string, string> = {
+  opener: "פתיח",
+  title: "כותרת",
+  subtitle: "תת-כותרת",
+  body: "גוף",
+  field: "שדה",
+  footer: "תחתית",
+  decoration: "עיטור",
+  background: "רקע",
+};
+
 // פריסות "קטע" — היכן על הקנבס תמוקם תמונת-רקע נוספת שאינה הרקע הכללי (פריט 54,
 // "הוספת רקעים נוספים לקטעים בעמוד"). כל פריסה היא פונקציה טהורה של מידות הקנבס.
 type SectionKey = "top" | "bottom" | "right" | "left";
@@ -1289,6 +1303,14 @@ export default function Editor() {
                               ? (l as TextLayer).text?.slice(0, 20) || (l as TextLayer).label || l.id
                               : (l as ImageLayer).label || l.id}
                           </span>
+                          {l.type === "text" && (
+                            <span
+                              className="shrink-0 rounded border border-[#C9A227]/25 px-1 text-[9px] text-[#C9A227]/70"
+                              data-testid={`badge-layer-role-${l.id}`}
+                            >
+                              {ROLE_LABELS[(l as TextLayer).role] || (l as TextLayer).role}
+                            </span>
+                          )}
                           {l.locked && <Lock className="h-3 w-3 shrink-0 text-[#C9A227]/60" />}
                         </button>
                         <div className="flex shrink-0 items-center gap-0.5">
