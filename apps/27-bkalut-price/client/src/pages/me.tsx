@@ -398,6 +398,7 @@ function DocumentsTab({ data }: { data: DashboardPayload }) {
             <Badge variant={d.status === "rejected" ? "destructive" : d.status === "reviewed" || d.status === "received" ? "default" : "secondary"} className="text-[11px]">{docStatusLabel[d.status] ?? d.status}</Badge>
           </div>
           <p className="text-xs text-muted-foreground">{docTypeLabel[d.docType] ?? d.docType}</p>
+          <p className="text-[11px] text-muted-foreground" dir="ltr">{d.createdAt.slice(0, 10)}</p>
           {d.notes && <p className="text-sm text-muted-foreground">{d.notes}</p>}
           {safeUrl(d.url) && (
             <a href={safeUrl(d.url)} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-sm text-primary hover:underline">
